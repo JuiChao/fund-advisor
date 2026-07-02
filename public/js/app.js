@@ -6,9 +6,9 @@ const App = (() => {
     let chartPool = {};
     const API_BASE = '';
 
-    // ===== 深色主题 Chart.js 默认配置 =====
-    Chart.defaults.color = '#8b8fa3';
-    Chart.defaults.borderColor = 'rgba(255,255,255,.06)';
+    // ===== 明亮主题 Chart.js 默认配置 =====
+    Chart.defaults.color = '#64748b';
+    Chart.defaults.borderColor = '#e2e8f0';
     Chart.defaults.font.family = "'Inter',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif";
     Chart.defaults.font.size = 11;
 
@@ -89,7 +89,7 @@ const App = (() => {
                     plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y.toFixed(2) + '%' } } },
                     scales: {
                         x: { grid: { display: false } },
-                        y: { beginAtZero: true, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,.04)' } }
+                        y: { beginAtZero: true, ticks: { callback: v => v + '%' }, grid: { color: '#f1f5f9' } }
                     }
                 }
             });
@@ -270,7 +270,7 @@ const App = (() => {
                     plugins: { legend: { display: false } },
                     scales: {
                         x: { grid: { display: false } },
-                        y: { title: { display: true, text: '万元' }, grid: { color: 'rgba(255,255,255,.04)' } }
+                        y: { title: { display: true, text: '万元' }, grid: { color: '#f1f5f9' } }
                     }
                 }
             });

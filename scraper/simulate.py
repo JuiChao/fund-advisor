@@ -49,7 +49,8 @@ def rank_funds(funds):
         f['rank'] = i + 1
     return scored
 
-def allocate(items, budget, apply_limits=True):
+def allocate_ideal(items, budget):
+    """理论最优：不考虑限购，按评分权重分配"""
     trading_days = 22
     allocs = []
     for item in items:
@@ -57,23 +58,120 @@ def allocate(items, budget, apply_limits=True):
         w = item['weight']
         monthly = budget * w
         daily = monthly / trading_days
-        limit = f.get('daily_limit') or 10
-        if apply_limits and daily > limit:
-            daily = limit
-            monthly = daily * trading_days
         allocs.append({
             'code': f['code'], 'name': f['name'], 'index_type': f.get('index_type', ''),
             'weight': round(w, 4), 'daily': round(daily, 1), 'monthly': round(monthly),
             'fee': round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0), 4),
             'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
-            'daily_limit': limit, 'limit_status': f.get('limit_status', ''),
-            'exceeds_limit': apply_limits and (budget * w / trading_days) > limit,
+            'daily_limit': f.get('daily_limit') or 10, 'limit_status': f.get('limit_status', ''),
+            'exceeds_limit': False,
         })
     total = sum(a['monthly'] for a in allocs)
     if total > 0:
         for a in allocs:
             a['actual_weight'] = round(a['monthly'] / total, 4)
     return allocs
+
+def allocate_practical(items, budget):
+    """实际可买：考虑限购和暂停状态，优化实际可执行性"""
+    trading_days = 22
+    
+    # 按状态分类并计算可买金额
+    allocs = []
+    total_buyable_weight = 0
+    
+    for item in items:
+        f = item['fund']
+        w = item['weight']
+        status = f.get('limit_status', '')
+        limit = f.get('daily_limit') or 10
+        
+        # 判断是否可买
+        is_suspended = '暂停' in status
+        is_limited = '限' in status and not is_suspended
+        
+        if is_suspended:
+            # 暂停的基金：按限额购买（假设限额仍然有效）
+            monthly_target = budget * w
+            daily_target = monthly_target / trading_days
+            if daily_target > limit:
+                daily = limit
+                monthly = daily * trading_days
+                exceeds = True
+            else:
+                daily = daily_target
+                monthly = monthly_target
+                exceeds = False
+            total_buyable_weight += w
+        elif is_limited:
+            # 限购的基金：按限额购买
+            monthly_target = budget * w
+            daily_target = monthly_target / trading_days
+            if daily_target > limit:
+                daily = limit
+                monthly = daily * trading_days
+                exceeds = True
+            else:
+                daily = daily_target
+                monthly = monthly_target
+                exceeds = False
+            total_buyable_weight += w
+        else:
+            # 正常基金：按权重购买
+            monthly = budget * w
+            daily = monthly / trading_days
+            exceeds = False
+            total_buyable_weight += w
+        
+        allocs.append({
+            'fund': f,
+            'weight': w,
+            'actual_daily': daily,
+            'actual_monthly': monthly,
+            'limit': limit,
+            'exceeds_limit': exceeds,
+            'status': status,
+        })
+    
+    # 计算实际总投入
+    actual_total = sum(a['actual_monthly'] for a in allocs)
+    
+    # 如果有超额资金，重新分配给未达上限的基金
+    if actual_total < budget:
+        excess = budget - actual_total
+        available = [a for a in allocs if not a['exceeds_limit']]
+        if available:
+            total_weight = sum(a['weight'] for a in available)
+            for a in available:
+                extra = excess * (a['weight'] / total_weight)
+                new_monthly = a['actual_monthly'] + extra
+                new_daily = new_monthly / trading_days
+                if new_daily > a['limit']:
+                    a['exceeds_limit'] = True
+                    a['actual_daily'] = a['limit']
+                    a['actual_monthly'] = a['limit'] * trading_days
+                else:
+                    a['actual_daily'] = new_daily
+                    a['actual_monthly'] = new_monthly
+    
+    # 格式化输出
+    result = []
+    for a in allocs:
+        f = a['fund']
+        result.append({
+            'code': f['code'], 'name': f['name'], 'index_type': f.get('index_type', ''),
+            'weight': round(a['weight'], 4), 'daily': round(a['actual_daily'], 1), 'monthly': round(a['actual_monthly']),
+            'fee': round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0), 4),
+            'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
+            'daily_limit': a['limit'], 'limit_status': f.get('limit_status', ''),
+            'exceeds_limit': a['exceeds_limit'],
+        })
+    
+    total = sum(a['monthly'] for a in result)
+    if total > 0:
+        for a in result:
+            a['actual_weight'] = round(a['monthly'] / total, 4)
+    return result
 
 # ---- 3种风格 × 2种子方案 ----
 
@@ -95,12 +193,23 @@ def pick_funds_by_style(funds, nq_pct):
 def build_strategy(key, name, desc, icon, nq_pct, funds, budget):
     """为一种风格生成理论最优+实际可买两个子方案"""
     items = pick_funds_by_style(funds, nq_pct)
-    ideal = allocate(items, budget, apply_limits=False)
-    practical = allocate(items, budget, apply_limits=True)
+    ideal = allocate_ideal(items, budget)
+    practical = allocate_practical(items, budget)
 
     # 检查实际可买是否有被截断的基金
     has_limited = any(a['exceeds_limit'] for a in practical)
-    practical_note = '受限购影响，部分基金实际投入低于理论配置。' if has_limited else '当前限购不影响配置。'
+    
+    # 计算实际可买总额
+    practical_total = sum(a['monthly'] for a in practical)
+    ideal_total = sum(a['monthly'] for a in ideal)
+    
+    if has_limited:
+        if practical_total < ideal_total:
+            practical_note = f'受限购影响，实际可投金额为 ¥{practical_total}/月，比理论配置少 ¥{ideal_total - practical_total}/月。'
+        else:
+            practical_note = '受限购影响，部分基金实际投入已调整至上限，资金已重新分配。'
+    else:
+        practical_note = '当前限购不影响配置。'
 
     return {
         'key': key,
