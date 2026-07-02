@@ -242,6 +242,81 @@ const App = (() => {
     let msSelected = new Set();
     let msInited = false;
 
+    function renderWeightSliders() {
+        const container = document.getElementById('sim-weights-container');
+        const listEl = document.getElementById('sim-weights-list');
+        if (!container || !listEl) return;
+        
+        const codes = Array.from(msSelected);
+        if (codes.length <= 1) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'block';
+        
+        // 如果已渲染过相同的基金列表，保留其相对权重值，否则初始化为等权重
+        const existingInputs = listEl.querySelectorAll('.sim-weight-row');
+        const savedWeights = {};
+        existingInputs.forEach(row => {
+            savedWeights[row.dataset.code] = +row.querySelector('input').value;
+        });
+        
+        listEl.innerHTML = codes.map(code => {
+            const fund = FUND_DATA.find(f => f.code === code);
+            const name = fund ? fund.name : '';
+            const val = savedWeights[code] !== undefined ? savedWeights[code] : 50; // 默认中等权重
+            return `
+                <div class="sim-weight-row" data-code="${code}" style="display:flex; flex-direction:column; gap: 0.25rem;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                        <span style="color:var(--txt); font-weight:500; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:200px;">${code} ${name}</span>
+                        <span class="sim-weight-val" style="color:var(--accent2); font-weight:700;">-</span>
+                    </div>
+                    <input type="range" class="sim-weight-input" min="0" max="100" step="5" value="${val}" style="width:100%; height:4px; opacity:0.8; cursor:pointer;">
+                </div>
+            `;
+        }).join('');
+        
+        // 绑定事件更新实际数值
+        const inputs = listEl.querySelectorAll('.sim-weight-input');
+        inputs.forEach(input => {
+            input.addEventListener('input', updateWeightDisplays);
+        });
+        
+        updateWeightDisplays();
+    }
+
+    function updateWeightDisplays() {
+        const listEl = document.getElementById('sim-weights-list');
+        if (!listEl) return;
+        const rows = listEl.querySelectorAll('.sim-weight-row');
+        if (rows.length === 0) return;
+        
+        const monthly = +document.getElementById('sim-m').value;
+        
+        // 收集当前滑块的相对权重
+        const values = Array.from(rows).map(row => {
+            return {
+                row: row,
+                code: row.dataset.code,
+                val: +row.querySelector('.sim-weight-input').value
+            };
+        });
+        
+        const totalVal = values.reduce((sum, item) => sum + item.val, 0);
+        
+        values.forEach(item => {
+            const actWeight = totalVal > 0 ? item.val / totalVal : 1 / values.length;
+            const actMonthly = Math.round(monthly * actWeight);
+            const pct = Math.round(actWeight * 100);
+            
+            const valEl = item.row.querySelector('.sim-weight-val');
+            if (valEl) {
+                valEl.textContent = `¥${actMonthly.toLocaleString('zh-CN')} (${pct}%)`;
+            }
+        });
+    }
+
     function initMultiSelect() {
         if (msInited) return;
         msInited = true;
@@ -294,6 +369,7 @@ const App = (() => {
                 textEl.innerHTML = `<span class="ms-count">${msSelected.size}</span> 只基金已选中`;
                 textEl.style.color = 'var(--txt)';
             }
+            renderWeightSliders();
         }
 
         trigger.addEventListener('click', e => {
@@ -350,15 +426,33 @@ const App = (() => {
                 return;
             }
 
-            // 对多基金组合进行高精度的联合蒙特卡洛模拟
-            const weights = new Array(funds.length).fill(1 / funds.length);
+            // 获取定投占比权重
+            const weights = [];
+            if (funds.length <= 1) {
+                weights.push(1.0);
+            } else {
+                const listEl = document.getElementById('sim-weights-list');
+                const rows = listEl.querySelectorAll('.sim-weight-row');
+                const relWeights = Array.from(rows).map(row => +row.querySelector('.sim-weight-input').value);
+                const totalRel = relWeights.reduce((s, w) => s + w, 0);
+                relWeights.forEach(rw => {
+                    weights.push(totalRel > 0 ? rw / totalRel : 1 / funds.length);
+                });
+            }
+
             const result = localSimulatePortfolio(funds, weights, years, monthly);
 
             // 显示预算分配说明
-            const perFundBudget = Math.round(monthly / codes.length);
-            const allocNote = codes.length > 1
-                ? `<p style="color:var(--txt3);font-size:.75rem;margin-bottom:.75rem">每月 ¥${monthly} 平均分配给 ${codes.length} 只基金，每只 ¥${perFundBudget}/月</p>`
-                : '';
+            let allocNote = '';
+            if (funds.length > 1) {
+                allocNote += `<p style="color:var(--txt3);font-size:.75rem;margin-bottom:.75rem">资金分配比例：<br>`;
+                funds.forEach((f, i) => {
+                    const pct = Math.round(weights[i] * 100);
+                    const allocated = Math.round(monthly * weights[i]);
+                    allocNote += `· ${f.code} ${f.name}: <strong>${pct}%</strong> (约 ¥${allocated}/月)<br>`;
+                });
+                allocNote += `</p>`;
+            }
 
             document.getElementById('sim-result').innerHTML = `
                 ${allocNote}
@@ -856,7 +950,10 @@ const App = (() => {
                 renderRanking();
             });
         });
-        document.getElementById('sim-m').addEventListener('input', e => document.getElementById('sim-mv').textContent = fmtMoney(e.target.value));
+        document.getElementById('sim-m').addEventListener('input', e => {
+            document.getElementById('sim-mv').textContent = fmtMoney(e.target.value);
+            updateWeightDisplays();
+        });
         document.getElementById('sim-y').addEventListener('input', e => document.getElementById('sim-yv').textContent = e.target.value + '年');
         document.getElementById('pf-m').addEventListener('input', e => document.getElementById('pf-mv').textContent = fmtMoney(e.target.value));
         document.getElementById('pf-y').addEventListener('input', e => document.getElementById('pf-yv').textContent = e.target.value + '年');
