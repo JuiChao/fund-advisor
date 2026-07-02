@@ -15,7 +15,7 @@
     "morningstar": 0,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "016055",
@@ -33,7 +33,7 @@
     "morningstar": 3,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "018043",
@@ -51,7 +51,7 @@
     "morningstar": 0,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "160213",
@@ -66,10 +66,10 @@
     "tracking_error": 0.0118,
     "return_1yr": 0.2507,
     "return_3yr": 0.8475,
-    "morningstar": 4,
-    "limit_status": "限100元/日",
+    "morningstar": 2,
+    "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "040046",
@@ -87,7 +87,7 @@
     "morningstar": 3,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "000834",
@@ -105,7 +105,7 @@
     "morningstar": 3,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "161130",
@@ -121,9 +121,9 @@
     "return_1yr": 0.2342,
     "return_3yr": 0.7997,
     "morningstar": 3,
-    "limit_status": "限10元/日",
+    "limit_status": "暂停(限10)",
     "daily_limit": 10,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "270042",
@@ -141,7 +141,7 @@
     "morningstar": 3,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "016452",
@@ -159,7 +159,7 @@
     "morningstar": 3,
     "limit_status": "限50元/日",
     "daily_limit": 50,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "539001",
@@ -177,7 +177,7 @@
     "morningstar": 4,
     "limit_status": "限100元/日",
     "daily_limit": 100,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "019547",
@@ -191,11 +191,10 @@
     "purchase_fee": 0.0012,
     "tracking_error": 0.0173,
     "return_1yr": 0.2359,
-    "return_3yr": null,
     "morningstar": 0,
-    "limit_status": "限10元/日",
+    "limit_status": "暂停(限10)",
     "daily_limit": 10,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "018966",
@@ -209,11 +208,10 @@
     "purchase_fee": 0.0012,
     "tracking_error": 0.0173,
     "return_1yr": 0.2206,
-    "return_3yr": null,
     "morningstar": 0,
     "limit_status": "限50元/日",
     "daily_limit": 50,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "015299",
@@ -229,9 +227,9 @@
     "return_1yr": 0.2448,
     "return_3yr": 0.7643,
     "morningstar": 3,
-    "limit_status": "限100元/日",
+    "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "019172",
@@ -245,11 +243,10 @@
     "purchase_fee": 0.0012,
     "tracking_error": 0.0228,
     "return_1yr": 0.2387,
-    "return_3yr": null,
     "morningstar": 0,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "050025",
@@ -267,7 +264,7 @@
     "morningstar": 2,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "161125",
@@ -285,7 +282,7 @@
     "morningstar": 2,
     "limit_status": "暂停(限10)",
     "daily_limit": 10,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "017641",
@@ -303,7 +300,7 @@
     "morningstar": 0,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "017028",
@@ -319,9 +316,9 @@
     "return_1yr": 0.1161,
     "return_3yr": 0.5017,
     "morningstar": 2,
-    "limit_status": "暂停(限1万)",
-    "daily_limit": 10000,
-    "updated_at": "2026-07-02T09:17:36"
+    "limit_status": "暂停(限100)",
+    "daily_limit": 100,
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "018064",
@@ -339,7 +336,7 @@
     "morningstar": 0,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   },
   {
     "code": "096001",
@@ -357,6 +354,6 @@
     "morningstar": 1,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-02T09:17:36"
+    "updated_at": "2026-07-02T03:01:56"
   }
 ]
