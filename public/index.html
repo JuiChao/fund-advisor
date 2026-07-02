@@ -3,15 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="基于蒙特卡洛模拟的指数基金定投智能分析平台，支持纳斯达克100和标普500基金量化分析">
 <title>基金定投智能分析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-<nav>
-    <div class="brand">基金定投智能分析</div>
+
+<nav class="navbar">
+    <div class="brand">FUND ADVISOR</div>
     <div class="links" id="nav-links">
-        <a href="#" data-page="home" class="on">首页</a>
+        <a href="#" data-page="home" class="on">概览</a>
         <a href="#" data-page="ranking">基金排名</a>
         <a href="#" data-page="simulator">模拟器</a>
         <a href="#" data-page="portfolio">定投方案</a>
@@ -19,63 +24,63 @@
 </nav>
 
 <main class="container">
-<!-- 首页 -->
-<div id="page-home">
-    <h1>基金定投智能分析平台</h1>
-    <p style="color:var(--txt2);margin-bottom:1.5rem">基于蒙特卡洛模拟的量化分析 · 数据每日自动更新 · 六种策略一键生成</p>
+
+<!-- ===== 概览 ===== -->
+<div id="page-home" class="fade-in">
+    <h1 class="page-title">基金定投智能分析</h1>
+    <p class="page-sub">蒙特卡洛模拟驱动 · 数据每日自动更新 · 六种策略一键对比</p>
     <div class="stats" id="home-stats"></div>
-    <div class="card"><h3>六种定投策略预览</h3><div id="home-strategies" class="ld">加载中...</div></div>
+    <div class="card"><h3>六种策略预览</h3><div id="home-strategies" class="ld"></div></div>
     <div class="g2">
         <div class="card"><h3>纳斯达克100 费率分布</h3><div class="cht"><canvas id="ch-nq"></canvas></div></div>
         <div class="card"><h3>标普500 费率分布</h3><div class="cht"><canvas id="ch-sp"></canvas></div></div>
     </div>
 </div>
 
-<!-- 排名页 -->
-<div id="page-ranking" style="display:none">
-    <h1>基金投资质量排名</h1>
-    <p style="color:var(--txt2);margin-bottom:1rem">费率35% + 跟踪误差25% + 规模15% + 业绩12% + 晨星8% + 申购费5%</p>
-    <select id="rank-filter" style="padding:.4rem .8rem;border-radius:6px;border:1px solid var(--bdr);margin-bottom:1rem">
+<!-- ===== 排名 ===== -->
+<div id="page-ranking" style="display:none" class="fade-in">
+    <h1 class="page-title">基金投资质量排名</h1>
+    <p class="page-sub">费率 35% · 跟踪误差 25% · 规模 15% · 业绩 12% · 晨星 8% · 申购费 5%</p>
+    <select id="rank-filter">
         <option value="纳斯达克100">纳斯达克100</option>
         <option value="标普500">标普500</option>
     </select>
-    <div class="card" style="overflow-x:auto"><table id="rank-table"><thead></thead><tbody></tbody></table></div>
+    <div style="height:1rem"></div>
+    <div class="table-wrap"><table id="rank-table"><thead></thead><tbody></tbody></table></div>
 </div>
 
-<!-- 模拟器页 -->
-<div id="page-simulator" style="display:none">
-    <h1>蒙特卡洛模拟器</h1>
-    <p style="color:var(--txt2);margin-bottom:1.5rem">自定义参数，模拟单只基金或组合的定投收益分布</p>
+<!-- ===== 模拟器 ===== -->
+<div id="page-simulator" style="display:none" class="fade-in">
+    <h1 class="page-title">蒙特卡洛模拟器</h1>
+    <p class="page-sub">自定义参数，模拟定投收益分布</p>
     <div class="g2">
         <div class="card">
             <h3>参数设置</h3>
-            <div class="fg"><label>选择基金</label><select id="sim-sel" multiple></select><small style="color:var(--txt2)">按住Ctrl多选</small></div>
-            <div class="fg"><label>每月预算</label><input type="range" id="sim-m" min="500" max="10000" step="100" value="2000"><div class="rd"><span>500</span><strong id="sim-mv">2000元</strong><span>10000</span></div></div>
+            <div class="fg"><label>选择基金</label><select id="sim-sel" multiple></select><small style="color:var(--txt3)">按住 Ctrl 多选</small></div>
+            <div class="fg"><label>每月预算</label><input type="range" id="sim-m" min="500" max="10000" step="100" value="2000"><div class="rd"><span>¥500</span><strong id="sim-mv">¥2,000</strong><span>¥10,000</span></div></div>
             <div class="fg"><label>投资年限</label><input type="range" id="sim-y" min="5" max="30" step="1" value="20"><div class="rd"><span>5年</span><strong id="sim-yv">20年</strong><span>30年</span></div></div>
-            <div class="fg"><label>模拟次数</label><select id="sim-n" style="padding:.4rem;border-radius:6px;border:1px solid var(--bdr)"><option value="2000">2000次(快)</option><option value="5000" selected>5000次</option><option value="10000">10000次(精)</option></select></div>
-            <button class="btn btn-p" id="btn-sim" style="width:100%">运行模拟</button>
+            <button class="btn btn-p" id="btn-sim" style="width:100%;margin-top:.5rem">运行模拟</button>
         </div>
-        <div class="card"><h3>模拟结果</h3><div id="sim-result"><p style="color:var(--txt2)">选择基金后点击运行</p></div></div>
+        <div class="card"><h3>模拟结果</h3><div id="sim-result"><p style="color:var(--txt3);text-align:center;padding:2rem">选择基金后点击运行</p></div></div>
     </div>
-    <div class="card" style="margin-top:1.5rem"><h3>收益分布</h3><div style="max-width:650px;margin:0 auto"><canvas id="ch-sim"></canvas></div></div>
+    <div class="card" style="margin-top:1.25rem"><h3>收益分布</h3><div style="max-width:650px;margin:0 auto"><canvas id="ch-sim"></canvas></div></div>
 </div>
 
-<!-- 定投方案页 -->
-<div id="page-portfolio" style="display:none">
-    <h1>多策略定投方案对比</h1>
-    <p style="color:var(--txt2);margin-bottom:1rem">六种策略自动生成，蒙特卡洛模拟计算预期收益</p>
-    <div class="g2" style="margin-bottom:1rem">
-        <div class="fg"><label>每月预算</label><input type="range" id="pf-m" min="500" max="10000" step="100" value="2000"><div class="rd"><span>500</span><strong id="pf-mv">2000元</strong><span>10000</span></div></div>
+<!-- ===== 定投方案 ===== -->
+<div id="page-portfolio" style="display:none" class="fade-in">
+    <h1 class="page-title">多策略定投方案</h1>
+    <p class="page-sub">六种策略自动生成 · 蒙特卡洛模拟计算预期收益</p>
+    <div class="g2" style="margin-bottom:1.25rem">
+        <div class="fg"><label>每月预算</label><input type="range" id="pf-m" min="500" max="10000" step="100" value="2000"><div class="rd"><span>¥500</span><strong id="pf-mv">¥2,000</strong><span>¥10,000</span></div></div>
         <div class="fg"><label>投资年限</label><input type="range" id="pf-y" min="5" max="30" step="1" value="20"><div class="rd"><span>5年</span><strong id="pf-yv">20年</strong><span>30年</span></div></div>
     </div>
     <button class="btn btn-p" id="btn-pf" style="margin-bottom:1.5rem">重新计算</button>
-    <div id="pf-container" class="ld">加载中...</div>
+    <div id="pf-container" class="ld"></div>
 </div>
+
 </main>
 
 <footer>数据来源：天天基金网 · 蒙特卡洛模拟 · 仅供参考，不构成投资建议</footer>
-<script src="js/simulator.js"></script>
-<script src="js/optimizer.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
