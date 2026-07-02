@@ -313,16 +313,24 @@ const App = (() => {
         try {
             const monthly = +document.getElementById('sim-m').value;
             const years = +document.getElementById('sim-y').value;
-            let result;
+            let result = null;
+
             if (codes.length === 1) {
                 const data = await apiGet(`/api/simulate?code=${codes[0]}&years=${years}&budget=${monthly}`);
                 result = data.simulation;
             } else {
+                // 多基金：获取所有策略，找到包含最多选中基金的
                 const strategies = await apiGet(`/api/portfolio?years=${years}&budget=${monthly}`);
                 let best = null, bestOverlap = 0;
                 strategies.forEach(s => {
-                    const overlap = (s.allocations || []).filter(a => codes.includes(a.code)).length;
-                    if (overlap > bestOverlap) { bestOverlap = overlap; best = s; }
+                    ['ideal', 'practical'].forEach(vk => {
+                        const allocs = s[vk]?.allocations || [];
+                        const overlap = allocs.filter(a => codes.includes(a.code)).length;
+                        if (overlap > bestOverlap) {
+                            bestOverlap = overlap;
+                            best = s[vk];
+                        }
+                    });
                 });
                 result = best?.simulation;
             }
@@ -518,6 +526,13 @@ const App = (() => {
         }
 
         const fmtMoney = v => '¥' + Number(v).toLocaleString('zh-CN');
+        // 算法说明折叠
+        const algoToggle = document.getElementById('algo-toggle');
+        if (algoToggle) {
+            algoToggle.addEventListener('click', () => {
+                algoToggle.closest('.algo-card').classList.toggle('open');
+            });
+        }
         document.querySelectorAll('#rank-filter .seg-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('#rank-filter .seg-btn').forEach(b => b.classList.remove('on'));

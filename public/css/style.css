@@ -479,6 +479,88 @@ input[type=range]::-moz-range-thumb {
     margin-left: .4rem;
 }
 
+/* ===== Algorithm Card ===== */
+.algo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+.algo-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--txt);
+    transition: var(--transition);
+}
+.algo-toggle:hover { background: rgba(79, 110, 247, 0.04); }
+.algo-arrow {
+    transition: transform .2s;
+    color: var(--txt3);
+}
+.algo-card.open .algo-arrow { transform: rotate(180deg); }
+.algo-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease;
+}
+.algo-card.open .algo-content { max-height: 800px; }
+.algo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    padding: 0 1.25rem 1.25rem;
+}
+.algo-item {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+}
+.algo-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .5rem;
+}
+.algo-weight {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    height: 26px;
+    border-radius: 13px;
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 700;
+    padding: 0 8px;
+}
+.algo-item p {
+    font-size: .8125rem;
+    color: var(--txt2);
+    line-height: 1.6;
+    margin: 0;
+}
+.algo-note {
+    margin: 0 1.25rem 1.25rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(79, 110, 247, 0.08), rgba(124, 93, 248, 0.08));
+    border-radius: var(--radius-sm);
+    font-size: .8125rem;
+    color: var(--txt2);
+    line-height: 1.7;
+    border-left: 3px solid var(--accent);
+}
+
 /* ===== Fund List in Chart ===== */
 .fund-list {
     display: flex;

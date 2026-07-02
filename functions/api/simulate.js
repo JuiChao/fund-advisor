@@ -34,17 +34,28 @@ export async function onRequest(context) {
     const sims = await simsResp.json();
     const yearKey = String(years);
 
-    // 找到包含该基金的策略
-    const matchingStrategy = sims.strategies.find(s =>
-      (s.allocations || []).some(a => a.code === code)
-    );
+    // 找到包含该基金的策略（检查 ideal 和 practical）
+    let matchingStrategy = null;
+    let matchingVariant = null;
+    for (const s of sims.strategies) {
+      for (const vk of ['ideal', 'practical']) {
+        const allocs = s[vk]?.allocations || [];
+        if (allocs.some(a => a.code === code)) {
+          matchingStrategy = s;
+          matchingVariant = vk;
+          break;
+        }
+      }
+      if (matchingStrategy) break;
+    }
 
     let simulation = null;
     if (matchingStrategy) {
-      const yearData = matchingStrategy.by_years?.[yearKey];
+      const variant = matchingStrategy[matchingVariant];
+      const yearData = variant?.by_years?.[yearKey];
       if (yearData) {
         // 找到该基金在策略中的权重
-        const alloc = matchingStrategy.allocations.find(a => a.code === code);
+        const alloc = variant.allocations.find(a => a.code === code);
         const weight = alloc?.actual_weight || alloc?.weight || 1;
 
         simulation = {

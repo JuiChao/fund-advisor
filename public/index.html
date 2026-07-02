@@ -41,6 +41,63 @@
 <div id="page-ranking" style="display:none" class="fade-in">
     <h1 class="page-title">基金投资质量排名</h1>
     <p class="page-sub">费率 35% · 跟踪误差 25% · 规模 15% · 业绩 12% · 晨星 8% · 申购费 5%</p>
+
+    <div class="algo-card">
+        <button class="algo-toggle" id="algo-toggle">
+            <span>📐 评分算法说明</span>
+            <svg class="algo-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="algo-content" id="algo-content">
+            <div class="algo-grid">
+                <div class="algo-item">
+                    <div class="algo-header">
+                        <span class="algo-weight" style="background:var(--accent-g)">35%</span>
+                        <strong>综合费率</strong>
+                    </div>
+                    <p>管理费 + 托管费。费率每高 0.1%，长期复利下会侵蚀数万元收益。费率是指数基金最核心的差异因素，因为跟踪同一指数的基金收益差异主要来自费率。</p>
+                </div>
+                <div class="algo-item">
+                    <div class="algo-header">
+                        <span class="algo-weight" style="background:linear-gradient(135deg,#6366f1,#a78bfa)">25%</span>
+                        <strong>跟踪误差</strong>
+                    </div>
+                    <p>基金收益率与指数收益率的标准差。跟踪误差越小，说明基金管理越精确。优秀基金的跟踪误差应低于 1%。</p>
+                </div>
+                <div class="algo-item">
+                    <div class="algo-header">
+                        <span class="algo-weight" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">15%</span>
+                        <strong>基金规模</strong>
+                    </div>
+                    <p>规模 10-80 亿为最优区间。太小有清盘风险，太大可能影响跟踪精度。规模适中的基金运营更稳定。</p>
+                </div>
+                <div class="algo-item">
+                    <div class="algo-header">
+                        <span class="algo-weight" style="background:linear-gradient(135deg,#10b981,#34d399)">12%</span>
+                        <strong>历史业绩</strong>
+                    </div>
+                    <p>近 3 年收益率。虽然过去业绩不代表未来，但可以反映基金的跟踪质量和管理水平。</p>
+                </div>
+                <div class="algo-item">
+                    <div class="algo-header">
+                        <span class="algo-weight" style="background:linear-gradient(135deg,#f59e0b,#f97316)">8%</span>
+                        <strong>晨星评级</strong>
+                    </div>
+                    <p>专业评级机构的综合评价，基于风险调整后收益。晨星评级是独立第三方的质量认证。</p>
+                </div>
+                <div class="algo-item">
+                    <div class="algo-header">
+                        <span class="algo-weight" style="background:linear-gradient(135deg,#06b6d4,#22d3ee)">5%</span>
+                        <strong>申购费率</strong>
+                    </div>
+                    <p>购买基金时的一次性费用。虽然占比小，但对于频繁定投的投资者，低申购费能节省不少成本。</p>
+                </div>
+            </div>
+            <div class="algo-note">
+                <strong>为什么费率权重最高？</strong> 假设两只基金都跟踪纳斯达克100，年化收益14%，费率差0.3%。每月定投2000元，20年后低费率基金多赚约 <span style="color:var(--ok);font-weight:700">8-12万元</span>。费率是确定性成本，而业绩是不确定性收益。
+            </div>
+        </div>
+    </div>
+
     <div class="seg-control" id="rank-filter">
         <button class="seg-btn on" data-value="纳斯达克100">
             <span class="seg-icon">📈</span> 纳斯达克100
