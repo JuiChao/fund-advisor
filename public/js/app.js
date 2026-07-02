@@ -255,37 +255,85 @@ const App = (() => {
         
         container.style.display = 'block';
         
-        // 如果已渲染过相同的基金列表，保留其相对权重值，否则初始化为等权重
+        // 如果已渲染过相同的基金列表，保留其权重值，否则初始化为等权重且总和为100
         const existingInputs = listEl.querySelectorAll('.sim-weight-row');
         const savedWeights = {};
         existingInputs.forEach(row => {
             savedWeights[row.dataset.code] = +row.querySelector('input').value;
         });
         
-        listEl.innerHTML = codes.map(code => {
+        const initialVal = Math.round(100 / codes.length);
+        
+        listEl.innerHTML = codes.map((code, idx) => {
             const fund = FUND_DATA.find(f => f.code === code);
             const name = fund ? fund.name : '';
-            const val = savedWeights[code] !== undefined ? savedWeights[code] : 50; // 默认中等权重
+            let val = savedWeights[code];
+            if (val === undefined) {
+                if (idx === codes.length - 1) {
+                    val = 100 - (initialVal * (codes.length - 1));
+                } else {
+                    val = initialVal;
+                }
+            }
             return `
                 <div class="sim-weight-row" data-code="${code}" style="display:flex; flex-direction:column; gap: 0.25rem;">
                     <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
                         <span style="color:var(--txt); font-weight:500; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:200px;">${code} ${name}</span>
                         <span class="sim-weight-val" style="color:var(--accent2); font-weight:700;">-</span>
                     </div>
-                    <input type="range" class="sim-weight-input" min="0" max="100" step="5" value="${val}" style="width:100%; height:4px; opacity:0.8; cursor:pointer;">
+                    <input type="range" class="sim-weight-input" min="0" max="100" step="1" value="${val}" style="width:100%; height:4px; opacity:0.8; cursor:pointer;">
                 </div>
             `;
         }).join('');
         
-        // 绑定事件更新实际数值
+        // 绑定事件实现滑块联动：拖动一个，其它按比例反向移动，总和严格等于100
         const inputs = listEl.querySelectorAll('.sim-weight-input');
         inputs.forEach(input => {
-            input.addEventListener('input', updateWeightDisplays);
+            input.addEventListener('input', e => {
+                const targetInput = e.target;
+                const targetRow = targetInput.closest('.sim-weight-row');
+                const targetCode = targetRow.dataset.code;
+                const newVal = +targetInput.value;
+                
+                const rows = listEl.querySelectorAll('.sim-weight-row');
+                const otherRows = Array.from(rows).filter(r => r.dataset.code !== targetCode);
+                if (otherRows.length === 0) return;
+                
+                const remaining = 100 - newVal;
+                
+                // 获取其它滑块现有的相对比例
+                const otherVals = otherRows.map(r => +r.querySelector('.sim-weight-input').value);
+                const sumOther = otherVals.reduce((a, b) => a + b, 0);
+                
+                if (sumOther > 0) {
+                    otherRows.forEach(r => {
+                        const inputEl = r.querySelector('.sim-weight-input');
+                        const oldVal = +inputEl.value;
+                        const share = oldVal / sumOther;
+                        inputEl.value = Math.round(remaining * share);
+                    });
+                } else {
+                    // 如果其它滑块都为0，平分剩余份额
+                    otherRows.forEach(r => {
+                        const inputEl = r.querySelector('.sim-weight-input');
+                        inputEl.value = Math.round(remaining / otherRows.length);
+                    });
+                }
+                
+                // 舍入误差微调，确保总和绝对等于100
+                let currentSum = newVal + otherRows.reduce((s, r) => s + +r.querySelector('.sim-weight-input').value, 0);
+                if (currentSum !== 100 && otherRows.length > 0) {
+                    const adjustInput = otherRows[0].querySelector('.sim-weight-input');
+                    adjustInput.value = +adjustInput.value + (100 - currentSum);
+                }
+                
+                updateWeightDisplays();
+            });
         });
         
         updateWeightDisplays();
     }
-
+    
     function updateWeightDisplays() {
         const listEl = document.getElementById('sim-weights-list');
         if (!listEl) return;
@@ -294,25 +342,13 @@ const App = (() => {
         
         const monthly = +document.getElementById('sim-m').value;
         
-        // 收集当前滑块的相对权重
-        const values = Array.from(rows).map(row => {
-            return {
-                row: row,
-                code: row.dataset.code,
-                val: +row.querySelector('.sim-weight-input').value
-            };
-        });
-        
-        const totalVal = values.reduce((sum, item) => sum + item.val, 0);
-        
-        values.forEach(item => {
-            const actWeight = totalVal > 0 ? item.val / totalVal : 1 / values.length;
-            const actMonthly = Math.round(monthly * actWeight);
-            const pct = Math.round(actWeight * 100);
+        rows.forEach(row => {
+            const val = +row.querySelector('.sim-weight-input').value;
+            const actMonthly = Math.round(monthly * (val / 100));
             
-            const valEl = item.row.querySelector('.sim-weight-val');
+            const valEl = row.querySelector('.sim-weight-val');
             if (valEl) {
-                valEl.textContent = `¥${actMonthly.toLocaleString('zh-CN')} (${pct}%)`;
+                valEl.textContent = `¥${actMonthly.toLocaleString('zh-CN')} (${val}%)`;
             }
         });
     }
