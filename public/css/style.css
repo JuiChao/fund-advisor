@@ -678,6 +678,40 @@ input[type=range]::-moz-range-thumb {
 .pf-tab.on { background: var(--accent-g); color: #fff; box-shadow: 0 2px 12px rgba(79, 110, 247, 0.3); }
 .pf-panel { animation: fadeIn .25s ease-out; }
 
+/* ===== Notice Banner ===== */
+.notice-banner {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.25rem;
+    color: var(--txt);
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    line-height: 1.5;
+    animation: fadeIn .4s ease-out;
+}
+.notice-banner-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    line-height: 1.2;
+}
+.notice-banner-text {
+    flex: 1;
+}
+.notice-banner-close {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: var(--transition);
+    font-weight: 700;
+    padding: 0 0.25rem;
+}
+.notice-banner-close:hover {
+    opacity: 1;
+}
+
 /* ===== Footer ===== */
 footer {
     text-align: center;

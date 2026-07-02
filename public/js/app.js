@@ -814,6 +814,28 @@ const App = (() => {
         try {
             const resp = await fetch('data/funds.json');
             FUND_DATA = await resp.json();
+
+            // 动态监测基金大面积暂停交易状态并发出公告
+            const total = FUND_DATA.length;
+            const suspended = FUND_DATA.filter(f => (f.limit_status || '').includes('暂停')).length;
+            const ratio = suspended / total;
+            const banner = document.getElementById('notice-banner');
+            if (banner) {
+                if (ratio >= 0.5) {
+                    const pct = Math.round(ratio * 100);
+                    banner.innerHTML = `
+                        <span class="notice-banner-icon">⚠️</span>
+                        <div class="notice-banner-text">
+                            <strong>市场公告：</strong>检测到当前有 <strong>${pct}%</strong> 的境外指数基金（共 ${suspended} 只）已暂停申购。这通常是由于海外市场休市（如香港主权移交纪念日、美国独立日等）或者基金公司 QDII 额度告急引起的。此时“实际可买”定投方案选择受限，建议您参考“理论最优”方案进行长期规划。
+                        </div>
+                        <span class="notice-banner-close" onclick="this.parentElement.style.display='none'">✕</span>
+                    `;
+                    banner.style.display = 'flex';
+                } else {
+                    banner.style.display = 'none';
+                }
+            }
+
             renderHome();
         } catch (e) {
             document.getElementById('home-stats').innerHTML = '<div class="card"><p style="color:var(--err)">数据加载失败: ' + e.message + '</p></div>';
