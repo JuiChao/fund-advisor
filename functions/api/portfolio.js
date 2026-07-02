@@ -1,39 +1,50 @@
 // GET /api/portfolio?years=20&budget=2000
-// 查表 + 线性缩放，返回6种策略结果
+// 返回3种策略 × 2种子方案（理论最优 + 实际可买）
 export async function onRequest(context) {
   const url = new URL(context.request.url);
   const years = Math.max(5, Math.min(30, parseInt(url.searchParams.get('years')) || 20));
   const budget = Math.max(100, parseInt(url.searchParams.get('budget')) || 2000);
-  const scale = budget / 1000; // 基准预算1000元
+  const scale = budget / 1000;
+  const yearKey = String(years);
 
   try {
     const simsUrl = new URL('/data/simulations.json', context.request.url).toString();
     const resp = await context.env.ASSETS.fetch(simsUrl);
     const data = await resp.json();
-    const yearKey = String(years);
 
     const results = data.strategies.map(s => {
-      const yearData = s.by_years?.[yearKey] || {};
+      function scaleVariant(variant) {
+        if (!variant) return null;
+        const yearData = variant.by_years?.[yearKey] || {};
+        return {
+          allocations: (variant.allocations || []).map(a => ({
+            ...a,
+            monthly: Math.round(a.monthly * scale),
+            daily: +(a.daily * scale).toFixed(1),
+          })),
+          note: variant.note,
+          simulation: yearData.median ? {
+            totalInvested: Math.round((yearData.totalInvested || 0) * scale),
+            medianFinal: Math.round(yearData.median * scale),
+            meanFinal: Math.round((yearData.mean || yearData.median) * scale),
+            p5: Math.round((yearData.p5 || 0) * scale),
+            p25: Math.round((yearData.p25 || 0) * scale),
+            p75: Math.round((yearData.p75 || 0) * scale),
+            p95: Math.round((yearData.p95 || 0) * scale),
+            annualReturn: yearData.annualReturn,
+            meanReturnPct: yearData.meanReturnPct,
+          } : null,
+        };
+      }
+
       return {
         key: s.key,
         name: s.name,
         description: s.description,
-        allocations: (s.allocations || []).map(a => ({
-          ...a,
-          monthly: Math.round(a.monthly * scale),
-          daily: +(a.daily * scale).toFixed(1),
-        })),
-        simulation: yearData.medianFinal ? {
-          totalInvested: Math.round(yearData.totalInvested * scale),
-          medianFinal: Math.round(yearData.medianFinal * scale),
-          meanFinal: Math.round((yearData.meanFinal || yearData.medianFinal) * scale),
-          p5: Math.round(yearData.p5 * scale),
-          p25: Math.round(yearData.p25 * scale),
-          p75: Math.round(yearData.p75 * scale),
-          p95: Math.round(yearData.p95 * scale),
-          annualReturn: yearData.annualReturn,
-          meanReturnPct: yearData.meanReturnPct,
-        } : null,
+        icon: s.icon,
+        nq_pct: s.nq_pct,
+        ideal: scaleVariant(s.ideal),
+        practical: scaleVariant(s.practical),
       };
     });
 

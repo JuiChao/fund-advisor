@@ -127,6 +127,13 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .skeleton{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--radius-sm)}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
+/* ===== Portfolio Tabs ===== */
+.pf-tabs{display:flex;gap:.25rem;background:var(--bg);border-radius:var(--radius-sm);padding:3px;margin-bottom:1rem;width:fit-content}
+.pf-tab{background:transparent;color:var(--txt2);border:none;padding:.45rem 1.1rem;border-radius:6px;font-size:.8125rem;font-weight:600;cursor:pointer;transition:var(--transition)}
+.pf-tab:hover{color:var(--txt)}
+.pf-tab.on{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(99,102,241,.3)}
+.pf-panel{animation:fadeIn .25s ease-out}
+
 /* ===== Footer ===== */
 footer{text-align:center;padding:2rem;color:var(--txt3);font-size:.75rem;border-top:1px solid var(--border);margin-top:2rem}
 

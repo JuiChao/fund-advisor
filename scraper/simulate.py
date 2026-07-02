@@ -49,7 +49,7 @@ def rank_funds(funds):
         f['rank'] = i + 1
     return scored
 
-def allocate(items, budget):
+def allocate(items, budget, apply_limits=True):
     trading_days = 22
     allocs = []
     for item in items:
@@ -58,7 +58,7 @@ def allocate(items, budget):
         monthly = budget * w
         daily = monthly / trading_days
         limit = f.get('daily_limit') or 10
-        if daily > limit:
+        if apply_limits and daily > limit:
             daily = limit
             monthly = daily * trading_days
         allocs.append({
@@ -67,6 +67,7 @@ def allocate(items, budget):
             'fee': round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0), 4),
             'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
             'daily_limit': limit, 'limit_status': f.get('limit_status', ''),
+            'exceeds_limit': apply_limits and (budget * w / trading_days) > limit,
         })
     total = sum(a['monthly'] for a in allocs)
     if total > 0:
@@ -74,45 +75,10 @@ def allocate(items, budget):
             a['actual_weight'] = round(a['monthly'] / total, 4)
     return allocs
 
-# ---- 6种策略 ----
+# ---- 3种风格 × 2种子方案 ----
 
-def strategy_unconstrained(funds):
-    ranked = rank_funds(funds)
-    low_fee = [f for f in ranked if ((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0)) < 0.007]
-    rest = [f for f in ranked if f not in low_fee]
-    items = []
-    if low_fee:
-        ts = sum(f['score'] for f in low_fee)
-        for f in low_fee:
-            items.append({'fund': f, 'weight': min((f['score'] / ts) * 0.6, 0.4)})
-    if rest:
-        top = rest[:5]
-        ts = sum(f['score'] for f in top)
-        for f in top:
-            items.append({'fund': f, 'weight': min((f['score'] / ts) * 0.4, 0.3)})
-    tw = sum(i['weight'] for i in items)
-    for i in items:
-        i['weight'] /= tw
-    return {'key': 'unconstrained', 'name': '无约束最优', 'description': '不考虑限购，纯投资质量排序。低费率基金(<0.7%)优先分配60%。', 'items': items}
-
-def strategy_available(funds):
-    avail = [f for f in funds if '暂停' not in (f.get('limit_status') or '')]
-    if not avail:
-        return {'key': 'available', 'name': '实际可买', 'description': '无可用基金', 'items': []}
-    ranked = rank_funds(avail)
-    ts = sum(f['score'] for f in ranked)
-    items = [{'fund': f, 'weight': f['score'] / ts} for f in ranked]
-    return {'key': 'available', 'name': '实际可买', 'description': '剔除暂停申购基金后，按评分加权分配。', 'items': items}
-
-def strategy_max_return(funds):
-    ranked = rank_funds(funds)
-    by_fee = sorted(ranked, key=lambda f: (f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0))
-    top3 = by_fee[:3]
-    ws = [0.5, 0.3, 0.2]
-    items = [{'fund': f, 'weight': w} for f, w in zip(top3, ws)]
-    return {'key': 'max_return', 'name': '最大收益', 'description': '集中配置费率最低的3只基金。风险相对集中。', 'items': items}
-
-def strategy_balanced(funds, nq_pct=0.6):
+def pick_funds_by_style(funds, nq_pct):
+    """按风格选取基金池：纳指nq_pct + 标普(1-nq_pct)"""
     nq = [f for f in funds if f.get('index_type') == '纳斯达克100']
     sp = [f for f in funds if f.get('index_type') == '标普500']
     rnq = rank_funds(nq)[:3]
@@ -124,24 +90,34 @@ def strategy_balanced(funds, nq_pct=0.6):
     sp_s = sum(f['score'] for f in rsp)
     for f in rsp:
         items.append({'fund': f, 'weight': (f['score'] / sp_s) * (1 - nq_pct)})
-    return {'key': 'balanced', 'name': '风险平衡', 'description': f'纳指{round(nq_pct*100)}%+标普{round((1-nq_pct)*100)}%，兼顾成长与稳健。', 'items': items}
+    return items
 
-def strategy_conservative(funds):
-    s = strategy_balanced(funds, 0.4)
-    s['key'] = 'conservative'
-    s['name'] = '稳健保守'
-    s['description'] = '纳指40%+标普60%，偏向低波动。'
-    return s
+def build_strategy(key, name, desc, icon, nq_pct, funds, budget):
+    """为一种风格生成理论最优+实际可买两个子方案"""
+    items = pick_funds_by_style(funds, nq_pct)
+    ideal = allocate(items, budget, apply_limits=False)
+    practical = allocate(items, budget, apply_limits=True)
 
-def strategy_no_limit(funds):
-    ranked = rank_funds(funds)
-    low = [f for f in ranked if ((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0)) < 0.008]
-    pool = low if low else ranked[:3]
-    ts = sum(f['score'] for f in pool)
-    items = [{'fund': f, 'weight': f['score'] / ts} for f in pool]
-    return {'key': 'no_limit_best', 'name': '最大收益(无限制)', 'description': '不考虑限购的理论最优，集中配置费率<0.8%的基金。', 'items': items}
+    # 检查实际可买是否有被截断的基金
+    has_limited = any(a['exceeds_limit'] for a in practical)
+    practical_note = '受限购影响，部分基金实际投入低于理论配置。' if has_limited else '当前限购不影响配置。'
 
-ALL_STRATEGIES = [strategy_unconstrained, strategy_available, strategy_max_return, strategy_balanced, strategy_conservative, strategy_no_limit]
+    return {
+        'key': key,
+        'name': name,
+        'description': desc,
+        'icon': icon,
+        'nq_pct': nq_pct,
+        'ideal': {'allocations': ideal, 'note': '不考虑限购的理论最优配置。'},
+        'practical': {'allocations': practical, 'note': practical_note},
+    }
+
+def generate_strategies(funds, budget=1000):
+    return [
+        build_strategy('growth', '进取型', '纳指70%+标普30%，追求高成长', '🚀', 0.7, funds, budget),
+        build_strategy('balanced', '平衡型', '纳指50%+标普50%，攻守兼备', '⚖️', 0.5, funds, budget),
+        build_strategy('conservative', '稳健型', '纳指30%+标普70%，注重稳定性', '🛡️', 0.3, funds, budget),
+    ]
 
 # ---- 蒙特卡洛模拟 ----
 
@@ -198,38 +174,41 @@ def main():
     print(f'  {len(funds)} 只基金')
 
     print('计算策略和模拟...')
+    strategies = generate_strategies(funds, BASE_BUDGET)
     strategies_result = []
 
-    for strat_fn in ALL_STRATEGIES:
-        strat = strat_fn(funds)
-        items = strat['items']
-        allocs = allocate(items, BASE_BUDGET)
-
-        sim_funds = []
-        sim_weights = []
-        for a in allocs:
-            f = next((x for x in funds if x['code'] == a['code']), None)
-            if f:
-                sim_funds.append(f)
-                sim_weights.append(a.get('actual_weight', a.get('weight', 0)))
-
-        by_years = {}
-        if sim_funds:
-            for y in YEARS_RANGE:
-                sim = simulate_portfolio(sim_funds, sim_weights, y, BASE_BUDGET)
-                by_years[str(y)] = sim
-                print(f'  {strat["name"]} / {y}年 → 中位终值 {sim["median"]:,}')
-
-        strategies_result.append({
+    for strat in strategies:
+        result = {
             'key': strat['key'],
             'name': strat['name'],
             'description': strat['description'],
-            'allocations': allocs,
-            'by_years': by_years,
-        })
+            'icon': strat['icon'],
+            'nq_pct': strat['nq_pct'],
+            'ideal': {'allocations': strat['ideal']['allocations'], 'note': strat['ideal']['note'], 'by_years': {}},
+            'practical': {'allocations': strat['practical']['allocations'], 'note': strat['practical']['note'], 'by_years': {}},
+        }
+
+        for variant_key in ['ideal', 'practical']:
+            allocs = strat[variant_key]['allocations']
+            sim_funds = []
+            sim_weights = []
+            for a in allocs:
+                f = next((x for x in funds if x['code'] == a['code']), None)
+                if f:
+                    sim_funds.append(f)
+                    sim_weights.append(a.get('actual_weight', a.get('weight', 0)))
+
+            if sim_funds:
+                for y in YEARS_RANGE:
+                    sim = simulate_portfolio(sim_funds, sim_weights, y, BASE_BUDGET)
+                    result[variant_key]['by_years'][str(y)] = sim
+                    label = '理论' if variant_key == 'ideal' else '实际'
+                    print(f'  {strat["name"]}/{label} / {y}年 → 中位终值 {sim["median"]:,}')
+
+        strategies_result.append(result)
 
     output = {
-        'generated_at': __import__('datetime').datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+        'generated_at': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
         'base_budget': BASE_BUDGET,
         'n_simulations': N_SIMS,
         'years_range': YEARS_RANGE,
@@ -242,10 +221,10 @@ def main():
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     size_kb = OUTPUT_PATH.stat().st_size / 1024
+    total_sims = len(strategies) * 2 * len(YEARS_RANGE)
     print(f'\n输出: {OUTPUT_PATH} ({size_kb:.1f} KB)')
-    print(f'策略数: {len(strategies_result)}')
-    print(f'年份范围: {YEARS_RANGE[0]}-{YEARS_RANGE[-1]}')
-    print(f'总模拟组数: {len(strategies_result) * len(YEARS_RANGE)}')
+    print(f'策略数: {len(strategies)} 种风格 × 2 子方案')
+    print(f'总模拟组数: {total_sims}')
 
 if __name__ == '__main__':
     main()

@@ -102,16 +102,20 @@ const App = (() => {
     async function loadStrategiesPreview() {
         try {
             const strategies = await apiGet('/api/portfolio?years=20&budget=2000');
-            let html = '<div class="table-wrap"><table><thead><tr><th>策略</th><th>说明</th><th>基金数</th><th>预期年化</th><th>20年终值</th></tr></thead><tbody>';
+            let html = '<div class="table-wrap"><table><thead><tr><th>策略</th><th>风格</th><th>子方案</th><th>预期年化</th><th>20年终值</th></tr></thead><tbody>';
             strategies.forEach(s => {
-                const sim = s.simulation || {};
-                html += `<tr>
-                    <td style="font-weight:600;color:var(--accent2)">${s.name}</td>
-                    <td style="text-align:left;font-size:.8125rem;color:var(--txt2)">${s.description || ''}</td>
-                    <td>${(s.allocations || []).length}</td>
-                    <td style="color:var(--ok);font-weight:600">${sim.annualReturn ? sim.annualReturn + '%' : '-'}</td>
-                    <td style="font-weight:600">${sim.medianFinal ? money(sim.medianFinal) : '-'}</td>
-                </tr>`;
+                ['ideal', 'practical'].forEach(vk => {
+                    const v = s[vk];
+                    const sim = v?.simulation || {};
+                    const label = vk === 'ideal' ? '理论最优' : '实际可买';
+                    html += `<tr>
+                        <td style="font-weight:600;color:var(--accent2)">${s.icon || ''} ${s.name}</td>
+                        <td style="font-size:.8125rem;color:var(--txt2)">${s.description || ''}</td>
+                        <td><span class="pill ${vk === 'ideal' ? 'pb' : 'pg'}">${label}</span></td>
+                        <td style="color:var(--ok);font-weight:600">${sim.annualReturn ? sim.annualReturn + '%' : '-'}</td>
+                        <td style="font-weight:600">${sim.medianFinal ? money(sim.medianFinal) : '-'}</td>
+                    </tr>`;
+                });
             });
             html += '</tbody></table></div>';
             document.getElementById('home-strategies').innerHTML = html;
@@ -279,6 +283,33 @@ const App = (() => {
     // ===== 定投方案 =====
     let pfCharts = {};
 
+    function renderVariantTable(variant, prefix) {
+        if (!variant) return '';
+        const allocs = variant.allocations || [];
+        const rows = allocs.map(a => `<tr class="${a.exceeds_limit ? 'wr' : ''}">
+            <td style="color:var(--txt2)">${a.code}</td>
+            <td style="text-align:left;font-weight:500">${a.name}</td>
+            <td style="${feeC(a.fee)}">${(a.fee*100).toFixed(2)}%</td>
+            <td>${a.daily}元</td>
+            <td style="font-weight:600">${a.monthly}元</td>
+            <td>${(a.actual_weight*100).toFixed(0)}%</td>
+            <td>${pill(a.limit_status)}</td>
+        </tr>`).join('');
+        return `<div class="table-wrap"><table><thead><tr><th>代码</th><th>名称</th><th>费率</th><th>每日</th><th>月合计</th><th>占比</th><th>限购</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }
+
+    function renderVariantSim(variant, years) {
+        const sim = variant?.simulation;
+        if (!sim) return '';
+        return `<div style="margin-top:1rem">
+            <div class="stats">
+                <div class="stat"><div class="lb">预期年化</div><div class="vl" style="font-size:1.05rem;color:var(--accent2)">${sim.annualReturn}%</div></div>
+                <div class="stat"><div class="lb">${years}年终值</div><div class="vl" style="font-size:1.05rem;color:var(--ok)">${money(sim.medianFinal)}</div></div>
+            </div>
+            <div style="font-size:.75rem;color:var(--txt3);margin-top:.35rem">5%: ${money(sim.p5)} · 25%: ${money(sim.p25)} · 75%: ${money(sim.p75)} · 95%: ${money(sim.p95)}</div>
+        </div>`;
+    }
+
     async function computePortfolio() {
         const btn = document.getElementById('btn-pf');
         btn.disabled = true; btn.textContent = '计算中…';
@@ -292,60 +323,83 @@ const App = (() => {
             const pieColors = ['#6366f1','#f59e0b','#64748b','#eab308','#818cf8','#22d3ee'];
 
             let html = '';
-            strategies.forEach((s, si) => {
-                const sim = s.simulation || {};
-                const allocs = s.allocations || [];
-                const rows = allocs.map(a => `<tr class="${a.exceeds_limit ? 'wr' : ''}">
-                    <td style="color:var(--txt2)">${a.code}</td>
-                    <td style="text-align:left;font-weight:500">${a.name}</td>
-                    <td style="${feeC(a.fee)}">${(a.fee*100).toFixed(2)}%</td>
-                    <td>${a.daily}元</td>
-                    <td style="font-weight:600">${a.monthly}元</td>
-                    <td>${(a.actual_weight*100).toFixed(0)}%</td>
-                    <td>${pill(a.limit_status)}</td>
-                </tr>`).join('');
+            strategies.forEach(s => {
+                const idealAllocs = s.ideal?.allocations || [];
+                const practicalAllocs = s.practical?.allocations || [];
 
-                const cid = 'ch-' + s.key;
                 html += `<div class="card">
-                    <h3>${s.name} <span class="tag">${s.key}</span></h3>
+                    <h3>${s.icon || ''} ${s.name} <span class="tag">${Math.round((s.nq_pct||0)*100)}% 纳指 + ${Math.round((1-(s.nq_pct||0))*100)}% 标普</span></h3>
                     <p style="color:var(--txt2);font-size:.8125rem;margin-bottom:1rem">${s.description || ''}</p>
-                    <div class="g2">
-                        <div class="table-wrap"><table><thead><tr><th>代码</th><th>名称</th><th>费率</th><th>每日</th><th>月合计</th><th>占比</th><th>限购</th></tr></thead><tbody>${rows}</tbody></table></div>
-                        <div>
-                            <div class="cht"><canvas id="${cid}"></canvas></div>
-                            ${sim.medianFinal ? `<div style="margin-top:1rem">
-                                <div class="stats">
-                                    <div class="stat"><div class="lb">预期年化</div><div class="vl" style="font-size:1.1rem;color:var(--accent2)">${sim.annualReturn}%</div></div>
-                                    <div class="stat"><div class="lb">${years}年终值</div><div class="vl" style="font-size:1.1rem;color:var(--ok)">${money(sim.medianFinal)}</div></div>
-                                </div>
-                                <div style="font-size:.75rem;color:var(--txt3);margin-top:.4rem">5%: ${money(sim.p5)} · 25%: ${money(sim.p25)} · 75%: ${money(sim.p75)} · 95%: ${money(sim.p95)}</div>
-                            </div>` : ''}
+
+                    <div class="pf-tabs" data-strategy="${s.key}">
+                        <button class="pf-tab on" data-variant="ideal">理论最优</button>
+                        <button class="pf-tab" data-variant="practical">实际可买</button>
+                    </div>
+
+                    <div class="pf-panel" id="pf-${s.key}-ideal">
+                        <p style="color:var(--txt3);font-size:.75rem;margin:.5rem 0">${s.ideal?.note || ''}</p>
+                        <div class="g2">
+                            <div>${renderVariantTable(s.ideal, s.key)}</div>
+                            <div>
+                                <div class="cht"><canvas id="ch-${s.key}-ideal"></canvas></div>
+                                ${renderVariantSim(s.ideal, years)}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pf-panel" id="pf-${s.key}-practical" style="display:none">
+                        <p style="color:var(--txt3);font-size:.75rem;margin:.5rem 0">${s.practical?.note || ''}</p>
+                        <div class="g2">
+                            <div>${renderVariantTable(s.practical, s.key)}</div>
+                            <div>
+                                <div class="cht"><canvas id="ch-${s.key}-practical"></canvas></div>
+                                ${renderVariantSim(s.practical, years)}
+                            </div>
                         </div>
                     </div>
                 </div>`;
             });
             document.getElementById('pf-container').innerHTML = html;
 
+            // 绑定 tab 切换
+            document.querySelectorAll('.pf-tabs').forEach(tabs => {
+                tabs.querySelectorAll('.pf-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const key = tabs.dataset.strategy;
+                        const variant = tab.dataset.variant;
+                        tabs.querySelectorAll('.pf-tab').forEach(t => t.classList.remove('on'));
+                        tab.classList.add('on');
+                        tabs.parentElement.querySelectorAll('.pf-panel').forEach(p => p.style.display = 'none');
+                        const panel = document.getElementById(`pf-${key}-${variant}`);
+                        if (panel) panel.style.display = '';
+                    });
+                });
+            });
+
+            // 画饼图
             strategies.forEach(s => {
-                const cid = 'ch-' + s.key;
-                const el = document.getElementById(cid);
-                if (!el || !s.allocations.length) return;
-                pfCharts[cid] = new Chart(el, {
-                    type: 'doughnut',
-                    data: {
-                        labels: s.allocations.map(a => a.name.substring(0, 8)),
-                        datasets: [{
-                            data: s.allocations.map(a => a.monthly),
-                            backgroundColor: pieColors,
-                            borderColor: 'var(--surface)',
-                            borderWidth: 2,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        cutout: '60%',
-                        plugins: { legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, pointStyle: 'circle', font: { size: 11 } } } }
-                    }
+                ['ideal', 'practical'].forEach(vk => {
+                    const cid = `ch-${s.key}-${vk}`;
+                    const el = document.getElementById(cid);
+                    const allocs = s[vk]?.allocations || [];
+                    if (!el || !allocs.length) return;
+                    pfCharts[cid] = new Chart(el, {
+                        type: 'doughnut',
+                        data: {
+                            labels: allocs.map(a => a.name.substring(0, 8)),
+                            datasets: [{
+                                data: allocs.map(a => a.monthly),
+                                backgroundColor: pieColors,
+                                borderColor: 'var(--surface)',
+                                borderWidth: 2,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            cutout: '60%',
+                            plugins: { legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, pointStyle: 'circle', font: { size: 11 } } } }
+                        }
+                    });
                 });
             });
         } catch (e) {
