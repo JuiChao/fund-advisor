@@ -73,6 +73,73 @@ def allocate_ideal(items, budget):
     return allocs
 
 def allocate_practical(items, budget):
+    """实际可买：遵守每日限额，超出部分重新分配"""
+    trading_days = 22
+    allocs = []
+
+    # 第一轮：按权重分配，检查是否超限
+    for item in items:
+        f = item['fund']
+        w = item['weight']
+        monthly_target = budget * w
+        daily_target = monthly_target / trading_days
+        limit = f.get('daily_limit') or 10
+        status = f.get('limit_status', '')
+
+        if daily_target > limit:
+            daily = limit
+            monthly = limit * trading_days
+            exceeds = True
+        else:
+            daily = daily_target
+            monthly = monthly_target
+            exceeds = False
+
+        allocs.append({
+            'fund': f, 'weight': w,
+            'daily': daily, 'monthly': monthly,
+            'limit': limit, 'exceeds_limit': exceeds,
+        })
+
+    # 第二轮：将超出限额的资金重新分配给未达上限的基金
+    actual_total = sum(a['monthly'] for a in allocs)
+    if actual_total < budget:
+        excess = budget - actual_total
+        available = [a for a in allocs if not a['exceeds_limit']]
+        if available:
+            total_weight = sum(a['weight'] for a in available)
+            for a in available:
+                extra = excess * (a['weight'] / total_weight)
+                new_monthly = a['monthly'] + extra
+                new_daily = new_monthly / trading_days
+                if new_daily > a['limit']:
+                    a['exceeds_limit'] = True
+                    a['daily'] = a['limit']
+                    a['monthly'] = a['limit'] * trading_days
+                else:
+                    a['daily'] = new_daily
+                    a['monthly'] = new_monthly
+
+    # 格式化输出
+    result = []
+    for a in allocs:
+        f = a['fund']
+        result.append({
+            'code': f['code'], 'name': f['name'], 'index_type': f.get('index_type', ''),
+            'weight': round(a['weight'], 4), 'daily': round(a['daily'], 1), 'monthly': round(a['monthly']),
+            'fee': round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0), 4),
+            'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
+            'daily_limit': a['limit'], 'limit_status': f.get('limit_status', ''),
+            'exceeds_limit': a['exceeds_limit'],
+        })
+
+    total = sum(a['monthly'] for a in result)
+    if total > 0:
+        for a in result:
+            a['actual_weight'] = round(a['monthly'] / total, 4)
+    return result
+
+def allocate_practical(items, budget):
     """实际可买：考虑限购和暂停状态，优化实际可执行性"""
     trading_days = 22
     
@@ -175,10 +242,20 @@ def allocate_practical(items, budget):
 
 # ---- 3种风格 × 2种子方案 ----
 
-def pick_funds_by_style(funds, nq_pct):
-    """按风格选取基金池：纳指nq_pct + 标普(1-nq_pct)"""
+def is_buyable(fund):
+    """判断基金是否可购买（暂停的不能买，限购的可以限额买）"""
+    status = fund.get('limit_status', '')
+    return '暂停' not in status
+
+def pick_funds_by_style(funds, nq_pct, only_buyable=False):
+    """按风格选取基金池：纳指nq_pct + 标普(1-nq_pct)
+    only_buyable=True时只选不限购的基金
+    """
     nq = [f for f in funds if f.get('index_type') == '纳斯达克100']
     sp = [f for f in funds if f.get('index_type') == '标普500']
+    if only_buyable:
+        nq = [f for f in nq if is_buyable(f)]
+        sp = [f for f in sp if is_buyable(f)]
     rnq = rank_funds(nq)[:3]
     rsp = rank_funds(sp)[:2]
     items = []
@@ -192,24 +269,10 @@ def pick_funds_by_style(funds, nq_pct):
 
 def build_strategy(key, name, desc, icon, nq_pct, funds, budget):
     """为一种风格生成理论最优+实际可买两个子方案"""
-    items = pick_funds_by_style(funds, nq_pct)
-    ideal = allocate_ideal(items, budget)
-    practical = allocate_practical(items, budget)
-
-    # 检查实际可买是否有被截断的基金
-    has_limited = any(a['exceeds_limit'] for a in practical)
-    
-    # 计算实际可买总额
-    practical_total = sum(a['monthly'] for a in practical)
-    ideal_total = sum(a['monthly'] for a in ideal)
-    
-    if has_limited:
-        if practical_total < ideal_total:
-            practical_note = f'受限购影响，实际可投金额为 ¥{practical_total}/月，比理论配置少 ¥{ideal_total - practical_total}/月。'
-        else:
-            practical_note = '受限购影响，部分基金实际投入已调整至上限，资金已重新分配。'
-    else:
-        practical_note = '当前限购不影响配置。'
+    items_ideal = pick_funds_by_style(funds, nq_pct, only_buyable=False)
+    items_practical = pick_funds_by_style(funds, nq_pct, only_buyable=True)
+    ideal = allocate_ideal(items_ideal, budget)
+    practical = allocate_practical(items_practical, budget)  # 排除暂停基金，遵守每日限额
 
     return {
         'key': key,
@@ -218,7 +281,7 @@ def build_strategy(key, name, desc, icon, nq_pct, funds, budget):
         'icon': icon,
         'nq_pct': nq_pct,
         'ideal': {'allocations': ideal, 'note': '不考虑限购的理论最优配置。'},
-        'practical': {'allocations': practical, 'note': practical_note},
+        'practical': {'allocations': practical, 'note': '排除暂停基金，遵守每日限购限额。'},
     }
 
 def generate_strategies(funds, budget=1000):
