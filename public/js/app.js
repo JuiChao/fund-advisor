@@ -119,8 +119,10 @@ const App = (() => {
             });
             html += '</tbody></table></div>';
             document.getElementById('home-strategies').innerHTML = html;
+            document.getElementById('home-strategies').classList.remove('ld');
         } catch (e) {
             document.getElementById('home-strategies').innerHTML = '<p style="color:var(--err)">加载失败: ' + e.message + '</p>';
+            document.getElementById('home-strategies').classList.remove('ld');
         }
     }
 
@@ -195,21 +197,94 @@ const App = (() => {
         draw();
     }
 
-    // ===== 模拟器 =====
-    function populateSimSelect() {
-        const sel = document.getElementById('sim-sel');
-        if (sel.options.length > 0) return;
-        FUND_DATA.forEach(f => {
-            const o = document.createElement('option');
-            o.value = f.code;
-            o.textContent = `${f.code} ${f.name} (${((f.mgmt_fee||0)+(f.custody_fee||0))*100}%)`;
-            sel.appendChild(o);
+    // ===== 模拟器 - 自定义多选 =====
+    let msSelected = new Set();
+    let msInited = false;
+
+    function initMultiSelect() {
+        if (msInited) return;
+        msInited = true;
+        const trigger = document.getElementById('sim-sel-trigger');
+        const dropdown = document.getElementById('sim-sel-dropdown');
+        const list = document.getElementById('sim-sel-list');
+        const search = document.getElementById('sim-sel-search');
+        const textEl = document.getElementById('sim-sel-text');
+
+        function feeStr(f) { return (((f.mgmt_fee||0)+(f.custody_fee||0))*100).toFixed(2) + '%'; }
+        function renderList(filter) {
+            const q = (filter || '').toLowerCase();
+            const items = FUND_DATA.filter(f => {
+                if (!q) return true;
+                return f.code.includes(q) || f.name.toLowerCase().includes(q);
+            });
+            list.innerHTML = items.map(f => {
+                const sel = msSelected.has(f.code) ? ' selected' : '';
+                return `<div class="ms-opt${sel}" data-code="${f.code}">
+                    <div class="ms-cb"></div>
+                    <div class="ms-opt-info">
+                        <div class="ms-opt-name">${f.code} ${f.name}</div>
+                        <div class="ms-opt-meta">费率 ${feeStr(f)} · ${f.index_type}</div>
+                    </div>
+                </div>`;
+            }).join('');
+            bindOptClick();
+        }
+
+        function bindOptClick() {
+            list.querySelectorAll('.ms-opt').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const code = opt.dataset.code;
+                    if (msSelected.has(code)) msSelected.delete(code); else msSelected.add(code);
+                    opt.classList.toggle('selected');
+                    updateText();
+                });
+            });
+        }
+
+        function updateText() {
+            if (msSelected.size === 0) {
+                textEl.textContent = '点击选择基金（可多选）';
+                textEl.style.color = '';
+            } else {
+                textEl.innerHTML = `<span class="ms-count">${msSelected.size}</span> 只基金已选中`;
+                textEl.style.color = 'var(--txt)';
+            }
+        }
+
+        trigger.addEventListener('click', e => {
+            if (e.target.closest('.ms-dropdown')) return;
+            const isOpen = dropdown.classList.contains('show');
+            dropdown.classList.toggle('show');
+            trigger.classList.toggle('open');
+            if (!isOpen) { search.value = ''; renderList(''); search.focus(); }
+        });
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.ms-wrap')) {
+                dropdown.classList.remove('show');
+                trigger.classList.remove('open');
+            }
+        });
+
+        search.addEventListener('input', () => renderList(search.value));
+        document.getElementById('sim-sel-all').addEventListener('click', e => {
+            e.stopPropagation();
+            FUND_DATA.forEach(f => msSelected.add(f.code));
+            renderList(search.value);
+            updateText();
+        });
+        document.getElementById('sim-sel-clear').addEventListener('click', e => {
+            e.stopPropagation();
+            msSelected.clear();
+            renderList(search.value);
+            updateText();
         });
     }
 
+    function populateSimSelect() { initMultiSelect(); }
+
     async function runSimulation() {
-        const sel = document.getElementById('sim-sel');
-        const codes = Array.from(sel.selectedOptions).map(o => o.value);
+        const codes = Array.from(msSelected);
         if (!codes.length) { alert('请至少选择一只基金'); return; }
         const btn = document.getElementById('btn-sim');
         btn.disabled = true; btn.textContent = '模拟中…';
@@ -360,6 +435,7 @@ const App = (() => {
                 </div>`;
             });
             document.getElementById('pf-container').innerHTML = html;
+            document.getElementById('pf-container').classList.remove('ld');
 
             // 绑定 tab 切换
             document.querySelectorAll('.pf-tabs').forEach(tabs => {
@@ -404,6 +480,7 @@ const App = (() => {
             });
         } catch (e) {
             document.getElementById('pf-container').innerHTML = `<p style="color:var(--err);text-align:center;padding:2rem">计算失败: ${e.message}</p>`;
+            document.getElementById('pf-container').classList.remove('ld');
         }
         btn.disabled = false; btn.textContent = '重新计算';
     }
