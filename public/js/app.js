@@ -428,11 +428,11 @@ const App = (() => {
 
             // 获取定投占比权重
             const weights = [];
-            if (funds.length <= 1) {
-                weights.push(1.0);
+            const listEl = document.getElementById('sim-weights-list');
+            const rows = listEl ? listEl.querySelectorAll('.sim-weight-row') : [];
+            if (funds.length <= 1 || rows.length === 0) {
+                funds.forEach(() => weights.push(1 / funds.length));
             } else {
-                const listEl = document.getElementById('sim-weights-list');
-                const rows = listEl.querySelectorAll('.sim-weight-row');
                 const relWeights = Array.from(rows).map(row => +row.querySelector('.sim-weight-input').value);
                 const totalRel = relWeights.reduce((s, w) => s + w, 0);
                 relWeights.forEach(rw => {
