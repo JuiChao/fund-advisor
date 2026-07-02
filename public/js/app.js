@@ -311,55 +311,52 @@ const App = (() => {
         btn.disabled = true; btn.textContent = '模拟中…';
 
         try {
-            // 确保读取到有效的数值
             const monthlyEl = document.getElementById('sim-m');
             const yearsEl = document.getElementById('sim-y');
             const monthly = Math.max(500, parseInt(monthlyEl.value) || parseInt(monthlyEl.defaultValue) || 2000);
             const years = Math.max(5, parseInt(yearsEl.value) || parseInt(yearsEl.defaultValue) || 20);
-            let result = null;
+            const perFundBudget = Math.round(monthly / codes.length);
+            const funds = codes.map(c => FUND_DATA.find(f => f.code === c)).filter(Boolean);
 
-            if (codes.length === 1) {
+            // 每只基金独立模拟
+            const results = funds.map(fund => {
                 try {
-                    const data = await apiGet(`/api/simulate?code=${codes[0]}&years=${years}&budget=${monthly}`);
-                    result = data?.simulation || null;
-                } catch (apiErr) {
-                    console.warn('API failed, using local sim:', apiErr);
+                    return localSimulate(fund, years, perFundBudget);
+                } catch (e) {
+                    console.warn('Sim failed for', fund.code, e);
+                    return null;
                 }
-            } else {
-                try {
-                    const strategies = await apiGet(`/api/portfolio?years=${years}&budget=${monthly}`);
-                    let best = null, bestOverlap = 0;
-                    strategies.forEach(s => {
-                        ['ideal', 'practical'].forEach(vk => {
-                            const allocs = s[vk]?.allocations || [];
-                            const overlap = allocs.filter(a => codes.includes(a.code)).length;
-                            if (overlap > bestOverlap) { bestOverlap = overlap; best = s[vk]; }
-                        });
-                    });
-                    result = best?.simulation || null;
-                } catch (apiErr) {
-                    console.warn('Portfolio API failed:', apiErr);
-                }
-            }
+            }).filter(r => r && !isNaN(r.medianFinal) && r.medianFinal > 0);
 
-            // API 结果无效时，使用本地模拟
-            if (!result || isNaN(result.medianFinal) || result.medianFinal <= 0) {
-                const fundData = FUND_DATA.find(f => f.code === codes[0]);
-                if (fundData) result = localSimulate(fundData, years, monthly);
-            }
-
-            if (!result || isNaN(result.medianFinal) || result.medianFinal <= 0) {
-                document.getElementById('sim-result').innerHTML = '<p style="color:var(--err);text-align:center;padding:2rem">无法获取模拟结果，请稍后重试</p>';
+            if (!results.length) {
+                document.getElementById('sim-result').innerHTML = '<p style="color:var(--err);text-align:center;padding:2rem">无法获取模拟结果</p>';
                 btn.disabled = false; btn.textContent = '运行模拟';
                 return;
             }
 
-            const total = monthly * years * 12;
+            // 汇总所有基金的模拟结果
+            const result = {
+                totalInvested: results.reduce((s, r) => s + r.totalInvested, 0),
+                medianFinal: results.reduce((s, r) => s + r.medianFinal, 0),
+                p5: results.reduce((s, r) => s + r.p5, 0),
+                p25: results.reduce((s, r) => s + r.p25, 0),
+                p75: results.reduce((s, r) => s + r.p75, 0),
+                p95: results.reduce((s, r) => s + r.p95, 0),
+            };
+            const totalReturn = (result.medianFinal / result.totalInvested - 1) * 100;
+            result.annualReturn = Math.round(totalReturn / years * 100) / 100;
+
+            // 显示预算分配说明
+            const allocNote = codes.length > 1
+                ? `<p style="color:var(--txt3);font-size:.75rem;margin-bottom:.75rem">每月 ¥${monthly} 平均分配给 ${codes.length} 只基金，每只 ¥${perFundBudget}/月</p>`
+                : '';
+
             document.getElementById('sim-result').innerHTML = `
+                ${allocNote}
                 <div class="stats">
-                    <div class="stat"><div class="lb">总投入</div><div class="vl" style="font-size:1.15rem">${money(total)}</div></div>
+                    <div class="stat"><div class="lb">总投入</div><div class="vl" style="font-size:1.15rem">${money(result.totalInvested)}</div></div>
                     <div class="stat"><div class="lb">预期终值</div><div class="vl" style="font-size:1.15rem;color:var(--ok)">${money(result.medianFinal)}</div></div>
-                    <div class="stat"><div class="lb">年化收益</div><div class="vl" style="font-size:1.15rem;color:var(--accent2)">${result.annualReturn || result.meanReturnPct}%</div></div>
+                    <div class="stat"><div class="lb">年化收益</div><div class="vl" style="font-size:1.15rem;color:var(--accent2)">${result.annualReturn}%</div></div>
                 </div>
                 <table style="margin-top:.75rem">
                     <tr><td style="color:var(--err)">5% 悲观</td><td><strong>${money(result.p5)}</strong></td></tr>
