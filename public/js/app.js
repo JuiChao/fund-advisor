@@ -335,25 +335,27 @@ const App = (() => {
                 result = best?.simulation;
             }
 
-            if (!result) {
+            if (!result || isNaN(result.medianFinal)) {
                 document.getElementById('sim-result').innerHTML = '<p style="color:var(--err);text-align:center;padding:2rem">无法获取模拟结果</p>';
                 btn.disabled = false; btn.textContent = '运行模拟';
                 return;
             }
 
             const total = monthly * years * 12;
+            const safeMoney = v => isNaN(v) ? '-' : money(v);
+            const safePct = v => isNaN(v) ? '-' : v + '%';
             document.getElementById('sim-result').innerHTML = `
                 <div class="stats">
                     <div class="stat"><div class="lb">总投入</div><div class="vl" style="font-size:1.15rem">${money(total)}</div></div>
-                    <div class="stat"><div class="lb">预期终值</div><div class="vl" style="font-size:1.15rem;color:var(--ok)">${money(result.medianFinal)}</div></div>
-                    <div class="stat"><div class="lb">年化收益</div><div class="vl" style="font-size:1.15rem;color:var(--accent2)">${result.annualReturn || result.meanReturnPct}%</div></div>
+                    <div class="stat"><div class="lb">预期终值</div><div class="vl" style="font-size:1.15rem;color:var(--ok)">${safeMoney(result.medianFinal)}</div></div>
+                    <div class="stat"><div class="lb">年化收益</div><div class="vl" style="font-size:1.15rem;color:var(--accent2)">${safePct(result.annualReturn || result.meanReturnPct)}</div></div>
                 </div>
                 <table style="margin-top:.75rem">
-                    <tr><td style="color:var(--err)">5% 悲观</td><td><strong>${money(result.p5)}</strong></td></tr>
-                    <tr><td>25%</td><td><strong>${money(result.p25)}</strong></td></tr>
-                    <tr><td style="color:var(--accent2)">50% 中位</td><td><strong>${money(result.medianFinal)}</strong></td></tr>
-                    <tr><td>75%</td><td><strong>${money(result.p75)}</strong></td></tr>
-                    <tr><td style="color:var(--ok)">95% 乐观</td><td><strong>${money(result.p95)}</strong></td></tr>
+                    <tr><td style="color:var(--err)">5% 悲观</td><td><strong>${safeMoney(result.p5)}</strong></td></tr>
+                    <tr><td>25%</td><td><strong>${safeMoney(result.p25)}</strong></td></tr>
+                    <tr><td style="color:var(--accent2)">50% 中位</td><td><strong>${safeMoney(result.medianFinal)}</strong></td></tr>
+                    <tr><td>75%</td><td><strong>${safeMoney(result.p75)}</strong></td></tr>
+                    <tr><td style="color:var(--ok)">95% 乐观</td><td><strong>${safeMoney(result.p95)}</strong></td></tr>
                 </table>`;
 
             if (chartPool.sim) chartPool.sim.destroy();

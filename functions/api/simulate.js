@@ -50,7 +50,6 @@ export async function onRequest(context) {
     let simulation = null;
 
     if (matchingStrategy) {
-      // 从预计算数据中获取
       const variant = matchingStrategy[matchingVariant];
       const yearData = variant?.by_years?.[yearKey];
       if (yearData) {
@@ -58,19 +57,24 @@ export async function onRequest(context) {
         const weight = alloc?.actual_weight || alloc?.weight || 1;
         simulation = {
           totalInvested: Math.round(yearData.totalInvested * scale * weight),
-          medianFinal: Math.round((yearData.median || yearData.medianFinal) * scale * weight),
-          p5: Math.round(yearData.p5 * scale * weight),
-          p25: Math.round(yearData.p25 * scale * weight),
-          p75: Math.round(yearData.p75 * scale * weight),
-          p95: Math.round(yearData.p95 * scale * weight),
-          annualReturn: yearData.annualReturn,
-          meanReturnPct: yearData.meanReturnPct,
+          medianFinal: Math.round((yearData.median || yearData.medianFinal || 0) * scale * weight),
+          p5: Math.round((yearData.p5 || 0) * scale * weight),
+          p25: Math.round((yearData.p25 || 0) * scale * weight),
+          p75: Math.round((yearData.p75 || 0) * scale * weight),
+          p95: Math.round((yearData.p95 || 0) * scale * weight),
+          annualReturn: yearData.annualReturn || 0,
+          meanReturnPct: yearData.meanReturnPct || 0,
         };
       }
     }
 
     // 预计算数据中找不到，使用基金参数独立模拟
     if (!simulation) {
+      simulation = simulateSingleFund(fund, years, budget);
+    }
+
+    // 确保 simulation 有效
+    if (!simulation || isNaN(simulation.medianFinal)) {
       simulation = simulateSingleFund(fund, years, budget);
     }
 
@@ -100,7 +104,6 @@ function simulateSingleFund(fund, years, budget) {
   const n_months = years * 12;
   const total_invested = budget * n_months;
 
-  // 模拟参数
   const params = {
     nasdaq_return: 0.14, nasdaq_vol: 0.22,
     sp500_return: 0.11, sp500_vol: 0.18,
@@ -108,7 +111,7 @@ function simulateSingleFund(fund, years, budget) {
     dividend_yield: 0.008, dividend_tax: 0.10,
   };
 
-  const is_sp = fund.index_type === '标普500';
+  const is_sp = (fund.index_type || '').includes('标普');
   const te = fund.tracking_error || 0.015;
   const purchase_fee = fund.purchase_fee || 0.0012;
   const annual_fee = (fund.mgmt_fee || 0.008) + (fund.custody_fee || 0.002);
@@ -122,7 +125,6 @@ function simulateSingleFund(fund, years, budget) {
   const div_m = params.dividend_yield / 12 * (1 - params.dividend_tax);
   const invest_per_month = budget * (1 - purchase_fee);
 
-  // 简化的蒙特卡洛模拟（使用确定性随机种子）
   const final_values = [];
   const seed = hashStr(fund.code);
 
@@ -145,27 +147,27 @@ function simulateSingleFund(fund, years, budget) {
   final_values.sort((a, b) => a - b);
 
   const mean = final_values.reduce((s, v) => s + v, 0) / N_SIMS;
-  const median = final_values[Math.floor(N_SIMS * 0.5)];
-  const p5 = final_values[Math.floor(N_SIMS * 0.05)];
-  const p25 = final_values[Math.floor(N_SIMS * 0.25)];
-  const p75 = final_values[Math.floor(N_SIMS * 0.75)];
-  const p95 = final_values[Math.floor(N_SIMS * 0.95)];
+  const median = final_values[Math.floor(N_SIMS * 0.5)] || 0;
+  const p5 = final_values[Math.floor(N_SIMS * 0.05)] || 0;
+  const p25 = final_values[Math.floor(N_SIMS * 0.25)] || 0;
+  const p75 = final_values[Math.floor(N_SIMS * 0.75)] || 0;
+  const p95 = final_values[Math.floor(N_SIMS * 0.95)] || 0;
 
-  const returns = (mean / total_invested - 1) * 100;
+  const returns = total_invested > 0 ? (mean / total_invested - 1) * 100 : 0;
 
   return {
     totalInvested: total_invested,
-    medianFinal: Math.round(median),
-    p5: Math.round(p5),
-    p25: Math.round(p25),
-    p75: Math.round(p75),
-    p95: Math.round(p95),
-    annualReturn: round2(returns / years),
-    meanReturnPct: round2(returns),
+    medianFinal: Math.round(median) || 0,
+    p5: Math.round(p5) || 0,
+    p25: Math.round(p25) || 0,
+    p75: Math.round(p75) || 0,
+    p95: Math.round(p95) || 0,
+    annualReturn: round2(returns / years) || 0,
+    meanReturnPct: round2(returns) || 0,
   };
 }
 
-function round2(v) { return Math.round(v * 100) / 100; }
+function round2(v) { return Math.round(v * 100) / 100 || 0; }
 
 function hashStr(s) {
   let h = 0;
