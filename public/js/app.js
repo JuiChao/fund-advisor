@@ -186,7 +186,7 @@ const App = (() => {
     }
 
     function renderRanking() {
-        const type = document.getElementById('rank-filter').value;
+        const type = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
         const funds = FUND_DATA.filter(f => f.index_type === type);
         rankData = funds.map(f => ({ ...f, score: scoreFund(f) })).sort((a, b) => b.score - a.score).map((f, i) => ({ ...f, rank: i + 1 }));
 
@@ -518,7 +518,13 @@ const App = (() => {
         }
 
         const fmtMoney = v => '¥' + Number(v).toLocaleString('zh-CN');
-        document.getElementById('rank-filter').addEventListener('change', renderRanking);
+        document.querySelectorAll('#rank-filter .seg-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#rank-filter .seg-btn').forEach(b => b.classList.remove('on'));
+                btn.classList.add('on');
+                renderRanking();
+            });
+        });
         document.getElementById('sim-m').addEventListener('input', e => document.getElementById('sim-mv').textContent = fmtMoney(e.target.value));
         document.getElementById('sim-y').addEventListener('input', e => document.getElementById('sim-yv').textContent = e.target.value + '年');
         document.getElementById('pf-m').addEventListener('input', e => document.getElementById('pf-mv').textContent = fmtMoney(e.target.value));

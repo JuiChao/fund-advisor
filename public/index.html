@@ -41,10 +41,14 @@
 <div id="page-ranking" style="display:none" class="fade-in">
     <h1 class="page-title">基金投资质量排名</h1>
     <p class="page-sub">费率 35% · 跟踪误差 25% · 规模 15% · 业绩 12% · 晨星 8% · 申购费 5%</p>
-    <select id="rank-filter">
-        <option value="纳斯达克100">纳斯达克100</option>
-        <option value="标普500">标普500</option>
-    </select>
+    <div class="seg-control" id="rank-filter">
+        <button class="seg-btn on" data-value="纳斯达克100">
+            <span class="seg-icon">📈</span> 纳斯达克100
+        </button>
+        <button class="seg-btn" data-value="标普500">
+            <span class="seg-icon">📊</span> 标普500
+        </button>
+    </div>
     <div style="height:1rem"></div>
     <div class="table-wrap"><table id="rank-table"><thead></thead><tbody></tbody></table></div>
 </div>

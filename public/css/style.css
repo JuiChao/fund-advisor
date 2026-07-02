@@ -529,6 +529,46 @@ input[type=range]::-moz-range-thumb {
 }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
+/* ===== Segmented Control ===== */
+.seg-control {
+    display: inline-flex;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+    gap: 4px;
+    box-shadow: var(--shadow-sm);
+}
+.seg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .55rem 1.25rem;
+    border: none;
+    border-radius: 7px;
+    font-size: .875rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+    background: transparent;
+    color: var(--txt2);
+    white-space: nowrap;
+}
+.seg-btn:hover {
+    color: var(--txt);
+    background: rgba(79, 110, 247, 0.06);
+}
+.seg-btn.on {
+    background: var(--accent-g);
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(79, 110, 247, 0.3);
+}
+.seg-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
 /* ===== Portfolio Tabs ===== */
 .pf-tabs {
     display: flex;
@@ -610,6 +650,8 @@ footer {
     .pf-tab { flex: 1; text-align: center; }
     .cht { max-width: 100%; }
     .ms-dropdown { max-height: 250px; }
+    .seg-control { width: 100%; }
+    .seg-btn { flex: 1; justify-content: center; padding: .5rem .75rem; font-size: .8125rem; }
 }
 
 @media (max-width: 480px) {
