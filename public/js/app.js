@@ -288,7 +288,22 @@ const App = (() => {
         
         // 绑定事件实现滑块联动：拖动一个，其它按比例反向移动，总和严格等于100
         const inputs = listEl.querySelectorAll('.sim-weight-input');
+        
+        let startValues = {};
+        const saveStartValues = () => {
+            const currentRows = listEl.querySelectorAll('.sim-weight-row');
+            currentRows.forEach(r => {
+                const inp = r.querySelector('.sim-weight-input');
+                startValues[r.dataset.code] = +inp.value;
+            });
+        };
+        
         inputs.forEach(input => {
+            // 在用户开始拖拽或聚焦时，记录当前所有滑块的基准初始值，防止在拖拽过程中不断取整累积误差导致“比例漂移” (Drift)
+            input.addEventListener('mousedown', saveStartValues);
+            input.addEventListener('touchstart', saveStartValues);
+            input.addEventListener('focus', saveStartValues);
+            
             input.addEventListener('input', e => {
                 const targetInput = e.target;
                 const targetRow = targetInput.closest('.sim-weight-row');
@@ -301,26 +316,26 @@ const App = (() => {
                 
                 const remaining = 100 - newVal;
                 
-                // 获取其它滑块现有的相对比例
-                const otherVals = otherRows.map(r => +r.querySelector('.sim-weight-input').value);
-                const sumOther = otherVals.reduce((a, b) => a + b, 0);
+                // 基于基准初始值按比例调整其它滑块
+                const otherStartVals = otherRows.map(r => startValues[r.dataset.code] !== undefined ? startValues[r.dataset.code] : Math.round(100 / rows.length));
+                const sumOtherStart = otherStartVals.reduce((a, b) => a + b, 0);
                 
-                if (sumOther > 0) {
-                    otherRows.forEach(r => {
+                if (sumOtherStart > 0) {
+                    otherRows.forEach((r, idx) => {
                         const inputEl = r.querySelector('.sim-weight-input');
-                        const oldVal = +inputEl.value;
-                        const share = oldVal / sumOther;
+                        const startVal = otherStartVals[idx];
+                        const share = startVal / sumOtherStart;
                         inputEl.value = Math.round(remaining * share);
                     });
                 } else {
-                    // 如果其它滑块都为0，平分剩余份额
+                    // 如果其它滑块起点全为0，则平分剩余份额
                     otherRows.forEach(r => {
                         const inputEl = r.querySelector('.sim-weight-input');
                         inputEl.value = Math.round(remaining / otherRows.length);
                     });
                 }
                 
-                // 舍入误差微调，确保总和绝对等于100
+                // 舍入微调，确保总和绝对等于100
                 let currentSum = newVal + otherRows.reduce((s, r) => s + +r.querySelector('.sim-weight-input').value, 0);
                 if (currentSum !== 100 && otherRows.length > 0) {
                     const adjustInput = otherRows[0].querySelector('.sim-weight-input');
