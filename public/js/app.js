@@ -7,8 +7,8 @@ const App = (() => {
     const API_BASE = '';
 
     // ===== 明亮主题 Chart.js 默认配置 =====
-    Chart.defaults.color = '#94a3b8';
-    Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.15)';
+    Chart.defaults.color = '#475569';
+    Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.08)';
     Chart.defaults.font.family = "'Inter',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif";
     Chart.defaults.font.size = 11;
 
@@ -103,7 +103,7 @@ const App = (() => {
                     },
                     scales: {
                         x: { grid: { display: false } },
-                        y: { beginAtZero: true, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(99, 102, 241, 0.15)' } }
+                        y: { beginAtZero: true, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(99, 102, 241, 0.08)' } }
                     }
                 }
             });
@@ -538,7 +538,7 @@ const App = (() => {
                     plugins: { legend: { display: false } },
                     scales: {
                         x: { grid: { display: false } },
-                        y: { title: { display: true, text: '万元' }, grid: { color: 'rgba(99, 102, 241, 0.15)' } }
+                        y: { title: { display: true, text: '万元' }, grid: { color: 'rgba(99, 102, 241, 0.08)' } }
                     }
                 }
             });
