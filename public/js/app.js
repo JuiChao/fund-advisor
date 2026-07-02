@@ -254,17 +254,21 @@ const App = (() => {
         function feeStr(f) { return (((f.mgmt_fee||0)+(f.custody_fee||0))*100).toFixed(2) + '%'; }
         function renderList(filter) {
             const q = (filter || '').toLowerCase();
-            const items = FUND_DATA.filter(f => {
+            const items = FUND_DATA.map(f => ({
+                ...f,
+                score: scoreFund(f)
+            })).filter(f => {
                 if (!q) return true;
                 return f.code.includes(q) || f.name.toLowerCase().includes(q);
-            });
-            list.innerHTML = items.map(f => {
+            }).sort((a, b) => b.score - a.score);
+
+            list.innerHTML = items.map((f, idx) => {
                 const sel = msSelected.has(f.code) ? ' selected' : '';
                 return `<div class="ms-opt${sel}" data-code="${f.code}">
                     <div class="ms-cb"></div>
                     <div class="ms-opt-info">
-                        <div class="ms-opt-name">${f.code} ${f.name}</div>
-                        <div class="ms-opt-meta">费率 ${feeStr(f)} · ${f.index_type}</div>
+                        <div class="ms-opt-name"><span class="ms-opt-rank">#${idx + 1}</span> ${f.code} ${f.name}</div>
+                        <div class="ms-opt-meta">评分 <strong style="color:var(--accent2)">${f.score}</strong> · 费率 ${feeStr(f)} · ${f.index_type}</div>
                     </div>
                 </div>`;
             }).join('');

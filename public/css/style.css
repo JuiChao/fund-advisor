@@ -378,6 +378,7 @@ tr.wr td { background: rgba(239, 68, 68, 0.06); color: var(--err); }
 }
 .ms-opt-info { flex: 1; min-width: 0; }
 .ms-opt-name { font-weight: 600; color: var(--txt); }
+.ms-opt-rank { font-size: 0.75rem; color: var(--accent2); margin-right: 0.3rem; font-weight: 700; }
 .ms-opt-meta { font-size: .6875rem; color: var(--txt3); margin-top: .1rem; }
 .ms-footer {
     padding: .5rem .75rem;
