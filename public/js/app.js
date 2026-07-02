@@ -70,7 +70,12 @@ const App = (() => {
 
         // 费率分布图
         function feeChart(id, list) {
-            const data = list.map(f => ({ code: f.code, fee: ((f.mgmt_fee || 0) + (f.custody_fee || 0)) * 100 })).sort((a, b) => a.fee - b.fee);
+            const data = list.map(f => ({
+                code: f.code,
+                name: f.name,
+                fee: ((f.mgmt_fee || 0) + (f.custody_fee || 0)) * 100,
+                status: f.limit_status || ''
+            })).sort((a, b) => a.fee - b.fee);
             if (chartPool[id]) chartPool[id].destroy();
             chartPool[id] = new Chart(document.getElementById(id), {
                 type: 'bar',
@@ -86,13 +91,29 @@ const App = (() => {
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y.toFixed(2) + '%' } } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: items => data[items[0].dataIndex].name,
+                                label: ctx => `综合费率: ${ctx.parsed.y.toFixed(2)}%`,
+                                afterLabel: ctx => data[ctx.dataIndex].status ? `状态: ${data[ctx.dataIndex].status}` : ''
+                            }
+                        }
+                    },
                     scales: {
                         x: { grid: { display: false } },
                         y: { beginAtZero: true, ticks: { callback: v => v + '%' }, grid: { color: '#f1f5f9' } }
                     }
                 }
             });
+            // 基金名称列表
+            const listEl = document.getElementById(id + '-list');
+            if (listEl) {
+                listEl.innerHTML = data.map(d =>
+                    `<span class="fund-tag" title="${d.name}">${d.code} ${d.name.length > 6 ? d.name.substring(0, 6) + '..' : d.name}</span>`
+                ).join('');
+            }
         }
         feeChart('ch-nq', nq);
         feeChart('ch-sp', sp);

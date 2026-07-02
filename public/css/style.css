@@ -479,6 +479,30 @@ input[type=range]::-moz-range-thumb {
     margin-left: .4rem;
 }
 
+/* ===== Fund List in Chart ===== */
+.fund-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin-top: .75rem;
+    padding-top: .75rem;
+    border-top: 1px solid var(--border);
+}
+.fund-tag {
+    display: inline-block;
+    background: var(--surface2);
+    color: var(--txt2);
+    padding: .2rem .5rem;
+    border-radius: 4px;
+    font-size: .6875rem;
+    cursor: default;
+    transition: var(--transition);
+}
+.fund-tag:hover {
+    background: var(--blue-bg);
+    color: var(--accent);
+}
+
 /* ===== Loading ===== */
 .ld { text-align: center; padding: 2.5rem; color: var(--txt3); }
 .ld::before {
