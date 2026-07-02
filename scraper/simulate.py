@@ -73,154 +73,71 @@ def allocate_ideal(items, budget):
     return allocs
 
 def allocate_practical(items, budget):
-    """实际可买：遵守每日限额，超出部分重新分配"""
+    """实际可买：考虑限购和暂停状态，优化实际可执行性（循环分配超额资金）"""
     trading_days = 22
     allocs = []
-
-    # 第一轮：按权重分配，检查是否超限
-    for item in items:
-        f = item['fund']
-        w = item['weight']
-        monthly_target = budget * w
-        daily_target = monthly_target / trading_days
-        limit = f.get('daily_limit') or 10
-        status = f.get('limit_status', '')
-
-        if daily_target > limit:
-            daily = limit
-            monthly = limit * trading_days
-            exceeds = True
-        else:
-            daily = daily_target
-            monthly = monthly_target
-            exceeds = False
-
-        allocs.append({
-            'fund': f, 'weight': w,
-            'daily': daily, 'monthly': monthly,
-            'limit': limit, 'exceeds_limit': exceeds,
-        })
-
-    # 第二轮：将超出限额的资金重新分配给未达上限的基金
-    actual_total = sum(a['monthly'] for a in allocs)
-    if actual_total < budget:
-        excess = budget - actual_total
-        available = [a for a in allocs if not a['exceeds_limit']]
-        if available:
-            total_weight = sum(a['weight'] for a in available)
-            for a in available:
-                extra = excess * (a['weight'] / total_weight)
-                new_monthly = a['monthly'] + extra
-                new_daily = new_monthly / trading_days
-                if new_daily > a['limit']:
-                    a['exceeds_limit'] = True
-                    a['daily'] = a['limit']
-                    a['monthly'] = a['limit'] * trading_days
-                else:
-                    a['daily'] = new_daily
-                    a['monthly'] = new_monthly
-
-    # 格式化输出
-    result = []
-    for a in allocs:
-        f = a['fund']
-        result.append({
-            'code': f['code'], 'name': f['name'], 'index_type': f.get('index_type', ''),
-            'weight': round(a['weight'], 4), 'daily': round(a['daily'], 1), 'monthly': round(a['monthly']),
-            'fee': round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0), 4),
-            'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
-            'daily_limit': a['limit'], 'limit_status': f.get('limit_status', ''),
-            'exceeds_limit': a['exceeds_limit'],
-        })
-
-    total = sum(a['monthly'] for a in result)
-    if total > 0:
-        for a in result:
-            a['actual_weight'] = round(a['monthly'] / total, 4)
-    return result
-
-def allocate_practical(items, budget):
-    """实际可买：考虑限购和暂停状态，优化实际可执行性"""
-    trading_days = 22
-    
-    # 按状态分类并计算可买金额
-    allocs = []
-    total_buyable_weight = 0
     
     for item in items:
         f = item['fund']
         w = item['weight']
         status = f.get('limit_status', '')
-        limit = f.get('daily_limit') or 10
+        limit = f.get('daily_limit')
         
         # 判断是否可买
-        is_suspended = '暂停' in status
-        is_limited = '限' in status and not is_suspended
-        
-        if is_suspended:
-            # 暂停的基金：按限额购买（假设限额仍然有效）
-            monthly_target = budget * w
-            daily_target = monthly_target / trading_days
-            if daily_target > limit:
-                daily = limit
-                monthly = daily * trading_days
-                exceeds = True
-            else:
-                daily = daily_target
-                monthly = monthly_target
-                exceeds = False
-            total_buyable_weight += w
-        elif is_limited:
-            # 限购的基金：按限额购买
-            monthly_target = budget * w
-            daily_target = monthly_target / trading_days
-            if daily_target > limit:
-                daily = limit
-                monthly = daily * trading_days
-                exceeds = True
-            else:
-                daily = daily_target
-                monthly = monthly_target
-                exceeds = False
-            total_buyable_weight += w
-        else:
-            # 正常基金：按权重购买
-            monthly = budget * w
-            daily = monthly / trading_days
-            exceeds = False
-            total_buyable_weight += w
+        is_suspended = '暂停申购' in status or ('暂停' in status and limit is None)
         
         allocs.append({
             'fund': f,
             'weight': w,
-            'actual_daily': daily,
-            'actual_monthly': monthly,
-            'limit': limit,
-            'exceeds_limit': exceeds,
-            'status': status,
+            'limit': limit if limit is not None else float('inf'),
+            'actual_daily': 0.0,
+            'actual_monthly': 0.0,
+            'exceeds_limit': False,
+            'is_suspended': is_suspended,
         })
+        
+    # 循环分配资金
+    remaining_budget = budget
+    active_allocs = [a for a in allocs if not a['is_suspended']]
     
-    # 计算实际总投入
-    actual_total = sum(a['actual_monthly'] for a in allocs)
-    
-    # 如果有超额资金，重新分配给未达上限的基金
-    if actual_total < budget:
-        excess = budget - actual_total
-        available = [a for a in allocs if not a['exceeds_limit']]
-        if available:
+    if active_allocs:
+        while remaining_budget > 0.01:
+            # 找到当前未达到上限的基金
+            available = [a for a in active_allocs if not a['exceeds_limit']]
+            if not available:
+                break  # 所有可用基金都达到上限了，无法分配更多资金
+                
             total_weight = sum(a['weight'] for a in available)
+            if total_weight == 0:
+                for a in available:
+                    a['weight'] = 1.0 / len(available)
+                total_weight = 1.0
+                
+            allocated_in_this_step = False
             for a in available:
-                extra = excess * (a['weight'] / total_weight)
-                new_monthly = a['actual_monthly'] + extra
-                new_daily = new_monthly / trading_days
-                if new_daily > a['limit']:
-                    a['exceeds_limit'] = True
+                # 这一步应该分配给该基金的增量资金
+                extra_monthly = remaining_budget * (a['weight'] / total_weight)
+                target_monthly = a['actual_monthly'] + extra_monthly
+                target_daily = target_monthly / trading_days
+                
+                limit_monthly = a['limit'] * trading_days
+                
+                if target_daily >= a['limit']:
+                    added = limit_monthly - a['actual_monthly']
+                    a['actual_monthly'] = limit_monthly
                     a['actual_daily'] = a['limit']
-                    a['actual_monthly'] = a['limit'] * trading_days
+                    a['exceeds_limit'] = True
+                    remaining_budget -= added
+                    allocated_in_this_step = True
                 else:
-                    a['actual_daily'] = new_daily
-                    a['actual_monthly'] = new_monthly
-    
+                    a['actual_monthly'] = target_monthly
+                    a['actual_daily'] = target_daily
+                    remaining_budget -= extra_monthly
+                    allocated_in_this_step = True
+            
+            if not allocated_in_this_step:
+                break
+
     # 格式化输出
     result = []
     for a in allocs:
@@ -230,10 +147,10 @@ def allocate_practical(items, budget):
             'weight': round(a['weight'], 4), 'daily': round(a['actual_daily'], 1), 'monthly': round(a['actual_monthly']),
             'fee': round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0), 4),
             'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
-            'daily_limit': a['limit'], 'limit_status': f.get('limit_status', ''),
+            'daily_limit': a['limit'] if a['limit'] != float('inf') else None, 'limit_status': f.get('limit_status', ''),
             'exceeds_limit': a['exceeds_limit'],
         })
-    
+        
     total = sum(a['monthly'] for a in result)
     if total > 0:
         for a in result:
@@ -294,13 +211,23 @@ def generate_strategies(funds, budget=1000):
 # ---- 蒙特卡洛模拟 ----
 
 def simulate_portfolio(funds_list, weights, years, budget):
-    """NumPy向量化蒙特卡洛模拟"""
+    """NumPy向量化组合蒙特卡洛模拟"""
     rng = np.random.default_rng(42)
     n_months = years * 12
     total_invested = budget * n_months
     final_values = np.zeros(N_SIMS)
 
+    # 产生共享的指数走势和汇率波动（纳斯达克100和标普500相关系数设为0.75）
+    rho = 0.75
+    z1 = rng.normal(0, 1, (N_SIMS, n_months))
+    z2 = rng.normal(0, 1, (N_SIMS, n_months))
+    z_nq = z1
+    z_sp = rho * z1 + np.sqrt(1 - rho**2) * z2
+    z_fx = rng.normal(0, 1, (N_SIMS, n_months))
+
     for fi, (fund, weight) in enumerate(zip(funds_list, weights)):
+        if weight <= 0:
+            continue
         fund_budget = budget * weight
         te = fund.get('tracking_error') or 0.015
         purchase_fee = fund.get('purchase_fee') or 0.0012
@@ -316,10 +243,13 @@ def simulate_portfolio(funds_list, weights, years, budget):
         div_m = PARAMS['dividend_yield'] / 12 * (1 - PARAMS['dividend_tax'])
         invest_per_month = fund_budget * (1 - purchase_fee)
 
-        # 生成收益矩阵 (N_SIMS × n_months)
-        idx_r = rng.normal(idx_ret_mean, idx_ret_vol, (N_SIMS, n_months))
-        te_r = rng.normal(0, te_vol, (N_SIMS, n_months))
-        fx_r = rng.normal(fx_mean, fx_vol, (N_SIMS, n_months))
+        # 跟踪误差为每只基金独立噪声
+        z_te = rng.normal(0, 1, (N_SIMS, n_months))
+        z_idx = z_sp if is_sp else z_nq
+
+        idx_r = idx_ret_mean + idx_ret_vol * z_idx
+        te_r = te_vol * z_te
+        fx_r = fx_mean + fx_vol * z_fx
         fund_r = idx_r + te_r - fee_m + div_m + fx_r
 
         nav = np.cumprod(1 + fund_r, axis=1)

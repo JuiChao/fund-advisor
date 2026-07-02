@@ -7,8 +7,8 @@ const App = (() => {
     const API_BASE = '';
 
     // ===== 明亮主题 Chart.js 默认配置 =====
-    Chart.defaults.color = '#64748b';
-    Chart.defaults.borderColor = '#e2e8f0';
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.15)';
     Chart.defaults.font.family = "'Inter',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif";
     Chart.defaults.font.size = 11;
 
@@ -103,7 +103,7 @@ const App = (() => {
                     },
                     scales: {
                         x: { grid: { display: false } },
-                        y: { beginAtZero: true, ticks: { callback: v => v + '%' }, grid: { color: '#f1f5f9' } }
+                        y: { beginAtZero: true, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(99, 102, 241, 0.15)' } }
                     }
                 }
             });
@@ -122,7 +122,27 @@ const App = (() => {
 
     async function loadStrategiesPreview() {
         try {
-            const strategies = await apiGet('/api/portfolio?years=20&budget=2000');
+            let strategies;
+            try {
+                strategies = await apiGet('/api/portfolio?years=20&budget=2000');
+            } catch (apiErr) {
+                console.warn("API failed in preview, using local calculations:", apiErr);
+                strategies = localCalculatePortfolio(20, 2000);
+            }
+
+            // 预先算一下预览组合模拟数据，如果API没有返回的话
+            strategies.forEach(s => {
+                ['ideal', 'practical'].forEach(vk => {
+                    const v = s[vk];
+                    if (!v.simulation) {
+                        const allocs = v.allocations || [];
+                        const simFunds = allocs.map(a => FUND_DATA.find(f => f.code === a.code)).filter(Boolean);
+                        const simWeights = allocs.map(a => a.actual_weight || a.weight || 0);
+                        v.simulation = localSimulatePortfolio(simFunds, simWeights, 20, 2000);
+                    }
+                });
+            });
+
             let html = '<div class="table-wrap"><table><thead><tr><th>策略</th><th>风格</th><th>子方案</th><th>预期年化</th><th>20年终值</th></tr></thead><tbody>';
             strategies.forEach(s => {
                 ['ideal', 'practical'].forEach(vk => {
@@ -310,43 +330,28 @@ const App = (() => {
         const btn = document.getElementById('btn-sim');
         btn.disabled = true; btn.textContent = '模拟中…';
 
+        // 异步以防止UI阻塞
+        await new Promise(r => setTimeout(r, 50));
+
         try {
             const monthlyEl = document.getElementById('sim-m');
             const yearsEl = document.getElementById('sim-y');
             const monthly = Math.max(500, parseInt(monthlyEl.value) || parseInt(monthlyEl.defaultValue) || 2000);
             const years = Math.max(5, parseInt(yearsEl.value) || parseInt(yearsEl.defaultValue) || 20);
-            const perFundBudget = Math.round(monthly / codes.length);
             const funds = codes.map(c => FUND_DATA.find(f => f.code === c)).filter(Boolean);
 
-            // 每只基金独立模拟
-            const results = funds.map(fund => {
-                try {
-                    return localSimulate(fund, years, perFundBudget);
-                } catch (e) {
-                    console.warn('Sim failed for', fund.code, e);
-                    return null;
-                }
-            }).filter(r => r && !isNaN(r.medianFinal) && r.medianFinal > 0);
-
-            if (!results.length) {
-                document.getElementById('sim-result').innerHTML = '<p style="color:var(--err);text-align:center;padding:2rem">无法获取模拟结果</p>';
+            if (!funds.length) {
+                document.getElementById('sim-result').innerHTML = '<p style="color:var(--err);text-align:center;padding:2rem">未找到选中的基金</p>';
                 btn.disabled = false; btn.textContent = '运行模拟';
                 return;
             }
 
-            // 汇总所有基金的模拟结果
-            const result = {
-                totalInvested: results.reduce((s, r) => s + r.totalInvested, 0),
-                medianFinal: results.reduce((s, r) => s + r.medianFinal, 0),
-                p5: results.reduce((s, r) => s + r.p5, 0),
-                p25: results.reduce((s, r) => s + r.p25, 0),
-                p75: results.reduce((s, r) => s + r.p75, 0),
-                p95: results.reduce((s, r) => s + r.p95, 0),
-            };
-            const totalReturn = (result.medianFinal / result.totalInvested - 1) * 100;
-            result.annualReturn = Math.round(totalReturn / years * 100) / 100;
+            // 对多基金组合进行高精度的联合蒙特卡洛模拟
+            const weights = new Array(funds.length).fill(1 / funds.length);
+            const result = localSimulatePortfolio(funds, weights, years, monthly);
 
             // 显示预算分配说明
+            const perFundBudget = Math.round(monthly / codes.length);
             const allocNote = codes.length > 1
                 ? `<p style="color:var(--txt3);font-size:.75rem;margin-bottom:.75rem">每月 ¥${monthly} 平均分配给 ${codes.length} 只基金，每只 ¥${perFundBudget}/月</p>`
                 : '';
@@ -384,7 +389,7 @@ const App = (() => {
                     plugins: { legend: { display: false } },
                     scales: {
                         x: { grid: { display: false } },
-                        y: { title: { display: true, text: '万元' }, grid: { color: '#f1f5f9' } }
+                        y: { title: { display: true, text: '万元' }, grid: { color: 'rgba(99, 102, 241, 0.15)' } }
                     }
                 }
             });
@@ -433,7 +438,32 @@ const App = (() => {
             Object.values(pfCharts).forEach(c => c.destroy());
             pfCharts = {};
 
-            const strategies = await apiGet(`/api/portfolio?years=${years}&budget=${monthly}`);
+            let strategies;
+            try {
+                strategies = await apiGet(`/api/portfolio?years=${years}&budget=${monthly}`);
+            } catch (apiErr) {
+                console.warn("API failed, falling back to local calculation:", apiErr);
+                strategies = localCalculatePortfolio(years, monthly);
+            }
+            
+            // 为 ideal 和 practical 方案动态运行精准的前端蒙特卡洛组合模拟
+            strategies.forEach(s => {
+                const idealAllocs = s.ideal?.allocations || [];
+                const practicalAllocs = s.practical?.allocations || [];
+                
+                if (idealAllocs.length) {
+                    const simFunds = idealAllocs.map(a => FUND_DATA.find(f => f.code === a.code)).filter(Boolean);
+                    const simWeights = idealAllocs.map(a => a.actual_weight || a.weight || 0);
+                    s.ideal.simulation = localSimulatePortfolio(simFunds, simWeights, years, monthly);
+                }
+                
+                if (practicalAllocs.length) {
+                    const simFunds = practicalAllocs.map(a => FUND_DATA.find(f => f.code === a.code)).filter(Boolean);
+                    const simWeights = practicalAllocs.map(a => a.actual_weight || a.weight || 0);
+                    s.practical.simulation = localSimulatePortfolio(simFunds, simWeights, years, monthly);
+                }
+            });
+
             const pieColors = ['#6366f1','#f59e0b','#64748b','#eab308','#818cf8','#22d3ee'];
 
             let html = '';
@@ -524,41 +554,253 @@ const App = (() => {
         btn.disabled = false; btn.textContent = '重新计算';
     }
 
-    // ===== 本地蒙特卡洛模拟（API不可用时的fallback）=====
-    function localSimulate(fund, years, budget) {
-        const N = 3000, months = years * 12, totalIn = budget * months;
-        const isSP = (fund.index_type || '').includes('标普');
-        const te = fund.tracking_error || 0.015;
-        const fee = (fund.mgmt_fee || 0.008) + (fund.custody_fee || 0.002);
-        const retM = (isSP ? 0.11 : 0.14) / 12;
-        const volM = (isSP ? 0.18 : 0.22) / Math.sqrt(12);
-        const teV = te / Math.sqrt(12);
-        const fxM = 0.005 / 12, fxV = 0.03 / Math.sqrt(12);
-        const feeM = fee / 12, divM = 0.008 / 12 * 0.9;
-        const invest = budget * 0.9988;
-        const seed = hashCode(fund.code);
-        const vals = [];
-        for (let s = 0; s < N; s++) {
-            let shares = 0, nav = 1, r = (seed + s) || 1;
-            for (let m = 0; m < months; m++) {
-                const rn = () => { r = (r * 1664525 + 1013904223) & 0xFFFFFFFF; return (r >>> 0) / 0xFFFFFFFF; };
-                const z1 = Math.sqrt(-2 * Math.log(rn() || 1e-10)) * Math.cos(6.2832 * rn());
-                const z2 = Math.sqrt(-2 * Math.log(rn() || 1e-10)) * Math.cos(6.2832 * rn());
-                const z3 = Math.sqrt(-2 * Math.log(rn() || 1e-10)) * Math.cos(6.2832 * rn());
-                nav *= (1 + retM + z1 * volM + z2 * teV - feeM + divM + fxM + z3 * fxV);
-                shares += invest / nav;
-            }
-            vals.push(shares * nav);
-        }
-        vals.sort((a, b) => a - b);
-        const mean = vals.reduce((a, b) => a + b, 0) / N;
-        const ret = (mean / totalIn - 1) * 100;
-        return {
-            totalInvested: totalIn, medianFinal: Math.round(vals[N * 0.5 | 0]),
-            p5: Math.round(vals[N * 0.05 | 0]), p25: Math.round(vals[N * 0.25 | 0]),
-            p75: Math.round(vals[N * 0.75 | 0]), p95: Math.round(vals[N * 0.95 | 0]),
-            annualReturn: Math.round(ret / years * 100) / 100, meanReturnPct: Math.round(ret * 100) / 100,
+    // ===== 本地联合蒙特卡洛组合模拟（前端高效向量化执行）=====
+    function localSimulatePortfolio(funds, weights, years, budget) {
+        const N = 3000;
+        const months = years * 12;
+        const totalInvested = budget * months;
+        const finalValues = new Array(N).fill(0);
+        
+        const rho = 0.75;
+        const params = {
+            nasdaq_return: 0.14, nasdaq_vol: 0.22,
+            sp500_return: 0.11, sp500_vol: 0.18,
+            fx_drift: 0.005, fx_vol: 0.03,
+            dividend_yield: 0.008, dividend_tax: 0.10,
         };
+        
+        const z_fx = new Float64Array(N * months);
+        const z_idx1 = new Float64Array(N * months);
+        const z_idx2 = new Float64Array(N * months);
+        
+        let r = 123456789;
+        const rn = () => { r = (r * 1664525 + 1013904223) & 0xFFFFFFFF; return (r >>> 0) / 0xFFFFFFFF; };
+        const boxMuller = () => {
+            const u1 = rn() || 1e-10;
+            const u2 = rn() || 1e-10;
+            return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        };
+        
+        for (let i = 0; i < N * months; i++) {
+            z_fx[i] = boxMuller();
+            z_idx1[i] = boxMuller();
+            z_idx2[i] = boxMuller();
+        }
+        
+        funds.forEach((fund, fIdx) => {
+            const weight = weights[fIdx];
+            if (weight <= 0) return;
+            
+            const fundBudget = budget * weight;
+            const isSP = (fund.index_type || '').includes('标普');
+            const te = fund.tracking_error || 0.015;
+            const fee = (fund.mgmt_fee || 0.008) + (fund.custody_fee || 0.002);
+            
+            const retM = (isSP ? params.sp500_return : params.nasdaq_return) / 12;
+            const volM = (isSP ? params.sp500_vol : params.nasdaq_vol) / Math.sqrt(12);
+            const teV = te / Math.sqrt(12);
+            const fxM = params.fx_drift / 12;
+            const fxV = params.fx_vol / Math.sqrt(12);
+            const feeM = fee / 12;
+            const divM = params.dividend_yield / 12 * (1 - params.dividend_tax);
+            const invest = fundBudget * (1 - (fund.purchase_fee || 0.0012));
+            
+            const z_te = new Float64Array(N * months);
+            for (let i = 0; i < N * months; i++) {
+                z_te[i] = boxMuller();
+            }
+            
+            for (let s = 0; s < N; s++) {
+                let shares = 0;
+                let nav = 1.0;
+                
+                for (let m = 0; m < months; m++) {
+                    const idx = s * months + m;
+                    
+                    const z_index1 = z_idx1[idx];
+                    const z_index2 = z_idx2[idx];
+                    const z_idx_val = isSP ? (rho * z_index1 + Math.sqrt(1 - rho * rho) * z_index2) : z_index1;
+                    
+                    const idx_r = retM + volM * z_idx_val;
+                    const te_r = teV * z_te[idx];
+                    const fx_r = fxM + fxV * z_fx[idx];
+                    
+                    const fund_r = idx_r + te_r - feeM + divM + fx_r;
+                    nav *= (1 + fund_r);
+                    shares += invest / nav;
+                }
+                finalValues[s] += shares * nav;
+            }
+        });
+        
+        finalValues.sort((a, b) => a - b);
+        const mean = finalValues.reduce((a, b) => a + b, 0) / N;
+        const ret = totalInvested > 0 ? (mean / totalInvested - 1) * 100 : 0;
+        
+        return {
+            totalInvested: Math.round(totalInvested),
+            medianFinal: Math.round(finalValues[Math.floor(N * 0.5)]),
+            p5: Math.round(finalValues[Math.floor(N * 0.05)]),
+            p25: Math.round(finalValues[Math.floor(N * 0.25)]),
+            p75: Math.round(finalValues[Math.floor(N * 0.75)]),
+            p95: Math.round(finalValues[Math.floor(N * 0.95)]),
+            annualReturn: +(ret / years).toFixed(2),
+            meanReturnPct: +ret.toFixed(2),
+        };
+    }
+
+    // ===== 客户端本地组合比例计算（在API不可用时提供兜底）=====
+    function localCalculatePortfolio(years, budget) {
+        function isBuyable(f) {
+            const status = f.limit_status || '';
+            return !status.includes('暂停') || status.includes('限');
+        }
+
+        function pickFundsByStyle(nqPct, onlyBuyable = false) {
+            let nq = FUND_DATA.filter(f => f.index_type === '纳斯达克100');
+            let sp = FUND_DATA.filter(f => f.index_type === '标普500');
+            if (onlyBuyable) {
+                nq = nq.filter(isBuyable);
+                sp = sp.filter(isBuyable);
+            }
+            const nqScored = nq.map(f => ({ ...f, score: scoreFund(f) })).sort((a, b) => b.score - a.score);
+            const spScored = sp.map(f => ({ ...f, score: scoreFund(f) })).sort((a, b) => b.score - a.score);
+            
+            const rnq = nqScored.slice(0, 3);
+            const rsp = spScored.slice(0, 2);
+            
+            const items = [];
+            const nqS = rnq.reduce((sum, f) => sum + f.score, 0);
+            if (nqS > 0) {
+                rnq.forEach(f => items.push({ fund: f, weight: (f.score / nqS) * nqPct }));
+            }
+            const spS = rsp.reduce((sum, f) => sum + f.score, 0);
+            if (spS > 0) {
+                rsp.forEach(f => items.push({ fund: f, weight: (f.score / spS) * (1 - nqPct) }));
+            }
+            return items;
+        }
+
+        function allocateIdeal(items) {
+            const tradingDays = 22;
+            const allocs = items.map(item => {
+                const f = item.fund;
+                const w = item.weight;
+                const monthly = budget * w;
+                const daily = monthly / tradingDays;
+                return {
+                    code: f.code, name: f.name, index_type: f.index_type || '',
+                    weight: +w.toFixed(4), daily: +daily.toFixed(1), monthly: Math.round(monthly),
+                    fee: +((f.mgmt_fee || 0) + (f.custody_fee || 0)).toFixed(4),
+                    tracking_error: f.tracking_error, score: f.score || 0,
+                    daily_limit: f.daily_limit || null, limit_status: f.limit_status || '',
+                    exceeds_limit: false,
+                };
+            });
+            const total = allocs.reduce((sum, a) => sum + a.monthly, 0);
+            if (total > 0) {
+                allocs.forEach(a => a.actual_weight = +(a.monthly / total).toFixed(4));
+            }
+            return allocs;
+        }
+
+        function allocatePractical(items) {
+            const tradingDays = 22;
+            const allocs = items.map(item => {
+                const f = item.fund;
+                const w = item.weight;
+                const limit = f.daily_limit;
+                const status = f.limit_status || '';
+                const isSuspended = status.includes('暂停申购') || (status.includes('暂停') && limit === null);
+                return {
+                    fund: f, weight: w, limit: (limit !== null && limit !== undefined) ? limit : Infinity,
+                    actual_daily: 0.0, actual_monthly: 0.0, exceeds_limit: false, is_suspended: isSuspended,
+                };
+            });
+
+            let remainingBudget = budget;
+            const activeAllocs = allocs.filter(a => !a.is_suspended);
+
+            if (activeAllocs.length > 0) {
+                while (remainingBudget > 0.01) {
+                    const available = activeAllocs.filter(a => !a.exceeds_limit);
+                    if (available.length === 0) break;
+
+                    let totalWeight = available.reduce((sum, a) => sum + a.weight, 0);
+                    if (totalWeight === 0) {
+                        available.forEach(a => a.weight = 1.0 / available.length);
+                        totalWeight = 1.0;
+                    }
+
+                    let allocatedInThisStep = false;
+                    for (const a of available) {
+                        const extraMonthly = remainingBudget * (a.weight / totalWeight);
+                        const targetMonthly = a.actual_monthly + extraMonthly;
+                        const targetDaily = targetMonthly / tradingDays;
+                        const limitMonthly = a.limit * tradingDays;
+
+                        if (targetDaily >= a.limit) {
+                            const added = limitMonthly - a.actual_monthly;
+                            a.actual_monthly = limitMonthly;
+                            a.actual_daily = a.limit;
+                            a.exceeds_limit = true;
+                            remainingBudget -= added;
+                            allocatedInThisStep = true;
+                        } else {
+                            a.actual_monthly = targetMonthly;
+                            a.actual_daily = targetDaily;
+                            remainingBudget -= extraMonthly;
+                            allocatedInThisStep = true;
+                        }
+                    }
+                    if (!allocatedInThisStep) break;
+                }
+            }
+
+            const result = allocs.map(a => {
+                const f = a.fund;
+                return {
+                    code: f.code, name: f.name, index_type: f.index_type || '',
+                    weight: +a.weight.toFixed(4), daily: +a.actual_daily.toFixed(1), monthly: Math.round(a.actual_monthly),
+                    fee: +((f.mgmt_fee || 0) + (f.custody_fee || 0)).toFixed(4),
+                    tracking_error: f.tracking_error, score: f.score || 0,
+                    daily_limit: a.limit !== Infinity ? a.limit : null, limit_status: f.limit_status || '',
+                    exceeds_limit: a.exceeds_limit,
+                };
+            });
+
+            const total = result.reduce((sum, a) => sum + a.monthly, 0);
+            if (total > 0) {
+                result.forEach(a => a.actual_weight = +(a.monthly / total).toFixed(4));
+            }
+            return result;
+        }
+
+        const strategiesDef = [
+            { key: 'growth', name: '进取型', description: '纳指70%+标普30%，追求高成长', icon: '🚀', nq_pct: 0.7 },
+            { key: 'balanced', name: '平衡型', description: '纳指50%+标普50%，攻守兼备', icon: '⚖️', nq_pct: 0.5 },
+            { key: 'conservative', name: '稳健型', description: '纳指30%+标普70%，注重稳定性', icon: '🛡️', nq_pct: 0.3 }
+        ];
+
+        return strategiesDef.map(s => {
+            const idealItems = pickFundsByStyle(s.nq_pct, false);
+            const practicalItems = pickFundsByStyle(s.nq_pct, true);
+            return {
+                key: s.key,
+                name: s.name,
+                description: s.description,
+                icon: s.icon,
+                nq_pct: s.nq_pct,
+                ideal: {
+                    allocations: allocateIdeal(idealItems),
+                    note: '不考虑限购的理论最优配置。'
+                },
+                practical: {
+                    allocations: allocatePractical(practicalItems),
+                    note: '排除暂停基金，遵守每日限购限额。'
+                }
+            };
+        });
     }
     function hashCode(s) { let h = 0; for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0; return Math.abs(h) || 1; }
 

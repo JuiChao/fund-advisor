@@ -51,32 +51,41 @@ def scrape_fund_page(code):
         text = resp.text
         data = {}
 
-        m = re.search(r'年化跟踪误差[：:]\s*(\d+\.\d+)%', text)
+        m = re.search(r'年化跟踪误差.*?(\d+\.\d+)%', text)
         if m: data['tracking_error'] = float(m.group(1)) / 100
 
-        m = re.search(r'规模[：:]\s*(\d+\.\d+)\s*亿元', text)
+        m = re.search(r'规模.*?(\d+\.\d+)\s*亿元', text)
         if m: data['scale'] = float(m.group(1))
 
-        m = re.search(r'近1年[：:]\s*(\d+\.\d+)%', text)
+        # 支持正负数收益率
+        m = re.search(r'近1年.*?(-?\d+\.\d+)%', text)
         if m: data['return_1yr'] = float(m.group(1)) / 100
 
-        m = re.search(r'近3年[：:]\s*(\d+\.\d+)%', text)
+        m = re.search(r'近3年.*?(-?\d+\.\d+)%', text)
         if m: data['return_3yr'] = float(m.group(1)) / 100
 
-        m = re.search(r'晨星评级.*?(\d)\s*星', text)
-        if m: data['morningstar'] = int(m.group(1))
-
-        if '暂停申购' in text:
-            m2 = re.search(r'购买上限\s*(\d+\.?\d*)\s*元', text)
-            dl = int(float(m2.group(1))) if m2 else 100
-            data['daily_limit'] = dl
-            data['limit_status'] = f'暂停(限{dl})'
+        # 晨星评级：通过 class="jjpjX" 精准提取（X为1-5）
+        m = re.search(r'jjpj(\d)', text)
+        if m:
+            data['morningstar'] = int(m.group(1))
         else:
-            m2 = re.search(r'购买上限\s*(\d+\.?\d*)\s*元', text)
-            if m2:
-                dl = int(float(m2.group(1)))
-                data['daily_limit'] = dl
+            data['morningstar'] = 0
+
+        # 限额限购解析
+        limit_match = re.search(r'单日累计购买上限\s*(\d+(?:\.\d+)?)\s*元', text) or re.search(r'购买上限.*?(\d+(?:\.\d+)?)\s*元', text)
+        if limit_match:
+            dl = int(float(limit_match.group(1)))
+            data['daily_limit'] = dl
+            if '暂停申购' in text:
+                data['limit_status'] = f'暂停(限{dl})'
+            else:
                 data['limit_status'] = f'限{dl}元/日'
+        elif '暂停申购' in text:
+            data['daily_limit'] = 0
+            data['limit_status'] = '暂停申购'
+        else:
+            data['daily_limit'] = None
+            data['limit_status'] = '正常'
 
         return data
     except Exception as e:
@@ -93,10 +102,10 @@ def scrape_fee_page(code):
         text = resp.text
         data = {}
 
-        m = re.search(r'管理费率\s*(\d+\.\d+)%（每年）', text)
+        m = re.search(r'管理费率.*?(\d+\.\d+)%', text)
         if m: data['mgmt_fee'] = float(m.group(1)) / 100
 
-        m = re.search(r'托管费率\s*(\d+\.\d+)%（每年）', text)
+        m = re.search(r'托管费率.*?(\d+\.\d+)%', text)
         if m: data['custody_fee'] = float(m.group(1)) / 100
 
         return data
@@ -179,7 +188,7 @@ def main():
         json.dump(results, f, ensure_ascii=False, indent=2)
 
     print(f'\n{"=" * 60}')
-    print(f'抓取完成: {updated}/{len(FUND_DATA)} 只基金更新')
+    print(f'抓取完成: {updated}/{len(FUND_LIST)} 只基金更新')
     print(f'输出: {OUTPUT}')
     if errors:
         print(f'警告: {len(errors)} 个问题')
