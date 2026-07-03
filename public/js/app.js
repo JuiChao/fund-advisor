@@ -595,18 +595,18 @@ const App = (() => {
                 strategies = localCalculatePortfolio(years, monthly);
             }
             
-            // 为 ideal 和 practical 方案动态运行精准的前端蒙特卡洛组合模拟
+            // 为 ideal 和 practical 方案提供蒙特卡洛组合模拟数据 (仅在 API 未返回模拟结果时执行本地计算)
             strategies.forEach(s => {
                 const idealAllocs = s.ideal?.allocations || [];
                 const practicalAllocs = s.practical?.allocations || [];
                 
-                if (idealAllocs.length) {
+                if (idealAllocs.length && !s.ideal.simulation) {
                     const simFunds = idealAllocs.map(a => FUND_DATA.find(f => f.code === a.code)).filter(Boolean);
                     const simWeights = idealAllocs.map(a => a.actual_weight || a.weight || 0);
                     s.ideal.simulation = localSimulatePortfolio(simFunds, simWeights, years, monthly);
                 }
                 
-                if (practicalAllocs.length) {
+                if (practicalAllocs.length && !s.practical.simulation) {
                     const simFunds = practicalAllocs.map(a => FUND_DATA.find(f => f.code === a.code)).filter(Boolean);
                     const simWeights = practicalAllocs.map(a => a.actual_weight || a.weight || 0);
                     s.practical.simulation = localSimulatePortfolio(simFunds, simWeights, years, monthly);
@@ -705,7 +705,8 @@ const App = (() => {
 
     // ===== 本地联合蒙特卡洛组合模拟（前端高效向量化执行）=====
     function localSimulatePortfolio(funds, weights, years, budget) {
-        const N = 3000;
+        // 优化：将模拟路径数降至1000次，在保证分位数统计置信度的同时，将计算时间缩短三分之二
+        const N = 1000;
         const months = years * 12;
         const totalInvested = budget * months;
         const finalValues = new Array(N).fill(0);
