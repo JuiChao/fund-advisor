@@ -65,34 +65,8 @@ const App = (() => {
             <div class="stat"><div class="lb">基金总数</div><div class="vl">${FUND_DATA.length}</div><div class="sub">纳指 ${nq.length} · 标普 ${sp.length}</div></div>
             <div class="stat"><div class="lb">可购买</div><div class="vl">${avail.length}</div><div class="sub">未暂停申购</div></div>
             <div class="stat"><div class="lb">最低费率</div><div class="vl">${(minFee * 100).toFixed(2)}%</div><div class="sub">管理费 + 托管费</div></div>
-            <div class="stat"><div class="lb">数据更新</div><div class="vl" style="font-size:1rem">${FUND_DATA[0]?.updated_at?.split('T')[0] || '-'}</div><div class="sub" style="display:flex;align-items:center;gap:4px">每日自动抓取 <button id="btn-manual-update" style="font-size:.7rem;padding:2px 6px;cursor:pointer;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:4px">手动更新</button></div></div>
+            <div class="stat"><div class="lb">数据更新</div><div class="vl" style="font-size:1rem">${FUND_DATA[0]?.updated_at?.split('T')[0] || '-'}</div><div class="sub">每日自动抓取</div></div>
         `;
-
-        const btnUpdate = document.getElementById('btn-manual-update');
-        if (btnUpdate) {
-            btnUpdate.addEventListener('click', async () => {
-                if (!confirm('手动更新需要约 1-2 分钟，确定要触发云端更新吗？')) return;
-                const origText = btnUpdate.textContent;
-                btnUpdate.textContent = '触发中...';
-                btnUpdate.disabled = true;
-                btnUpdate.style.opacity = '0.5';
-                try {
-                    const res = await fetch('/api/update', { method: 'POST' });
-                    const data = await res.json();
-                    if (data.success) {
-                        alert('✅ 更新指令已送达！\\nGitHub Actions 正在云端抓取最新数据并重新进行蒙特卡洛模拟。\\n请在 1-2 分钟后刷新本页面查看最新结果。');
-                        btnUpdate.textContent = '已触发';
-                    } else {
-                        throw new Error(data.error || '未知错误');
-                    }
-                } catch (e) {
-                    alert('❌ 触发失败: ' + e.message + '\\n\\n请确保在 Cloudflare 后台配置了 GITHUB_PAT 环境变量。');
-                    btnUpdate.textContent = origText;
-                    btnUpdate.disabled = false;
-                    btnUpdate.style.opacity = '1';
-                }
-            });
-        }
 
         // 费率分布图
         function feeChart(id, list) {
