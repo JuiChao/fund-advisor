@@ -75,11 +75,9 @@ body {
 .navbar .brand {
     display: flex;
     align-items: center;
-    margin-right: 2.5rem;
-}
-.navbar .brand-text {
     font-size: 1.1rem;
     font-weight: 800;
+    margin-right: 2.5rem;
     white-space: nowrap;
     background: var(--accent-g);
     -webkit-background-clip: text;
