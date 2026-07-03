@@ -176,9 +176,10 @@ def main():
 
         results.append(merged)
 
-    # 输出时间戳
-    from datetime import datetime
-    timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+    # 输出时间戳（强制使用北京时间 UTC+8）
+    from datetime import datetime, timezone, timedelta
+    tz_beijing = timezone(timedelta(hours=8))
+    timestamp = datetime.now(tz_beijing).strftime('%Y-%m-%dT%H:%M:%S')
     for r in results:
         r['updated_at'] = timestamp
 
