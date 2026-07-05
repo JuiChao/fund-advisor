@@ -56,6 +56,18 @@
   }]
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "投资指南与指数科普 - 纳斯达克100与标普500定投策略",
+  "description": "深度解析指数基金定投策略、QDII限购避坑指南以及纳斯达克100与标普500的核心差异，助您建立科学的理财框架。",
+  "author": {
+    "@type": "Organization",
+    "name": "Fund Advisor"
+  }
+}
+</script>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,12 +84,13 @@
         <img src="favicon.png" alt="Fund Advisor Logo" style="width: 24px; height: 24px; margin-right: 8px; display: block; border-radius: 4px;">
         <span class="brand-text">FUND ADVISOR</span>
     </div>
-    <div class="links" id="nav-links">
-        <a href="#home" data-page="home" class="on">概览</a>
-        <a href="#ranking" data-page="ranking">基金排名</a>
-        <a href="#simulator" data-page="simulator">模拟器</a>
-        <a href="#portfolio" data-page="portfolio">定投方案</a>
-    </div>
+        <div class="links" id="nav-links">
+            <a href="#home" data-page="home" class="on">概览</a>
+            <a href="#ranking" data-page="ranking">基金排名</a>
+            <a href="#simulator" data-page="simulator">模拟器</a>
+            <a href="#portfolio" data-page="portfolio">定投方案</a>
+            <a href="#guide" data-page="guide">投资指南</a>
+        </div>
 </nav>
 
 <main class="container">
@@ -217,6 +230,44 @@
     </div>
     <button class="btn btn-p" id="btn-pf" style="margin-bottom:1.5rem">重新计算</button>
     <div id="pf-container" class="ld"></div>
+</div>
+
+<!-- ===== 投资指南 ===== -->
+<div id="page-guide" style="display:none" class="fade-in article-container">
+    <h1 class="page-title">投资指南与指数科普</h1>
+    <p class="page-sub">构建科学的理财框架 · 深度解析定投策略与核心资产</p>
+
+    <article class="article-content">
+        <h2>一、为什么选择指数基金定投？</h2>
+        <p>在充满不确定性的金融市场中，<strong>指数基金定投</strong>被公认为最适合普通投资者的理财方式。正如股神巴菲特所言：“通过定期投资指数基金，一个什么都不懂的业余投资者竟然往往能够战胜大部分专业投资者。”</p>
+        <p>定投的核心优势在于<strong>“平摊成本、分散风险、复利效应”</strong>。通过在固定时间投入固定金额，在市场低迷时您可以买入更多的基金份额，而在市场高涨时买入较少的份额，从而有效降低整体持仓成本。配合纳斯达克100等长期向上的宽基指数，定投能够帮助您穿越牛熊周期，享受经济增长的红利。</p>
+        
+        <h2>二、纳斯达克100 vs 标普500 深度解析</h2>
+        <p>作为全球最具代表性的两大美股指数，它们各有千秋：</p>
+        <ul>
+            <li><strong>标普500 (S&P 500)</strong>：被誉为美国经济的“晴雨表”，包含了美国500家顶尖上市企业。它的行业分布非常广泛，涵盖科技、金融、医疗、消费等各大板块，走势相对稳健，是长线资金配置的<strong>压舱石</strong>。</li>
+            <li><strong>纳斯达克100 (Nasdaq-100)</strong>：剔除了金融股，主要由纳斯达克交易所上市的100家最大型非金融企业组成。由于权重极度向大型科技巨头（如苹果、微软、英伟达、谷歌、亚马逊等）倾斜，其历史年化收益率显著高于标普500，但相应的<strong>波动率和回撤风险也更大</strong>。</li>
+        </ul>
+        <div class="quote-block">
+            <strong>💡 投资建议：</strong>如果您追求稳健增值，可以增加标普500的权重；如果您能够承受较高的短期波动以博取更高的长期回报，纳斯达克100是更好的选择。利用本站的“蒙特卡洛模拟器”，您可以直观地看到这两种指数在未来数十年的收益概率分布。
+        </div>
+
+        <h2>三、QDII 基金投资避坑指南</h2>
+        <p>境内投资者购买美股指数，最便捷的途径是 <strong>QDII 基金</strong>（合格境内机构投资者）。但在实际操作中，您需要注意以下“坑”：</p>
+        <p>1. <strong>外汇额度导致限购</strong>：当基金公司的外汇额度用尽时，往往会采取单日限额申购（如限购100元）甚至完全暂停申购的措施。这会导致定投计划被迫中断，资金站岗。</p>
+        <p>2. <strong>场外溢价风险</strong>：在额度紧缺时，部分场内 ETF 会出现高额溢价。盲目追高买入溢价品种，相当于一开始就亏损了溢价部分的本金。此时，建议通过本站的“基金排名”功能，寻找<strong>尚未限购、且费率合理</strong>的场外联接基金作为平替。</p>
+        <p>3. <strong>隐性费率差异</strong>：看似追踪同一个指数，不同基金公司的管理费和托管费差异可能高达一倍（例如 0.6% vs 1.2%）。在长达 10-20 年的复利计算下，这 0.6% 的费率差将吞噬惊人的利润。</p>
+
+        <h2>四、蒙特卡洛模型在理财中的应用</h2>
+        <p>在传统的理财计算器中，我们常常假设每年有固定的收益率（如8%）。但在真实市场中，收益率是剧烈波动的。今年可能上涨30%，明年可能下跌20%。</p>
+        <p>本站采用的<strong>蒙特卡洛模拟 (Monte Carlo Simulation)</strong> 引入了“随机漫步理论”。系统根据该指数历史的平均收益率和波动率，生成成千上万种未来的市场走势路线图。最终的模拟结果不仅仅是一个枯燥的数字，而是一个<strong>概率分布</strong>：</p>
+        <ul>
+            <li>前 10% 的极佳情况：财富可能翻数十倍；</li>
+            <li>中位数情况：最有可能达到的预期财富；</li>
+            <li>后 10% 的极差情况：市场长期低迷时的财富底线。</li>
+        </ul>
+        <p>通过了解最差情况，您可以更好地评估自身的风险承受能力，确保定投的资金是真正的“闲钱”，从而在剧烈波动中保持良好的心态，坚持到复利开花结果的那一天。</p>
+    </article>
 </div>
     
 <!-- ===== SEO 富文本问答区域 (FAQ) ===== -->
