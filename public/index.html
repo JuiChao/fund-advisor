@@ -81,21 +81,19 @@
 
 <nav class="navbar">
     <div class="brand">
-        <img src="favicon.png" alt="Fund Advisor Logo" style="width: 24px; height: 24px; margin-right: 8px; display: block; border-radius: 4px;">
+        <img src="favicon.png" alt="" class="brand-logo">
         <span class="brand-text">FUND ADVISOR</span>
     </div>
-        <div class="links" id="nav-links">
-            <a href="#home" data-page="home" class="on">概览</a>
-            <a href="#ranking" data-page="ranking">基金排名</a>
-            <a href="#simulator" data-page="simulator">模拟器</a>
-            <a href="#portfolio" data-page="portfolio">定投方案</a>
-            <a href="#guide" data-page="guide">投资指南</a>
-        </div>
+    <div class="links" id="nav-links">
+        <a href="#home" data-page="home" class="on">概览</a>
+        <a href="#ranking" data-page="ranking">基金排名</a>
+        <a href="#simulator" data-page="simulator">模拟器</a>
+        <a href="#portfolio" data-page="portfolio">定投方案</a>
+        <a href="#guide" data-page="guide">投资指南</a>
+    </div>
 </nav>
 
 <main class="container">
-
-<!-- 移除了手动横幅广告位，因为已启用 Auto Ads -->
 
 <!-- ===== 概览 ===== -->
 <div id="page-home" class="fade-in">
@@ -107,6 +105,24 @@
         <div class="card"><h3>纳斯达克100 费率分布</h3><div class="cht"><canvas id="ch-nq"></canvas></div><div class="fund-list" id="ch-nq-list"></div></div>
         <div class="card"><h3>标普500 费率分布</h3><div class="cht"><canvas id="ch-sp"></canvas></div><div class="fund-list" id="ch-sp-list"></div></div>
     </div>
+
+<!-- ===== SEO 常见问题 ===== -->
+<section class="seo-faq" id="seo-faq">
+    <h2 class="seo-title">基金定投常见问题</h2>
+    <details>
+        <summary>什么是蒙特卡洛模拟基金收益？</summary>
+        <p><strong>蒙特卡洛模拟 (Monte Carlo Simulation)</strong> 是一种基于随机漫步理论的高级金融预测模型。Fund Advisor 通过分析纳斯达克100和标普500指数基金的历史波动率、预期年化收益等数据，生成成千上万种未来的市场走势可能。这种量化分析能比简单的"线性复利计算器"更真实地反映出投资的风险与潜在回报分布，帮您找到最佳的指数基金定投策略。</p>
+    </details>
+    <details>
+        <summary>纳斯达克100和标普500定投哪个好？</summary>
+        <p>这是指数基金投资者最常问的问题。<strong>标普500指数</strong>包含美国500家顶尖企业，行业分布广泛，走势相对稳健，适合作为长期定投的压舱石；而<strong>纳斯达克100指数</strong>侧重于科技巨头（如苹果、微软、英伟达等），历史年化收益率更高，但波动也更大。通过本站的"多策略定投方案"，您可以利用蒙特卡洛模拟来分配这两者的资金权重，实现收益与风险的最佳平衡。</p>
+    </details>
+    <details>
+        <summary>QDII基金限购/暂停申购怎么办？</summary>
+        <p>投资美股指数基金通常需要通过境内发行的 QDII 基金。由于外汇额度限制，热门的纳指或标普500基金经常会遇到<strong>单日限购（如限购10元、100元）甚至完全暂停申购</strong>的情况。此时，您可以通过本平台的"基金排名"功能，实时筛选出当前未限购、且管理费和托管费最低的优质平替基金，最大化资金利用率，避免资金站岗。</p>
+    </details>
+</section>
+
 </div>
 
 <!-- ===== 排名 ===== -->
@@ -178,7 +194,7 @@
             <span class="seg-icon">📊</span> 标普500
         </button>
     </div>
-    <div style="height:1rem"></div>
+
     <div class="table-wrap"><table id="rank-table"><thead></thead><tbody></tbody></table></div>
 </div>
 
@@ -254,9 +270,11 @@
 
         <h2>三、QDII 基金投资避坑指南</h2>
         <p>境内投资者购买美股指数，最便捷的途径是 <strong>QDII 基金</strong>（合格境内机构投资者）。但在实际操作中，您需要注意以下“坑”：</p>
-        <p>1. <strong>外汇额度导致限购</strong>：当基金公司的外汇额度用尽时，往往会采取单日限额申购（如限购100元）甚至完全暂停申购的措施。这会导致定投计划被迫中断，资金站岗。</p>
-        <p>2. <strong>场外溢价风险</strong>：在额度紧缺时，部分场内 ETF 会出现高额溢价。盲目追高买入溢价品种，相当于一开始就亏损了溢价部分的本金。此时，建议通过本站的“基金排名”功能，寻找<strong>尚未限购、且费率合理</strong>的场外联接基金作为平替。</p>
-        <p>3. <strong>隐性费率差异</strong>：看似追踪同一个指数，不同基金公司的管理费和托管费差异可能高达一倍（例如 0.6% vs 1.2%）。在长达 10-20 年的复利计算下，这 0.6% 的费率差将吞噬惊人的利润。</p>
+        <ol>
+            <li><strong>外汇额度导致限购</strong>：当基金公司的外汇额度用尽时，往往会采取单日限额申购（如限购100元）甚至完全暂停申购的措施。这会导致定投计划被迫中断，资金站岗。</li>
+            <li><strong>场外溢价风险</strong>：在额度紧缺时，部分场内 ETF 会出现高额溢价。盲目追高买入溢价品种，相当于一开始就亏损了溢价部分的本金。此时，建议通过本站的“基金排名”功能，寻找<strong>尚未限购、且费率合理</strong>的场外联接基金作为平替。</li>
+            <li><strong>隐性费率差异</strong>：看似追踪同一个指数，不同基金公司的管理费和托管费差异可能高达一倍（例如 0.6% vs 1.2%）。在长达 10-20 年的复利计算下，这 0.6% 的费率差将吞噬惊人的利润。</li>
+        </ol>
 
         <h2>四、蒙特卡洛模型在理财中的应用</h2>
         <p>在传统的理财计算器中，我们常常假设每年有固定的收益率（如8%）。但在真实市场中，收益率是剧烈波动的。今年可能上涨30%，明年可能下跌20%。</p>
@@ -269,30 +287,25 @@
         <p>通过了解最差情况，您可以更好地评估自身的风险承受能力，确保定投的资金是真正的“闲钱”，从而在剧烈波动中保持良好的心态，坚持到复利开花结果的那一天。</p>
     </article>
 </div>
-    
-<!-- ===== SEO 富文本问答区域 (FAQ) ===== -->
-<section class="seo-faq" id="seo-faq">
-    <h2 class="seo-title">基金定投常见问题与指数科普</h2>
-    
-    <div class="faq-item">
-        <h3>1. 什么是蒙特卡洛模拟基金收益？</h3>
-        <p><strong>蒙特卡洛模拟 (Monte Carlo Simulation)</strong> 是一种基于随机漫步理论的高级金融预测模型。Fund Advisor 通过分析纳斯达克100和标普500指数基金的历史波动率、预期年化收益等数据，生成成千上万种未来的市场走势可能。这种量化分析能比简单的“线性复利计算器”更真实地反映出投资的风险与潜在回报分布，帮您找到最佳的指数基金定投策略。</p>
-    </div>
-
-    <div class="faq-item">
-        <h3>2. 纳斯达克100和标普500定投哪个好？</h3>
-        <p>这是指数基金投资者最常问的问题。<strong>标普500指数</strong>包含美国500家顶尖企业，行业分布广泛，走势相对稳健，适合作为长期定投的压舱石；而<strong>纳斯达克100指数</strong>侧重于科技巨头（如苹果、微软、英伟达等），历史年化收益率更高，但波动也更大。通过本站的“多策略定投方案”，您可以利用蒙特卡洛模拟来分配这两者的资金权重，实现收益与风险的最佳平衡。</p>
-    </div>
-
-    <div class="faq-item">
-        <h3>3. QDII基金限购/暂停申购怎么办？</h3>
-        <p>投资美股指数基金通常需要通过境内发行的 QDII 基金。由于外汇额度限制，热门的纳指或标普500基金经常会遇到<strong>单日限购（如限购10元、100元）甚至完全暂停申购</strong>的情况。此时，您可以通过本平台的“基金排名”功能，实时筛选出当前未限购、且管理费和托管费最低的优质平替基金，最大化资金利用率，避免资金站岗。</p>
-    </div>
-</section>
 
 </main>
 
-<footer>数据来源：天天基金网 · 蒙特卡洛模拟 · 仅供参考，不构成投资建议</footer>
+<footer>
+    <div class="footer-inner">
+        <div class="footer-info">
+            <strong>Fund Advisor</strong> — 基金定投智能分析平台<br>
+            数据来源：天天基金网 · 每日自动更新 · 仅供参考，不构成投资建议<br>
+            © 2026 Fund Advisor. All rights reserved.
+        </div>
+        <div class="footer-links">
+            <a href="#home">概览</a>
+            <a href="#ranking">基金排名</a>
+            <a href="#simulator">模拟器</a>
+            <a href="#portfolio">定投方案</a>
+            <a href="#guide">投资指南</a>
+        </div>
+    </div>
+</footer>
 <script src="js/app.js"></script>
 </body>
 </html>

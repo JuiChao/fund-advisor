@@ -23,7 +23,7 @@ const App = (() => {
     function pill(s) {
         if (!s) return '<span class="pill pb">未知</span>';
         if (s.includes('暂停')) return '<span class="pill pr">' + s + '</span>';
-        if (s.includes('限10元')) return '<span class="pill py">' + s + '</span>';
+        if (s.includes('限')) return '<span class="pill py">' + s + '</span>';
         return '<span class="pill pg">' + s + '</span>';
     }
     function feeC(f) {
@@ -51,6 +51,10 @@ const App = (() => {
         if (ogTitle) ogTitle.setAttribute('content', tdk.title);
         const ogDesc = document.querySelector('meta[property="og:description"]');
         if (ogDesc) ogDesc.setAttribute('content', tdk.desc);
+        const twTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twTitle) twTitle.setAttribute('content', tdk.title);
+        const twDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twDesc) twDesc.setAttribute('content', tdk.desc);
     }
 
     function switchPage(page) {
@@ -206,6 +210,7 @@ const App = (() => {
 
     // ===== 排名页 =====
     let rankData = [];
+    let rankSortDir = {};
     const rankCols = [
         { key: 'rank', label: '#' },
         { key: 'code', label: '代码' },
@@ -255,13 +260,17 @@ const App = (() => {
             th.addEventListener('click', () => {
                 const key = th.dataset.key;
                 const isFee = key === 'fee';
+                rankSortDir[key] = rankSortDir[key] === 'asc' ? 'desc' : 'asc';
+                const dir = rankSortDir[key] === 'desc' ? -1 : 1;
                 rankData.sort((a, b) => {
                     let va, vb;
                     if (isFee) { va = (a.mgmt_fee || 0) + (a.custody_fee || 0); vb = (b.mgmt_fee || 0) + (b.custody_fee || 0); }
                     else { va = a[key]; vb = b[key]; }
                     if (va == null) va = Infinity; if (vb == null) vb = Infinity;
-                    return typeof va === 'string' ? va.localeCompare(vb) : va - vb;
+                    return dir * (typeof va === 'string' ? va.localeCompare(vb) : va - vb);
                 });
+                thead.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                th.classList.add(rankSortDir[key] === 'desc' ? 'sort-desc' : 'sort-asc');
                 draw();
             });
         });
@@ -982,7 +991,6 @@ const App = (() => {
             };
         });
     }
-    function hashCode(s) { let h = 0; for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0; return Math.abs(h) || 1; }
 
     // ===== 初始化 =====
     async function init() {
