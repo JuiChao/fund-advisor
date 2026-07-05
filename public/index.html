@@ -3,14 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="theme-color" content="#4f46e5">
 <meta name="description" content="基于蒙特卡洛模拟的指数基金定投智能分析平台，支持纳斯达克100和标普500基金量化分析。自动抓取天天基金数据，提供基金排名、收益率模拟及最佳资产配置方案。">
-<meta name="keywords" content="基金定投, 纳斯达克100, 标普500, 蒙特卡洛模拟, 指数基金, 量化分析, 基金排名, 投资分析">
+<meta name="keywords" content="基金定投, 纳斯达克100, 标普500, 蒙特卡洛模拟, 指数基金, 量化分析, 基金排名, 投资分析, QDII基金, 基金费率对比, 指数基金推荐, 定投计算器">
 <meta name="author" content="Fund Advisor">
 <meta property="og:title" content="基金定投智能分析 | Fund Advisor">
 <meta property="og:description" content="基于蒙特卡洛模拟的指数基金定投智能分析平台，寻找最优的纳斯达克100与标普500投资策略。">
 <meta property="og:url" content="https://858000.xyz/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Fund Advisor">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://858000.xyz/favicon.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基金定投智能分析 | Fund Advisor">
 <meta name="twitter:description" content="基于蒙特卡洛模拟的指数基金定投智能分析平台。">
@@ -53,6 +59,27 @@
       "@type": "Answer",
       "text": "投资美股指数基金常遇 QDII 额度限制导致单日限购甚至暂停申购。此时可以通过本平台的“基金排名”功能，实时筛选出当前未限购、且管理费和托管费最低的优质平替基金，避免资金站岗。"
     }
+  }, {
+    "@type": "Question",
+    "name": "每月定投多少钱合适？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "定投金额的关键原则是用闲钱投资，建议每月收入的10%-30%用于定投，确保不影响日常生活和应急储备。Fund Advisor的蒙特卡洛模拟器支持自定义每月预算500-10000元。"
+    }
+  }, {
+    "@type": "Question",
+    "name": "指数基金的管理费和托管费是什么？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "管理费是基金公司为管理基金收取的费用，托管费是银行为保管基金资产收取的费用。两者合计称为综合费率，每年从基金净值中自动扣除。追踪同一指数的基金费率差异可达0.3%-0.6%。"
+    }
+  }, {
+    "@type": "Question",
+    "name": "定投多少年才能看到明显收益？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "指数基金定投是一项长期策略，通常需要5年以上才能明显感受到复利效应。持续10-20年定投纳斯达克100或标普500，历史上几乎所有时间窗口都能取得正收益。"
+    }
   }]
 }
 </script>
@@ -62,10 +89,23 @@
   "@type": "Article",
   "headline": "投资指南与指数科普 - 纳斯达克100与标普500定投策略",
   "description": "深度解析指数基金定投策略、QDII限购避坑指南以及纳斯达克100与标普500的核心差异，助您建立科学的理财框架。",
-  "author": {
-    "@type": "Organization",
-    "name": "Fund Advisor"
-  }
+  "author": { "@type": "Organization", "name": "Fund Advisor" },
+  "publisher": { "@type": "Organization", "name": "Fund Advisor", "url": "https://858000.xyz/" },
+  "mainEntityOfPage": "https://858000.xyz/#guide",
+  "inLanguage": "zh-CN"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "概览", "item": "https://858000.xyz/#home" },
+    { "@type": "ListItem", "position": 2, "name": "基金排名", "item": "https://858000.xyz/#ranking" },
+    { "@type": "ListItem", "position": 3, "name": "模拟器", "item": "https://858000.xyz/#simulator" },
+    { "@type": "ListItem", "position": 4, "name": "定投方案", "item": "https://858000.xyz/#portfolio" },
+    { "@type": "ListItem", "position": 5, "name": "投资指南", "item": "https://858000.xyz/#guide" }
+  ]
 }
 </script>
 <link rel="icon" type="image/png" href="favicon.png">
@@ -73,7 +113,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 </head>
@@ -111,15 +152,27 @@
     <h2 class="seo-title">基金定投常见问题</h2>
     <details>
         <summary>什么是蒙特卡洛模拟基金收益？</summary>
-        <p><strong>蒙特卡洛模拟 (Monte Carlo Simulation)</strong> 是一种基于随机漫步理论的高级金融预测模型。Fund Advisor 通过分析纳斯达克100和标普500指数基金的历史波动率、预期年化收益等数据，生成成千上万种未来的市场走势可能。这种量化分析能比简单的"线性复利计算器"更真实地反映出投资的风险与潜在回报分布，帮您找到最佳的指数基金定投策略。</p>
+        <p><strong>蒙特卡洛模拟 (Monte Carlo Simulation)</strong> 是一种基于随机漫步理论的高级金融预测模型。Fund Advisor 通过分析纳斯达克100和标普500指数基金的历史波动率、预期年化收益等数据，生成成千上万种未来的市场走势可能。这种量化分析能比简单的“线性复利计算器”更真实地反映出投资的风险与潜在回报分布，帮您找到最佳的指数基金定投策略。</p>
     </details>
     <details>
         <summary>纳斯达克100和标普500定投哪个好？</summary>
-        <p>这是指数基金投资者最常问的问题。<strong>标普500指数</strong>包含美国500家顶尖企业，行业分布广泛，走势相对稳健，适合作为长期定投的压舱石；而<strong>纳斯达克100指数</strong>侧重于科技巨头（如苹果、微软、英伟达等），历史年化收益率更高，但波动也更大。通过本站的"多策略定投方案"，您可以利用蒙特卡洛模拟来分配这两者的资金权重，实现收益与风险的最佳平衡。</p>
+        <p>这是指数基金投资者最常问的问题。<strong>标普500指数</strong>包含美国500家顶尖企业，行业分布广泛，走势相对稳健，适合作为长期定投的压舱石；而<strong>纳斯达克100指数</strong>侧重于科技巨头（如苹果、微软、英伟达等），历史年化收益率更高，但波动也更大。您可以利用本站的<a href="#portfolio">多策略定投方案</a>，用蒙特卡洛模拟来分配这两者的资金权重，实现收益与风险的最佳平衡。</p>
     </details>
     <details>
         <summary>QDII基金限购/暂停申购怎么办？</summary>
-        <p>投资美股指数基金通常需要通过境内发行的 QDII 基金。由于外汇额度限制，热门的纳指或标普500基金经常会遇到<strong>单日限购（如限购10元、100元）甚至完全暂停申购</strong>的情况。此时，您可以通过本平台的"基金排名"功能，实时筛选出当前未限购、且管理费和托管费最低的优质平替基金，最大化资金利用率，避免资金站岗。</p>
+        <p>投资美股指数基金通常需要通过境内发行的 QDII 基金。由于外汇额度限制，热门的纳指或标普500基金经常会遇到<strong>单日限购甚至完全暂停申购</strong>的情况。此时，您可以通过本平台的<a href="#ranking">基金排名</a>功能，实时筛选出当前未限购、且管理费和托管费最低的优质平替基金。</p>
+    </details>
+    <details>
+        <summary>每月定投多少钱合适？</summary>
+        <p>定投金额没有固定答案，关键原则是“用闲钱投资”。建议每月收入的 10%-30% 用于定投，确保不影响日常生活和应急储备。本站的<a href="#simulator">蒙特卡洛模拟器</a>支持自定义每月预算（¥500～¥10,000），帮您直观看到不同投入金额对应的未来财富分布。</p>
+    </details>
+    <details>
+        <summary>指数基金的管理费和托管费是什么？</summary>
+        <p><strong>管理费</strong>是基金公司为管理基金收取的费用，<strong>托管费</strong>是银行为保管基金资产收取的费用。两者合计称为“综合费率”，每年从基金净值中自动扣除。追踪同一指数的基金，费率差异可达 0.3%～0.6%。通过本站的<a href="#ranking">基金费率排名</a>，您可以快速找到同类基金中费率最低的产品。</p>
+    </details>
+    <details>
+        <summary>定投多少年才能看到明显收益？</summary>
+        <p>指数基金定投是一项长期策略。根据历史数据，定投纳斯达克100或标普500，通常需要 <strong>5年以上</strong>才能明显感受到复利效应。持续 10～20 年的定投，历史上几乎所有时间窗口都能取得正收益。使用本站的<a href="#simulator">模拟器</a>，您可以设置 5～30 年的投资年限，直观地看到不同时间跨度下的收益概率分布。</p>
     </details>
 </section>
 
@@ -265,14 +318,14 @@
             <li><strong>纳斯达克100 (Nasdaq-100)</strong>：剔除了金融股，主要由纳斯达克交易所上市的100家最大型非金融企业组成。由于权重极度向大型科技巨头（如苹果、微软、英伟达、谷歌、亚马逊等）倾斜，其历史年化收益率显著高于标普500，但相应的<strong>波动率和回撤风险也更大</strong>。</li>
         </ul>
         <div class="quote-block">
-            <strong>💡 投资建议：</strong>如果您追求稳健增值，可以增加标普500的权重；如果您能够承受较高的短期波动以博取更高的长期回报，纳斯达克100是更好的选择。利用本站的“蒙特卡洛模拟器”，您可以直观地看到这两种指数在未来数十年的收益概率分布。
+            <strong>💡 投资建议：</strong>如果您追求稳健增值，可以增加标普500的权重；如果您能够承受较高的短期波动以博取更高的长期回报，纳斯达克100是更好的选择。利用本站的<a href="#simulator">蒙特卡洛模拟器</a>，您可以直观地看到这两种指数在未来数十年的收益概率分布。
         </div>
 
         <h2>三、QDII 基金投资避坑指南</h2>
         <p>境内投资者购买美股指数，最便捷的途径是 <strong>QDII 基金</strong>（合格境内机构投资者）。但在实际操作中，您需要注意以下“坑”：</p>
         <ol>
             <li><strong>外汇额度导致限购</strong>：当基金公司的外汇额度用尽时，往往会采取单日限额申购（如限购100元）甚至完全暂停申购的措施。这会导致定投计划被迫中断，资金站岗。</li>
-            <li><strong>场外溢价风险</strong>：在额度紧缺时，部分场内 ETF 会出现高额溢价。盲目追高买入溢价品种，相当于一开始就亏损了溢价部分的本金。此时，建议通过本站的“基金排名”功能，寻找<strong>尚未限购、且费率合理</strong>的场外联接基金作为平替。</li>
+            <li><strong>场外溢价风险</strong>：在额度紧缺时，部分场内 ETF 会出现高额溢价。盲目追高买入溢价品种，相当于一开始就亏损了溢价部分的本金。此时，建议通过本站的<a href="#ranking">基金排名</a>功能，寻找<strong>尚未限购、且费率合理</strong>的场外联接基金作为平替。</li>
             <li><strong>隐性费率差异</strong>：看似追踪同一个指数，不同基金公司的管理费和托管费差异可能高达一倍（例如 0.6% vs 1.2%）。在长达 10-20 年的复利计算下，这 0.6% 的费率差将吞噬惊人的利润。</li>
         </ol>
 
