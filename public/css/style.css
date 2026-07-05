@@ -716,6 +716,54 @@ input[type=range]::-moz-range-thumb {
     opacity: 1;
 }
 
+/* ===== SEO FAQ ===== */
+.seo-faq {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+.seo-faq .seo-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--txt);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.seo-faq .seo-title::before {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 18px;
+    background: var(--accent-g);
+    border-radius: 2px;
+}
+.faq-item {
+    margin-bottom: 1.5rem;
+}
+.faq-item:last-child {
+    margin-bottom: 0;
+}
+.faq-item h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--txt);
+    margin-bottom: 0.5rem;
+}
+.faq-item p {
+    font-size: 0.85rem;
+    color: var(--txt2);
+    line-height: 1.6;
+}
+.faq-item p strong {
+    color: var(--txt);
+    font-weight: 500;
+}
+
 /* ===== Footer ===== */
 footer {
     text-align: center;

@@ -33,25 +33,54 @@ const App = (() => {
         return 'color:#f87171';
     }
 
-    // ===== 页面切换 =====
-    function initNav() {
-        document.querySelectorAll('#nav-links a').forEach(a => {
-            a.addEventListener('click', e => {
-                e.preventDefault();
-                const page = a.dataset.page;
-                document.querySelectorAll('#nav-links a').forEach(x => x.classList.remove('on'));
-                a.classList.add('on');
-                document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display = 'none');
-                const target = document.getElementById('page-' + page);
-                target.style.display = '';
-                target.classList.remove('fade-in');
-                void target.offsetWidth;
-                target.classList.add('fade-in');
-                if (page === 'ranking') renderRanking();
-                if (page === 'simulator') populateSimSelect();
-                if (page === 'portfolio') computePortfolio();
-            });
+    // ===== 页面切换与 TDK 动态更新 =====
+    const PAGE_TDK = {
+        'home': { title: '基金定投智能分析 | Fund Advisor', desc: '基于蒙特卡洛模拟的指数基金定投智能分析平台。自动抓取天天基金数据，提供基金排名、收益率模拟及最佳资产配置方案。' },
+        'ranking': { title: '纳斯达克100与标普500指数基金排名 - 费率与收益对比 | Fund Advisor', desc: '全网最新纳斯达克100和标普500指数基金排名。对比各基金的管理费、托管费、限购状态及历史年化收益，助您找到最低费率的优质基金。' },
+        'simulator': { title: '基金蒙特卡洛模拟器 - 预测未来收益走势 | Fund Advisor', desc: '采用高级蒙特卡洛随机漫步模型，模拟指数基金在未来不同市场环境下的收益率分布。输入本金与定投金额，预见未来财富可能。' },
+        'portfolio': { title: '最优基金定投方案 - QDII限购环境下的资产配置 | Fund Advisor', desc: '根据各基金最新的单日申购限额（QDII额度限制），通过动态规划算法计算出理论最优与实际可买的完美定投组合方案，最大化资金利用率。' }
+    };
+
+    function updateTDK(page) {
+        const tdk = PAGE_TDK[page] || PAGE_TDK['home'];
+        document.title = tdk.title;
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute('content', tdk.desc);
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', tdk.title);
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.setAttribute('content', tdk.desc);
+    }
+
+    function switchPage(page) {
+        document.querySelectorAll('#nav-links a').forEach(x => {
+            if (x.dataset.page === page) x.classList.add('on');
+            else x.classList.remove('on');
         });
+        document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display = 'none');
+        const target = document.getElementById('page-' + page);
+        if (!target) return;
+        target.style.display = '';
+        target.classList.remove('fade-in');
+        void target.offsetWidth;
+        target.classList.add('fade-in');
+        
+        updateTDK(page);
+        
+        if (page === 'ranking') renderRanking();
+        if (page === 'simulator') populateSimSelect();
+        if (page === 'portfolio') computePortfolio();
+    }
+
+    function initNav() {
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.replace('#', '') || 'home';
+            switchPage(hash);
+        });
+        
+        // 首次加载
+        const initHash = window.location.hash.replace('#', '') || 'home';
+        switchPage(initHash);
     }
 
     // ===== 概览页 =====

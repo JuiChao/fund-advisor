@@ -28,6 +28,34 @@
   "operatingSystem": "All"
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "什么是蒙特卡洛模拟基金收益？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "蒙特卡洛模拟 (Monte Carlo Simulation) 是一种基于随机漫步理论的高级金融预测模型。Fund Advisor 通过分析纳斯达克100和标普500指数基金的历史波动率、预期年化收益等数据，生成成千上万种未来的市场走势可能，比简单的线性复利计算器更真实地反映出投资风险与潜在回报。"
+    }
+  }, {
+    "@type": "Question",
+    "name": "纳斯达克100和标普500定投哪个好？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "标普500指数包含美国500家顶尖企业，行业分布广泛，走势稳健；纳斯达克100指数侧重于科技巨头，历史年化收益率更高但波动更大。利用蒙特卡洛模拟分配资金权重，可以实现收益与风险的最佳平衡。"
+    }
+  }, {
+    "@type": "Question",
+    "name": "QDII基金限购/暂停申购怎么办？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "投资美股指数基金常遇 QDII 额度限制导致单日限购甚至暂停申购。此时可以通过本平台的“基金排名”功能，实时筛选出当前未限购、且管理费和托管费最低的优质平替基金，避免资金站岗。"
+    }
+  }]
+}
+</script>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,10 +73,10 @@
         <span class="brand-text">FUND ADVISOR</span>
     </div>
     <div class="links" id="nav-links">
-        <a href="#" data-page="home" class="on">概览</a>
-        <a href="#" data-page="ranking">基金排名</a>
-        <a href="#" data-page="simulator">模拟器</a>
-        <a href="#" data-page="portfolio">定投方案</a>
+        <a href="#home" data-page="home" class="on">概览</a>
+        <a href="#ranking" data-page="ranking">基金排名</a>
+        <a href="#simulator" data-page="simulator">模拟器</a>
+        <a href="#portfolio" data-page="portfolio">定投方案</a>
     </div>
 </nav>
 
@@ -190,6 +218,26 @@
     <button class="btn btn-p" id="btn-pf" style="margin-bottom:1.5rem">重新计算</button>
     <div id="pf-container" class="ld"></div>
 </div>
+    
+<!-- ===== SEO 富文本问答区域 (FAQ) ===== -->
+<section class="seo-faq" id="seo-faq">
+    <h2 class="seo-title">基金定投常见问题与指数科普</h2>
+    
+    <div class="faq-item">
+        <h3>1. 什么是蒙特卡洛模拟基金收益？</h3>
+        <p><strong>蒙特卡洛模拟 (Monte Carlo Simulation)</strong> 是一种基于随机漫步理论的高级金融预测模型。Fund Advisor 通过分析纳斯达克100和标普500指数基金的历史波动率、预期年化收益等数据，生成成千上万种未来的市场走势可能。这种量化分析能比简单的“线性复利计算器”更真实地反映出投资的风险与潜在回报分布，帮您找到最佳的指数基金定投策略。</p>
+    </div>
+
+    <div class="faq-item">
+        <h3>2. 纳斯达克100和标普500定投哪个好？</h3>
+        <p>这是指数基金投资者最常问的问题。<strong>标普500指数</strong>包含美国500家顶尖企业，行业分布广泛，走势相对稳健，适合作为长期定投的压舱石；而<strong>纳斯达克100指数</strong>侧重于科技巨头（如苹果、微软、英伟达等），历史年化收益率更高，但波动也更大。通过本站的“多策略定投方案”，您可以利用蒙特卡洛模拟来分配这两者的资金权重，实现收益与风险的最佳平衡。</p>
+    </div>
+
+    <div class="faq-item">
+        <h3>3. QDII基金限购/暂停申购怎么办？</h3>
+        <p>投资美股指数基金通常需要通过境内发行的 QDII 基金。由于外汇额度限制，热门的纳指或标普500基金经常会遇到<strong>单日限购（如限购10元、100元）甚至完全暂停申购</strong>的情况。此时，您可以通过本平台的“基金排名”功能，实时筛选出当前未限购、且管理费和托管费最低的优质平替基金，最大化资金利用率，避免资金站岗。</p>
+    </div>
+</section>
 
 </main>
 
