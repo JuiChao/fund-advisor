@@ -10,12 +10,12 @@
     "custody_fee": 0.001,
     "purchase_fee": 0.001,
     "tracking_error": 0.0151,
-    "return_1yr": -0.0152,
-    "return_3yr": 0.6684,
+    "return_1yr": -0.0006,
+    "return_3yr": 0.6667000000000001,
     "morningstar": 0,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "016055",
@@ -28,12 +28,12 @@
     "custody_fee": 0.0015,
     "purchase_fee": 0.001,
     "tracking_error": 0.014499999999999999,
-    "return_1yr": -0.0151,
-    "return_3yr": 0.7132,
+    "return_1yr": -0.0005,
+    "return_3yr": 0.7115,
     "morningstar": 3,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "018043",
@@ -46,12 +46,12 @@
     "custody_fee": 0.001,
     "purchase_fee": 0.001,
     "tracking_error": 0.0146,
-    "return_1yr": -0.0151,
-    "return_3yr": 0.679,
+    "return_1yr": -0.0005,
+    "return_3yr": 0.6767,
     "morningstar": 3,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "160213",
@@ -64,12 +64,12 @@
     "custody_fee": 0.002,
     "purchase_fee": 0.0015,
     "tracking_error": 0.011899999999999999,
-    "return_1yr": -0.0159,
-    "return_3yr": 0.7879999999999999,
+    "return_1yr": -0.0007000000000000001,
+    "return_3yr": 0.7857,
     "morningstar": 4,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "040046",
@@ -82,12 +82,12 @@
     "custody_fee": 0.002,
     "purchase_fee": 0.0012,
     "tracking_error": 0.0106,
-    "return_1yr": -0.016,
-    "return_3yr": 0.7161,
+    "return_1yr": -0.0006,
+    "return_3yr": 0.7140000000000001,
     "morningstar": 3,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "000834",
@@ -100,12 +100,12 @@
     "custody_fee": 0.002,
     "purchase_fee": 0.0012,
     "tracking_error": 0.0106,
-    "return_1yr": -0.0163,
-    "return_3yr": 0.6967,
+    "return_1yr": -0.0004,
+    "return_3yr": 0.6951999999999999,
     "morningstar": 3,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "161130",
@@ -118,12 +118,12 @@
     "custody_fee": 0.001,
     "purchase_fee": 0.0012,
     "tracking_error": 0.014499999999999999,
-    "return_1yr": -0.0152,
-    "return_3yr": 0.7444,
+    "return_1yr": -0.0006,
+    "return_3yr": 0.7426999999999999,
     "morningstar": 3,
     "limit_status": "暂停(限10)",
     "daily_limit": 10,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "270042",
@@ -135,13 +135,13 @@
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
     "purchase_fee": 0.0013,
-    "tracking_error": 0.0109,
-    "return_1yr": -0.0163,
-    "return_3yr": 0.7413,
+    "tracking_error": 0.011000000000000001,
+    "return_1yr": -0.0007000000000000001,
+    "return_3yr": 0.7393000000000001,
     "morningstar": 3,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "016452",
@@ -154,12 +154,12 @@
     "custody_fee": 0.0015,
     "purchase_fee": 0.0012,
     "tracking_error": 0.0146,
-    "return_1yr": -0.015600000000000001,
-    "return_3yr": 0.6851,
+    "return_1yr": -0.0006,
+    "return_3yr": 0.6834,
     "morningstar": 3,
     "limit_status": "限50元/日",
     "daily_limit": 50,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "539001",
@@ -171,13 +171,13 @@
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
     "purchase_fee": 0.0012,
-    "tracking_error": 0.0218,
-    "return_1yr": -0.0149,
-    "return_3yr": 0.7670999999999999,
+    "tracking_error": 0.0219,
+    "return_1yr": 0.0,
+    "return_3yr": 0.7666,
     "morningstar": 4,
     "limit_status": "限100元/日",
     "daily_limit": 100,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "019547",
@@ -190,12 +190,12 @@
     "custody_fee": 0.0015,
     "purchase_fee": 0.0012,
     "tracking_error": 0.0175,
-    "return_1yr": -0.0146,
-    "return_3yr": 0.1177,
+    "return_1yr": -0.0006,
+    "return_3yr": 0.11710000000000001,
     "morningstar": 0,
     "limit_status": "暂停(限10)",
     "daily_limit": 10,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "018966",
@@ -207,13 +207,13 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "purchase_fee": 0.0012,
-    "tracking_error": 0.0174,
-    "return_1yr": -0.0152,
-    "return_3yr": 0.11259999999999999,
+    "tracking_error": 0.0175,
+    "return_1yr": -0.0005,
+    "return_3yr": 0.11199999999999999,
     "morningstar": 0,
     "limit_status": "限50元/日",
     "daily_limit": 50,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "015299",
@@ -222,16 +222,16 @@
     "manager": "华夏",
     "inception_year": 2022,
     "scale": 3.15,
-    "mgmt_fee": 0.008,
+    "mgmt_fee": 0.006,
     "custody_fee": 0.002,
     "purchase_fee": 0.0012,
-    "tracking_error": 0.0253,
-    "return_1yr": -0.016200000000000003,
-    "return_3yr": 0.7077,
+    "tracking_error": 0.0254,
+    "return_1yr": -0.001,
+    "return_3yr": 0.7045999999999999,
     "morningstar": 3,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "019172",
@@ -244,12 +244,12 @@
     "custody_fee": 0.001,
     "purchase_fee": 0.0012,
     "tracking_error": 0.023,
-    "return_1yr": -0.0144,
-    "return_3yr": 0.1133,
+    "return_1yr": -0.0006,
+    "return_3yr": 0.11259999999999999,
     "morningstar": 0,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "050025",
@@ -261,13 +261,13 @@
     "mgmt_fee": 0.006,
     "custody_fee": 0.002,
     "purchase_fee": 0.0012,
-    "tracking_error": 0.013000000000000001,
-    "return_1yr": 0.0,
-    "return_3yr": 0.537,
+    "tracking_error": 0.0131,
+    "return_1yr": -0.0006,
+    "return_3yr": 0.5365,
     "morningstar": 2,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "161125",
@@ -280,12 +280,12 @@
     "custody_fee": 0.002,
     "purchase_fee": 0.0012,
     "tracking_error": 0.0125,
-    "return_1yr": 0.0002,
-    "return_3yr": 0.5402,
+    "return_1yr": -0.0006,
+    "return_3yr": 0.5399,
     "morningstar": 2,
     "limit_status": "暂停(限10)",
     "daily_limit": 10,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "017641",
@@ -298,12 +298,12 @@
     "custody_fee": 0.0015,
     "purchase_fee": 0.0012,
     "tracking_error": 0.017,
-    "return_1yr": 0.0,
-    "return_3yr": 0.5115,
+    "return_1yr": -0.0005,
+    "return_3yr": 0.5112,
     "morningstar": 2,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "017028",
@@ -315,13 +315,13 @@
     "mgmt_fee": 0.006,
     "custody_fee": 0.0015,
     "purchase_fee": 0.001,
-    "tracking_error": 0.0178,
-    "return_1yr": -0.0001,
-    "return_3yr": 0.4902,
+    "tracking_error": 0.0179,
+    "return_1yr": -0.0005,
+    "return_3yr": 0.48960000000000004,
     "morningstar": 2,
     "limit_status": "暂停(限10)",
     "daily_limit": 10,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "018064",
@@ -333,13 +333,13 @@
     "mgmt_fee": 0.006,
     "custody_fee": 0.0015,
     "purchase_fee": 0.0012,
-    "tracking_error": 0.0233,
-    "return_1yr": -0.0011,
-    "return_3yr": 0.506,
+    "tracking_error": 0.023399999999999997,
+    "return_1yr": -0.001,
+    "return_3yr": 0.5047,
     "morningstar": 2,
     "limit_status": "暂停(限100)",
     "daily_limit": 100,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   },
   {
     "code": "096001",
@@ -352,11 +352,11 @@
     "custody_fee": 0.002,
     "purchase_fee": 0.0015,
     "tracking_error": 0.066,
-    "return_1yr": 0.0073,
-    "return_3yr": 0.3335,
+    "return_1yr": -0.0006,
+    "return_3yr": 0.331,
     "morningstar": 1,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "updated_at": "2026-07-06T03:24:33"
+    "updated_at": "2026-07-07T04:04:25"
   }
 ]
