@@ -218,7 +218,20 @@ const App = (() => {
         { key: 'fee', label: '费率', render: r => { const f = (r.mgmt_fee || 0) + (r.custody_fee || 0); return '<span style="' + feeC(f) + '">' + fmt(f) + '</span>'; } },
         { key: 'tracking_error', label: '跟踪误差', render: r => fmt(r.tracking_error) },
         { key: 'scale', label: '规模', render: r => r.scale ? r.scale.toFixed(1) + '亿' : '-' },
-        { key: 'return_3yr', label: '近3年', render: r => { const v = r.return_3yr; return v != null ? '<span style="color:var(--ok)">' + fmt(v) + '</span>' : '-'; } },
+        { key: 'return_3yr', label: '近3年', render: r => { 
+            const v = r.return_3yr; 
+            if (v != null) return '<span style="color:var(--ok)">' + fmt(v) + '</span>';
+            if (r.return_since != null && r.inception_date) {
+                const inc = new Date(r.inception_date);
+                const now = new Date();
+                const dm = (now.getFullYear() - inc.getFullYear())*12 + now.getMonth() - inc.getMonth();
+                const y = Math.floor(dm/12);
+                const m = dm % 12;
+                const sp = y > 0 ? (m > 0 ? `${y}年${m}个月` : `${y}年`) : `${m}个月`;
+                return `<span style="color:var(--ok)">${fmt(r.return_since)} <span style="font-size:0.8em;color:var(--desc)">(${sp})*</span></span>`;
+            }
+            return '-'; 
+        } },
         { key: 'morningstar', label: '晨星', render: r => { const n = r.morningstar; return n > 0 ? '<span style="color:var(--warn)">' + '★'.repeat(n) + '</span>' : '-'; } },
         { key: 'limit_status', label: '限购', render: r => pill(r.limit_status) },
         { key: 'score', label: '评分', render: r => '<strong style="color:var(--accent2)">' + r.score + '</strong>' },

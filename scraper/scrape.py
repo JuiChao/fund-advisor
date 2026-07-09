@@ -30,7 +30,7 @@ FUND_LIST = [
     ('161130', '纳斯达克100'), ('270042', '纳斯达克100'), ('016452', '纳斯达克100'),
     ('539001', '纳斯达克100'), ('019547', '纳斯达克100'), ('018966', '纳斯达克100'),
     ('015299', '纳斯达克100'), ('019172', '纳斯达克100'), ('019441', '纳斯达克100'),
-    ('019524', '纳斯达克100'),
+    ('019524', '纳斯达克100'), ('019736', '纳斯达克100'),
     ('050025', '标普500'), ('161125', '标普500'), ('017641', '标普500'),
     ('017028', '标普500'), ('018064', '标普500'), ('096001', '标普500'),
     ('007721', '标普500'), ('013425', '标普500'),
@@ -58,13 +58,35 @@ def scrape_fund_page(code):
 
         m = re.search(r'规模.*?(\d+\.\d+)\s*亿元', text)
         if m: data['scale'] = float(m.group(1))
-
-        # 支持正负数收益率
-        m = re.search(r'近1年.*?(-?\d+\.\d+)%', text)
-        if m: data['return_1yr'] = float(m.group(1)) / 100
-
-        m = re.search(r'近3年.*?(-?\d+\.\d+)%', text)
-        if m: data['return_3yr'] = float(m.group(1)) / 100
+        # 使用 pingzhongdata/{code}.js 提取精准的收益率和成立日期
+        pz_url = f'http://fund.eastmoney.com/pingzhongdata/{code}.js'
+        pz_resp = requests.get(pz_url, headers=HEADERS, timeout=15)
+        pz_text = pz_resp.text
+        
+        m1 = re.search(r'syl_1n\s*=\s*"([^"]+)"', pz_text)
+        if m1 and m1.group(1): data['return_1yr'] = float(m1.group(1)) / 100
+        
+        m_net = re.search(r'var Data_netWorthTrend\s*=\s*(\[.*?\]);', pz_text)
+        if m_net:
+            import json, datetime
+            nwt = json.loads(m_net.group(1))
+            if nwt:
+                inception_ts = nwt[0]['x']
+                # 转换为北京时间
+                data['inception_date'] = datetime.datetime.utcfromtimestamp(inception_ts/1000 + 8*3600).strftime('%Y-%m-%d')
+                data['return_since'] = nwt[-1]['equityReturn'] / 100
+                
+                latest_ts = nwt[-1]['x']
+                latest_r = nwt[-1]['equityReturn'] / 100
+                
+                # 3年 = 1095天 = 94608000000 ms
+                ts_3y = latest_ts - 94608000000
+                if ts_3y >= inception_ts:
+                    pt = min(nwt, key=lambda d: abs(d['x'] - ts_3y))
+                    old_r = pt['equityReturn'] / 100
+                    data['return_3yr'] = (1 + latest_r) / (1 + old_r) - 1
+                else:
+                    data['return_3yr'] = None
 
         # 晨星评级：通过 class="jjpjX" 精准提取（X为1-5）
         m = re.search(r'jjpj(\d)', text)
@@ -78,10 +100,7 @@ def scrape_fund_page(code):
         if limit_match:
             dl = int(float(limit_match.group(1)))
             data['daily_limit'] = dl
-            if '暂停申购' in text:
-                data['limit_status'] = f'暂停(限{dl})'
-            else:
-                data['limit_status'] = f'限{dl}元/日'
+            data['limit_status'] = f'限{dl}元/日'
         elif '暂停申购' in text:
             data['daily_limit'] = 0
             data['limit_status'] = '暂停申购'
