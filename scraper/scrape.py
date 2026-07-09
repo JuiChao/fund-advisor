@@ -58,33 +58,50 @@ def scrape_fund_page(code):
 
         m = re.search(r'规模.*?(\d+\.\d+)\s*亿元', text)
         if m: data['scale'] = float(m.group(1))
+
         # 使用 pingzhongdata/{code}.js 提取精准的收益率和成立日期
         pz_url = f'http://fund.eastmoney.com/pingzhongdata/{code}.js'
         pz_resp = requests.get(pz_url, headers=HEADERS, timeout=15)
         pz_text = pz_resp.text
-        
+
+        # 近1年涨跌幅：使用官方 syl_1n（最准确）
         m1 = re.search(r'syl_1n\s*=\s*"([^"]+)"', pz_text)
-        if m1 and m1.group(1): data['return_1yr'] = float(m1.group(1)) / 100
-        
-        m_net = re.search(r'var Data_netWorthTrend\s*=\s*(\[.*?\]);', pz_text)
-        if m_net:
-            import json, datetime
-            nwt = json.loads(m_net.group(1))
+        if m1 and m1.group(1):
+            data['return_1yr'] = float(m1.group(1)) / 100
+
+        # 成立日期：从 Data_netWorthTrend 获取
+        m_nwt = re.search(r'var Data_netWorthTrend\s*=\s*(\[.*?\]);', pz_text)
+        if m_nwt:
+            import json as _json
+            from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+            _tz8 = _tz(_td(hours=8))
+            nwt = _json.loads(m_nwt.group(1))
             if nwt:
-                inception_ts = nwt[0]['x']
-                # 转换为北京时间
-                data['inception_date'] = datetime.datetime.utcfromtimestamp(inception_ts/1000 + 8*3600).strftime('%Y-%m-%d')
-                data['return_since'] = nwt[-1]['equityReturn'] / 100
-                
-                latest_ts = nwt[-1]['x']
-                latest_r = nwt[-1]['equityReturn'] / 100
-                
-                # 3年 = 1095天 = 94608000000 ms
-                ts_3y = latest_ts - 94608000000
+                data['inception_date'] = _dt.fromtimestamp(
+                    nwt[0]['x'] / 1000, tz=_tz8).strftime('%Y-%m-%d')
+
+        # 近3年 & 成立以来涨跌幅：使用 Data_ACWorthTrend（累计净值）
+        # 累计净值已包含分红再投资，不受基金拆分/分红影响
+        m_ac = re.search(r'var Data_ACWorthTrend\s*=\s*(\[.*?\]);', pz_text)
+        if m_ac:
+            import json as _json
+            from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+            _tz8 = _tz(_td(hours=8))
+            act = _json.loads(m_ac.group(1))
+            if act:
+                first_ac = act[0][1]
+                last_ac = act[-1][1]
+                inception_ts = act[0][0]
+                latest_ts = act[-1][0]
+
+                # 成立以来涨跌幅
+                data['return_since'] = (last_ac / first_ac) - 1
+
+                # 近3年涨跌幅
+                ts_3y = latest_ts - int(3 * 365.25 * 24 * 3600 * 1000)
                 if ts_3y >= inception_ts:
-                    pt = min(nwt, key=lambda d: abs(d['x'] - ts_3y))
-                    old_r = pt['equityReturn'] / 100
-                    data['return_3yr'] = (1 + latest_r) / (1 + old_r) - 1
+                    pt_3y = min(act, key=lambda d: abs(d[0] - ts_3y))
+                    data['return_3yr'] = (last_ac / pt_3y[1]) - 1
                 else:
                     data['return_3yr'] = None
 
@@ -96,6 +113,8 @@ def scrape_fund_page(code):
             data['morningstar'] = 0
 
         # 限额限购解析
+        # 注意：很多限购基金页面同时出现 "暂停申购" 和具体限额
+        # 有限额说明仍可购买（只是限大额），应显示为 "限X元/日"
         limit_match = re.search(r'单日累计购买上限\s*(\d+(?:\.\d+)?)\s*元', text) or re.search(r'购买上限.*?(\d+(?:\.\d+)?)\s*元', text)
         if limit_match:
             dl = int(float(limit_match.group(1)))
@@ -139,7 +158,8 @@ def validate(data):
     """校验数据"""
     checks = {
         'tracking_error': (0.001, 0.15), 'scale': (0.01, 1000),
-        'return_1yr': (-0.5, 2.0), 'return_3yr': (-0.8, 5.0),
+        'return_1yr': (-0.8, 5.0), 'return_3yr': (-0.8, 10.0),
+        'return_since': (-0.9, 100.0),
         'mgmt_fee': (0.001, 0.03), 'custody_fee': (0.0005, 0.01),
         'morningstar': (0, 5),
     }
