@@ -113,16 +113,32 @@ def scrape_fund_page(code):
             data['morningstar'] = 0
 
         # 限额限购解析
-        # 注意：很多限购基金页面同时出现 "暂停申购" 和具体限额
-        # 有限额说明仍可购买（只是限大额），应显示为 "限X元/日"
+        # 以页面上的"申购状态"字段为准（暂停申购/限大额/开放申购）
+        sg_status = re.search(r'申购状态.*?>(暂停申购|限大额|开放申购)', text)
         limit_match = re.search(r'单日累计购买上限\s*(\d+(?:\.\d+)?)\s*元', text) or re.search(r'购买上限.*?(\d+(?:\.\d+)?)\s*元', text)
-        if limit_match:
-            dl = int(float(limit_match.group(1)))
-            data['daily_limit'] = dl
-            data['limit_status'] = f'限{dl}元/日'
+
+        if sg_status:
+            status_text = sg_status.group(1)
+            if status_text == '暂停申购':
+                data['daily_limit'] = 0
+                data['limit_status'] = '暂停申购'
+            elif status_text == '限大额' and limit_match:
+                dl = int(float(limit_match.group(1)))
+                data['daily_limit'] = dl
+                data['limit_status'] = f'限{dl}元/日'
+            elif status_text == '限大额':
+                data['daily_limit'] = 0
+                data['limit_status'] = '限大额'
+            else:
+                data['daily_limit'] = None
+                data['limit_status'] = '正常'
         elif '暂停申购' in text:
             data['daily_limit'] = 0
             data['limit_status'] = '暂停申购'
+        elif limit_match:
+            dl = int(float(limit_match.group(1)))
+            data['daily_limit'] = dl
+            data['limit_status'] = f'限{dl}元/日'
         else:
             data['daily_limit'] = None
             data['limit_status'] = '正常'

@@ -1,0 +1,13 @@
+016532 易方达纳斯达克100           | 暂停申购=True | 暂停大额=False | 限大额=False | 申购状态=暂停申购 | limit=100.00 | buy_btn=
+016055 博时纳斯达克100            | 暂停申购=True | 暂停大额=False | 限大额=False | 申购状态=暂停申购 | limit=100.00 | buy_btn=
+018043 天弘纳斯达克100            | 暂停申购=True | 暂停大额=False | 限大额=False | 申购状态=暂停申购 | limit=100.00 | buy_btn=
+160213 国泰纳斯达克100LOF         | 暂停申购=True | 暂停大额=False | 限大额=False | 申购状态=暂停申购 | limit=100.00 | buy_btn=
+040046 华安纳斯达克100            | 暂停申购=False | 暂停大额=False | 限大额=True | 申购状态=限大额 | limit=10.00 | buy_btn=
+000834 大成纳斯达克100            | 暂停申购=False | 暂停大额=False | 限大额=True | 申购状态=限大额 | limit=10.00 | buy_btn=
+161130 易方达纳斯达克100联接         | 暂停申购=True | 暂停大额=False | 限大额=False | 申购状态=暂停申购 | limit=10.00 | buy_btn=
+270042 广发纳斯达克100联接          | 暂停申购=False | 暂停大额=False | 限大额=True | 申购状态=限大额 | limit=10.00 | buy_btn=
+539001 建信纳斯达克100            | 暂停申购=False | 暂停大额=True | 限大额=True | 申购状态=限大额 | limit=100.00 | buy_btn=
+019547 招商纳斯达克100            | 暂停申购=True | 暂停大额=False | 限大额=True | 申购状态=限大额 | limit=10.00 | buy_btn=
+050025 博时标普500联接            | 暂停申购=True | 暂停大额=False | 限大额=False | 申购状态=暂停申购 | limit=100.00 | buy_btn=
+007721 天弘标普500              | 暂停申购=True | 暂停大额=False | 限大额=False | 申购状态=暂停申购 | limit=100.00 | buy_btn=
+013425 华宝标普500              | 暂停申购=True | 暂停大额=False | 限大额=False | 申购状态=暂停申购 | limit=N/A | buy_btn=购买
