@@ -438,18 +438,37 @@ const App = (() => {
             })).filter(f => {
                 if (!q) return true;
                 return f.code.includes(q) || f.name.toLowerCase().includes(q);
-            }).sort((a, b) => b.score - a.score);
+            }).sort((a, b) => {
+                // 先按指数类型分组：纳斯达克100在前，标普500在后
+                const typeOrder = { '纳斯达克100': 0, '标普500': 1 };
+                const ta = typeOrder[a.index_type] ?? 2;
+                const tb = typeOrder[b.index_type] ?? 2;
+                if (ta !== tb) return ta - tb;
+                // 同类型内按评分降序
+                return b.score - a.score;
+            });
 
-            list.innerHTML = items.map((f, idx) => {
+            // 生成带分组标题的列表
+            let html = '';
+            let lastType = '';
+            let rankInGroup = 0;
+            items.forEach(f => {
+                if (f.index_type !== lastType) {
+                    lastType = f.index_type;
+                    rankInGroup = 0;
+                    html += `<div style="padding:6px 12px;font-size:0.75rem;font-weight:700;color:var(--accent2);background:var(--bg);position:sticky;top:0;z-index:1;border-bottom:1px solid var(--border)">${f.index_type || '其他'}</div>`;
+                }
+                rankInGroup++;
                 const sel = msSelected.has(f.code) ? ' selected' : '';
-                return `<div class="ms-opt${sel}" data-code="${f.code}">
+                html += `<div class="ms-opt${sel}" data-code="${f.code}">
                     <div class="ms-cb"></div>
                     <div class="ms-opt-info">
-                        <div class="ms-opt-name"><span class="ms-opt-rank">#${idx + 1}</span> ${f.code} ${f.name}</div>
+                        <div class="ms-opt-name"><span class="ms-opt-rank">#${rankInGroup}</span> ${f.code} ${f.name}</div>
                         <div class="ms-opt-meta">评分 <strong style="color:var(--accent2)">${f.score}</strong> · 费率 ${feeStr(f)} · ${f.index_type}</div>
                     </div>
                 </div>`;
-            }).join('');
+            });
+            list.innerHTML = html;
             bindOptClick();
         }
 

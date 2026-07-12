@@ -17,7 +17,7 @@
     "daily_limit": 0,
     "inception_date": "2022-09-15",
     "return_since": 1.1932,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "016055",
@@ -37,7 +37,7 @@
     "daily_limit": 0,
     "inception_date": "2022-07-26",
     "return_since": 1.1400000000000001,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "018043",
@@ -57,7 +57,7 @@
     "daily_limit": 0,
     "inception_date": "2023-04-11",
     "return_since": 1.0583,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "160213",
@@ -77,7 +77,7 @@
     "daily_limit": 0,
     "inception_date": "2010-04-29",
     "return_since": 9.825,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "040046",
@@ -97,7 +97,7 @@
     "daily_limit": 10,
     "inception_date": "2013-08-02",
     "return_since": 7.337400000000001,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "000834",
@@ -117,7 +117,7 @@
     "daily_limit": 10,
     "inception_date": "2014-11-13",
     "return_since": 5.3929,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "161130",
@@ -137,7 +137,7 @@
     "daily_limit": 0,
     "inception_date": "2017-06-23",
     "return_since": 3.4890510948905105,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "270042",
@@ -157,7 +157,7 @@
     "daily_limit": 10,
     "inception_date": "2012-08-15",
     "return_since": 7.559799999999999,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "016452",
@@ -177,7 +177,7 @@
     "daily_limit": 10,
     "inception_date": "2022-11-29",
     "return_since": 1.3140999999999998,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "539001",
@@ -197,7 +197,7 @@
     "daily_limit": 100,
     "inception_date": "2010-09-14",
     "return_since": 2.4814,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "019547",
@@ -216,7 +216,7 @@
     "daily_limit": 10,
     "inception_date": "2023-11-29",
     "return_since": 0.5896999999999999,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "018966",
@@ -235,7 +235,7 @@
     "daily_limit": 50,
     "inception_date": "2023-08-02",
     "return_since": 0.6631,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "015299",
@@ -255,7 +255,7 @@
     "daily_limit": 0,
     "inception_date": "2022-04-14",
     "return_since": 1.0669,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "019172",
@@ -274,7 +274,7 @@
     "daily_limit": 10,
     "inception_date": "2023-09-25",
     "return_since": 0.7683,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "019441",
@@ -290,7 +290,7 @@
     "limit_status": "限10元/日",
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "019524",
@@ -306,7 +306,7 @@
     "limit_status": "限10元/日",
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "019736",
@@ -322,7 +322,7 @@
     "limit_status": "限10元/日",
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "050025",
@@ -342,7 +342,7 @@
     "daily_limit": 0,
     "inception_date": "2012-06-14",
     "return_since": 4.5759,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "161125",
@@ -362,7 +362,7 @@
     "daily_limit": 0,
     "inception_date": "2016-12-02",
     "return_since": 2.1112,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "017641",
@@ -382,7 +382,7 @@
     "daily_limit": 10,
     "inception_date": "2023-04-06",
     "return_since": 0.6816,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "017028",
@@ -402,7 +402,7 @@
     "daily_limit": 0,
     "inception_date": "2022-11-02",
     "return_since": 0.7009000000000001,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "018064",
@@ -422,7 +422,7 @@
     "daily_limit": 0,
     "inception_date": "2023-05-10",
     "return_since": 0.6932,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "096001",
@@ -442,7 +442,7 @@
     "daily_limit": 10,
     "inception_date": "2011-03-23",
     "return_since": 2.4939,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   },
   {
     "code": "007721",
@@ -458,23 +458,6 @@
     "limit_status": "暂停申购",
     "mgmt_fee": 0.006,
     "custody_fee": 0.002,
-    "updated_at": "2026-07-12T03:11:33"
-  },
-  {
-    "code": "013425",
-    "name": "华宝标普500ETF联接A",
-    "index_type": "标普500",
-    "tracking_error": 0.006500000000000001,
-    "scale": 59.27,
-    "return_1yr": 0.20079999999999998,
-    "inception_date": "2021-09-07",
-    "return_since": 0.5981474182104849,
-    "return_3yr": 0.6579431609077897,
-    "morningstar": 2,
-    "daily_limit": 0,
-    "limit_status": "暂停申购",
-    "mgmt_fee": 0.006,
-    "custody_fee": 0.002,
-    "updated_at": "2026-07-12T03:11:33"
+    "updated_at": "2026-07-12T13:46:52"
   }
 ]

@@ -258,6 +258,8 @@
     <div class="g2">
         <div class="card">
             <h3>参数设置</h3>
+            <div class="fg"><label>每月预算</label><input type="range" id="sim-m" min="500" max="10000" step="100" value="2000"><div class="rd"><span>¥500</span><strong id="sim-mv">¥2,000</strong><span>¥10,000</span></div></div>
+            <div class="fg"><label>投资年限</label><input type="range" id="sim-y" min="5" max="30" step="1" value="20"><div class="rd"><span>5年</span><strong id="sim-yv">20年</strong><span>30年</span></div></div>
             <div class="ms-wrap">
                 <label>选择基金</label>
                 <div class="ms-trigger" id="sim-sel-trigger">
@@ -273,8 +275,6 @@
                     </div>
                 </div>
             </div>
-            <div class="fg"><label>每月预算</label><input type="range" id="sim-m" min="500" max="10000" step="100" value="2000"><div class="rd"><span>¥500</span><strong id="sim-mv">¥2,000</strong><span>¥10,000</span></div></div>
-            <div class="fg"><label>投资年限</label><input type="range" id="sim-y" min="5" max="30" step="1" value="20"><div class="rd"><span>5年</span><strong id="sim-yv">20年</strong><span>30年</span></div></div>
             
             <!-- 定投权重分配 -->
             <div id="sim-weights-container" style="display:none; margin: 1.25rem 0;">
