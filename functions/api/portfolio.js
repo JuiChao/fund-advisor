@@ -1,11 +1,22 @@
 // GET /api/portfolio?years=20&budget=2000
 // 返回3种策略 × 2种子方案（理论最优 + 实际可买）
 // 动态应用额度分配算法，返回正确的、随实际预算调整后的配置比例
+// 所有算法参数从 /data/algorithm.json 读取（单一数据源）
 export async function onRequest(context) {
   const url = new URL(context.request.url);
-  const years = Math.max(5, Math.min(30, parseInt(url.searchParams.get('years')) || 20));
+  const algoUrl = new URL('/data/algorithm.json', context.request.url).toString();
+  const algoResp = await context.env.ASSETS.fetch(algoUrl);
+  const CFG = await algoResp.json();
+
+  const allocCfg = CFG.allocation;
+  const scoringCfg = CFG.scoring;
+  const defaults = CFG.defaults;
+  const fundSel = CFG.fund_selection;
+  const strategiesDef = CFG.strategies;
+
+  const years = Math.max(allocCfg.years_min, Math.min(allocCfg.years_max, parseInt(url.searchParams.get('years')) || 20));
   const budget = Math.max(100, parseInt(url.searchParams.get('budget')) || 2000);
-  const scale = budget / 1000;
+  const scale = budget / allocCfg.base_budget;
   const yearKey = String(years);
 
   try {
@@ -18,21 +29,26 @@ export async function onRequest(context) {
     const simsResp = await context.env.ASSETS.fetch(simsUrl);
     const simsData = await simsResp.json();
 
-    // 2. 动态额度分配算法和基金挑选逻辑（与 Python 端完全对齐）
+    // 2. 动态额度分配算法和基金挑选逻辑（从共享配置读取参数）
     function scoreFund(f) {
       const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0);
-      const te = f.tracking_error || 0.02;
-      const scaleVal = f.scale || 10;
+      const te = f.tracking_error || defaults.tracking_error_for_scoring;
+      const scaleVal = f.scale || defaults.scale;
       const y3 = f.return_3yr;
-      const ms = f.morningstar || 0;
-      const pur = f.purchase_fee || 0.0012;
-      const feeS = Math.max(0, Math.min(100, 100 - (fee - 0.004) / 0.006 * 50));
-      const teS = Math.max(0, Math.min(100, 100 - (te - 0.008) / 0.022 * 67));
-      const scS = (scaleVal >= 10 && scaleVal <= 80) ? 100 : (scaleVal < 5 ? 40 : (scaleVal > 100 ? 70 : 80));
-      const y3S = y3 != null ? Math.max(0, Math.min(100, (y3 - 0.3) / 0.6 * 100)) : 50;
-      const msS = ms > 0 ? ms * 25 : 40;
-      const purS = Math.max(0, Math.min(100, 100 - (pur - 0.0008) / 0.001 * 50));
-      return +(feeS * 0.35 + teS * 0.25 + scS * 0.15 + y3S * 0.12 + msS * 0.08 + purS * 0.05).toFixed(1);
+      const ms = f.morningstar || defaults.morningstar;
+      const pur = f.purchase_fee || defaults.purchase_fee;
+      const s = scoringCfg;
+      const feeS = Math.max(0, Math.min(100, 100 - (fee - s.fee.optimal) / s.fee.range * s.fee.penalty));
+      const teS = Math.max(0, Math.min(100, 100 - (te - s.tracking_error.optimal) / s.tracking_error.range * s.tracking_error.penalty));
+      const sc = s.scale;
+      const scS = (scaleVal >= sc.optimal_min && scaleVal <= sc.optimal_max) ? sc.optimal_score
+        : (scaleVal < sc.small_threshold ? sc.small_score
+          : (scaleVal > sc.large_threshold ? sc.large_score : sc.mid_score));
+      const y3S = y3 != null ? Math.max(0, Math.min(100, (y3 - s.return_3yr.baseline) / s.return_3yr.range * 100)) : s.return_3yr.null_default;
+      const msS = ms > 0 ? ms * s.morningstar.multiplier : s.morningstar.null_default;
+      const purS = Math.max(0, Math.min(100, 100 - (pur - s.purchase_fee.optimal) / s.purchase_fee.range * s.purchase_fee.penalty));
+      const w = s.weights;
+      return +(feeS * w.fee + teS * w.tracking_error + scS * w.scale + y3S * w.return_3yr + msS * w.morningstar + purS * w.purchase_fee).toFixed(1);
     }
 
     function rankFunds(list) {
@@ -53,8 +69,8 @@ export async function onRequest(context) {
         nq = nq.filter(isBuyable);
         sp = sp.filter(isBuyable);
       }
-      const rnq = rankFunds(nq).slice(0, 3);
-      const rsp = rankFunds(sp).slice(0, 2);
+      const rnq = rankFunds(nq).slice(0, fundSel.nasdaq_top_n);
+      const rsp = rankFunds(sp).slice(0, fundSel.sp500_top_n);
       const items = [];
       const nqS = rnq.reduce((sum, f) => sum + f.score, 0);
       if (nqS > 0) {
@@ -68,7 +84,7 @@ export async function onRequest(context) {
     }
 
     function allocateIdeal(items) {
-      const tradingDays = 22;
+      const tradingDays = allocCfg.trading_days_per_month;
       const allocs = items.map(item => {
         const f = item.fund;
         const w = item.weight;
@@ -91,7 +107,7 @@ export async function onRequest(context) {
     }
 
     function allocatePractical(items) {
-      const tradingDays = 22;
+      const tradingDays = allocCfg.trading_days_per_month;
       const allocs = items.map(item => {
         const f = item.fund;
         const w = item.weight;
@@ -163,24 +179,24 @@ export async function onRequest(context) {
     }
 
     // 3. 构建结果并合并预计算的模拟收益
-    const results = simsData.strategies.map(s => {
-      const idealItems = pickFundsByStyle(s.nq_pct, false);
-      const practicalItems = pickFundsByStyle(s.nq_pct, true);
+    const results = strategiesDef.map(sDef => {
+      const idealItems = pickFundsByStyle(sDef.nq_pct, false);
+      const practicalItems = pickFundsByStyle(sDef.nq_pct, true);
 
       const idealAllocations = allocateIdeal(idealItems);
       const practicalAllocations = allocatePractical(practicalItems);
 
       // 获取该策略在 simulations.json 中对应的预计算收益数据进行线性缩放
-      const simStrategy = simsData.strategies.find(x => x.key === s.key);
-      
+      const simStrategy = simsData.strategies.find(x => x.key === sDef.key);
+
       function scaleSimulation(variantKey) {
         const variantData = simStrategy?.[variantKey];
         const yearData = variantData?.by_years?.[yearKey];
         if (!yearData) return null;
         return {
           totalInvested: Math.round(yearData.totalInvested * scale),
-          medianFinal: Math.round((yearData.median || yearData.medianFinal || 0) * scale),
-          meanFinal: Math.round((yearData.mean || yearData.median || 0) * scale),
+          medianFinal: Math.round((yearData.median || 0) * scale),
+          meanFinal: Math.round((yearData.mean || 0) * scale),
           p5: Math.round((yearData.p5 || 0) * scale),
           p25: Math.round((yearData.p25 || 0) * scale),
           p75: Math.round((yearData.p75 || 0) * scale),
@@ -191,19 +207,19 @@ export async function onRequest(context) {
       }
 
       return {
-        key: s.key,
-        name: s.name,
-        description: s.description,
-        icon: s.icon,
-        nq_pct: s.nq_pct,
+        key: sDef.key,
+        name: sDef.name,
+        description: sDef.description,
+        icon: sDef.icon,
+        nq_pct: sDef.nq_pct,
         ideal: {
           allocations: idealAllocations,
-          note: s.ideal?.note || '不考虑限购的理论最优配置。',
+          note: '不考虑限购的理论最优配置。',
           simulation: scaleSimulation('ideal')
         },
         practical: {
           allocations: practicalAllocations,
-          note: s.practical?.note || '排除暂停基金，遵守每日限购限额。',
+          note: '排除暂停基金，遵守每日限购限额。',
           simulation: scaleSimulation('practical')
         }
       };

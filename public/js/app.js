@@ -3,6 +3,7 @@
  */
 const App = (() => {
     let FUND_DATA = [];
+    let ALGO_CONFIG = null;
     let chartPool = {};
     const API_BASE = '';
 
@@ -165,6 +166,8 @@ const App = (() => {
             }
 
             // 预先算一下预览组合模拟数据，如果API没有返回的话
+            const dynParams = await getDynamicParams();
+            const simPromises = [];
             strategies.forEach(s => {
                 ['ideal', 'practical'].forEach(vk => {
                     const v = s[vk];
@@ -172,10 +175,15 @@ const App = (() => {
                         const allocs = v.allocations || [];
                         const simFunds = allocs.map(a => FUND_DATA.find(f => f.code === a.code)).filter(Boolean);
                         const simWeights = allocs.map(a => a.actual_weight || a.weight || 0);
-                        v.simulation = localSimulatePortfolio(simFunds, simWeights, 20, 2000);
+                        simPromises.push(
+                            simulateViaWorker(simFunds, simWeights, 20, 2000, dynParams).then(result => {
+                                v.simulation = result;
+                            })
+                        );
                     }
                 });
             });
+            await Promise.all(simPromises);
 
             let html = '<div class="table-wrap"><table><thead><tr><th>策略</th><th>风格</th><th>子方案</th><th>预期年化</th><th>20年终值</th></tr></thead><tbody>';
             strategies.forEach(s => {
@@ -238,19 +246,24 @@ const App = (() => {
     ];
 
     function scoreFund(f) {
+        const cfg = ALGO_CONFIG;
+        const d = cfg.defaults;
+        const s = cfg.scoring;
         const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0);
-        const te = f.tracking_error || 0.02;
-        const scale = f.scale || 10;
+        const te = f.tracking_error || d.tracking_error_for_scoring;
+        const scale = f.scale || d.scale;
         const y3 = f.return_3yr;
-        const ms = f.morningstar || 0;
-        const pur = f.purchase_fee || 0.0012;
-        const feeS = Math.max(0, Math.min(100, 100 - (fee - 0.004) / 0.006 * 50));
-        const teS = Math.max(0, Math.min(100, 100 - (te - 0.008) / 0.022 * 67));
-        const scS = (scale >= 10 && scale <= 80) ? 100 : (scale < 5 ? 40 : (scale > 100 ? 70 : 80));
-        const y3S = y3 != null ? Math.max(0, Math.min(100, (y3 - 0.3) / 0.6 * 100)) : 50;
-        const msS = ms > 0 ? ms * 25 : 40;
-        const purS = Math.max(0, Math.min(100, 100 - (pur - 0.0008) / 0.001 * 50));
-        return +(feeS * 0.35 + teS * 0.25 + scS * 0.15 + y3S * 0.12 + msS * 0.08 + purS * 0.05).toFixed(1);
+        const ms = f.morningstar || d.morningstar;
+        const pur = f.purchase_fee || d.purchase_fee;
+        const feeS = Math.max(0, Math.min(100, 100 - (fee - s.fee.optimal) / s.fee.range * s.fee.penalty));
+        const teS = Math.max(0, Math.min(100, 100 - (te - s.tracking_error.optimal) / s.tracking_error.range * s.tracking_error.penalty));
+        const sc = s.scale;
+        const scS = (scale >= sc.optimal_min && scale <= sc.optimal_max) ? sc.optimal_score : (scale < sc.small_threshold ? sc.small_score : (scale > sc.large_threshold ? sc.large_score : sc.mid_score));
+        const y3S = y3 != null ? Math.max(0, Math.min(100, (y3 - s.return_3yr.baseline) / s.return_3yr.range * 100)) : s.return_3yr.null_default;
+        const msS = ms > 0 ? ms * s.morningstar.multiplier : s.morningstar.null_default;
+        const purS = Math.max(0, Math.min(100, 100 - (pur - s.purchase_fee.optimal) / s.purchase_fee.range * s.purchase_fee.penalty));
+        const w = s.weights;
+        return +(feeS * w.fee + teS * w.tracking_error + scS * w.scale + y3S * w.return_3yr + msS * w.morningstar + purS * w.purchase_fee).toFixed(1);
     }
 
     function renderRanking() {
@@ -288,57 +301,6 @@ const App = (() => {
             });
         });
         draw();
-
-        // 基金详情展开
-        document.querySelector('#rank-table').addEventListener('click', e => {
-            const link = e.target.closest('.fund-name-link');
-            if (!link) return;
-            const code = link.dataset.code;
-            const tr = link.closest('tr');
-            const existing = tr.nextElementSibling;
-            if (existing && existing.classList.contains('fund-detail-row')) {
-                existing.remove();
-                return;
-            }
-            // 关闭其他展开的详情
-            document.querySelectorAll('.fund-detail-row').forEach(r => r.remove());
-
-            const f = FUND_DATA.find(d => d.code === code);
-            if (!f) return;
-
-            const detailTr = document.createElement('tr');
-            detailTr.className = 'fund-detail-row';
-            const colSpan = rankCols.length;
-            const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0);
-            detailTr.innerHTML = `<td colspan="${colSpan}" style="padding:1rem 1.25rem;background:var(--bg);border-left:3px solid var(--accent2)">
-                <div style="font-size:0.8rem;color:var(--txt2);line-height:1.8">
-                    ${f.full_name ? `<div><strong>基金全称：</strong>${f.full_name}</div>` : ''}
-                    ${f.fund_type ? `<div><strong>基金类型：</strong>${f.fund_type}</div>` : ''}
-                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem">
-                        ${f.manager_company ? `<div><strong>管理人：</strong>${f.manager_company}</div>` : ''}
-                        ${f.custodian ? `<div><strong>托管人：</strong>${f.custodian}</div>` : ''}
-                        ${f.fund_manager ? `<div><strong>基金经理：</strong>${f.fund_manager}</div>` : ''}
-                    </div>
-                    ${f.tracking_index ? `<div><strong>跟踪标的：</strong>${f.tracking_index}</div>` : ''}
-                    ${f.benchmark ? `<div><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
-                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem;margin-top:0.35rem;padding-top:0.35rem;border-top:1px dashed var(--border)">
-                        <div><strong>管理费：</strong>${f.mgmt_fee ? (f.mgmt_fee*100).toFixed(2)+'%/年' : '-'}</div>
-                        <div><strong>托管费：</strong>${f.custody_fee ? (f.custody_fee*100).toFixed(2)+'%/年' : '-'}</div>
-                        <div><strong>综合费率：</strong><span style="color:var(--ok);font-weight:600">${(fee*100).toFixed(2)}%/年</span></div>
-                        ${f.purchase_fee != null ? `<div><strong>申购费：</strong>${(f.purchase_fee*100).toFixed(2)}%</div>` : ''}
-                        ${f.sales_fee != null ? `<div><strong>销售服务费：</strong>${(f.sales_fee*100).toFixed(2)}%/年</div>` : ''}
-                    </div>
-                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem;margin-top:0.35rem">
-                        ${f.inception_date ? `<div><strong>成立日期：</strong>${f.inception_date}</div>` : ''}
-                        ${f.issue_date ? `<div><strong>发行日期：</strong>${f.issue_date}</div>` : ''}
-                        ${f.scale ? `<div><strong>规模：</strong>${f.scale.toFixed(2)}亿元</div>` : ''}
-                        ${f.dividend_info ? `<div><strong>分红：</strong>${f.dividend_info}</div>` : ''}
-                    </div>
-                    ${f.return_1yr != null ? `<div style="margin-top:0.35rem;padding-top:0.35rem;border-top:1px dashed var(--border)"><strong>近1年：</strong><span style="color:var(--ok)">${(f.return_1yr*100).toFixed(2)}%</span>　<strong>近3年：</strong><span style="color:var(--ok)">${f.return_3yr != null ? (f.return_3yr*100).toFixed(2)+'%' : '-'}</span>　<strong>成立以来：</strong><span style="color:var(--ok)">${f.return_since != null ? (f.return_since*100).toFixed(2)+'%' : '-'}</span></div>` : ''}
-                </div>
-            </td>`;
-            tr.after(detailTr);
-        });
     }
 
     // ===== 模拟器 - 自定义多选 =====
@@ -613,7 +575,7 @@ const App = (() => {
                 });
             }
 
-            const result = localSimulatePortfolio(funds, weights, years, monthly);
+            const result = await simulateViaWorker(funds, weights, years, monthly, await getDynamicParams());
 
             // 显示预算分配说明
             let allocNote = '';
@@ -718,6 +680,8 @@ const App = (() => {
             }
             
             // 为 ideal 和 practical 方案提供蒙特卡洛组合模拟数据 (仅在 API 未返回模拟结果时执行本地计算)
+            const dynParams = await getDynamicParams();
+            const simPromises = [];
             strategies.forEach(s => {
                 const idealAllocs = s.ideal?.allocations || [];
                 const practicalAllocs = s.practical?.allocations || [];
@@ -725,15 +689,24 @@ const App = (() => {
                 if (idealAllocs.length && !s.ideal.simulation) {
                     const simFunds = idealAllocs.map(a => FUND_DATA.find(f => f.code === a.code)).filter(Boolean);
                     const simWeights = idealAllocs.map(a => a.actual_weight || a.weight || 0);
-                    s.ideal.simulation = localSimulatePortfolio(simFunds, simWeights, years, monthly);
+                    simPromises.push(
+                        simulateViaWorker(simFunds, simWeights, years, monthly, dynParams).then(result => {
+                            s.ideal.simulation = result;
+                        })
+                    );
                 }
                 
                 if (practicalAllocs.length && !s.practical.simulation) {
                     const simFunds = practicalAllocs.map(a => FUND_DATA.find(f => f.code === a.code)).filter(Boolean);
                     const simWeights = practicalAllocs.map(a => a.actual_weight || a.weight || 0);
-                    s.practical.simulation = localSimulatePortfolio(simFunds, simWeights, years, monthly);
+                    simPromises.push(
+                        simulateViaWorker(simFunds, simWeights, years, monthly, dynParams).then(result => {
+                            s.practical.simulation = result;
+                        })
+                    );
                 }
             });
+            await Promise.all(simPromises);
 
             const pieColors = ['#6366f1','#f59e0b','#64748b','#eab308','#818cf8','#22d3ee'];
 
@@ -826,20 +799,92 @@ const App = (() => {
     }
 
     // ===== 本地联合蒙特卡洛组合模拟（前端高效向量化执行）=====
-    function localSimulatePortfolio(funds, weights, years, budget) {
-        // 优化：将模拟路径数降至1000次，在保证分位数统计置信度的同时，将计算时间缩短三分之二
-        const N = 1000;
+    // Worker 管理器：优先使用 Web Worker 在后台线程执行，避免阻塞 UI
+    // 使用消息 ID 路由机制支持并发调用
+    let _simWorker = null;
+    let _workerSupported = typeof Worker !== 'undefined';
+    let _dynamicParams = null;
+    let _dynamicParamsFetched = false;  // 区分"未获取"和"获取到null"
+    let _msgId = 0;
+    const _pendingPromises = new Map();  // id -> { resolve, fallbackArgs }
+
+    // 惰性加载 simulations.json 中的动态参数（失败时回退到 config 静态参数）
+    async function getDynamicParams() {
+        if (_dynamicParamsFetched) return _dynamicParams;
+        _dynamicParamsFetched = true;
+        try {
+            const resp = await fetch('data/simulations.json');
+            const data = await resp.json();
+            _dynamicParams = data.params || null;
+        } catch (e) {
+            console.warn('无法加载动态参数，使用静态参数:', e);
+            _dynamicParams = null;
+        }
+        return _dynamicParams;
+    }
+
+    function getSimWorker() {
+        if (!_simWorker && _workerSupported) {
+            try {
+                _simWorker = new Worker('js/sim-worker.js');
+                // 统一消息路由：根据 id 分发到对应的 Promise
+                _simWorker.onmessage = (e) => {
+                    const { id, result, error } = e.data;
+                    const pending = _pendingPromises.get(id);
+                    if (!pending) return;
+                    _pendingPromises.delete(id);
+                    if (error) {
+                        console.warn('Worker 模拟失败，回退到主线程:', error);
+                        pending.resolve(localSimulatePortfolio(...pending.fallbackArgs));
+                    } else {
+                        pending.resolve(result);
+                    }
+                };
+                _simWorker.onerror = (e) => {
+                    console.warn('Worker 全局错误，所有待处理任务回退到主线程:', e.message);
+                    for (const [id, pending] of _pendingPromises) {
+                        _pendingPromises.delete(id);
+                        pending.resolve(localSimulatePortfolio(...pending.fallbackArgs));
+                    }
+                    _simWorker = null;
+                    _workerSupported = false;
+                };
+            } catch (e) {
+                console.warn('Web Worker 不可用，回退到主线程模拟:', e);
+                _workerSupported = false;
+            }
+        }
+        return _simWorker;
+    }
+
+    function simulateViaWorker(funds, weights, years, budget, dynamicParams) {
+        return new Promise((resolve) => {
+            const worker = getSimWorker();
+            const fallbackArgs = [funds, weights, years, budget, dynamicParams];
+            if (!worker) {
+                resolve(localSimulatePortfolio(...fallbackArgs));
+                return;
+            }
+            const cfg = ALGO_CONFIG;
+            const effectiveParams = dynamicParams || cfg.simulation.params;
+            const effectiveConfig = { ...cfg, simulation: { ...cfg.simulation, params: effectiveParams } };
+            const id = ++_msgId;
+            _pendingPromises.set(id, { resolve, fallbackArgs });
+            worker.postMessage({ id, funds, weights, years, budget, config: effectiveConfig });
+        });
+    }
+
+    function localSimulatePortfolio(funds, weights, years, budget, dynamicParams) {
+        const cfg = ALGO_CONFIG;
+        const N = cfg.simulation.n_sims_frontend;
         const months = years * 12;
         const totalInvested = budget * months;
         const finalValues = new Array(N).fill(0);
         
-        const rho = 0.75;
-        const params = {
-            nasdaq_return: 0.14, nasdaq_vol: 0.22,
-            sp500_return: 0.11, sp500_vol: 0.18,
-            fx_drift: 0.005, fx_vol: 0.03,
-            dividend_yield: 0.008, dividend_tax: 0.10,
-        };
+        const rho = cfg.simulation.correlation_nq_sp;
+        const params = dynamicParams || cfg.simulation.params;
+        const defaults = cfg.defaults;
+        const tradingDays = cfg.allocation.trading_days_per_month;
         
         const z_fx = new Float64Array(N * months);
         const z_idx1 = new Float64Array(N * months);
@@ -865,8 +910,8 @@ const App = (() => {
             
             const fundBudget = budget * weight;
             const isSP = (fund.index_type || '').includes('标普');
-            const te = fund.tracking_error || 0.015;
-            const fee = (fund.mgmt_fee || 0.008) + (fund.custody_fee || 0.002);
+            const te = fund.tracking_error || defaults.tracking_error_for_simulation;
+            const fee = (fund.mgmt_fee || defaults.mgmt_fee) + (fund.custody_fee || defaults.custody_fee);
             
             const retM = (isSP ? params.sp500_return : params.nasdaq_return) / 12;
             const volM = (isSP ? params.sp500_vol : params.nasdaq_vol) / Math.sqrt(12);
@@ -875,7 +920,7 @@ const App = (() => {
             const fxV = params.fx_vol / Math.sqrt(12);
             const feeM = fee / 12;
             const divM = params.dividend_yield / 12 * (1 - params.dividend_tax);
-            const invest = fundBudget * (1 - (fund.purchase_fee || 0.0012));
+            const invest = fundBudget * (1 - (fund.purchase_fee || defaults.purchase_fee));
             
             const z_te = new Float64Array(N * months);
             for (let i = 0; i < N * months; i++) {
@@ -923,6 +968,11 @@ const App = (() => {
 
     // ===== 客户端本地组合比例计算（在API不可用时提供兜底）=====
     function localCalculatePortfolio(years, budget) {
+        const cfg = ALGO_CONFIG;
+        const fundSel = cfg.fund_selection;
+        const tradingDays = cfg.allocation.trading_days_per_month;
+        const defaults = cfg.defaults;
+
         function isBuyable(f) {
             const status = f.limit_status || '';
             return !status.includes('暂停');
@@ -938,8 +988,8 @@ const App = (() => {
             const nqScored = nq.map(f => ({ ...f, score: scoreFund(f) })).sort((a, b) => b.score - a.score);
             const spScored = sp.map(f => ({ ...f, score: scoreFund(f) })).sort((a, b) => b.score - a.score);
             
-            const rnq = nqScored.slice(0, 3);
-            const rsp = spScored.slice(0, 2);
+            const rnq = nqScored.slice(0, fundSel.nasdaq_top_n);
+            const rsp = spScored.slice(0, fundSel.sp500_top_n);
             
             const items = [];
             const nqS = rnq.reduce((sum, f) => sum + f.score, 0);
@@ -954,7 +1004,6 @@ const App = (() => {
         }
 
         function allocateIdeal(items) {
-            const tradingDays = 22;
             const allocs = items.map(item => {
                 const f = item.fund;
                 const w = item.weight;
@@ -977,7 +1026,6 @@ const App = (() => {
         }
 
         function allocatePractical(items) {
-            const tradingDays = 22;
             const allocs = items.map(item => {
                 const f = item.fund;
                 const w = item.weight;
@@ -1048,11 +1096,7 @@ const App = (() => {
             return result;
         }
 
-        const strategiesDef = [
-            { key: 'growth', name: '进取型', description: '纳指70%+标普30%，追求高成长', icon: '🚀', nq_pct: 0.7 },
-            { key: 'balanced', name: '平衡型', description: '纳指50%+标普50%，攻守兼备', icon: '⚖️', nq_pct: 0.5 },
-            { key: 'conservative', name: '稳健型', description: '纳指30%+标普70%，注重稳定性', icon: '🛡️', nq_pct: 0.3 }
-        ];
+        const strategiesDef = cfg.strategies;
 
         return strategiesDef.map(s => {
             const idealItems = pickFundsByStyle(s.nq_pct, false);
@@ -1079,10 +1123,12 @@ const App = (() => {
     async function init() {
         initNav();
         try {
-            const resp = await fetch('data/funds.json');
-            FUND_DATA = await resp.json();
-
-
+            const [fundsResp, algoResp] = await Promise.all([
+                fetch('data/funds.json'),
+                fetch('data/algorithm.json')
+            ]);
+            FUND_DATA = await fundsResp.json();
+            ALGO_CONFIG = await algoResp.json();
 
             renderHome();
         } catch (e) {
@@ -1113,6 +1159,56 @@ const App = (() => {
         document.getElementById('pf-y').addEventListener('input', e => document.getElementById('pf-yv').textContent = e.target.value + '年');
         document.getElementById('btn-sim').addEventListener('click', runSimulation);
         document.getElementById('btn-pf').addEventListener('click', computePortfolio);
+
+        // 基金详情展开（事件委托，只绑定一次）
+        document.querySelector('#rank-table').addEventListener('click', e => {
+            const link = e.target.closest('.fund-name-link');
+            if (!link) return;
+            const code = link.dataset.code;
+            const tr = link.closest('tr');
+            const existing = tr.nextElementSibling;
+            if (existing && existing.classList.contains('fund-detail-row')) {
+                existing.remove();
+                return;
+            }
+            document.querySelectorAll('.fund-detail-row').forEach(r => r.remove());
+
+            const f = FUND_DATA.find(d => d.code === code);
+            if (!f) return;
+
+            const detailTr = document.createElement('tr');
+            detailTr.className = 'fund-detail-row';
+            const colSpan = rankCols.length;
+            const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0);
+            detailTr.innerHTML = `<td colspan="${colSpan}" style="padding:1rem 1.25rem;background:var(--bg);border-left:3px solid var(--accent2)">
+                <div style="font-size:0.8rem;color:var(--txt2);line-height:1.8">
+                    ${f.full_name ? `<div><strong>基金全称：</strong>${f.full_name}</div>` : ''}
+                    ${f.fund_type ? `<div><strong>基金类型：</strong>${f.fund_type}</div>` : ''}
+                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem">
+                        ${f.manager_company ? `<div><strong>管理人：</strong>${f.manager_company}</div>` : ''}
+                        ${f.custodian ? `<div><strong>托管人：</strong>${f.custodian}</div>` : ''}
+                        ${f.fund_manager ? `<div><strong>基金经理：</strong>${f.fund_manager}</div>` : ''}
+                    </div>
+                    ${f.tracking_index ? `<div><strong>跟踪标的：</strong>${f.tracking_index}</div>` : ''}
+                    ${f.benchmark ? `<div><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
+                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem;margin-top:0.35rem;padding-top:0.35rem;border-top:1px dashed var(--border)">
+                        <div><strong>管理费：</strong>${f.mgmt_fee ? (f.mgmt_fee*100).toFixed(2)+'%/年' : '-'}</div>
+                        <div><strong>托管费：</strong>${f.custody_fee ? (f.custody_fee*100).toFixed(2)+'%/年' : '-'}</div>
+                        <div><strong>综合费率：</strong><span style="color:var(--ok);font-weight:600">${(fee*100).toFixed(2)}%/年</span></div>
+                        ${f.purchase_fee != null ? `<div><strong>申购费：</strong>${(f.purchase_fee*100).toFixed(2)}%</div>` : ''}
+                        ${f.sales_fee != null ? `<div><strong>销售服务费：</strong>${(f.sales_fee*100).toFixed(2)}%/年</div>` : ''}
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem;margin-top:0.35rem">
+                        ${f.inception_date ? `<div><strong>成立日期：</strong>${f.inception_date}</div>` : ''}
+                        ${f.issue_date ? `<div><strong>发行日期：</strong>${f.issue_date}</div>` : ''}
+                        ${f.scale ? `<div><strong>规模：</strong>${f.scale.toFixed(2)}亿元</div>` : ''}
+                        ${f.dividend_info ? `<div><strong>分红：</strong>${f.dividend_info}</div>` : ''}
+                    </div>
+                    ${f.return_1yr != null ? `<div style="margin-top:0.35rem;padding-top:0.35rem;border-top:1px dashed var(--border)"><strong>近1年：</strong><span style="color:var(--ok)">${(f.return_1yr*100).toFixed(2)}%</span>　<strong>近3年：</strong><span style="color:var(--ok)">${f.return_3yr != null ? (f.return_3yr*100).toFixed(2)+'%' : '-'}</span>　<strong>成立以来：</strong><span style="color:var(--ok)">${f.return_since != null ? (f.return_since*100).toFixed(2)+'%' : '-'}</span></div>` : ''}
+                </div>
+            </td>`;
+            tr.after(detailTr);
+        });
     }
 
     return { init };

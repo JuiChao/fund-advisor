@@ -5,3 +5,8 @@ node_modules/
 *.db
 .wrangler/
 .vercel/
+
+# Scratch / debug files
+scratch/
+*.debug
+*.tmp

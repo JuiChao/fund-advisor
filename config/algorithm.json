@@ -1,0 +1,148 @@
+{
+  "_comment": "算法共享配置 - 所有端（Python scraper、Cloudflare Workers、前端 JS）的唯一数据源。修改此文件后运行 python scraper/simulate.py 会自动同步到 public/data/algorithm.json。",
+
+  "scoring": {
+    "weights": {
+      "fee": 0.35,
+      "tracking_error": 0.25,
+      "scale": 0.15,
+      "return_3yr": 0.12,
+      "morningstar": 0.08,
+      "purchase_fee": 0.05
+    },
+    "fee": {
+      "optimal": 0.004,
+      "range": 0.006,
+      "penalty": 50
+    },
+    "tracking_error": {
+      "optimal": 0.008,
+      "range": 0.022,
+      "penalty": 67
+    },
+    "scale": {
+      "optimal_min": 10,
+      "optimal_max": 80,
+      "small_threshold": 5,
+      "large_threshold": 100,
+      "optimal_score": 100,
+      "small_score": 40,
+      "large_score": 70,
+      "mid_score": 80
+    },
+    "return_3yr": {
+      "baseline": 0.3,
+      "range": 0.6,
+      "null_default": 50
+    },
+    "morningstar": {
+      "multiplier": 25,
+      "null_default": 40
+    },
+    "purchase_fee": {
+      "optimal": 0.0008,
+      "range": 0.001,
+      "penalty": 50
+    }
+  },
+
+  "defaults": {
+    "tracking_error_for_scoring": 0.02,
+    "tracking_error_for_simulation": 0.015,
+    "scale": 10,
+    "purchase_fee": 0.0012,
+    "mgmt_fee": 0.008,
+    "custody_fee": 0.002,
+    "morningstar": 0,
+    "daily_limit_fallback": 10
+  },
+
+  "allocation": {
+    "trading_days_per_month": 22,
+    "base_budget": 1000,
+    "budget_min": 500,
+    "budget_max": 10000,
+    "budget_step": 100,
+    "years_min": 5,
+    "years_max": 30,
+    "years_step": 1
+  },
+
+  "fund_selection": {
+    "nasdaq_top_n": 3,
+    "sp500_top_n": 2
+  },
+
+  "strategies": [
+    {
+      "key": "growth",
+      "name": "进取型",
+      "description": "纳指70%+标普30%，追求高成长",
+      "icon": "🚀",
+      "nq_pct": 0.7
+    },
+    {
+      "key": "balanced",
+      "name": "平衡型",
+      "description": "纳指50%+标普50%，攻守兼备",
+      "icon": "⚖️",
+      "nq_pct": 0.5
+    },
+    {
+      "key": "conservative",
+      "name": "稳健型",
+      "description": "纳指30%+标普70%，注重稳定性",
+      "icon": "🛡️",
+      "nq_pct": 0.3
+    }
+  ],
+
+  "simulation": {
+    "n_sims_python": 5000,
+    "n_sims_frontend": 1000,
+    "rng_seed": 42,
+    "years_range": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+    "correlation_nq_sp": 0.75,
+    "params": {
+      "nasdaq_return": 0.14,
+      "nasdaq_vol": 0.22,
+      "sp500_return": 0.11,
+      "sp500_vol": 0.18,
+      "fx_drift": 0.005,
+      "fx_vol": 0.03,
+      "dividend_yield": 0.008,
+      "dividend_tax": 0.10
+    },
+    "params_fallback": {
+      "_comment": "当无法从基金数据动态计算参数时的回退值（等同于 params）",
+      "nasdaq_return": 0.14,
+      "nasdaq_vol": 0.22,
+      "sp500_return": 0.11,
+      "sp500_vol": 0.18,
+      "fx_drift": 0.005,
+      "fx_vol": 0.03,
+      "dividend_yield": 0.008,
+      "dividend_tax": 0.10
+    },
+    "dynamic_params": {
+      "_comment": "动态参数计算配置：从 funds.json 中各基金的近3年年化收益率和波动率取中位数",
+      "min_funds_for_dynamic": 3,
+      "return_3yr_annualize": true,
+      "volatility_field": "volatility"
+    }
+  },
+
+  "validation": {
+    "tracking_error": [0.001, 0.15],
+    "scale": [0.01, 1000],
+    "return_1yr": [-0.8, 5.0],
+    "return_3yr": [-0.8, 10.0],
+    "return_since": [-0.9, 100.0],
+    "mgmt_fee": [0.001, 0.03],
+    "custody_fee": [0.0005, 0.01],
+    "purchase_fee": [0.0, 0.02],
+    "sales_fee": [-0.001, 0.01],
+    "morningstar": [0, 5],
+    "volatility": [0.05, 0.8]
+  }
+}

@@ -17,6 +17,65 @@ HEADERS = {
     'Referer': 'https://fund.eastmoney.com/',
 }
 DELAY = 4  # 每只基金间隔秒数
+MAX_RETRIES = 3  # 单次请求最大重试次数
+RETRY_BACKOFF = 2  # 重试间隔倍数（秒）
+
+
+def fetch_with_retry(url, timeout=15):
+    """带重试的 HTTP 请求"""
+    last_err = None
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=timeout)
+            resp.encoding = 'utf-8'
+            if resp.status_code == 200:
+                return resp
+            print(f'    [重试 {attempt}/{MAX_RETRIES}] HTTP {resp.status_code} for {url}')
+        except Exception as e:
+            last_err = e
+            print(f'    [重试 {attempt}/{MAX_RETRIES}] {e} for {url}')
+        if attempt < MAX_RETRIES:
+            time.sleep(RETRY_BACKOFF * attempt)
+    raise last_err or Exception(f'请求失败: {url}')
+
+
+def calc_volatility(nwt_data):
+    """从日净值序列计算年化波动率
+    nwt_data: [{'x': timestamp_ms, 'y': nav}, ...]
+    返回: 年化波动率（如 0.22 表示 22%），不足60条数据返回 None
+    """
+    if not nwt_data or len(nwt_data) < 60:
+        return None
+    # 取最近1年的数据计算
+    latest_ts = nwt_data[-1]['x']
+    one_year_ms = int(365.25 * 24 * 3600 * 1000)
+    ts_cutoff = latest_ts - one_year_ms
+    recent = [d for d in nwt_data if d['x'] >= ts_cutoff]
+    if len(recent) < 30:
+        recent = nwt_data[-252:]  # 回退到最近252条（约1年交易日）
+
+    # 计算日收益率
+    daily_returns = []
+    for i in range(1, len(recent)):
+        prev_nav = recent[i - 1]['y']
+        curr_nav = recent[i]['y']
+        if prev_nav > 0 and curr_nav > 0:
+            daily_returns.append(curr_nav / prev_nav - 1)
+
+    if len(daily_returns) < 20:
+        return None
+
+    # 年化波动率 = 日收益率标准差 × sqrt(252)
+    n = len(daily_returns)
+    mean_r = sum(daily_returns) / n
+    variance = sum((r - mean_r) ** 2 for r in daily_returns) / (n - 1)
+    daily_vol = variance ** 0.5
+    annual_vol = daily_vol * (252 ** 0.5)
+
+    # 合理性检查：波动率应在 0.05-0.8 之间
+    if 0.05 <= annual_vol <= 0.8:
+        return round(annual_vol, 4)
+    return None
 
 # 兜底数据文件路径
 FALLBACK = os.path.join(os.path.dirname(__file__), '..', 'data', 'funds_fallback.json')
@@ -48,8 +107,7 @@ def scrape_fund_page(code):
     """从基金主页抓取"""
     url = f'https://fund.eastmoney.com/{code}.html'
     try:
-        resp = requests.get(url, headers=HEADERS, timeout=15)
-        resp.encoding = 'utf-8'
+        resp = fetch_with_retry(url)
         text = resp.text
         data = {}
 
@@ -61,7 +119,7 @@ def scrape_fund_page(code):
 
         # 使用 pingzhongdata/{code}.js 提取精准的收益率和成立日期
         pz_url = f'http://fund.eastmoney.com/pingzhongdata/{code}.js'
-        pz_resp = requests.get(pz_url, headers=HEADERS, timeout=15)
+        pz_resp = fetch_with_retry(pz_url)
         pz_text = pz_resp.text
 
         # 基金名称：使用 fS_name（权威来源）
@@ -74,7 +132,7 @@ def scrape_fund_page(code):
         if m1 and m1.group(1):
             data['return_1yr'] = float(m1.group(1)) / 100
 
-        # 成立日期：从 Data_netWorthTrend 获取
+        # 成立日期 + 年化波动率：从 Data_netWorthTrend 获取
         m_nwt = re.search(r'var Data_netWorthTrend\s*=\s*(\[.*?\]);', pz_text)
         if m_nwt:
             import json as _json
@@ -84,6 +142,10 @@ def scrape_fund_page(code):
             if nwt:
                 data['inception_date'] = _dt.fromtimestamp(
                     nwt[0]['x'] / 1000, tz=_tz8).strftime('%Y-%m-%d')
+                # 从日净值序列计算年化波动率
+                vol = calc_volatility(nwt)
+                if vol is not None:
+                    data['volatility'] = vol
 
         # 近3年 & 成立以来涨跌幅：使用 Data_ACWorthTrend（累计净值）
         # 累计净值已包含分红再投资，不受基金拆分/分红影响
@@ -158,8 +220,7 @@ def scrape_f10_page(code):
     """从 f10 基本概况页抓取详细信息"""
     url = f'https://fundf10.eastmoney.com/jbgk_{code}.html'
     try:
-        resp = requests.get(url, headers=HEADERS, timeout=15)
-        resp.encoding = 'utf-8'
+        resp = fetch_with_retry(url)
         soup = BeautifulSoup(resp.text, 'html.parser')
         data = {}
 
@@ -218,8 +279,7 @@ def scrape_fee_page(code):
     """从费率详情页抓取"""
     url = f'https://fundf10.eastmoney.com/jjfl_{code}.html'
     try:
-        resp = requests.get(url, headers=HEADERS, timeout=15)
-        resp.encoding = 'utf-8'
+        resp = fetch_with_retry(url)
         text = resp.text
         data = {}
 
@@ -235,16 +295,18 @@ def scrape_fee_page(code):
         return {}
 
 
+# 校验范围缓存（避免每次调用 validate 都读文件）
+_VALIDATION_CACHE = None
+
+
 def validate(data):
-    """校验数据"""
-    checks = {
-        'tracking_error': (0.001, 0.15), 'scale': (0.01, 1000),
-        'return_1yr': (-0.8, 5.0), 'return_3yr': (-0.8, 10.0),
-        'return_since': (-0.9, 100.0),
-        'mgmt_fee': (0.001, 0.03), 'custody_fee': (0.0005, 0.01),
-        'purchase_fee': (0.0, 0.02), 'sales_fee': (-0.001, 0.01),
-        'morningstar': (0, 5),
-    }
+    """校验数据 - 范围从 config/algorithm.json 读取（首次读取后缓存）"""
+    global _VALIDATION_CACHE
+    if _VALIDATION_CACHE is None:
+        config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'algorithm.json')
+        with open(config_path, 'r', encoding='utf-8') as f:
+            _VALIDATION_CACHE = {k: tuple(v) for k, v in json.load(f)['validation'].items()}
+    checks = _VALIDATION_CACHE
     cleaned = {}
     for k, v in data.items():
         if k in checks:
@@ -322,6 +384,16 @@ def main():
         for e in errors:
             print(f'  - {e}')
     print('=' * 60)
+
+    # 输出结构化摘要供 CI/CD 解析
+    summary = {
+        'timestamp': timestamp,
+        'total': len(FUND_LIST),
+        'updated': updated,
+        'failed': len(errors),
+        'errors': errors,
+    }
+    print(f'\n__SCRAPE_SUMMARY__{json.dumps(summary, ensure_ascii=False)}__SCRAPE_SUMMARY__')
 
     return 0 if updated > 0 else 1
 

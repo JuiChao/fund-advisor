@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   update:
@@ -26,9 +27,23 @@ jobs:
       - name: Install dependencies
         run: pip install requests beautifulsoup4 numpy
 
+      - name: Run unit tests
+        run: python -m unittest tests.test_algorithm tests.test_validate tests.test_dynamic_params -v
+
       - name: Scrape fund data
-        run: python scraper/scrape.py
-        continue-on-error: true
+        id: scrape
+        run: |
+          set +e
+          python scraper/scrape.py 2>&1 | tee scrape_output.log
+          SCRAPE_EXIT=${PIPESTATUS[0]}
+          echo "exit_code=${SCRAPE_EXIT}" >> "$GITHUB_OUTPUT"
+
+          # 提取抓取摘要（供后续步骤使用）
+          SUMMARY=$(grep -oP '__SCRAPE_SUMMARY__\K.*(?=__SCRAPE_SUMMARY__)' scrape_output.log || echo '{}')
+          echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+
+          # 即使抓取部分失败也继续运行模拟（使用兜底数据）
+          exit 0
 
       - name: Pre-compute simulations
         run: python scraper/simulate.py
@@ -37,10 +52,56 @@ jobs:
         run: |
           git config user.name "fund-bot"
           git config user.email "bot@fund-advisor.local"
-          git add public/data/funds.json public/data/simulations.json
+          git add public/data/funds.json public/data/simulations.json public/data/algorithm.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
             git commit -m "chore: update fund data $(date -u +%Y-%m-%d)"
             git push
           fi
+
+      - name: Create issue on scrape failure
+        if: steps.scrape.outputs.exit_code != '0'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const summary = JSON.parse('${{ steps.scrape.outputs.summary }}');
+            const failed = summary.failed || 0;
+            const updated = summary.updated || 0;
+            const total = summary.total || '?';
+            const errors = (summary.errors || []).join('\n');
+
+            const title = `数据抓取告警: ${new Date().toISOString().slice(0,10)} - ${failed}/${total} 只基金失败`;
+            const body = `## 抓取结果摘要\n\n` +
+              `- 成功更新: ${updated}/${total}\n` +
+              `- 失败/使用兜底: ${failed}\n` +
+              `- 时间: ${summary.timestamp || 'unknown'}\n\n` +
+              (errors ? `## 失败详情\n\n${errors}` : '');
+
+            // 避免重复创建：先检查是否已有今天的 open issue
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'scrape-alert',
+              per_page: 5,
+            });
+            const today = new Date().toISOString().slice(0, 10);
+            const duplicate = existing.find(i => i.title.includes(today));
+            if (duplicate) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: duplicate.number,
+                body: `## 更新 ${new Date().toISOString().slice(0,19)}\n\n${body}`,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['scrape-alert'],
+              });
+            }

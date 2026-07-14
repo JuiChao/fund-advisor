@@ -1,11 +1,18 @@
 // GET /api/simulate?code=160213&years=20&budget=2000
 // 单基金模拟：优先从预计算数据查找，找不到则独立模拟
+// 所有算法参数从 /data/algorithm.json 读取（单一数据源）
 export async function onRequest(context) {
   const url = new URL(context.request.url);
   const code = url.searchParams.get('code');
-  const years = Math.max(5, Math.min(30, parseInt(url.searchParams.get('years')) || 20));
+
+  // 加载共享配置
+  const algoUrl = new URL('/data/algorithm.json', context.request.url).toString();
+  const algoResp = await context.env.ASSETS.fetch(algoUrl);
+  const CFG = await algoResp.json();
+
+  const years = Math.max(CFG.allocation.years_min, Math.min(CFG.allocation.years_max, parseInt(url.searchParams.get('years')) || 20));
   const budget = Math.max(100, parseInt(url.searchParams.get('budget')) || 2000);
-  const scale = budget / 1000;
+  const scale = budget / CFG.allocation.base_budget;
 
   if (!code) {
     return new Response(JSON.stringify({ error: 'code parameter required' }), {
@@ -57,7 +64,8 @@ export async function onRequest(context) {
         const weight = alloc?.actual_weight || alloc?.weight || 1;
         simulation = {
           totalInvested: Math.round(yearData.totalInvested * scale * weight),
-          medianFinal: Math.round((yearData.median || yearData.medianFinal || 0) * scale * weight),
+          medianFinal: Math.round((yearData.median || 0) * scale * weight),
+          meanFinal: Math.round((yearData.mean || 0) * scale * weight),
           p5: Math.round((yearData.p5 || 0) * scale * weight),
           p25: Math.round((yearData.p25 || 0) * scale * weight),
           p75: Math.round((yearData.p75 || 0) * scale * weight),
@@ -68,14 +76,16 @@ export async function onRequest(context) {
       }
     }
 
-    // 预计算数据中找不到，使用基金参数独立模拟
+    // 预计算数据中找不到，使用基金参数独立模拟（优先使用 simulations.json 中的动态参数）
     if (!simulation) {
-      simulation = simulateSingleFund(fund, years, budget);
+      const dynamicParams = sims.params || CFG.simulation.params;
+      simulation = simulateSingleFund(fund, years, budget, CFG, dynamicParams);
     }
 
     // 确保 simulation 有效
     if (!simulation || isNaN(simulation.medianFinal)) {
-      simulation = simulateSingleFund(fund, years, budget);
+      const dynamicParams = sims.params || CFG.simulation.params;
+      simulation = simulateSingleFund(fund, years, budget, CFG, dynamicParams);
     }
 
     return new Response(JSON.stringify({
@@ -98,23 +108,19 @@ export async function onRequest(context) {
   }
 }
 
-// 基于基金参数的蒙特卡洛模拟
-function simulateSingleFund(fund, years, budget) {
-  const N_SIMS = 5000;
+// 基于基金参数的蒙特卡洛模拟（参数优先使用动态计算的，回退到 config 默认值）
+function simulateSingleFund(fund, years, budget, CFG, dynamicParams) {
+  const N_SIMS = CFG.simulation.n_sims_python;
   const n_months = years * 12;
   const total_invested = budget * n_months;
 
-  const params = {
-    nasdaq_return: 0.14, nasdaq_vol: 0.22,
-    sp500_return: 0.11, sp500_vol: 0.18,
-    fx_drift: 0.005, fx_vol: 0.03,
-    dividend_yield: 0.008, dividend_tax: 0.10,
-  };
+  const params = dynamicParams || CFG.simulation.params;
+  const defaults = CFG.defaults;
 
   const is_sp = (fund.index_type || '').includes('标普');
-  const te = fund.tracking_error || 0.015;
-  const purchase_fee = fund.purchase_fee || 0.0012;
-  const annual_fee = (fund.mgmt_fee || 0.008) + (fund.custody_fee || 0.002);
+  const te = fund.tracking_error || defaults.tracking_error_for_simulation;
+  const purchase_fee = fund.purchase_fee || defaults.purchase_fee;
+  const annual_fee = (fund.mgmt_fee || defaults.mgmt_fee) + (fund.custody_fee || defaults.custody_fee);
 
   const idx_ret_mean = (is_sp ? params.sp500_return : params.nasdaq_return) / 12;
   const idx_ret_vol = (is_sp ? params.sp500_vol : params.nasdaq_vol) / Math.sqrt(12);
@@ -158,6 +164,7 @@ function simulateSingleFund(fund, years, budget) {
   return {
     totalInvested: total_invested,
     medianFinal: Math.round(median) || 0,
+    meanFinal: Math.round(mean) || 0,
     p5: Math.round(p5) || 0,
     p25: Math.round(p25) || 0,
     p75: Math.round(p75) || 0,
