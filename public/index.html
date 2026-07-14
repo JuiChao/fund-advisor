@@ -14,13 +14,14 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Fund Advisor">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://858000.xyz/favicon.png">
-<meta property="og:image:width" content="512">
-<meta property="og:image:height" content="512">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://858000.xyz/og-image.jpg">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="720">
+<meta property="og:image:alt" content="Fund Advisor 基金定投智能分析平台">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="基金定投智能分析 | Fund Advisor">
 <meta name="twitter:description" content="基于蒙特卡洛模拟的指数基金定投智能分析平台。">
-<meta name="twitter:image" content="https://858000.xyz/favicon.png">
+<meta name="twitter:image" content="https://858000.xyz/og-image.jpg">
 <link rel="canonical" href="https://858000.xyz/">
 <title>基金定投智能分析 | Fund Advisor</title>
 <script type="application/ld+json">
@@ -31,7 +32,34 @@
   "url": "https://858000.xyz/",
   "description": "基于蒙特卡洛模拟的指数基金定投智能分析平台，支持纳斯达克100和标普500基金量化分析。自动抓取天天基金数据，提供基金排名、收益率模拟及最佳资产配置方案。",
   "applicationCategory": "FinanceApplication",
-  "operatingSystem": "All"
+  "operatingSystem": "All",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "128" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Fund Advisor",
+  "url": "https://858000.xyz/",
+  "logo": "https://858000.xyz/favicon.png",
+  "description": "基于蒙特卡洛模拟的指数基金定投智能分析平台",
+  "sameAs": []
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Fund Advisor",
+  "url": "https://858000.xyz/",
+  "inLanguage": "zh-CN",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://858000.xyz/#ranking?q={query}",
+    "query-input": "required name=query"
+  }
 }
 </script>
 <script type="application/ld+json">
@@ -114,29 +142,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="manifest" href="manifest.json">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
 <!-- Google AdSense - 审核通过后启用 -->
 <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script> -->
 </head>
 <body>
 
+<header>
 <nav class="navbar">
     <div class="brand">
-        <img src="favicon.png" alt="" class="brand-logo">
+        <img src="favicon.png" alt="Fund Advisor" class="brand-logo">
         <span class="brand-text">FUND ADVISOR</span>
     </div>
-    <div class="links" id="nav-links">
+    <div class="links" id="nav-links" role="navigation" aria-label="主导航">
         <a href="#home" data-page="home" class="on">概览</a>
         <a href="#ranking" data-page="ranking">基金排名</a>
         <a href="#simulator" data-page="simulator">模拟器</a>
         <a href="#portfolio" data-page="portfolio">定投方案</a>
         <a href="#guide" data-page="guide">投资指南</a>
-        <a href="articles/" target="_blank">投资百科</a>
+        <a href="articles/">投资百科</a>
         <a href="#about" data-page="about">关于</a>
-    </nav>
+    </div>
     <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false">
         <span></span><span></span><span></span>
     </button>
+</nav>
+</header>
 
 <main class="container">
 

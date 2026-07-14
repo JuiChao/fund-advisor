@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://858000.xyz/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
+      <image:title>Fund Advisor 基金定投智能分析平台</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://858000.xyz/articles/</loc>
@@ -14,26 +19,46 @@
     <loc>https://858000.xyz/articles/nasdaq-100-investment-guide.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
+      <image:title>纳斯达克100指数投资完全指南</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://858000.xyz/articles/sp500-investment-guide.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
+      <image:title>标普500指数投资深度解析</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://858000.xyz/articles/dca-strategy-guide.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
+      <image:title>基金定投策略完全指南</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://858000.xyz/articles/fund-fee-impact-analysis.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
+      <image:title>基金费率对长期收益的真实影响分析</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://858000.xyz/articles/qdii-fund-investment-guide.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
+      <image:title>QDII基金投资完全攻略</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://858000.xyz/privacy-policy.html</loc>

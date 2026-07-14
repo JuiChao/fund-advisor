@@ -1,0 +1,21 @@
+{
+  "name": "基金定投智能分析 | Fund Advisor",
+  "short_name": "Fund Advisor",
+  "description": "基于蒙特卡洛模拟的指数基金定投智能分析平台，支持纳斯达克100和标普500基金量化分析。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8f9fc",
+  "theme_color": "#4f46e5",
+  "lang": "zh-CN",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
