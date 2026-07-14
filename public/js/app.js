@@ -82,11 +82,33 @@ const App = (() => {
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.replace('#', '') || 'home';
             switchPage(hash);
+            closeMobileNav();
         });
-        
+
+        // 移动端汉堡菜单
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.navbar .links');
+        if (navToggle && navLinks) {
+            navToggle.addEventListener('click', () => {
+                const isOpen = navLinks.classList.toggle('show');
+                navToggle.classList.toggle('open', isOpen);
+                navToggle.setAttribute('aria-expanded', isOpen);
+            });
+        }
+
         // 首次加载
         const initHash = window.location.hash.replace('#', '') || 'home';
         switchPage(initHash);
+    }
+
+    function closeMobileNav() {
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.navbar .links');
+        if (navLinks?.classList.contains('show')) {
+            navLinks.classList.remove('show');
+            navToggle?.classList.remove('open');
+            navToggle?.setAttribute('aria-expanded', 'false');
+        }
     }
 
     // ===== 概览页 =====

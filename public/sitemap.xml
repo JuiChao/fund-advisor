@@ -6,33 +6,43 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://858000.xyz/#home</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/#ranking</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/#simulator</loc>
+    <loc>https://858000.xyz/articles/</loc>
     <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://858000.xyz/articles/nasdaq-100-investment-guide.html</loc>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://858000.xyz/#portfolio</loc>
-    <changefreq>daily</changefreq>
+    <loc>https://858000.xyz/articles/sp500-investment-guide.html</loc>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://858000.xyz/#guide</loc>
+    <loc>https://858000.xyz/articles/dca-strategy-guide.html</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://858000.xyz/#about</loc>
+    <loc>https://858000.xyz/articles/fund-fee-impact-analysis.html</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://858000.xyz/articles/qdii-fund-investment-guide.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://858000.xyz/privacy-policy.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://858000.xyz/terms-of-service.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>
