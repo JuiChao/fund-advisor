@@ -64,6 +64,11 @@ def scrape_fund_page(code):
         pz_resp = requests.get(pz_url, headers=HEADERS, timeout=15)
         pz_text = pz_resp.text
 
+        # 基金名称：使用 fS_name（权威来源）
+        m_name = re.search(r'fS_name\s*=\s*"([^"]+)"', pz_text)
+        if m_name:
+            data['name'] = m_name.group(1)
+
         # 近1年涨跌幅：使用官方 syl_1n（最准确）
         m1 = re.search(r'syl_1n\s*=\s*"([^"]+)"', pz_text)
         if m1 and m1.group(1):
@@ -149,6 +154,66 @@ def scrape_fund_page(code):
         return {}
 
 
+def scrape_f10_page(code):
+    """从 f10 基本概况页抓取详细信息"""
+    url = f'https://fundf10.eastmoney.com/jbgk_{code}.html'
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        resp.encoding = 'utf-8'
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        data = {}
+
+        # 解析所有 table.info 中的 th-td 对
+        fields = {}
+        for table in soup.find_all('table', class_='info'):
+            for row in table.find_all('tr'):
+                ths = row.find_all('th')
+                tds = row.find_all('td')
+                for i, th in enumerate(ths):
+                    td = tds[i] if i < len(tds) else None
+                    if td:
+                        label = th.get_text(strip=True)
+                        # 优先取链接文本
+                        links = td.find_all('a')
+                        value = ', '.join(a.get_text(strip=True) for a in links) if links else td.get_text(strip=True)
+                        fields[label] = value
+
+        # 映射到数据字段
+        if '基金全称' in fields:
+            data['full_name'] = fields['基金全称']
+        if '基金类型' in fields:
+            data['fund_type'] = fields['基金类型']
+        if '基金管理人' in fields:
+            data['manager_company'] = fields['基金管理人']
+        if '基金托管人' in fields:
+            data['custodian'] = fields['基金托管人']
+        if '基金经理人' in fields:
+            data['fund_manager'] = fields['基金经理人']
+        if '业绩比较基准' in fields:
+            data['benchmark'] = fields['业绩比较基准']
+        if '跟踪标的' in fields:
+            data['tracking_index'] = fields['跟踪标的']
+        if '成立来分红' in fields:
+            data['dividend_info'] = fields['成立来分红']
+        if '最高认购费率' in fields:
+            m = re.search(r'(\d+\.\d+)%', fields['最高认购费率'])
+            if m:
+                data['purchase_fee'] = float(m.group(1)) / 100
+        if '销售服务费率' in fields:
+            m = re.search(r'(\d+\.\d+)%', fields['销售服务费率'])
+            if m:
+                data['sales_fee'] = float(m.group(1)) / 100
+        if '发行日期' in fields:
+            m = re.search(r'(\d{4})年(\d{2})月(\d{2})日', fields['发行日期'])
+            if m:
+                data['issue_date'] = f'{m.group(1)}-{m.group(2)}-{m.group(3)}'
+
+        return data
+    except Exception as e:
+        print(f'  [WARN] 抓取 {code} f10页失败: {e}')
+        return {}
+
+
 def scrape_fee_page(code):
     """从费率详情页抓取"""
     url = f'https://fundf10.eastmoney.com/jjfl_{code}.html'
@@ -177,6 +242,7 @@ def validate(data):
         'return_1yr': (-0.8, 5.0), 'return_3yr': (-0.8, 10.0),
         'return_since': (-0.9, 100.0),
         'mgmt_fee': (0.001, 0.03), 'custody_fee': (0.0005, 0.01),
+        'purchase_fee': (0.0, 0.02), 'sales_fee': (-0.001, 0.01),
         'morningstar': (0, 5),
     }
     cleaned = {}
@@ -213,16 +279,19 @@ def main():
         # 抓取最新数据
         page_data = scrape_fund_page(code)
         time.sleep(DELAY)
+        f10_data = scrape_f10_page(code)
+        time.sleep(DELAY)
         fee_data = scrape_fee_page(code)
         time.sleep(DELAY)
 
         # 合并：抓取到的数据覆盖兜底数据
-        merged = {**base, **page_data, **fee_data}
+        merged = {**base, **page_data, **f10_data, **fee_data}
         merged = validate(merged)
 
-        if page_data or fee_data:
+        total_fields = len(page_data) + len(f10_data) + len(fee_data)
+        if total_fields > 0:
             updated += 1
-            print(f'  [OK] 更新了 {len(page_data) + len(fee_data)} 个字段')
+            print(f'  [OK] 更新了 {total_fields} 个字段')
         else:
             errors.append(f'{code}: 未获取到新数据，使用兜底数据')
             print(f'  [INFO] 使用兜底数据')

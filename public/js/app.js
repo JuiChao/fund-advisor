@@ -214,7 +214,7 @@ const App = (() => {
     const rankCols = [
         { key: 'rank', label: '#' },
         { key: 'code', label: '代码' },
-        { key: 'name', label: '名称', render: r => '<strong style="color:var(--txt)">' + r.name + '</strong>' },
+        { key: 'name', label: '名称', render: r => `<strong style="color:var(--accent2);cursor:pointer" class="fund-name-link" data-code="${r.code}" title="点击查看详情">` + r.name + ' <span style="font-size:0.7em;opacity:0.5">▸</span></strong>' },
         { key: 'fee', label: '费率', render: r => { const f = (r.mgmt_fee || 0) + (r.custody_fee || 0); return '<span style="' + feeC(f) + '">' + fmt(f) + '</span>'; } },
         { key: 'tracking_error', label: '跟踪误差', render: r => fmt(r.tracking_error) },
         { key: 'scale', label: '规模', render: r => r.scale ? r.scale.toFixed(1) + '亿' : '-' },
@@ -288,6 +288,57 @@ const App = (() => {
             });
         });
         draw();
+
+        // 基金详情展开
+        document.querySelector('#rank-table').addEventListener('click', e => {
+            const link = e.target.closest('.fund-name-link');
+            if (!link) return;
+            const code = link.dataset.code;
+            const tr = link.closest('tr');
+            const existing = tr.nextElementSibling;
+            if (existing && existing.classList.contains('fund-detail-row')) {
+                existing.remove();
+                return;
+            }
+            // 关闭其他展开的详情
+            document.querySelectorAll('.fund-detail-row').forEach(r => r.remove());
+
+            const f = FUND_DATA.find(d => d.code === code);
+            if (!f) return;
+
+            const detailTr = document.createElement('tr');
+            detailTr.className = 'fund-detail-row';
+            const colSpan = rankCols.length;
+            const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0);
+            detailTr.innerHTML = `<td colspan="${colSpan}" style="padding:1rem 1.25rem;background:var(--bg);border-left:3px solid var(--accent2)">
+                <div style="font-size:0.8rem;color:var(--txt2);line-height:1.8">
+                    ${f.full_name ? `<div><strong>基金全称：</strong>${f.full_name}</div>` : ''}
+                    ${f.fund_type ? `<div><strong>基金类型：</strong>${f.fund_type}</div>` : ''}
+                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem">
+                        ${f.manager_company ? `<div><strong>管理人：</strong>${f.manager_company}</div>` : ''}
+                        ${f.custodian ? `<div><strong>托管人：</strong>${f.custodian}</div>` : ''}
+                        ${f.fund_manager ? `<div><strong>基金经理：</strong>${f.fund_manager}</div>` : ''}
+                    </div>
+                    ${f.tracking_index ? `<div><strong>跟踪标的：</strong>${f.tracking_index}</div>` : ''}
+                    ${f.benchmark ? `<div><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
+                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem;margin-top:0.35rem;padding-top:0.35rem;border-top:1px dashed var(--border)">
+                        <div><strong>管理费：</strong>${f.mgmt_fee ? (f.mgmt_fee*100).toFixed(2)+'%/年' : '-'}</div>
+                        <div><strong>托管费：</strong>${f.custody_fee ? (f.custody_fee*100).toFixed(2)+'%/年' : '-'}</div>
+                        <div><strong>综合费率：</strong><span style="color:var(--ok);font-weight:600">${(fee*100).toFixed(2)}%/年</span></div>
+                        ${f.purchase_fee != null ? `<div><strong>申购费：</strong>${(f.purchase_fee*100).toFixed(2)}%</div>` : ''}
+                        ${f.sales_fee != null ? `<div><strong>销售服务费：</strong>${(f.sales_fee*100).toFixed(2)}%/年</div>` : ''}
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem;margin-top:0.35rem">
+                        ${f.inception_date ? `<div><strong>成立日期：</strong>${f.inception_date}</div>` : ''}
+                        ${f.issue_date ? `<div><strong>发行日期：</strong>${f.issue_date}</div>` : ''}
+                        ${f.scale ? `<div><strong>规模：</strong>${f.scale.toFixed(2)}亿元</div>` : ''}
+                        ${f.dividend_info ? `<div><strong>分红：</strong>${f.dividend_info}</div>` : ''}
+                    </div>
+                    ${f.return_1yr != null ? `<div style="margin-top:0.35rem;padding-top:0.35rem;border-top:1px dashed var(--border)"><strong>近1年：</strong><span style="color:var(--ok)">${(f.return_1yr*100).toFixed(2)}%</span>　<strong>近3年：</strong><span style="color:var(--ok)">${f.return_3yr != null ? (f.return_3yr*100).toFixed(2)+'%' : '-'}</span>　<strong>成立以来：</strong><span style="color:var(--ok)">${f.return_since != null ? (f.return_since*100).toFixed(2)+'%' : '-'}</span></div>` : ''}
+                </div>
+            </td>`;
+            tr.after(detailTr);
+        });
     }
 
     // ===== 模拟器 - 自定义多选 =====
