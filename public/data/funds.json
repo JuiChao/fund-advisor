@@ -11,13 +11,13 @@
     "purchase_fee": 0.008,
     "tracking_error": 0.0152,
     "return_1yr": 0.212,
-    "return_3yr": 0.6605539491705981,
+    "return_3yr": 0.6541622279713895,
     "morningstar": 0,
     "limit_status": "暂停申购",
     "daily_limit": 0,
     "inception_date": "2022-09-15",
-    "volatility": 0.1809,
-    "return_since": 1.1823000000000001,
+    "volatility": 0.181,
+    "return_since": 1.1739000000000002,
     "full_name": "嘉实纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "嘉实基金",
@@ -28,7 +28,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2022-09-05",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "016055",
@@ -40,15 +40,15 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "purchase_fee": 0.008,
-    "tracking_error": 0.0146,
+    "tracking_error": 0.0147,
     "return_1yr": 0.22190000000000001,
-    "return_3yr": 0.7069103735770401,
+    "return_3yr": 0.7002565335898667,
     "morningstar": 3,
     "limit_status": "暂停申购",
     "daily_limit": 0,
     "inception_date": "2022-07-26",
-    "volatility": 0.182,
-    "return_since": 1.1292,
+    "volatility": 0.1821,
+    "return_since": 1.1208999999999998,
     "full_name": "博时纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "博时基金",
@@ -59,7 +59,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2022-07-18",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "018043",
@@ -71,15 +71,15 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.001,
     "purchase_fee": 0.008,
-    "tracking_error": 0.0147,
+    "tracking_error": 0.0148,
     "return_1yr": 0.2151,
-    "return_3yr": 0.67273915529777,
+    "return_3yr": 0.6663671268687199,
     "morningstar": 3,
     "limit_status": "暂停申购",
     "daily_limit": 0,
     "inception_date": "2023-04-11",
-    "volatility": 0.1813,
-    "return_since": 1.0476,
+    "volatility": 0.1814,
+    "return_since": 1.0398,
     "full_name": "天弘纳斯达克100指数型发起式证券投资基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "天弘基金",
@@ -90,7 +90,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2023-03-27",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "160213",
@@ -104,13 +104,13 @@
     "purchase_fee": 0.012,
     "tracking_error": 0.011899999999999999,
     "return_1yr": 0.2262,
-    "return_3yr": 0.533569907735983,
+    "return_3yr": 0.5311568488289569,
     "morningstar": 4,
     "limit_status": "暂停申购",
     "daily_limit": 0,
     "inception_date": "2010-04-29",
     "volatility": 0.4737,
-    "return_since": 9.804,
+    "return_since": 9.787,
     "full_name": "国泰纳斯达克100指数证券投资基金",
     "fund_type": "指数型-海外股票",
     "manager_company": "国泰基金",
@@ -120,7 +120,7 @@
     "tracking_index": "纳斯达克100指数",
     "dividend_info": "每份累计6.30元（8次）",
     "issue_date": "2010-03-22",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "040046",
@@ -132,15 +132,15 @@
     "mgmt_fee": 0.006,
     "custody_fee": 0.002,
     "purchase_fee": 0.01,
-    "tracking_error": 0.0106,
+    "tracking_error": 0.010700000000000001,
     "return_1yr": 0.2211,
-    "return_3yr": 0.7061766522544779,
+    "return_3yr": 0.6991970352069179,
     "morningstar": 3,
     "limit_status": "限10元/日",
     "daily_limit": 10,
     "inception_date": "2013-08-02",
-    "volatility": 0.1902,
-    "return_since": 7.286899999999999,
+    "volatility": 0.1903,
+    "return_since": 7.253,
     "full_name": "华安纳斯达克100交易型开放式指数证券投资基金联接基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "华安基金",
@@ -151,7 +151,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2013-06-13",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "000834",
@@ -165,13 +165,13 @@
     "purchase_fee": 0.01,
     "tracking_error": 0.0106,
     "return_1yr": 0.21280000000000002,
-    "return_3yr": 0.6901382243487506,
+    "return_3yr": 0.6834662413609782,
     "morningstar": 3,
     "limit_status": "限10元/日",
     "daily_limit": 10,
     "inception_date": "2014-11-13",
     "volatility": 0.1888,
-    "return_since": 5.3583,
+    "return_since": 5.3332,
     "full_name": "大成纳斯达克100交易型开放式指数证券投资基金联接基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "大成基金",
@@ -182,7 +182,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2014-10-20",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "161130",
@@ -196,13 +196,13 @@
     "purchase_fee": 0.01,
     "tracking_error": 0.0146,
     "return_1yr": 0.21,
-    "return_3yr": 0.7380730017900226,
+    "return_3yr": 0.731496614522531,
     "morningstar": 3,
     "limit_status": "暂停申购",
     "daily_limit": 0,
     "inception_date": "2017-06-23",
-    "volatility": 0.1813,
-    "return_since": 3.466053394660534,
+    "volatility": 0.1814,
+    "return_since": 3.449155084491551,
     "full_name": "易方达纳斯达克100交易型开放式指数证券投资基金联接基金(LOF)",
     "fund_type": "指数型-海外股票",
     "manager_company": "易方达基金",
@@ -213,7 +213,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2017-05-02",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "270042",
@@ -227,13 +227,13 @@
     "purchase_fee": 0.011000000000000001,
     "tracking_error": 0.011000000000000001,
     "return_1yr": 0.21530000000000002,
-    "return_3yr": 0.6926870985063938,
+    "return_3yr": 0.6858455480201266,
     "morningstar": 3,
     "limit_status": "限10元/日",
     "daily_limit": 10,
     "inception_date": "2012-08-15",
-    "volatility": 0.1902,
-    "return_since": 7.510999999999999,
+    "volatility": 0.1903,
+    "return_since": 7.4765999999999995,
     "full_name": "广发纳斯达克100交易型开放式指数证券投资基金联接基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "广发基金",
@@ -244,7 +244,7 @@
     "dividend_info": "每份累计0.27元（2次）",
     "sales_fee": 0.0,
     "issue_date": "2012-07-09",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "016452",
@@ -258,13 +258,13 @@
     "purchase_fee": 0.01,
     "tracking_error": 0.0146,
     "return_1yr": 0.20879999999999999,
-    "return_3yr": 0.6794366608289548,
+    "return_3yr": 0.6730151780502043,
     "morningstar": 3,
     "limit_status": "限10元/日",
     "daily_limit": 10,
     "inception_date": "2022-11-29",
-    "volatility": 0.1827,
-    "return_since": 1.3014999999999999,
+    "volatility": 0.1828,
+    "return_since": 1.2927,
     "full_name": "南方纳斯达克100指数发起式证券投资基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "南方基金",
@@ -275,7 +275,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2022-11-07",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "539001",
@@ -289,13 +289,13 @@
     "purchase_fee": 0.015,
     "tracking_error": 0.0222,
     "return_1yr": 0.2071,
-    "return_3yr": 0.763614176030915,
+    "return_3yr": 0.7564956526160573,
     "morningstar": 4,
     "limit_status": "限100元/日",
     "daily_limit": 100,
     "inception_date": "2010-09-14",
-    "volatility": 0.179,
-    "return_since": 2.4685,
+    "volatility": 0.1791,
+    "return_since": 2.4545,
     "full_name": "建信纳斯达克100指数型证券投资基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "建信基金",
@@ -306,7 +306,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2010-08-11",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "019547",
@@ -324,8 +324,8 @@
     "limit_status": "限10元/日",
     "daily_limit": 10,
     "inception_date": "2023-11-29",
-    "volatility": 0.178,
-    "return_since": 0.5817000000000001,
+    "volatility": 0.1781,
+    "return_since": 0.5755999999999999,
     "full_name": "招商纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "招商基金",
@@ -336,7 +336,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2023-11-13",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "018966",
@@ -351,11 +351,11 @@
     "tracking_error": 0.0176,
     "return_1yr": 0.195,
     "morningstar": 0,
-    "limit_status": "限50元/日",
-    "daily_limit": 50,
+    "limit_status": "限10元/日",
+    "daily_limit": 10,
     "inception_date": "2023-08-02",
-    "volatility": 0.1796,
-    "return_since": 0.6545000000000001,
+    "volatility": 0.1797,
+    "return_since": 0.6480999999999999,
     "full_name": "汇添富纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "汇添富基金",
@@ -366,7 +366,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2023-07-31",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "015299",
@@ -380,13 +380,13 @@
     "purchase_fee": 0.01,
     "tracking_error": 0.0255,
     "return_1yr": 0.2187,
-    "return_3yr": 0.7075361836632841,
+    "return_3yr": 0.7009648976875731,
     "morningstar": 3,
     "limit_status": "暂停申购",
     "daily_limit": 0,
     "inception_date": "2022-04-14",
-    "volatility": 0.1794,
-    "return_since": 1.0528,
+    "volatility": 0.1795,
+    "return_since": 1.0449000000000002,
     "full_name": "华夏纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "华夏基金",
@@ -397,7 +397,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2022-04-06",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "019172",
@@ -416,7 +416,7 @@
     "daily_limit": 10,
     "inception_date": "2023-09-25",
     "volatility": 0.1754,
-    "return_since": 0.7594000000000001,
+    "return_since": 0.7527999999999999,
     "full_name": "摩根纳斯达克100指数型发起式证券投资基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "摩根基金(中国)",
@@ -427,7 +427,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2023-09-11",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "019441",
@@ -437,8 +437,8 @@
     "scale": 4.38,
     "return_1yr": 0.21,
     "inception_date": "2023-09-27",
-    "volatility": 0.1783,
-    "return_since": 0.6917,
+    "volatility": 0.1784,
+    "return_since": 0.6852,
     "morningstar": 0,
     "daily_limit": 10,
     "limit_status": "限10元/日",
@@ -455,7 +455,7 @@
     "issue_date": "2023-09-26",
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "019524",
@@ -466,7 +466,7 @@
     "return_1yr": 0.20670000000000002,
     "inception_date": "2023-10-19",
     "volatility": 0.1801,
-    "return_since": 0.6594,
+    "return_since": 0.6531,
     "morningstar": 0,
     "daily_limit": 10,
     "limit_status": "限10元/日",
@@ -483,7 +483,7 @@
     "issue_date": "2023-10-16",
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "019736",
@@ -493,8 +493,8 @@
     "scale": 5.68,
     "return_1yr": 0.2094,
     "inception_date": "2024-03-22",
-    "volatility": 0.1806,
-    "return_since": 0.49859999999999993,
+    "volatility": 0.1807,
+    "return_since": 0.4928999999999999,
     "morningstar": 0,
     "daily_limit": 10,
     "limit_status": "限10元/日",
@@ -511,7 +511,7 @@
     "issue_date": "2024-02-29",
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "050025",
@@ -525,13 +525,13 @@
     "purchase_fee": 0.01,
     "tracking_error": 0.0131,
     "return_1yr": 0.1414,
-    "return_3yr": 0.538569850911099,
+    "return_3yr": 0.542352291551629,
     "morningstar": 2,
     "limit_status": "暂停申购",
     "daily_limit": 0,
     "inception_date": "2012-06-14",
     "volatility": 0.1219,
-    "return_since": 4.5727,
+    "return_since": 4.5864,
     "full_name": "博时标普500交易型开放式指数证券投资基金联接基金",
     "fund_type": "指数型-海外股票",
     "manager_company": "博时基金",
@@ -542,7 +542,7 @@
     "dividend_info": "每份累计0.06元（3次）",
     "sales_fee": 0.0,
     "issue_date": "2012-05-15",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "161125",
@@ -554,15 +554,15 @@
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
     "purchase_fee": 0.01,
-    "tracking_error": 0.0125,
+    "tracking_error": 0.0126,
     "return_1yr": 0.1388,
-    "return_3yr": 0.5518842026453707,
+    "return_3yr": 0.5558273022211133,
     "morningstar": 2,
     "limit_status": "暂停申购",
     "daily_limit": 0,
     "inception_date": "2016-12-02",
-    "volatility": 0.1208,
-    "return_since": 2.1092,
+    "volatility": 0.1207,
+    "return_since": 2.1171,
     "full_name": "易方达标普500指数证券投资基金(LOF)",
     "fund_type": "指数型-海外股票",
     "manager_company": "易方达基金",
@@ -573,7 +573,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2016-11-14",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "017641",
@@ -585,15 +585,15 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "purchase_fee": 0.01,
-    "tracking_error": 0.017,
+    "tracking_error": 0.0171,
     "return_1yr": 0.1414,
-    "return_3yr": 0.5217745586238116,
+    "return_3yr": 0.5254866455409688,
     "morningstar": 2,
     "limit_status": "限10元/日",
     "daily_limit": 10,
     "inception_date": "2023-04-06",
     "volatility": 0.1165,
-    "return_since": 0.6808000000000001,
+    "return_since": 0.6849000000000001,
     "full_name": "摩根标普500指数型发起式证券投资基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "摩根基金(中国)",
@@ -604,7 +604,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2023-03-27",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "017028",
@@ -616,15 +616,15 @@
     "mgmt_fee": 0.006,
     "custody_fee": 0.0015,
     "purchase_fee": 0.008,
-    "tracking_error": 0.0176,
+    "tracking_error": 0.0177,
     "return_1yr": 0.1164,
-    "return_3yr": 0.5021205159922248,
+    "return_3yr": 0.5059197738116274,
     "morningstar": 2,
     "limit_status": "暂停申购",
     "daily_limit": 0,
     "inception_date": "2022-11-02",
     "volatility": 0.1213,
-    "return_since": 0.7001,
+    "return_since": 0.7043999999999999,
     "full_name": "国泰标普500交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "国泰基金",
@@ -635,7 +635,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2022-11-01",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "018064",
@@ -649,13 +649,13 @@
     "purchase_fee": 0.01,
     "tracking_error": 0.023399999999999997,
     "return_1yr": 0.13699999999999998,
-    "return_3yr": 0.5227149810708491,
+    "return_3yr": 0.5265008112493241,
     "morningstar": 2,
     "limit_status": "暂停申购",
     "daily_limit": 0,
     "inception_date": "2023-05-10",
-    "volatility": 0.1205,
-    "return_since": 0.6893,
+    "volatility": 0.1204,
+    "return_since": 0.6935,
     "full_name": "华夏标普500交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "fund_type": "指数型-海外股票",
     "manager_company": "华夏基金",
@@ -666,7 +666,7 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2023-04-25",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "096001",
@@ -680,13 +680,13 @@
     "purchase_fee": 0.012,
     "tracking_error": 0.066,
     "return_1yr": 0.0974,
-    "return_3yr": 0.25472851492268966,
+    "return_3yr": 0.25185185185185177,
     "morningstar": 1,
     "limit_status": "限10元/日",
     "daily_limit": 10,
     "inception_date": "2011-03-23",
-    "volatility": 0.1143,
-    "return_since": 2.4894,
+    "volatility": 0.1135,
+    "return_since": 2.4814,
     "full_name": "大成标普500等权重指数证券投资基金",
     "fund_type": "指数型-海外股票",
     "manager_company": "大成基金",
@@ -697,7 +697,7 @@
     "dividend_info": "每份累计0.70元（13次）",
     "sales_fee": 0.0,
     "issue_date": "2011-02-21",
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   },
   {
     "code": "007721",
@@ -706,9 +706,9 @@
     "scale": 22.29,
     "return_1yr": 0.13390000000000002,
     "inception_date": "2019-09-24",
-    "volatility": 0.1135,
-    "return_since": 1.2269,
-    "return_3yr": 0.4915606162089752,
+    "volatility": 0.1134,
+    "return_since": 1.2321,
+    "return_3yr": 0.4950435365036838,
     "morningstar": 2,
     "daily_limit": 0,
     "limit_status": "暂停申购",
@@ -725,6 +725,6 @@
     "issue_date": "2019-09-16",
     "mgmt_fee": 0.006,
     "custody_fee": 0.002,
-    "updated_at": "2026-07-16T03:21:28"
+    "updated_at": "2026-07-17T03:20:53"
   }
 ]
