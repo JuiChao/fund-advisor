@@ -130,7 +130,7 @@ def calc_dynamic_params(funds):
     return params, source
 
 
-def score_fund(fund):
+def score_fund(fund, median_te=None):
     fee = (fund.get('mgmt_fee') or 0) + (fund.get('custody_fee') or 0)
     te = fund.get('tracking_error') or DEFAULTS['tracking_error_for_scoring']
     scale = fund.get('scale') or DEFAULTS['scale']
@@ -140,7 +140,18 @@ def score_fund(fund):
 
     s = SCORING
     fee_score = max(0, min(100, 100 - (fee - s['fee']['optimal']) / s['fee']['range'] * s['fee']['penalty']))
-    te_score = max(0, min(100, 100 - (te - s['tracking_error']['optimal']) / s['tracking_error']['range'] * s['tracking_error']['penalty']))
+
+    # 跟踪误差评分：同类相对法（peer_relative）或绝对法（fallback）
+    te_cfg = s['tracking_error']
+    if te_cfg.get('method') == 'peer_relative' and median_te is not None:
+        te_score = max(0, min(100, 100 - (te - median_te) / te_cfg['spread'] * te_cfg['penalty']))
+    else:
+        # 兜底绝对评分
+        opt = te_cfg.get('fallback_optimal', te_cfg.get('optimal', 0.008))
+        rng = te_cfg.get('fallback_range', te_cfg.get('range', 0.022))
+        pen = te_cfg.get('fallback_penalty', te_cfg.get('penalty', 67))
+        te_score = max(0, min(100, 100 - (te - opt) / rng * pen))
+
     sc = s['scale']
     if sc['optimal_min'] <= scale <= sc['optimal_max']:
         scale_score = sc['optimal_score']
@@ -158,8 +169,18 @@ def score_fund(fund):
     return round(fee_score * w['fee'] + te_score * w['tracking_error'] + scale_score * w['scale'] + y3_score * w['return_3yr'] + ms_score * w['morningstar'] + pur_score * w['purchase_fee'], 1)
 
 
+def _calc_median_te(funds):
+    """计算基金组的TE中位数"""
+    tes = sorted(f.get('tracking_error') for f in funds if f.get('tracking_error'))
+    if not tes:
+        return None
+    mid = len(tes) // 2
+    return tes[mid] if len(tes) % 2 else (tes[mid - 1] + tes[mid]) / 2
+
+
 def rank_funds(funds):
-    scored = [{**f, 'score': score_fund(f)} for f in funds]
+    median_te = _calc_median_te(funds)
+    scored = [{**f, 'score': score_fund(f, median_te=median_te)} for f in funds]
     scored.sort(key=lambda x: x['score'], reverse=True)
     for i, f in enumerate(scored):
         f['rank'] = i + 1

@@ -267,7 +267,7 @@ const App = (() => {
         { key: 'score', label: '评分', render: r => '<strong style="color:var(--accent2)">' + r.score + '</strong>' },
     ];
 
-    function scoreFund(f) {
+    function scoreFund(f, medianTE) {
         const cfg = ALGO_CONFIG;
         const d = cfg.defaults;
         const s = cfg.scoring;
@@ -278,7 +278,19 @@ const App = (() => {
         const ms = f.morningstar || d.morningstar;
         const pur = f.purchase_fee || d.purchase_fee;
         const feeS = Math.max(0, Math.min(100, 100 - (fee - s.fee.optimal) / s.fee.range * s.fee.penalty));
-        const teS = Math.max(0, Math.min(100, 100 - (te - s.tracking_error.optimal) / s.tracking_error.range * s.tracking_error.penalty));
+
+        // 跟踪误差评分：同类相对法 or 绝对法兜底
+        const teCfg = s.tracking_error;
+        let teS;
+        if (teCfg.method === 'peer_relative' && medianTE != null) {
+            teS = Math.max(0, Math.min(100, 100 - (te - medianTE) / teCfg.spread * teCfg.penalty));
+        } else {
+            const opt = teCfg.fallback_optimal ?? teCfg.optimal ?? 0.008;
+            const rng = teCfg.fallback_range ?? teCfg.range ?? 0.022;
+            const pen = teCfg.fallback_penalty ?? teCfg.penalty ?? 67;
+            teS = Math.max(0, Math.min(100, 100 - (te - opt) / rng * pen));
+        }
+
         const sc = s.scale;
         const scS = (scale >= sc.optimal_min && scale <= sc.optimal_max) ? sc.optimal_score : (scale < sc.small_threshold ? sc.small_score : (scale > sc.large_threshold ? sc.large_score : sc.mid_score));
         const y3S = y3 != null ? Math.max(0, Math.min(100, (y3 - s.return_3yr.baseline) / s.return_3yr.range * 100)) : s.return_3yr.null_default;
@@ -288,10 +300,18 @@ const App = (() => {
         return +(feeS * w.fee + teS * w.tracking_error + scS * w.scale + y3S * w.return_3yr + msS * w.morningstar + purS * w.purchase_fee).toFixed(1);
     }
 
+    function calcMedianTE(funds) {
+        const tes = funds.map(f => f.tracking_error).filter(v => v != null && v > 0).sort((a, b) => a - b);
+        if (!tes.length) return null;
+        const mid = Math.floor(tes.length / 2);
+        return tes.length % 2 ? tes[mid] : (tes[mid - 1] + tes[mid]) / 2;
+    }
+
     function renderRanking() {
         const type = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
         const funds = FUND_DATA.filter(f => f.index_type === type);
-        rankData = funds.map(f => ({ ...f, score: scoreFund(f) })).sort((a, b) => b.score - a.score).map((f, i) => ({ ...f, rank: i + 1 }));
+        const medianTE = calcMedianTE(funds);
+        rankData = funds.map(f => ({ ...f, score: scoreFund(f, medianTE) })).sort((a, b) => b.score - a.score).map((f, i) => ({ ...f, rank: i + 1 }));
 
         const thead = document.querySelector('#rank-table thead');
         thead.innerHTML = '<tr>' + rankCols.map(c => `<th data-key="${c.key}">${c.label} <span class="arr">⇅</span></th>`).join('') + '</tr>';
@@ -467,9 +487,11 @@ const App = (() => {
         function feeStr(f) { return (((f.mgmt_fee||0)+(f.custody_fee||0))*100).toFixed(2) + '%'; }
         function renderList(filter) {
             const q = (filter || '').toLowerCase();
+            const nqMedianTE = calcMedianTE(FUND_DATA.filter(f => f.index_type === '纳斯达克100'));
+            const spMedianTE = calcMedianTE(FUND_DATA.filter(f => f.index_type === '标普500'));
             const items = FUND_DATA.map(f => ({
                 ...f,
-                score: scoreFund(f)
+                score: scoreFund(f, f.index_type === '标普500' ? spMedianTE : nqMedianTE)
             })).filter(f => {
                 if (!q) return true;
                 return f.code.includes(q) || f.name.toLowerCase().includes(q);
@@ -1007,8 +1029,10 @@ const App = (() => {
                 nq = nq.filter(isBuyable);
                 sp = sp.filter(isBuyable);
             }
-            const nqScored = nq.map(f => ({ ...f, score: scoreFund(f) })).sort((a, b) => b.score - a.score);
-            const spScored = sp.map(f => ({ ...f, score: scoreFund(f) })).sort((a, b) => b.score - a.score);
+            const nqMedianTE = calcMedianTE(nq);
+            const spMedianTE = calcMedianTE(sp);
+            const nqScored = nq.map(f => ({ ...f, score: scoreFund(f, nqMedianTE) })).sort((a, b) => b.score - a.score);
+            const spScored = sp.map(f => ({ ...f, score: scoreFund(f, spMedianTE) })).sort((a, b) => b.score - a.score);
             
             const rnq = nqScored.slice(0, fundSel.nasdaq_top_n);
             const rsp = spScored.slice(0, fundSel.sp500_top_n);

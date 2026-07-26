@@ -4,10 +4,10 @@
   "scoring": {
     "weights": {
       "fee": 0.35,
-      "tracking_error": 0.25,
+      "tracking_error": 0.20,
       "scale": 0.15,
-      "return_3yr": 0.12,
-      "morningstar": 0.08,
+      "return_3yr": 0.15,
+      "morningstar": 0.10,
       "purchase_fee": 0.05
     },
     "fee": {
@@ -16,9 +16,13 @@
       "penalty": 50
     },
     "tracking_error": {
-      "optimal": 0.008,
-      "range": 0.022,
-      "penalty": 67
+      "method": "peer_relative",
+      "spread": 0.015,
+      "penalty": 50,
+      "_comment": "同类相对评分：TE与同指数基金中位数比较。spread=中位数上下浮动范围，penalty=超出spread时的扣分力度",
+      "fallback_optimal": 0.008,
+      "fallback_range": 0.022,
+      "fallback_penalty": 67
     },
     "scale": {
       "optimal_min": 10,
@@ -133,6 +137,7 @@
   },
 
   "validation": {
+    "_comment": "tracking_error_1yr may be added in the future",
     "tracking_error": [0.001, 0.15],
     "scale": [0.01, 1000],
     "return_1yr": [-0.8, 5.0],
