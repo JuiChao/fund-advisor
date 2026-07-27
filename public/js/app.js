@@ -1167,7 +1167,6 @@ const App = (() => {
 
     // ===== 初始化 =====
     async function init() {
-        initNav();
         try {
             const [fundsResp, algoResp] = await Promise.all([
                 fetch('data/funds.json'),
@@ -1177,6 +1176,7 @@ const App = (() => {
             ALGO_CONFIG = await algoResp.json();
 
             renderHome();
+            initNav();
         } catch (e) {
             document.getElementById('home-stats').innerHTML = '<div class="card"><p style="color:var(--err)">数据加载失败: ' + e.message + '</p></div>';
         }
@@ -1226,32 +1226,44 @@ const App = (() => {
             detailTr.className = 'fund-detail-row';
             const colSpan = rankCols.length;
             const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0);
-            detailTr.innerHTML = `<td colspan="${colSpan}" style="padding:1rem 1.25rem;background:var(--bg);border-left:3px solid var(--accent2)">
-                <div style="font-size:0.8rem;color:var(--txt2);line-height:1.8">
-                    ${f.full_name ? `<div><strong>基金全称：</strong>${f.full_name}</div>` : ''}
-                    ${f.fund_type ? `<div><strong>基金类型：</strong>${f.fund_type}</div>` : ''}
-                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem">
-                        ${f.manager_company ? `<div><strong>管理人：</strong>${f.manager_company}</div>` : ''}
-                        ${f.custodian ? `<div><strong>托管人：</strong>${f.custodian}</div>` : ''}
-                        ${f.fund_manager ? `<div><strong>基金经理：</strong>${f.fund_manager}</div>` : ''}
+            detailTr.innerHTML = `<td colspan="${colSpan}" style="padding:1.5rem; background:var(--surface2); border-left:4px solid var(--accent2); box-shadow:inset 0 2px 4px rgba(0,0,0,0.02)">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; font-size:0.85rem; color:var(--txt2); line-height:1.6;">
+                    
+                    <!-- 基础信息 -->
+                    <div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">📝 基础信息</div>
+                        ${f.full_name ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">全称：</strong>${f.full_name}</div>` : ''}
+                        ${f.fund_type ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">类型：</strong>${f.fund_type}</div>` : ''}
+                        ${f.tracking_index ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">标的：</strong>${f.tracking_index}</div>` : ''}
                     </div>
-                    ${f.tracking_index ? `<div><strong>跟踪标的：</strong>${f.tracking_index}</div>` : ''}
-                    ${f.benchmark ? `<div><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
-                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem;margin-top:0.35rem;padding-top:0.35rem;border-top:1px dashed var(--border)">
-                        <div><strong>管理费：</strong>${f.mgmt_fee ? (f.mgmt_fee*100).toFixed(2)+'%/年' : '-'}</div>
-                        <div><strong>托管费：</strong>${f.custody_fee ? (f.custody_fee*100).toFixed(2)+'%/年' : '-'}</div>
-                        <div><strong>综合费率：</strong><span style="color:var(--ok);font-weight:600">${(fee*100).toFixed(2)}%/年</span></div>
-                        ${f.purchase_fee != null ? `<div><strong>申购费：</strong>${(f.purchase_fee*100).toFixed(2)}%</div>` : ''}
-                        ${f.sales_fee != null ? `<div><strong>销售服务费：</strong>${(f.sales_fee*100).toFixed(2)}%/年</div>` : ''}
+
+                    <!-- 管理团队 -->
+                    <div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">👔 管理团队</div>
+                        ${f.manager_company ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">基金公司：</strong>${f.manager_company}</div>` : ''}
+                        ${f.fund_manager ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">基金经理：</strong>${f.fund_manager}</div>` : ''}
+                        ${f.custodian ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">托管银行：</strong>${f.custodian}</div>` : ''}
                     </div>
-                    <div style="display:flex;flex-wrap:wrap;gap:0 2rem;margin-top:0.35rem">
-                        ${f.inception_date ? `<div><strong>成立日期：</strong>${f.inception_date}</div>` : ''}
-                        ${f.issue_date ? `<div><strong>发行日期：</strong>${f.issue_date}</div>` : ''}
-                        ${f.scale ? `<div><strong>规模：</strong>${f.scale.toFixed(2)}亿元</div>` : ''}
-                        ${f.dividend_info ? `<div><strong>分红：</strong>${f.dividend_info}</div>` : ''}
+
+                    <!-- 费率详情 -->
+                    <div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">💰 费率详情</div>
+                        <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">综合费率：</strong><span style="color:var(--ok);font-weight:700">${(fee*100).toFixed(2)}%/年</span></div>
+                        <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">管理费：</strong>${f.mgmt_fee ? (f.mgmt_fee*100).toFixed(2)+'%/年' : '-'}</div>
+                        <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">托管费：</strong>${f.custody_fee ? (f.custody_fee*100).toFixed(2)+'%/年' : '-'}</div>
+                        ${f.purchase_fee != null ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">申购费：</strong>${(f.purchase_fee*100).toFixed(2)}%</div>` : ''}
                     </div>
-                    ${f.return_1yr != null ? `<div style="margin-top:0.35rem;padding-top:0.35rem;border-top:1px dashed var(--border)"><strong>近1年：</strong><span style="color:var(--ok)">${(f.return_1yr*100).toFixed(2)}%</span>　<strong>近3年：</strong><span style="color:var(--ok)">${f.return_3yr != null ? (f.return_3yr*100).toFixed(2)+'%' : '-'}</span>　<strong>成立以来：</strong><span style="color:var(--ok)">${f.return_since != null ? (f.return_since*100).toFixed(2)+'%' : '-'}</span></div>` : ''}
+
+                    <!-- 规模与时间 -->
+                    <div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">📅 规模与时间</div>
+                        ${f.scale ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">基金规模：</strong>${f.scale.toFixed(2)}亿元</div>` : ''}
+                        ${f.inception_date ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">成立日期：</strong>${f.inception_date}</div>` : ''}
+                        ${f.dividend_info ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">分红：</strong>${f.dividend_info}</div>` : ''}
+                    </div>
+
                 </div>
+                ${f.benchmark ? `<div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border); font-size:0.8rem; color:var(--txt3);"><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
             </td>`;
             tr.after(detailTr);
         });
