@@ -1019,7 +1019,8 @@ const App = (() => {
 
         function isBuyable(f) {
             const status = f.limit_status || '';
-            return !status.includes('暂停');
+            const limit = f.daily_limit;
+            return !(status.includes('暂停申购') || (status.includes('暂停') && limit == null));
         }
 
         function pickFundsByStyle(nqPct, onlyBuyable = false) {
