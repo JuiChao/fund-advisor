@@ -751,8 +751,7 @@ const App = (() => {
                 }
             });
             await Promise.all(simPromises);
-
-            const pieColors = ['#6366f1','#f59e0b','#64748b','#eab308','#818cf8','#22d3ee'];
+            const pieColors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#f43f5e', '#06b6d4'];
 
             let html = '';
             strategies.forEach(s => {
@@ -823,14 +822,38 @@ const App = (() => {
                             datasets: [{
                                 data: allocs.map(a => a.monthly),
                                 backgroundColor: pieColors,
-                                borderColor: 'var(--surface)',
-                                borderWidth: 2,
+                                borderWidth: 0,
+                                hoverOffset: 6,
+                                borderRadius: 5,
+                                spacing: 3
                             }]
                         },
                         options: {
                             responsive: true,
-                            cutout: '60%',
-                            plugins: { legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, pointStyle: 'circle', font: { size: 11 } } } }
+                            cutout: '72%',
+                            layout: { padding: 8 },
+                            plugins: { 
+                                legend: { 
+                                    position: 'bottom', 
+                                    labels: { 
+                                        padding: 16, 
+                                        usePointStyle: true, 
+                                        pointStyle: 'circle', 
+                                        font: { size: 12, family: 'system-ui, -apple-system, sans-serif' },
+                                        color: '#64748b'
+                                    } 
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                    titleFont: { size: 13, family: 'system-ui, -apple-system, sans-serif', weight: 'normal' },
+                                    bodyFont: { size: 13, family: 'system-ui, -apple-system, sans-serif', weight: 'bold' },
+                                    padding: 12,
+                                    cornerRadius: 8,
+                                    boxPadding: 6,
+                                    displayColors: true,
+                                    usePointStyle: true
+                                }
+                            }
                         }
                     });
                 });
