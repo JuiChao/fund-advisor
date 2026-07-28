@@ -30,7 +30,14 @@ export async function onRequest(context) {
     const simsData = await simsResp.json();
 
     // 2. 动态额度分配算法和基金挑选逻辑（从共享配置读取参数）
-    function scoreFund(f) {
+    function calcMedianTE(list) {
+      const tes = list.map(f => f.tracking_error).filter(v => v != null && v > 0).sort((a, b) => a - b);
+      if (!tes.length) return null;
+      const mid = Math.floor(tes.length / 2);
+      return tes.length % 2 ? tes[mid] : (tes[mid - 1] + tes[mid]) / 2;
+    }
+
+    function scoreFund(f, medianTE) {
       const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0);
       const te = f.tracking_error || defaults.tracking_error_for_scoring;
       const scaleVal = f.scale || defaults.scale;
@@ -39,7 +46,18 @@ export async function onRequest(context) {
       const pur = f.purchase_fee || defaults.purchase_fee;
       const s = scoringCfg;
       const feeS = Math.max(0, Math.min(100, 100 - (fee - s.fee.optimal) / s.fee.range * s.fee.penalty));
-      const teS = Math.max(0, Math.min(100, 100 - (te - s.tracking_error.optimal) / s.tracking_error.range * s.tracking_error.penalty));
+      
+      const teCfg = s.tracking_error;
+      let teS;
+      if (teCfg.method === 'peer_relative' && medianTE != null) {
+        teS = Math.max(0, Math.min(100, 100 - (te - medianTE) / teCfg.spread * teCfg.penalty));
+      } else {
+        const opt = teCfg.fallback_optimal ?? teCfg.optimal ?? 0.008;
+        const rng = teCfg.fallback_range ?? teCfg.range ?? 0.022;
+        const pen = teCfg.fallback_penalty ?? teCfg.penalty ?? 67;
+        teS = Math.max(0, Math.min(100, 100 - (te - opt) / rng * pen));
+      }
+
       const sc = s.scale;
       const scS = (scaleVal >= sc.optimal_min && scaleVal <= sc.optimal_max) ? sc.optimal_score
         : (scaleVal < sc.small_threshold ? sc.small_score
@@ -52,7 +70,8 @@ export async function onRequest(context) {
     }
 
     function rankFunds(list) {
-      const scored = list.map(f => ({ ...f, score: scoreFund(f) }));
+      const medianTE = calcMedianTE(list);
+      const scored = list.map(f => ({ ...f, score: scoreFund(f, medianTE) }));
       scored.sort((a, b) => b.score - a.score);
       return scored.map((f, i) => ({ ...f, rank: i + 1 }));
     }
