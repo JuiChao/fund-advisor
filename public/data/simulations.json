@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T05:45:32Z",
+  "generated_at": "2026-08-02T07:13:51Z",
   "base_budget": 1000,
   "n_simulations": 5000,
   "years_range": [
@@ -511,7 +511,7 @@
             "daily_limit": 10,
             "limit_status": "限10元/日",
             "direct_daily_limit": null,
-            "direct_limit_status": "",
+            "direct_limit_status": null,
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -1274,7 +1274,7 @@
             "daily_limit": 10,
             "limit_status": "限10元/日",
             "direct_daily_limit": null,
-            "direct_limit_status": "",
+            "direct_limit_status": null,
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -2037,7 +2037,7 @@
             "daily_limit": 10,
             "limit_status": "限10元/日",
             "direct_daily_limit": null,
-            "direct_limit_status": "",
+            "direct_limit_status": null,
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
