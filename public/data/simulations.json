@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T07:13:51Z",
+  "generated_at": "2026-08-02T07:30:15Z",
   "base_budget": 1000,
   "n_simulations": 5000,
   "years_range": [
@@ -200,8 +200,8 @@
             "score": 68.1,
             "daily_limit": 10,
             "limit_status": "暂停申购",
-            "direct_daily_limit": 500,
-            "direct_limit_status": "限500元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.146
           }
@@ -963,8 +963,8 @@
             "score": 68.1,
             "daily_limit": 10,
             "limit_status": "暂停申购",
-            "direct_daily_limit": 500,
-            "direct_limit_status": "限500元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.243
           }
@@ -1726,8 +1726,8 @@
             "score": 68.1,
             "daily_limit": 10,
             "limit_status": "暂停申购",
-            "direct_daily_limit": 500,
-            "direct_limit_status": "限500元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.3407
           }
