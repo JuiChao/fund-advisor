@@ -115,6 +115,7 @@ export async function onRequest(context) {
           fee: +((f.mgmt_fee || 0) + (f.custody_fee || 0)).toFixed(4),
           tracking_error: f.tracking_error, score: f.score || 0,
           daily_limit: f.daily_limit || null, limit_status: f.limit_status || '',
+          direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
           exceeds_limit: false,
         };
       });
@@ -186,6 +187,7 @@ export async function onRequest(context) {
           fee: +((f.mgmt_fee || 0) + (f.custody_fee || 0)).toFixed(4),
           tracking_error: f.tracking_error, score: f.score || 0,
           daily_limit: a.limit !== Infinity ? a.limit : null, limit_status: f.limit_status || '',
+          direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
           exceeds_limit: a.exceeds_limit,
         };
       });

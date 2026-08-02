@@ -295,6 +295,84 @@ def scrape_fee_page(code):
         return {}
 
 
+def scrape_limit_announcement(code):
+    """从基金公告中提取直销渠道限购信息"""
+    try:
+        # 获取公告列表（需要特殊 Referer）
+        ann_headers = {**HEADERS, 'Referer': 'https://fundf10.eastmoney.com/'}
+        url = f'http://api.fund.eastmoney.com/f10/JJGG?callback=jQuery&fundcode={code}&pageIndex=1&pageSize=30&type=0'
+        resp = requests.get(url, headers=ann_headers, timeout=15)
+        resp.encoding = 'utf-8'
+        m = re.search(r'jQuery\((.*)\)', resp.text, re.DOTALL)
+        if not m:
+            return {}
+        data = json.loads(m.group(1))
+
+        # 查找最新的限购相关公告
+        target_ann_id = None
+        for item in data.get('Data', []):
+            title = item.get('TITLE', '')
+            if any(k in title for k in ['大额申购', '暂停大额', '暂停申购', '限制大额', '调整大额', '限制申购']):
+                target_ann_id = item.get('ID')
+                break
+
+        if not target_ann_id:
+            return {}
+
+        # 获取公告全文
+        ann_url = f'https://np-cnotice-fund.eastmoney.com/api/content/ann?art_code={target_ann_id}&client_source=fund_pc&page_index=1&page_size=1'
+        ann_resp = requests.get(ann_url, headers=HEADERS, timeout=15)
+        ann_resp.encoding = 'utf-8'
+        ann_data = ann_resp.json()
+
+        content = ''
+        try:
+            content = ann_data['data']['notice_content']
+        except (KeyError, TypeError):
+            pass
+        if not content:
+            try:
+                content = ann_data['data']['list'][0]['content']
+            except (KeyError, TypeError, IndexError):
+                pass
+
+        if not content:
+            return {'limit_announcement_id': target_ann_id}
+
+        # 清理 HTML 标签，保留空格用于正则匹配
+        text_norm = re.sub(r'<[^>]+>', ' ', content)
+        text_norm = re.sub(r'[\n\r\t\xa0\u3000]+', ' ', text_norm)
+        text_norm = re.sub(r'\s+', ' ', text_norm)
+
+        result = {
+            'direct_daily_limit': None,
+            'direct_limit_status': None,
+            'limit_announcement_id': target_ann_id
+        }
+
+        # 提取直销限额："通过本公司直销机构...不超过 X 元"
+        m1 = re.search(
+            r'(?:通过|经由?)(?:本)?(?:公司|基金管理人)?直销(?:机构|渠道|平台|柜台)?'
+            r'(?:申购|买入)?(?:本基金)?.*?'
+            r'(?:不超过|限额为?|上限为?)\s*(\d+(?:\.\d+)?)\s*元',
+            text_norm
+        )
+        if m1:
+            dl = int(float(m1.group(1)))
+            result['direct_daily_limit'] = dl
+            result['direct_limit_status'] = f'限{dl}元/日'
+
+        # 检查直销渠道是否暂停（覆盖上面的限额）
+        if re.search(r'直销(?:机构|渠道|平台)?(?:\s*)?暂停', text_norm):
+            result['direct_daily_limit'] = 0
+            result['direct_limit_status'] = '暂停申购'
+
+        return result
+    except Exception as e:
+        print(f'  [WARN] 抓取 {code} 直销限额公告失败: {e}')
+        return {}
+
+
 # 校验范围缓存（避免每次调用 validate 都读文件）
 _VALIDATION_CACHE = None
 
@@ -345,12 +423,14 @@ def main():
         time.sleep(DELAY)
         fee_data = scrape_fee_page(code)
         time.sleep(DELAY)
+        limit_data = scrape_limit_announcement(code)
+        time.sleep(DELAY)
 
         # 合并：抓取到的数据覆盖兜底数据
-        merged = {**base, **page_data, **f10_data, **fee_data}
+        merged = {**base, **page_data, **f10_data, **fee_data, **limit_data}
         merged = validate(merged)
 
-        total_fields = len(page_data) + len(f10_data) + len(fee_data)
+        total_fields = len(page_data) + len(f10_data) + len(fee_data) + len(limit_data)
         if total_fields > 0:
             updated += 1
             print(f'  [OK] 更新了 {total_fields} 个字段')

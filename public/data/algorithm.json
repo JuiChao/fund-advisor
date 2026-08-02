@@ -58,7 +58,8 @@
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
     "morningstar": 0,
-    "daily_limit_fallback": 10
+    "daily_limit_fallback": 10,
+    "direct_daily_limit_fallback": 100
   },
 
   "allocation": {

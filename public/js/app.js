@@ -120,7 +120,7 @@ const App = (() => {
 
         document.getElementById('home-stats').innerHTML = `
             <div class="stat"><div class="lb">基金总数</div><div class="vl">${FUND_DATA.length}</div><div class="sub">纳指 ${nq.length} · 标普 ${sp.length}</div></div>
-            <div class="stat"><div class="lb">可购买</div><div class="vl">${avail.length}</div><div class="sub">未暂停申购</div></div>
+            <div class="stat"><div class="lb">可购买</div><div class="vl">${avail.length}</div><div class="sub">代销未暂停</div></div>
             <div class="stat"><div class="lb">最低费率</div><div class="vl">${(minFee * 100).toFixed(2)}%</div><div class="sub">管理费 + 托管费</div></div>
             <div class="stat"><div class="lb">数据更新</div><div class="vl" style="font-size:1rem">${FUND_DATA[0]?.updated_at?.split('T')[0] || '-'}</div><div class="sub">每日自动抓取</div></div>
         `;
@@ -263,7 +263,15 @@ const App = (() => {
             return '-'; 
         } },
         { key: 'morningstar', label: '晨星', render: r => { const n = r.morningstar; return n > 0 ? '<span style="color:var(--warn)">' + '★'.repeat(n) + '</span>' : '-'; } },
-        { key: 'limit_status', label: '限购', render: r => pill(r.limit_status) },
+        { key: 'limit_status', label: '限购', render: r => {
+            let html = '<div style="display:flex;flex-direction:column;gap:2px;align-items:center">';
+            html += '<div style="font-size:0.7rem;color:var(--txt3)">代销</div>' + pill(r.limit_status);
+            if (r.direct_limit_status) {
+                html += '<div style="font-size:0.7rem;color:var(--txt3);margin-top:2px">直销</div>' + pill(r.direct_limit_status);
+            }
+            html += '</div>';
+            return html;
+        } },
         { key: 'score', label: '评分', render: r => '<strong style="color:var(--accent2)">' + r.score + '</strong>' },
     ];
 
@@ -689,9 +697,9 @@ const App = (() => {
             <td>${a.daily}元</td>
             <td style="font-weight:600">${a.monthly}元</td>
             <td>${(a.actual_weight*100).toFixed(0)}%</td>
-            <td>${pill(a.limit_status)}</td>
+            <td>${pill(a.limit_status)}${a.direct_limit_status ? '<div style="margin-top:2px">' + pill(a.direct_limit_status) + '</div>' : ''}</td>
         </tr>`).join('');
-        return `<div class="table-wrap"><table><thead><tr><th>代码</th><th>名称</th><th>费率</th><th>每日</th><th>月合计</th><th>占比</th><th>限购</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        return `<div class="table-wrap"><table><thead><tr><th>代码</th><th>名称</th><th>费率</th><th>每日</th><th>月合计</th><th>占比</th><th>代销/直销</th></tr></thead><tbody>${rows}</tbody></table></div>`;
     }
 
     function renderVariantSim(variant, years) {
@@ -1085,6 +1093,7 @@ const App = (() => {
                     fee: +((f.mgmt_fee || 0) + (f.custody_fee || 0)).toFixed(4),
                     tracking_error: f.tracking_error, score: f.score || 0,
                     daily_limit: f.daily_limit || null, limit_status: f.limit_status || '',
+                    direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
                     exceeds_limit: false,
                 };
             });
@@ -1155,6 +1164,7 @@ const App = (() => {
                     fee: +((f.mgmt_fee || 0) + (f.custody_fee || 0)).toFixed(4),
                     tracking_error: f.tracking_error, score: f.score || 0,
                     daily_limit: a.limit !== Infinity ? a.limit : null, limit_status: f.limit_status || '',
+                    direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
                     exceeds_limit: a.exceeds_limit,
                 };
             });
@@ -1286,6 +1296,12 @@ const App = (() => {
                         ${f.dividend_info ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">分红：</strong>${f.dividend_info}</div>` : ''}
                     </div>
 
+                    <!-- 限购状态 -->
+                    <div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">🛑 限购状态</div>
+                        <div style="margin-bottom:0.25rem;display:flex;align-items:center;gap:6px"><strong style="color:var(--txt3)">代销限购：</strong>${pill(f.limit_status)}</div>
+                        <div style="margin-bottom:0.25rem;display:flex;align-items:center;gap:6px"><strong style="color:var(--txt3)">直销限购：</strong>${f.direct_limit_status ? pill(f.direct_limit_status) : '<span style="color:var(--txt3)">—</span>'}</div>
+                    </div>
                 </div>
                 ${f.benchmark ? `<div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border); font-size:0.8rem; color:var(--txt3);"><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
             </td>`;

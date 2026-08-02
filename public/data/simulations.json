@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T19:17:14Z",
+  "generated_at": "2026-08-02T05:15:47Z",
   "base_budget": 1000,
   "n_simulations": 5000,
   "years_range": [
@@ -132,6 +132,8 @@
             "score": 80.0,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.237
           },
@@ -147,6 +149,8 @@
             "score": 78.5,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.232
           },
@@ -162,6 +166,8 @@
             "score": 77.9,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.231
           },
@@ -177,6 +183,8 @@
             "score": 71.8,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.154
           },
@@ -192,6 +200,8 @@
             "score": 68.1,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": 500,
+            "direct_limit_status": "限500元/日",
             "exceeds_limit": false,
             "actual_weight": 0.146
           }
@@ -500,6 +510,8 @@
             "score": 77.3,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": "",
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -515,6 +527,8 @@
             "score": 74.2,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -530,6 +544,8 @@
             "score": 73.5,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -545,6 +561,8 @@
             "score": 72.1,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -560,6 +578,8 @@
             "score": 29.8,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": 100,
+            "direct_limit_status": "限100元/日",
             "exceeds_limit": false,
             "actual_weight": 0.12
           }
@@ -875,6 +895,8 @@
             "score": 80.0,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.169
           },
@@ -890,6 +912,8 @@
             "score": 78.5,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.166
           },
@@ -905,6 +929,8 @@
             "score": 77.9,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.165
           },
@@ -920,6 +946,8 @@
             "score": 71.8,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.257
           },
@@ -935,6 +963,8 @@
             "score": 68.1,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": 500,
+            "direct_limit_status": "限500元/日",
             "exceeds_limit": false,
             "actual_weight": 0.243
           }
@@ -1243,6 +1273,8 @@
             "score": 77.3,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": "",
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -1258,6 +1290,8 @@
             "score": 74.2,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -1273,6 +1307,8 @@
             "score": 73.5,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -1288,6 +1324,8 @@
             "score": 72.1,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -1303,6 +1341,8 @@
             "score": 29.8,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": 100,
+            "direct_limit_status": "限100元/日",
             "exceeds_limit": false,
             "actual_weight": 0.12
           }
@@ -1618,6 +1658,8 @@
             "score": 80.0,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.1019
           },
@@ -1633,6 +1675,8 @@
             "score": 78.5,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.0999
           },
@@ -1648,6 +1692,8 @@
             "score": 77.9,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.0989
           },
@@ -1663,6 +1709,8 @@
             "score": 71.8,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.3586
           },
@@ -1678,6 +1726,8 @@
             "score": 68.1,
             "daily_limit": 10,
             "limit_status": "暂停申购",
+            "direct_daily_limit": 500,
+            "direct_limit_status": "限500元/日",
             "exceeds_limit": false,
             "actual_weight": 0.3407
           }
@@ -1986,6 +2036,8 @@
             "score": 77.3,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": "",
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -2001,6 +2053,8 @@
             "score": 74.2,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.186
           },
@@ -2016,6 +2070,8 @@
             "score": 73.5,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": false,
             "actual_weight": 0.154
           },
@@ -2031,6 +2087,8 @@
             "score": 72.1,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": null,
+            "direct_limit_status": null,
             "exceeds_limit": true,
             "actual_weight": 0.22
           },
@@ -2046,6 +2104,8 @@
             "score": 29.8,
             "daily_limit": 10,
             "limit_status": "限10元/日",
+            "direct_daily_limit": 100,
+            "direct_limit_status": "限100元/日",
             "exceeds_limit": true,
             "actual_weight": 0.22
           }

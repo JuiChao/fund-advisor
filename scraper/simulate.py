@@ -201,6 +201,7 @@ def allocate_ideal(items, budget):
             'fee': round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0), 4),
             'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
             'daily_limit': f.get('daily_limit') or DEFAULTS['daily_limit_fallback'], 'limit_status': f.get('limit_status', ''),
+            'direct_daily_limit': f.get('direct_daily_limit'), 'direct_limit_status': f.get('direct_limit_status', ''),
             'exceeds_limit': False,
         })
     total = sum(a['monthly'] for a in allocs)
@@ -285,6 +286,7 @@ def allocate_practical(items, budget):
             'fee': round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0), 4),
             'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
             'daily_limit': a['limit'] if a['limit'] != float('inf') else None, 'limit_status': f.get('limit_status', ''),
+            'direct_daily_limit': f.get('direct_daily_limit'), 'direct_limit_status': f.get('direct_limit_status', ''),
             'exceeds_limit': a['exceeds_limit'],
         })
 
