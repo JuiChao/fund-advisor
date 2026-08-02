@@ -28,10 +28,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2022-09-05",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 0,
+    "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202602031819507007",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "016055",
@@ -62,10 +62,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2022-07-18",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 0,
+    "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202601071816541786",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "018043",
@@ -96,10 +96,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2023-03-27",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 0,
+    "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202605291822989315",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "160213",
@@ -129,10 +129,10 @@
     "tracking_index": "纳斯达克100指数",
     "dividend_info": "每份累计6.30元（8次）",
     "issue_date": "2010-03-22",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 0,
+    "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202606291826539905",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "040046",
@@ -166,7 +166,7 @@
     "direct_daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "limit_announcement_id": "AN202607211827178744",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "000834",
@@ -200,7 +200,7 @@
     "direct_daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "limit_announcement_id": "AN202606031823188725",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "161130",
@@ -231,10 +231,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2017-05-02",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 0,
+    "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202606291826539801",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "270042",
@@ -265,10 +265,10 @@
     "dividend_info": "每份累计0.27元（2次）",
     "sales_fee": 0.0,
     "issue_date": "2012-07-09",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 5,
+    "direct_limit_status": "限5元/日",
     "limit_announcement_id": "AN202607201827126800",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "016452",
@@ -299,10 +299,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2022-11-07",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 10,
+    "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202607081826816306",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "539001",
@@ -336,7 +336,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202607091826839817",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "019547",
@@ -369,7 +369,7 @@
     "direct_daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "limit_announcement_id": "AN202607241827305125",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "018966",
@@ -399,10 +399,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2023-07-31",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 10,
+    "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202607171827041199",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "015299",
@@ -436,7 +436,7 @@
     "direct_daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "limit_announcement_id": "AN202607311827507936",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "019172",
@@ -466,10 +466,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2023-09-11",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 10,
+    "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202607241827315717",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "019441",
@@ -497,10 +497,10 @@
     "issue_date": "2023-09-26",
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 10,
+    "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202607091826830545",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "019524",
@@ -528,10 +528,10 @@
     "issue_date": "2023-10-16",
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 10,
+    "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202604231821470346",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "019736",
@@ -559,10 +559,10 @@
     "issue_date": "2024-02-29",
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 10,
+    "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202606101823409504",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "050025",
@@ -593,10 +593,10 @@
     "dividend_info": "每份累计0.06元（3次）",
     "sales_fee": 0.0,
     "issue_date": "2012-05-15",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 0,
+    "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202605081822057674",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "161125",
@@ -627,10 +627,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2016-11-14",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 0,
+    "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202606291826539801",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "017641",
@@ -661,10 +661,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2023-03-27",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 10,
+    "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202607241827315718",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "017028",
@@ -695,10 +695,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2022-11-01",
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 0,
+    "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202606291826539905",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "018064",
@@ -732,7 +732,7 @@
     "direct_daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "limit_announcement_id": "AN202607311827510657",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "096001",
@@ -766,7 +766,7 @@
     "direct_daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "limit_announcement_id": "AN202606031823187833",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   },
   {
     "code": "007721",
@@ -794,9 +794,9 @@
     "issue_date": "2019-09-16",
     "mgmt_fee": 0.006,
     "custody_fee": 0.002,
-    "direct_daily_limit": null,
-    "direct_limit_status": null,
+    "direct_daily_limit": 0,
+    "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202605291822984235",
-    "updated_at": "2026-08-02T15:27:28"
+    "updated_at": "2026-08-02T15:57:43"
   }
 ]
