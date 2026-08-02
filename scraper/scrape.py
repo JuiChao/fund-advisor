@@ -350,20 +350,41 @@ def scrape_limit_announcement(code):
             'limit_announcement_id': target_ann_id
         }
 
-        # 提取直销限额："通过本公司直销机构...不超过 X 元"
+        # === 多模式提取直销限额 ===
+        # 模式1: "通过本公司直销机构...不超过 X 元"
         m1 = re.search(
             r'(?:通过|经由?)(?:本)?(?:公司|基金管理人)?直销(?:机构|渠道|平台|柜台)?'
             r'(?:申购|买入)?(?:本基金)?.*?'
-            r'(?:不超过|限额为?|上限为?)\s*(\d+(?:\.\d+)?)\s*元',
+            r'(?:不超过|限额为?|上限为?)\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)',
             text_norm
         )
-        if m1:
-            dl = int(float(m1.group(1)))
-            result['direct_daily_limit'] = dl
-            result['direct_limit_status'] = f'限{dl}元/日'
+        # 模式2: "在直销机构...超过 X 元...有权拒绝"（招商等）
+        m2 = re.search(
+            r'(?:在|调整)(?:本公司)?直销(?:机构|渠道|平台)?'
+            r'.*?(?:超过|高于)\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)'
+            r'.*?(?:有权|将予以?)(?:部分或全部)?拒绝',
+            text_norm
+        )
+        # 模式3: "直销" 后紧跟表格数据中的限额数字（大成等）
+        m3 = re.search(
+            r'直销(?:机构|渠道|平台|柜台)?(?:\s*(?:（[^）]*）)?)?\s*(?:申购|买入)'
+            r'.*?(?:累计金额应?不超过|累计上限为?|单笔.*?上限为?)\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)',
+            text_norm
+        )
+        # 模式4: "直销" 段落中出现 "不超过 X 元"（宽松匹配，限制在200字符内）
+        direct_section = re.search(r'直销.{0,200}?不超过\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)', text_norm)
+
+        # 按优先级取值
+        for match in [m1, m2, m3, direct_section]:
+            if match:
+                dl = int(float(match.group(1)))
+                if dl > 0:  # 排除0的情况
+                    result['direct_daily_limit'] = dl
+                    result['direct_limit_status'] = f'限{dl}元/日'
+                    break
 
         # 检查直销渠道是否暂停（覆盖上面的限额）
-        if re.search(r'直销(?:机构|渠道|平台)?(?:\s*)?暂停', text_norm):
+        if re.search(r'(?:在)?直销(?:机构|渠道|平台)?(?:\s*)?暂停', text_norm):
             result['direct_daily_limit'] = 0
             result['direct_limit_status'] = '暂停申购'
 
