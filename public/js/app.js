@@ -244,7 +244,7 @@ const App = (() => {
     const rankCols = [
         { key: 'rank', label: '#' },
         { key: 'code', label: '代码' },
-        { key: 'name', label: '名称', render: r => `<strong style="color:var(--accent2);cursor:pointer" class="fund-name-link" data-code="${r.code}" title="点击查看详情">` + r.name + ' <span style="font-size:0.7em;opacity:0.5">▸</span></strong>' },
+        { key: 'name', label: '名称', render: r => `<a href="fund/${r.code}.html" style="color:var(--accent2);cursor:pointer;text-decoration:none;font-weight:600" class="fund-name-link" data-code="${r.code}" title="点击查看详情">` + r.name + ' <span style="font-size:0.7em;opacity:0.5">▸</span></a>' },
         { key: 'fee', label: '费率', render: r => { const f = (r.mgmt_fee || 0) + (r.custody_fee || 0); return '<span style="' + feeC(f) + '">' + fmt(f) + '</span>'; } },
         { key: 'tracking_error', label: '跟踪误差', render: r => fmt(r.tracking_error) },
         { key: 'scale', label: '规模', render: r => r.scale ? r.scale.toFixed(1) + '亿' : '-' },
@@ -1244,6 +1244,7 @@ const App = (() => {
         document.querySelector('#rank-table').addEventListener('click', e => {
             const link = e.target.closest('.fund-name-link');
             if (!link) return;
+            e.preventDefault();
             const code = link.dataset.code;
             const tr = link.closest('tr');
             const existing = tr.nextElementSibling;

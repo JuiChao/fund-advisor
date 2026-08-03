@@ -48,15 +48,18 @@ jobs:
       - name: Pre-compute simulations
         run: python scraper/simulate.py
 
+      - name: Generate static SEO pages
+        run: python scraper/generate_seo.py
+
       - name: Commit and push
         run: |
           git config user.name "fund-bot"
           git config user.email "bot@fund-advisor.local"
-          git add public/data/funds.json public/data/simulations.json public/data/algorithm.json
+          git add public/data/funds.json public/data/simulations.json public/data/algorithm.json public/sitemap.xml public/fund/*.html
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: update fund data $(date -u +%Y-%m-%d)"
+            git commit -m "chore: update fund data and seo pages $(date -u +%Y-%m-%d)"
             git push
           fi
 
