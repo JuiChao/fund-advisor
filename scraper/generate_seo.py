@@ -71,11 +71,22 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </div>
         </div>
 
+        {review_html}
+
         <div style="text-align:center;margin:2.5rem 0 1rem 0">
             <a href="/#ranking?q={fund_code}" class="btn btn-p" style="text-decoration:none;padding:0.75rem 2rem;font-size:1.1rem">在 Fund Advisor 完整版中进行定投模拟 ➔</a>
         </div>
     </div>
 </main>
+<footer style="margin-top:4rem;padding:2rem 0;border-top:1px solid var(--border);text-align:center;color:var(--txt3);font-size:0.9rem">
+    <div style="margin-bottom:1rem">
+        <a href="/about.html" style="color:var(--txt3);margin:0 10px;text-decoration:none">关于我们</a> |
+        <a href="/privacy-policy.html" style="color:var(--txt3);margin:0 10px;text-decoration:none">隐私政策</a> |
+        <a href="/terms-of-service.html" style="color:var(--txt3);margin:0 10px;text-decoration:none">服务条款</a> |
+        <a href="mailto:contact@858000.xyz" style="color:var(--txt3);margin:0 10px;text-decoration:none">联系我们</a>
+    </div>
+    <p>© 2026 Fund Advisor. All rights reserved.</p>
+</footer>
 </body>
 </html>
 """
@@ -111,6 +122,38 @@ for fund in funds:
         "feesAndCommissionsSpecification": f"管理费 {format_pct(fund.get('mgmt_fee'))}%, 托管费 {format_pct(fund.get('custody_fee'))}%"
     }
 
+    review_fee_desc = "在同类产品中属于中等水平"
+    if total_fee <= 0.008:
+        review_fee_desc = "在同类产品中处于极低水平，非常适合长期定投，能为您显著节省复利成本"
+    elif total_fee >= 0.012:
+        review_fee_desc = "在同类产品中偏高，建议对比其他低费率平替产品"
+        
+    review_status_desc = f"目前该基金的代销渠道状态为“{agency_status}”，直销渠道状态为“{direct_status}”。"
+    if "暂停" in agency_status and "暂停" not in direct_status:
+        review_status_desc += "如果您发现无法在天天基金或支付宝等平台买入，建议前往基金公司官网或官方APP通过直销渠道申购，通常可以突破代销限额。"
+    elif "暂停" in agency_status and "暂停" in direct_status:
+        review_status_desc += "由于外汇额度等原因，目前可能无法大额申购，建议关注本站的平替基金推荐。"
+        
+    review_return_desc = f"近三年历史收益率为 {r3_str}%。" if r3 is not None else "暂无近三年完整历史收益数据。"
+    
+    review_html = f"""
+        <div class="fund-seo-review" style="margin-top:2rem;line-height:1.7;color:var(--txt2);font-size:1.05rem;">
+            <h2 style="font-size:1.25rem;color:var(--txt);margin-bottom:1rem;font-weight:600;">{fund.get('name', '')} 深度评测</h2>
+            <p style="margin-bottom:1rem;">
+                <strong>{fund.get('name', '')} ({code})</strong> 是一只由{fund.get('manager_company', '')}发行的优质指数产品，主要追踪 <strong>{fund.get('index_type', '')}</strong> 指数。成立于 {fund.get('inception_date', '-')}。作为一只紧密跟踪海外核心资产的 QDII 基金，它为境内投资者提供了便捷的全球资产配置渠道。
+            </p>
+            <p style="margin-bottom:1rem;">
+                在费率方面，该基金的综合费率为每年 <strong>{format_pct(total_fee)}%</strong>（其中管理费 {format_pct(fund.get('mgmt_fee'))}%，托管费 {format_pct(fund.get('custody_fee'))}%）。这一费率结构{review_fee_desc}。在长达数十年的定投复利过程中，费率是影响最终财富积累的核心因素之一。
+            </p>
+            <p style="margin-bottom:1rem;">
+                {review_status_desc} QDII基金由于受国家外汇管理局的QDII额度审批限制，常常会根据额度余量调整限购政策，这是投资海外市场特有的现象。
+            </p>
+            <p>
+                业绩方面，该基金{review_return_desc} 值得注意的是，指数基金的过往业绩主要取决于底层指数（{fund.get('index_type', '')}）的Beta收益，而不代表对未来表现的保证。如果您计划投资该基金，我们强烈建议您使用 Fund Advisor 的蒙特卡洛模拟器，测算在不同的定投预算和年限下，该基金可能呈现的风险收益分布。
+            </p>
+        </div>
+    """
+
     html = HTML_TEMPLATE.format(
         fund_name=fund.get('name', ''),
         fund_code=code,
@@ -125,6 +168,7 @@ for fund in funds:
         direct_status=direct_status,
         return_3yr=r3_str,
         return_color=ret_color,
+        review_html=review_html,
         json_ld=json.dumps(json_ld, ensure_ascii=False, indent=2)
     )
 
