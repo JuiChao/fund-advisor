@@ -1,11 +1,13 @@
 import json
 import os
 import shutil
+import glob
 
 # 路径配置
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_FILE = os.path.join(ROOT_DIR, 'public', 'data', 'funds.json')
 FUND_DIR = os.path.join(ROOT_DIR, 'public', 'fund')
+ARTICLES_DIR = os.path.join(ROOT_DIR, 'public', 'articles')
 SITEMAP_FILE = os.path.join(ROOT_DIR, 'public', 'sitemap.xml')
 
 # 清理并创建 fund 目录
@@ -17,17 +19,19 @@ os.makedirs(FUND_DIR)
 with open(DATA_FILE, 'r', encoding='utf-8') as f:
     funds = json.load(f)
 
-# HTML 模板
+# HTML 模板：针对 AdSense 政策设置 noindex，防止被判为模板化门页 (Doorway pages)
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex, follow">
 <title>{fund_name} ({fund_code}) 费率_限购_历史收益 - Fund Advisor</title>
 <meta name="description" content="{fund_name}({fund_code})是跟踪{index_type}指数的优质QDII基金。当前代销状态：{agency_status}，直销状态：{direct_status}。管理费{mgmt_fee}%，托管费{custody_fee}%。近3年收益率{return_3yr}%。点击查看详细定投模拟与评分排名。">
 <meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, 费率, 限购, 收益率, 定投, Fund Advisor">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="/css/style.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {json_ld}
 </script>
@@ -43,6 +47,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     </div>
     <div class="links">
         <a href="/">返回首页</a>
+        <a href="/articles/">投资百科</a>
+        <a href="/about.html">关于我们</a>
     </div>
 </nav>
 </header>
@@ -96,7 +102,7 @@ def format_pct(val):
         return "-"
     return f"{val * 100:.2f}"
 
-generated_urls = []
+generated_count = 0
 
 for fund in funds:
     code = fund['code']
@@ -176,38 +182,73 @@ for fund in funds:
     with open(out_path, 'w', encoding='utf-8') as f:
         f.write(html)
     
-    generated_urls.append(f"https://858000.xyz/fund/{code}.html")
+    generated_count += 1
 
-print(f"Successfully generated {len(generated_urls)} fund pages")
+print(f"Successfully generated {generated_count} fund pages (with noindex)")
 
-# === 更新 Sitemap ===
-if os.path.exists(SITEMAP_FILE):
-    with open(SITEMAP_FILE, 'r', encoding='utf-8') as f:
-        sitemap_content = f.read()
+# === 重构生成高质量 Sitemap ===
+# 只索引真正高质量原创内容、工具首页、关于和法律合规页，彻底排除同质化门页
+article_files = sorted(glob.glob(os.path.join(ARTICLES_DIR, "*.html")))
+article_urls = []
+for af in article_files:
+    filename = os.path.basename(af)
+    if filename == 'index.html':
+        continue
+    article_urls.append(f"https://858000.xyz/articles/{filename}")
 
-    # 移除原有的自动生成的 <url>...</url> (我们可以在 <!-- FUNDS_START --> 和 <!-- FUNDS_END --> 之间写入)
-    # 如果没有标签，我们就在 </urlset> 前插入
-    
-    import re
-    if '<!-- FUNDS_START -->' in sitemap_content:
-        sitemap_content = re.sub(r'<!-- FUNDS_START -->.*<!-- FUNDS_END -->', '', sitemap_content, flags=re.DOTALL)
-    else:
-        sitemap_content = sitemap_content.replace('</urlset>', '')
+sitemap_lines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
+    '        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+    '  <url>',
+    '    <loc>https://858000.xyz/</loc>',
+    '    <changefreq>daily</changefreq>',
+    '    <priority>1.0</priority>',
+    '    <image:image>',
+    '      <image:loc>https://858000.xyz/og-image.jpg</image:loc>',
+    '      <image:title>Fund Advisor 基金定投智能分析平台</image:title>',
+    '    </image:image>',
+    '  </url>',
+    '  <url>',
+    '    <loc>https://858000.xyz/articles/</loc>',
+    '    <changefreq>weekly</changefreq>',
+    '    <priority>0.9</priority>',
+    '  </url>'
+]
 
-    # 组装新的 funds XML
-    funds_xml = "<!-- FUNDS_START -->\n"
-    for url in generated_urls:
-        funds_xml += f"""  <url>
-    <loc>{url}</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>\n"""
-    funds_xml += "<!-- FUNDS_END -->\n</urlset>"
+for url in article_urls:
+    sitemap_lines.extend([
+        '  <url>',
+        f'    <loc>{url}</loc>',
+        '    <changefreq>monthly</changefreq>',
+        '    <priority>0.8</priority>',
+        '    <image:image>',
+        '      <image:loc>https://858000.xyz/og-image.jpg</image:loc>',
+        '    </image:image>',
+        '  </url>'
+    ])
 
-    sitemap_content = sitemap_content.strip() + "\n" + funds_xml
+sitemap_lines.extend([
+    '  <url>',
+    '    <loc>https://858000.xyz/about.html</loc>',
+    '    <changefreq>monthly</changefreq>',
+    '    <priority>0.6</priority>',
+    '  </url>',
+    '  <url>',
+    '    <loc>https://858000.xyz/privacy-policy.html</loc>',
+    '    <changefreq>yearly</changefreq>',
+    '    <priority>0.5</priority>',
+    '  </url>',
+    '  <url>',
+    '    <loc>https://858000.xyz/terms-of-service.html</loc>',
+    '    <changefreq>yearly</changefreq>',
+    '    <priority>0.5</priority>',
+    '  </url>',
+    '</urlset>',
+    ''
+])
 
-    with open(SITEMAP_FILE, 'w', encoding='utf-8') as f:
-        f.write(sitemap_content)
-    
-    print(f"Successfully updated Sitemap: {SITEMAP_FILE}")
+with open(SITEMAP_FILE, 'w', encoding='utf-8') as f:
+    f.write('\n'.join(sitemap_lines))
 
+print(f"Successfully generated clean Sitemap: {SITEMAP_FILE} with {len(article_urls)} articles")

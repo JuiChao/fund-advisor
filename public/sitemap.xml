@@ -16,21 +16,11 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://858000.xyz/articles/nasdaq-100-investment-guide.html</loc>
+    <loc>https://858000.xyz/articles/beginner-dca-step-by-step-guide.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
       <image:loc>https://858000.xyz/og-image.jpg</image:loc>
-      <image:title>纳斯达克100指数投资完全指南</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://858000.xyz/articles/sp500-investment-guide.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
-      <image:title>标普500指数投资深度解析</image:title>
     </image:image>
   </url>
   <url>
@@ -39,7 +29,14 @@
     <priority>0.8</priority>
     <image:image>
       <image:loc>https://858000.xyz/og-image.jpg</image:loc>
-      <image:title>基金定投策略完全指南</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://858000.xyz/articles/dca-timing-and-profit-taking.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
     </image:image>
   </url>
   <url>
@@ -48,7 +45,30 @@
     <priority>0.8</priority>
     <image:image>
       <image:loc>https://858000.xyz/og-image.jpg</image:loc>
-      <image:title>基金费率对长期收益的真实影响分析</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://858000.xyz/articles/how-to-choose-qdii-funds.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://858000.xyz/articles/nasdaq-100-investment-guide.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://858000.xyz/articles/qdii-currency-hedging-analysis.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
     </image:image>
   </url>
   <url>
@@ -57,8 +77,28 @@
     <priority>0.8</priority>
     <image:image>
       <image:loc>https://858000.xyz/og-image.jpg</image:loc>
-      <image:title>QDII基金投资完全攻略</image:title>
     </image:image>
+  </url>
+  <url>
+    <loc>https://858000.xyz/articles/sp500-investment-guide.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://858000.xyz/articles/tracking-error-and-fund-scale.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://858000.xyz/og-image.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://858000.xyz/about.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://858000.xyz/privacy-policy.html</loc>
@@ -70,198 +110,4 @@
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-
-</urlset>
-<!-- FUNDS_START -->
-  <url>
-    <loc>https://858000.xyz/fund/016532.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/016055.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/018043.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/160213.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/040046.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/000834.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/161130.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/270042.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/016452.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/539001.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/019547.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/018966.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/015299.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/019172.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/019441.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/019524.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/019736.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/050025.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/161125.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/017641.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/017028.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/018064.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/096001.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://858000.xyz/fund/007721.html</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-<!-- FUNDS_END -->
 </urlset>
