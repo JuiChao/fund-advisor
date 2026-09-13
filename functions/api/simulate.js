@@ -2,26 +2,25 @@
 // 单基金模拟：优先从预计算数据查找，找不到则独立模拟
 // 所有算法参数从 /data/algorithm.json 读取（单一数据源）
 export async function onRequest(context) {
-  const url = new URL(context.request.url);
-  const code = url.searchParams.get('code');
-
-  // 加载共享配置
-  const algoUrl = new URL('/data/algorithm.json', context.request.url).toString();
-  const algoResp = await context.env.ASSETS.fetch(algoUrl);
-  const CFG = await algoResp.json();
-
-  const years = Math.max(CFG.allocation.years_min, Math.min(CFG.allocation.years_max, parseInt(url.searchParams.get('years')) || 20));
-  const budget = Math.max(100, parseInt(url.searchParams.get('budget')) || 2000);
-  const scale = budget / CFG.allocation.base_budget;
-
-  if (!code) {
-    return new Response(JSON.stringify({ error: 'code parameter required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
+    const url = new URL(context.request.url);
+    const code = url.searchParams.get('code');
+
+    // 加载共享配置
+    const algoUrl = new URL('/data/algorithm.json', context.request.url).toString();
+    const algoResp = await context.env.ASSETS.fetch(algoUrl);
+    const CFG = await algoResp.json();
+
+    const years = Math.max(CFG.allocation.years_min, Math.min(CFG.allocation.years_max, parseInt(url.searchParams.get('years')) || 20));
+    const budget = Math.max(100, parseInt(url.searchParams.get('budget')) || 2000);
+    const scale = budget / CFG.allocation.base_budget;
+
+    if (!code) {
+      return new Response(JSON.stringify({ error: 'code parameter required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     const fundsUrl = new URL('/data/funds.json', context.request.url).toString();
     const fundsResp = await context.env.ASSETS.fetch(fundsUrl);
     const funds = await fundsResp.json();

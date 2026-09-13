@@ -3,23 +3,22 @@
 // 动态应用额度分配算法，返回正确的、随实际预算调整后的配置比例
 // 所有算法参数从 /data/algorithm.json 读取（单一数据源）
 export async function onRequest(context) {
-  const url = new URL(context.request.url);
-  const algoUrl = new URL('/data/algorithm.json', context.request.url).toString();
-  const algoResp = await context.env.ASSETS.fetch(algoUrl);
-  const CFG = await algoResp.json();
-
-  const allocCfg = CFG.allocation;
-  const scoringCfg = CFG.scoring;
-  const defaults = CFG.defaults;
-  const fundSel = CFG.fund_selection;
-  const strategiesDef = CFG.strategies;
-
-  const years = Math.max(allocCfg.years_min, Math.min(allocCfg.years_max, parseInt(url.searchParams.get('years')) || 20));
-  const budget = Math.max(100, parseInt(url.searchParams.get('budget')) || 2000);
-  const scale = budget / allocCfg.base_budget;
-  const yearKey = String(years);
-
   try {
+    const url = new URL(context.request.url);
+    const algoUrl = new URL('/data/algorithm.json', context.request.url).toString();
+    const algoResp = await context.env.ASSETS.fetch(algoUrl);
+    const CFG = await algoResp.json();
+
+    const allocCfg = CFG.allocation;
+    const scoringCfg = CFG.scoring;
+    const defaults = CFG.defaults;
+    const fundSel = CFG.fund_selection;
+    const strategiesDef = CFG.strategies;
+
+    const years = Math.max(allocCfg.years_min, Math.min(allocCfg.years_max, parseInt(url.searchParams.get('years')) || 20));
+    const budget = Math.max(100, parseInt(url.searchParams.get('budget')) || 2000);
+    const scale = budget / allocCfg.base_budget;
+    const yearKey = String(years);
     // 1. 获取最新的基金数据和预计算模拟底表
     const fundsUrl = new URL('/data/funds.json', context.request.url).toString();
     const fundsResp = await context.env.ASSETS.fetch(fundsUrl);

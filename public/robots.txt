@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
-Disallow:
+Disallow: /api/
+Disallow: /data/
+Disallow: /fund/
 
 Sitemap: https://858000.xyz/sitemap.xml
