@@ -30,7 +30,7 @@
     "issue_date": "2022-09-05",
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "016055",
@@ -64,7 +64,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202601071816541786",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "018043",
@@ -98,7 +98,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202609181829590491",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "160213",
@@ -131,7 +131,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202609221829740223",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "040046",
@@ -165,7 +165,7 @@
     "direct_daily_limit": 5,
     "direct_limit_status": "限5元/日",
     "limit_announcement_id": "AN202609231829773864",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "000834",
@@ -196,10 +196,10 @@
     "dividend_info": "每份累计0.00元（0次）",
     "sales_fee": 0.0,
     "issue_date": "2014-10-20",
+    "direct_daily_limit": 100,
+    "direct_limit_status": "限100元/日",
     "limit_announcement_id": "AN202606031823188725",
-    "direct_daily_limit": 10,
-    "direct_limit_status": "限10元/日",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "161130",
@@ -233,7 +233,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202609011828884696",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "270042",
@@ -267,7 +267,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202609181829580913",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "016452",
@@ -301,7 +301,7 @@
     "direct_daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202607081826816306",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "539001",
@@ -335,7 +335,7 @@
     "direct_daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202608191828132673",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "019547",
@@ -368,7 +368,7 @@
     "direct_daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202609021828932440",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "018966",
@@ -402,7 +402,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202609241829835607",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "015299",
@@ -436,7 +436,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202608071827734257",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "019172",
@@ -469,7 +469,7 @@
     "direct_daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202607241827315717",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "019441",
@@ -500,7 +500,7 @@
     "direct_daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202609231829774454",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "019524",
@@ -531,7 +531,7 @@
     "direct_daily_limit": 5,
     "direct_limit_status": "限5元/日",
     "limit_announcement_id": "AN202609221829732369",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "019736",
@@ -562,7 +562,7 @@
     "direct_daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202609241829831132",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "050025",
@@ -596,7 +596,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202605081822057674",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "161125",
@@ -630,7 +630,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202609011828884696",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "017641",
@@ -664,7 +664,7 @@
     "direct_daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "limit_announcement_id": "AN202607241827315718",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "017028",
@@ -698,7 +698,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202609011828888223",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "018064",
@@ -732,7 +732,7 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202608071827737353",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "096001",
@@ -766,7 +766,7 @@
     "direct_daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "limit_announcement_id": "AN202609081829112680",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   },
   {
     "code": "007721",
@@ -797,6 +797,6 @@
     "direct_daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "limit_announcement_id": "AN202609181829580336",
-    "updated_at": "2026-09-26T05:22:27"
+    "updated_at": "2026-09-27T04:54:50"
   }
 ]
