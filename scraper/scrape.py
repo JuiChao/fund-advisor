@@ -16,7 +16,7 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Referer': 'https://fund.eastmoney.com/',
 }
-DELAY = 4  # 每只基金间隔秒数
+DELAY = 1.5  # 每只基金间隔秒数
 MAX_RETRIES = 3  # 单次请求最大重试次数
 RETRY_BACKOFF = 2  # 重试间隔倍数（秒）
 
@@ -174,32 +174,26 @@ def scrape_fund_page(code):
             data['morningstar'] = 0
 
         # 限额限购解析
-        # 以页面上的"申购状态"字段为准（暂停申购/限大额/开放申购）
-        sg_status = re.search(r'申购状态.*?>(暂停申购|限大额|开放申购)', text)
-        limit_match = re.search(r'单日累计购买上限\s*(\d+(?:\.\d+)?)\s*元', text) or re.search(r'购买上限.*?(\d+(?:\.\d+)?)\s*元', text)
+        # 优先使用天天基金官方页面底层状态变量 fundBuyStatus（权威第一信源）："4"=暂停申购, "1"=开放/限额
+        m_buy = re.search(r'var\s+fundBuyStatus\s*=\s*"([^"]+)"', text)
+        buy_code = m_buy.group(1) if m_buy else None
 
-        if sg_status:
-            status_text = sg_status.group(1)
-            if status_text == '暂停申购':
-                data['daily_limit'] = 0
-                data['limit_status'] = '暂停申购'
-            elif status_text == '限大额' and limit_match:
-                dl = int(float(limit_match.group(1)))
-                data['daily_limit'] = dl
-                data['limit_status'] = f'限{dl}元/日'
-            elif status_text == '限大额':
-                data['daily_limit'] = 0
-                data['limit_status'] = '限大额'
-            else:
-                data['daily_limit'] = None
-                data['limit_status'] = '正常'
-        elif '暂停申购' in text:
+        sg_status = re.search(r'申购状态.*?>(暂停申购|限大额|开放申购)', text)
+        limit_match = re.search(r'(?:单日累计购买上限|购买上限|单日上限|限额)\s*[:：]?\s*(\d+(?:\.\d+)?)\s*元', text)
+
+        if buy_code == '4' or (sg_status and sg_status.group(1) == '暂停申购'):
             data['daily_limit'] = 0
             data['limit_status'] = '暂停申购'
         elif limit_match:
             dl = int(float(limit_match.group(1)))
             data['daily_limit'] = dl
             data['limit_status'] = f'限{dl}元/日'
+        elif sg_status and sg_status.group(1) == '限大额':
+            data['daily_limit'] = 0
+            data['limit_status'] = '限大额'
+        elif '暂停申购' in text:
+            data['daily_limit'] = 0
+            data['limit_status'] = '暂停申购'
         else:
             data['daily_limit'] = None
             data['limit_status'] = '正常'
@@ -317,8 +311,16 @@ def scrape_limit_announcement(code):
         exclude_keywords = [f'{c}类' for c in other_classes]
         for item in data.get('Data', []):
             title = item.get('TITLE', '')
-            # 排除专门针对其他份额的公告
-            if any(k in title for k in exclude_keywords):
+
+            # 如果公告明确指明了本份额（如标题含"A类"或"C类"），绝不排除
+            if my_class and f'{my_class}类' in title:
+                pass
+            elif any(k in title for k in exclude_keywords):
+                # 只有当公告明确指定了其他份额，且未提及本份额时，才排除
+                continue
+
+            # 排除纯美元份额公告（所有收录标的均为人民币份额）
+            if any(k in title for k in ['美元份额', '美元现汇', '美元现钞']) and '人民币' not in title:
                 continue
             
             if any(k in title for k in title_keywords):
@@ -360,6 +362,21 @@ def scrape_limit_announcement(code):
         }
 
         # === 多模式提取直销限额 ===
+        # 模式0: 优先匹配本份额专属直销限额
+        m0 = None
+        if my_class:
+            m0 = re.search(
+                r'(?:通过|经由?|在)?(?:本)?(?:公司|基金管理人)?直销(?:机构|渠道|平台|柜台)?'
+                rf'.*?{my_class}类.*?'
+                r'(?:不超过|限额为?|上限为?)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)',
+                text_norm
+            ) or re.search(
+                rf'{my_class}类.*?'
+                r'(?:通过|经由?|在)?(?:本)?(?:公司|基金管理人)?直销(?:机构|渠道|平台|柜台)?.*?'
+                r'(?:不超过|限额为?|上限为?)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)',
+                text_norm
+            )
+
         # 模式1: "通过本公司直销机构...不超过 X 元"
         m1 = re.search(
             r'(?:通过|经由?)(?:本)?(?:公司|基金管理人)?直销(?:机构|渠道|平台|柜台)?'
@@ -386,7 +403,8 @@ def scrape_limit_announcement(code):
         m5 = re.search(r'直销电子交易平台.{0,500}?(?:不超过|上限为?)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)', text_norm)
 
         # 按优先级取值
-        for match in [m1, m2, m3, m5, m4]:
+        match_candidates = ([m0] if m0 else []) + [m1, m2, m3, m5, m4]
+        for match in match_candidates:
             if match:
                 dl = int(float(match.group(1)))
                 if dl > 0:
