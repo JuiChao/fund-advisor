@@ -1277,8 +1277,8 @@
     "morningstar": 0,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "direct_limit_status": "限100元/日",
-    "direct_daily_limit": 100,
+    "direct_limit_status": "限10元/日",
+    "direct_daily_limit": 10,
     "inception_date": "2023-11-29",
     "manager_company": "招商基金"
   },
@@ -1307,8 +1307,8 @@
     "morningstar": 0,
     "limit_status": "限10元/日",
     "daily_limit": 10,
-    "direct_limit_status": "限100元/日",
-    "direct_daily_limit": 100,
+    "direct_limit_status": "限10元/日",
+    "direct_daily_limit": 10,
     "inception_date": "2023-01-01",
     "manager_company": "招商基金"
   },
@@ -1610,8 +1610,8 @@
     "morningstar": 2,
     "limit_status": "暂停申购",
     "daily_limit": 0,
-    "direct_limit_status": "限100元/日",
-    "direct_daily_limit": 100,
+    "direct_limit_status": "暂停申购",
+    "direct_daily_limit": 0,
     "inception_date": "2023-05-10",
     "manager_company": "华夏基金"
   },
@@ -1640,8 +1640,8 @@
     "morningstar": 0,
     "limit_status": "暂停申购",
     "daily_limit": 0,
-    "direct_limit_status": "限100元/日",
-    "direct_daily_limit": 100,
+    "direct_limit_status": "暂停申购",
+    "direct_daily_limit": 0,
     "inception_date": "2023-01-01",
     "manager_company": "华夏基金"
   },

@@ -341,6 +341,10 @@ def scrape_limit_announcement(code):
                 # 只有当公告明确指定了其他份额，且未提及本份额时，才排除
                 continue
 
+            # 排除节假日/休市临时暂停公告（此类公告属于市场休市，非日常申购限额政策）
+            if any(k in title for k in ['节假日', '非交易日', '休市', '主要投资市场节假日']):
+                continue
+
             # 排除纯美元份额公告（所有收录标的均为人民币份额）
             if any(k in title for k in ['美元份额', '美元现汇', '美元现钞']) and '人民币' not in title:
                 continue
@@ -352,21 +356,27 @@ def scrape_limit_announcement(code):
         if not target_ann_id:
             return {}
 
-        # 获取公告全文
-        ann_url = f'https://np-cnotice-fund.eastmoney.com/api/content/ann?art_code={target_ann_id}&client_source=fund_pc&page_index=1&page_size=1'
-        ann_resp = requests.get(ann_url, headers=HEADERS, timeout=15)
-        ann_resp.encoding = 'utf-8'
-        ann_data = ann_resp.json()
-
+        # 双源获取公告全文：优先使用 JSON API，若失败或被重置则自动回退下载东财官方 PDF 原件提取
         content = ''
         try:
-            content = ann_data['data']['notice_content']
-        except (KeyError, TypeError):
+            ann_url = f'https://np-cnotice-fund.eastmoney.com/api/content/ann?art_code={target_ann_id}&client_source=fund_pc&page_index=1&page_size=1'
+            ann_resp = requests.get(ann_url, headers=HEADERS, timeout=8)
+            ann_resp.encoding = 'utf-8'
+            ann_data = ann_resp.json()
+            content = ann_data.get('data', {}).get('notice_content', '') or ann_data.get('data', {}).get('list', [{}])[0].get('content', '')
+        except Exception:
             pass
+
         if not content:
             try:
-                content = ann_data['data']['list'][0]['content']
-            except (KeyError, TypeError, IndexError):
+                pdf_url = f'http://pdf.dfcfw.com/pdf/H2_{target_ann_id}_1.pdf'
+                pr = requests.get(pdf_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
+                if pr.status_code == 200:
+                    import io
+                    from pypdf import PdfReader
+                    pdf = PdfReader(io.BytesIO(pr.content))
+                    content = '\n'.join(p.extract_text() or '' for p in pdf.pages)
+            except Exception:
                 pass
 
         if not content:
@@ -383,68 +393,74 @@ def scrape_limit_announcement(code):
             'limit_announcement_id': target_ann_id
         }
 
+        # === 优先匹配直销专属暂停公告（如华夏标普：在华夏直销电子交易平台暂停申购业务） ===
+        if re.search(r'在(?:本公司)?直销(?:电子交易平台|机构|渠道)?(?:暂停|停止)(?:办理)?(?:本基金)?.*?申购', text_norm) or \
+           re.search(r'暂停(?:在)?(?:本公司)?直销(?:电子交易平台|机构|渠道)?.*?申购', text_norm) or \
+           re.search(r'直销(?:电子交易平台|机构|渠道)?暂停申购', text_norm):
+            result['direct_daily_limit'] = 0
+            result['direct_limit_status'] = '暂停申购'
+            return result
+
         # === 多模式提取直销限额 ===
         # 模式0: 基金代码精准匹配表格（如南方021000公告表格）
-        m_code = re.search(rf'{code}\D{{0,60}}?(?:该基金份额的)?(?:限制金额|限额)\s*(\d+(?:\.\d+)?)\s*元', text_norm) or \
-                 re.search(rf'(?:限制金额|限额)\D{{0,60}}?{code}\D{{0,20}}?(\d+(?:\.\d+)?)\s*元', text_norm)
+        m_code = re.search(rf'{code}\D{{0,60}}?(?:该基金份额的)?(?:限制金额|限额)\s*([0-9,]+(?:\.\d+)?)\s*元', text_norm) or \
+                 re.search(rf'(?:限制金额|限额)\D{{0,60}}?{code}\D{{0,20}}?([0-9,]+(?:\.\d+)?)\s*元', text_norm)
 
         # 模式0b: 优先匹配本份额专属直销限额或公告
         m0 = None
         if my_class:
             m0 = re.search(
+                rf'{my_class}.*?(?:不超过|不得超(?:过)?|上限为?|限额为?)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)',
+                text_norm
+            ) or re.search(
                 r'(?:通过|经由?|在)?(?:本)?(?:公司|基金管理人)?直销(?:机构|渠道|平台|柜台)?'
-                rf'.*?{my_class}类.*?'
-                r'(?:不超过|限额为?|上限为?)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)',
+                rf'.*?{my_class}.*?'
+                r'(?:不超过|不得超(?:过)?|限额为?|上限为?)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)',
                 text_norm
             ) or re.search(
-                rf'{my_class}类.*?'
-                r'(?:通过|经由?|在)?(?:本)?(?:公司|基金管理人)?直销(?:机构|渠道|平台|柜台)?.*?'
-                r'(?:不超过|限额为?|上限为?)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)',
-                text_norm
-            ) or re.search(
-                rf'单个基金账户单日累计申购\s*{my_class}\s*类.*?金额不得超过\s*(\d+(?:\.\d+)?)\s*元',
+                rf'单个基金账户单日累计申购\s*{my_class}.*?金额(?:不得超(?:过)?|不超过)\s*([0-9,]+(?:\.\d+)?)\s*元',
                 text_norm
             )
 
         # 模式0c: 若公告标题指明了本份额（如"I类基金份额申购...金额限制的公告"），提取该公告中的金额
         m_title_class = None
         if my_class and f'{my_class}类' in text_norm[:200]:
-            m_title_class = re.search(r'(?:调整后)?限额\s*(\d+(?:\.\d+)?)\s*元', text_norm) or \
-                            re.search(r'限制金额\s*(\d+(?:\.\d+)?)\s*元', text_norm)
+            m_title_class = re.search(r'(?:调整后)?限额\s*([0-9,]+(?:\.\d+)?)\s*元', text_norm) or \
+                            re.search(r'限制金额\s*([0-9,]+(?:\.\d+)?)\s*元', text_norm)
 
         # 模式1: "通过本公司直销机构...不超过 X 元"
         m1 = re.search(
             r'(?:通过|经由?)(?:本)?(?:公司|基金管理人)?直销(?:机构|渠道|平台|柜台)?'
             r'(?:申购|买入)?(?:本基金)?.*?'
-            r'(?:不超过|限额为?|上限为?)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)',
+            r'(?:不超过|限额为?|上限为?)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)',
             text_norm
         )
         # 模式2: "在直销机构...金额上限为 X 元" / "超过 X 元...有权拒绝"（招商、华夏等）
         m2 = re.search(
-            r'直销(?:机构|渠道|平台|柜台)?.*?(?:金额上限为|上限为|限额为?|不超过)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)',
+            r'直销(?:机构|渠道|平台|柜台)?.*?(?:金额上限为|上限为|限额为?|不超过)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)',
             text_norm
         ) or re.search(
             r'(?:在|调整)(?:本公司)?直销(?:机构|渠道|平台)?'
-            r'.*?(?:超过|高于)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)'
-            r'.*?(?:有权|将予以?)(?:部分或全部)?拒绝',
+            r'.*?(?:超过|高于)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)',
             text_norm
         )
         # 模式3: "直销" 后紧跟表格数据中的限额数字（大成等）
         m3 = re.search(
             r'直销(?:机构|渠道|平台|柜台)?(?:\s*(?:（[^）]*）)?)?\s*(?:申购|买入)'
-            r'.*?(?:累计金额应?不超过|累计上限为?|单笔.*?上限为?)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)',
+            r'.*?(?:累计金额应?不超过|累计上限为?|单笔.*?上限为?)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)',
             text_norm
         )
         # 模式4: "直销" 段落中出现 "不超过 X 元"（宽松匹配，限制在300字符内）
-        m4 = re.search(r'直销.{0,300}?(?:不超过|上限)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)', text_norm)
+        m4 = re.search(r'直销.{0,300}?(?:不超过|上限)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)', text_norm)
         # 模式5: "直销电子交易平台" 专用（华夏等，允许更长距离匹配）
-        m5 = re.search(r'直销电子交易平台.{0,500}?(?:不超过|上限为?)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)', text_norm)
+        m5 = re.search(r'直销电子交易平台.{0,500}?(?:不超过|上限为?)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)', text_norm)
 
         # 按优先级取值
         match_candidates = ([m_code] if m_code else []) + ([m0] if m0 else []) + ([m_title_class] if m_title_class else []) + [m1, m2, m3, m5, m4]
         for match in match_candidates:
             if match:
-                dl = int(float(match.group(1)))
+                raw_val = match.group(1).replace(',', '')
+                dl = int(float(raw_val))
                 if dl > 0:
                     result['direct_daily_limit'] = dl
                     result['direct_limit_status'] = f'限{dl}元/日'
