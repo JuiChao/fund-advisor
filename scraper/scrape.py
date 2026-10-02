@@ -264,18 +264,32 @@ def scrape_f10_page(code):
 
 
 def scrape_fee_page(code):
-    """从费率详情页抓取"""
+    """从费率详情页抓取，精准解析运作费用表格与优惠费率"""
     url = f'https://fundf10.eastmoney.com/jjfl_{code}.html'
     try:
         resp = fetch_with_retry(url)
-        text = resp.text
+        soup = BeautifulSoup(resp.text, 'html.parser')
         data = {}
 
-        m = re.search(r'管理费率.*?(\d+\.\d+)%', text)
-        if m: data['mgmt_fee'] = float(m.group(1)) / 100
+        for td in soup.find_all(['td', 'th']):
+            txt = td.get_text(strip=True)
+            if txt in ['管理费率', '托管费率', '销售服务费率']:
+                next_td = td.find_next_sibling('td')
+                if next_td:
+                    val_txt = next_td.get_text(strip=True)
+                    m = re.search(r'(\d+(?:\.\d+)?)%', val_txt)
+                    if m:
+                        val = float(m.group(1)) / 100
+                        if txt == '管理费率': data['mgmt_fee'] = val
+                        elif txt == '托管费率': data['custody_fee'] = val
+                        elif txt == '销售服务费率': data['sales_fee'] = val
+                    elif '---' in val_txt or '-' in val_txt:
+                        if txt == '销售服务费率': data['sales_fee'] = 0.0
 
-        m = re.search(r'托管费率.*?(\d+\.\d+)%', text)
-        if m: data['custody_fee'] = float(m.group(1)) / 100
+        # 前端申购费解析
+        m_pur = re.search(r'申购费率.*?(\d+(?:\.\d+)?)%', resp.text)
+        if m_pur:
+            data['purchase_fee'] = float(m_pur.group(1)) / 100
 
         return data
     except Exception as e:

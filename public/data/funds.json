@@ -5,8 +5,8 @@
     "full_name": "嘉实纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "jiashi_nq100",
-    "family_name": "嘉实纳斯达克100ETF联接",
+    "family_id": "嘉实_nq100",
+    "family_name": "嘉实纳斯达克100",
     "manager": "嘉实",
     "siblings": [
       "016532",
@@ -17,7 +17,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.001,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.01,
     "tracking_error": 0.015,
     "return_1yr": 0.1521,
     "return_3yr": 0.6323,
@@ -27,7 +27,8 @@
     "daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "direct_daily_limit": 0,
-    "inception_date": "2022-09-15"
+    "inception_date": "2022-09-15",
+    "manager_company": "嘉实基金"
   },
   {
     "code": "016533",
@@ -35,8 +36,8 @@
     "full_name": "嘉实纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "jiashi_nq100",
-    "family_name": "嘉实纳斯达克100ETF联接",
+    "family_id": "嘉实_nq100",
+    "family_name": "嘉实纳斯达克100",
     "manager": "嘉实",
     "siblings": [
       "016532",
@@ -57,7 +58,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "嘉实基金"
   },
   {
     "code": "021838",
@@ -65,8 +67,8 @@
     "full_name": "嘉实纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "I",
-    "family_id": "jiashi_nq100",
-    "family_name": "嘉实纳斯达克100ETF联接",
+    "family_id": "嘉实_nq100",
+    "family_name": "嘉实纳斯达克100",
     "manager": "嘉实",
     "siblings": [
       "016532",
@@ -87,7 +89,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "嘉实基金"
   },
   {
     "code": "016055",
@@ -95,8 +98,8 @@
     "full_name": "博时纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "boshi_nq100",
-    "family_name": "博时纳斯达克100ETF联接",
+    "family_id": "博时_nq100",
+    "family_name": "博时纳斯达克100",
     "manager": "博时",
     "siblings": [
       "016055",
@@ -107,7 +110,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.01,
     "tracking_error": 0.0145,
     "return_1yr": 0.162,
     "return_3yr": 0.6708,
@@ -117,7 +120,8 @@
     "daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "direct_daily_limit": 0,
-    "inception_date": "2022-07-26"
+    "inception_date": "2022-07-26",
+    "manager_company": "博时基金"
   },
   {
     "code": "016057",
@@ -125,8 +129,8 @@
     "full_name": "博时纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "boshi_nq100",
-    "family_name": "博时纳斯达克100ETF联接",
+    "family_id": "博时_nq100",
+    "family_name": "博时纳斯达克100",
     "manager": "博时",
     "siblings": [
       "016055",
@@ -147,7 +151,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "博时基金"
   },
   {
     "code": "024237",
@@ -155,8 +160,8 @@
     "full_name": "博时纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "I",
-    "family_id": "boshi_nq100",
-    "family_name": "博时纳斯达克100ETF联接",
+    "family_id": "博时_nq100",
+    "family_name": "博时纳斯达克100",
     "manager": "博时",
     "siblings": [
       "016055",
@@ -177,7 +182,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "博时基金"
   },
   {
     "code": "018043",
@@ -185,8 +191,8 @@
     "full_name": "天弘纳斯达克100指数型发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "tianhong_nq100",
-    "family_name": "天弘纳斯达克100指数发起",
+    "family_id": "天弘_nq100",
+    "family_name": "天弘纳斯达克100",
     "manager": "天弘",
     "siblings": [
       "018043",
@@ -197,7 +203,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.001,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.01,
     "tracking_error": 0.0147,
     "return_1yr": 0.1529,
     "return_3yr": 0.6393,
@@ -207,7 +213,8 @@
     "daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "direct_daily_limit": 100,
-    "inception_date": "2023-04-11"
+    "inception_date": "2023-04-11",
+    "manager_company": "天弘基金"
   },
   {
     "code": "018044",
@@ -215,8 +222,8 @@
     "full_name": "天弘纳斯达克100指数型发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "tianhong_nq100",
-    "family_name": "天弘纳斯达克100指数发起",
+    "family_id": "天弘_nq100",
+    "family_name": "天弘纳斯达克100",
     "manager": "天弘",
     "siblings": [
       "018043",
@@ -237,7 +244,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "天弘基金"
   },
   {
     "code": "022525",
@@ -245,8 +253,8 @@
     "full_name": "天弘纳斯达克100指数型发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "D",
-    "family_id": "tianhong_nq100",
-    "family_name": "天弘纳斯达克100指数发起",
+    "family_id": "天弘_nq100",
+    "family_name": "天弘纳斯达克100",
     "manager": "天弘",
     "siblings": [
       "018043",
@@ -267,7 +275,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "天弘基金"
   },
   {
     "code": "018966",
@@ -275,8 +284,8 @@
     "full_name": "汇添富纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "huitianfu_nq100",
-    "family_name": "汇添富纳斯达克100ETF联接",
+    "family_id": "汇添富_nq100",
+    "family_name": "汇添富纳斯达克100",
     "manager": "汇添富",
     "siblings": [
       "018966",
@@ -287,7 +296,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0173,
     "return_1yr": 0.1265,
     "return_3yr": 0.5829,
@@ -297,7 +306,8 @@
     "daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "direct_daily_limit": 10,
-    "inception_date": "2023-08-02"
+    "inception_date": "2023-08-02",
+    "manager_company": "汇添富基金"
   },
   {
     "code": "018967",
@@ -305,8 +315,8 @@
     "full_name": "汇添富纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "huitianfu_nq100",
-    "family_name": "汇添富纳斯达克100ETF联接",
+    "family_id": "汇添富_nq100",
+    "family_name": "汇添富纳斯达克100",
     "manager": "汇添富",
     "siblings": [
       "018966",
@@ -327,7 +337,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "汇添富基金"
   },
   {
     "code": "021773",
@@ -335,8 +346,8 @@
     "full_name": "汇添富纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "E",
-    "family_id": "huitianfu_nq100",
-    "family_name": "汇添富纳斯达克100ETF联接",
+    "family_id": "汇添富_nq100",
+    "family_name": "汇添富纳斯达克100",
     "manager": "汇添富",
     "siblings": [
       "018966",
@@ -357,16 +368,17 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "汇添富基金"
   },
   {
     "code": "017091",
     "name": "景顺长城纳斯达克科技ETF联接(QDII)A人民币",
-    "full_name": "景顺长城纳斯达克科技ETF联接(QDII)A类",
+    "full_name": "景顺长城纳斯达克科技市值加权交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "jingshun_nq100",
-    "family_name": "景顺长城纳斯达克科技ETF联接",
+    "family_id": "景顺长城_nq100",
+    "family_name": "景顺长城纳斯达克100",
     "manager": "景顺长城",
     "siblings": [
       "017091",
@@ -374,10 +386,10 @@
       "019118"
     ],
     "scale": 1.2,
-    "mgmt_fee": 0.005,
-    "custody_fee": 0.0015,
+    "mgmt_fee": 0.008,
+    "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.015,
     "return_1yr": 0.22,
     "return_3yr": 0.65,
@@ -387,16 +399,17 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "景顺长城基金"
   },
   {
     "code": "017093",
     "name": "景顺长城纳斯达克科技ETF联接(QDII)C人民币",
-    "full_name": "景顺长城纳斯达克科技ETF联接(QDII)C类",
+    "full_name": "景顺长城纳斯达克科技市值加权交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "jingshun_nq100",
-    "family_name": "景顺长城纳斯达克科技ETF联接",
+    "family_id": "景顺长城_nq100",
+    "family_name": "景顺长城纳斯达克100",
     "manager": "景顺长城",
     "siblings": [
       "017091",
@@ -404,9 +417,9 @@
       "019118"
     ],
     "scale": 2.8,
-    "mgmt_fee": 0.005,
-    "custody_fee": 0.0015,
-    "sales_fee": 0.0025,
+    "mgmt_fee": 0.008,
+    "custody_fee": 0.002,
+    "sales_fee": 0.004,
     "purchase_fee": 0.0,
     "tracking_error": 0.015,
     "return_1yr": 0.22,
@@ -417,16 +430,17 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "景顺长城基金"
   },
   {
     "code": "019118",
     "name": "景顺长城纳斯达克科技ETF联接(QDII)E人民币",
-    "full_name": "景顺长城纳斯达克科技ETF联接(QDII)E类",
+    "full_name": "景顺长城纳斯达克科技市值加权交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "E",
-    "family_id": "jingshun_nq100",
-    "family_name": "景顺长城纳斯达克科技ETF联接",
+    "family_id": "景顺长城_nq100",
+    "family_name": "景顺长城纳斯达克100",
     "manager": "景顺长城",
     "siblings": [
       "017091",
@@ -434,9 +448,9 @@
       "019118"
     ],
     "scale": 2.8,
-    "mgmt_fee": 0.005,
-    "custody_fee": 0.0015,
-    "sales_fee": 0.0025,
+    "mgmt_fee": 0.008,
+    "custody_fee": 0.002,
+    "sales_fee": 0.002,
     "purchase_fee": 0.0,
     "tracking_error": 0.015,
     "return_1yr": 0.22,
@@ -447,7 +461,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "景顺长城基金"
   },
   {
     "code": "539001",
@@ -455,19 +470,19 @@
     "full_name": "建信纳斯达克100指数型证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "jianxin_nq100",
-    "family_name": "建信纳斯达克100指数",
+    "family_id": "建信_nq100",
+    "family_name": "建信纳斯达克100",
     "manager": "建信",
     "siblings": [
-      "539001",
       "012752",
-      "023422"
+      "023422",
+      "539001"
     ],
     "scale": 21.76,
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0225,
     "return_1yr": 0.1421,
     "return_3yr": 0.7194,
@@ -477,7 +492,8 @@
     "daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "direct_daily_limit": 10,
-    "inception_date": "2010-09-14"
+    "inception_date": "2010-09-14",
+    "manager_company": "建信基金"
   },
   {
     "code": "012752",
@@ -485,13 +501,13 @@
     "full_name": "建信纳斯达克100指数型证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "jianxin_nq100",
-    "family_name": "建信纳斯达克100指数",
+    "family_id": "建信_nq100",
+    "family_name": "建信纳斯达克100",
     "manager": "建信",
     "siblings": [
-      "539001",
       "012752",
-      "023422"
+      "023422",
+      "539001"
     ],
     "scale": 8.7,
     "mgmt_fee": 0.008,
@@ -507,7 +523,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "建信基金"
   },
   {
     "code": "023422",
@@ -515,13 +532,13 @@
     "full_name": "建信纳斯达克100指数型证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "D",
-    "family_id": "jianxin_nq100",
-    "family_name": "建信纳斯达克100指数",
+    "family_id": "建信_nq100",
+    "family_name": "建信纳斯达克100",
     "manager": "建信",
     "siblings": [
-      "539001",
       "012752",
-      "023422"
+      "023422",
+      "539001"
     ],
     "scale": 8.7,
     "mgmt_fee": 0.008,
@@ -537,7 +554,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "建信基金"
   },
   {
     "code": "016452",
@@ -545,9 +563,9 @@
     "full_name": "南方纳斯达克100指数发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "huaxia_nq100",
-    "family_name": "华夏纳斯达克100指数",
-    "manager": "华夏",
+    "family_id": "南方_nq100",
+    "family_name": "南方纳斯达克100",
+    "manager": "南方",
     "siblings": [
       "016452",
       "016453",
@@ -557,7 +575,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0143,
     "return_1yr": 0.1491,
     "return_3yr": 0.6476,
@@ -567,7 +585,8 @@
     "daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "direct_daily_limit": 10,
-    "inception_date": "2022-11-29"
+    "inception_date": "2022-11-29",
+    "manager_company": "南方基金"
   },
   {
     "code": "016453",
@@ -575,9 +594,9 @@
     "full_name": "南方纳斯达克100指数发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "huaxia_nq100",
-    "family_name": "华夏纳斯达克100指数",
-    "manager": "华夏",
+    "family_id": "南方_nq100",
+    "family_name": "南方纳斯达克100",
+    "manager": "南方",
     "siblings": [
       "016452",
       "016453",
@@ -597,17 +616,18 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "南方基金"
   },
   {
     "code": "021000",
     "name": "南方纳斯达克100指数发起(QDII)I",
-    "full_name": "华夏纳斯达克100指数(QDII)I类",
+    "full_name": "南方纳斯达克100指数发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "I",
-    "family_id": "huaxia_nq100",
-    "family_name": "华夏纳斯达克100指数",
-    "manager": "华夏",
+    "family_id": "南方_nq100",
+    "family_name": "南方纳斯达克100",
+    "manager": "南方",
     "siblings": [
       "016452",
       "016453",
@@ -616,7 +636,7 @@
     "scale": 9.31,
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "sales_fee": 0.0025,
+    "sales_fee": 0.0001,
     "purchase_fee": 0.0,
     "tracking_error": 0.0143,
     "return_1yr": 0.1491,
@@ -627,7 +647,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "南方基金"
   },
   {
     "code": "019524",
@@ -635,9 +656,9 @@
     "full_name": "华泰柏瑞纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "yinhua_nq100",
-    "family_name": "银华天玑纳斯达克100ETF联接",
-    "manager": "银华",
+    "family_id": "华泰柏瑞_nq100",
+    "family_name": "华泰柏瑞纳斯达克100",
+    "manager": "华泰柏瑞",
     "siblings": [
       "019524",
       "019525",
@@ -647,7 +668,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0156,
     "return_1yr": 0.1437,
     "return_3yr": null,
@@ -657,7 +678,8 @@
     "daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "direct_daily_limit": 10,
-    "inception_date": "2023-10-19"
+    "inception_date": "2023-10-19",
+    "manager_company": "华泰柏瑞基金"
   },
   {
     "code": "019525",
@@ -665,9 +687,9 @@
     "full_name": "华泰柏瑞纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "yinhua_nq100",
-    "family_name": "银华天玑纳斯达克100ETF联接",
-    "manager": "银华",
+    "family_id": "华泰柏瑞_nq100",
+    "family_name": "华泰柏瑞纳斯达克100",
+    "manager": "华泰柏瑞",
     "siblings": [
       "019524",
       "019525",
@@ -687,17 +709,18 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "华泰柏瑞基金"
   },
   {
     "code": "022664",
     "name": "华泰柏瑞纳斯达克100ETF发起式联接(QDII)I",
-    "full_name": "银华天玑纳斯达克100ETF联接(QDII)I类",
+    "full_name": "华泰柏瑞纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "I",
-    "family_id": "yinhua_nq100",
-    "family_name": "银华天玑纳斯达克100ETF联接",
-    "manager": "银华",
+    "family_id": "华泰柏瑞_nq100",
+    "family_name": "华泰柏瑞纳斯达克100",
+    "manager": "华泰柏瑞",
     "siblings": [
       "019524",
       "019525",
@@ -706,7 +729,7 @@
     "scale": 1.22,
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
-    "sales_fee": 0.0025,
+    "sales_fee": 0.001,
     "purchase_fee": 0.0,
     "tracking_error": 0.0156,
     "return_1yr": 0.1437,
@@ -717,7 +740,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "华泰柏瑞基金"
   },
   {
     "code": "160213",
@@ -725,8 +749,8 @@
     "full_name": "国泰纳斯达克100指数证券投资基金",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "guotai_nq100",
-    "family_name": "国泰纳斯达克100指数(LOF)",
+    "family_id": "国泰_nq100",
+    "family_name": "国泰纳斯达克100",
     "manager": "国泰",
     "siblings": [
       "160213"
@@ -735,7 +759,7 @@
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.015,
     "tracking_error": 0.011,
     "return_1yr": 0.1603,
     "return_3yr": 0.5127,
@@ -745,7 +769,8 @@
     "daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "direct_daily_limit": 100,
-    "inception_date": "2010-04-29"
+    "inception_date": "2010-04-29",
+    "manager_company": "国泰基金"
   },
   {
     "code": "040046",
@@ -753,18 +778,18 @@
     "full_name": "华安纳斯达克100交易型开放式指数证券投资基金联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "huaan_nq100",
-    "family_name": "华安纳斯达克100ETF联接",
+    "family_id": "华安_nq100",
+    "family_name": "华安纳斯达克100",
     "manager": "华安",
     "siblings": [
-      "040046",
-      "014978"
+      "014978",
+      "040046"
     ],
     "scale": 58.1,
     "mgmt_fee": 0.006,
     "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.01,
     "return_1yr": 0.1484,
     "return_3yr": 0.6577,
@@ -774,7 +799,8 @@
     "daily_limit": 10,
     "direct_limit_status": "限100元/日",
     "direct_daily_limit": 100,
-    "inception_date": "2013-08-02"
+    "inception_date": "2013-08-02",
+    "manager_company": "华安基金"
   },
   {
     "code": "014978",
@@ -782,12 +808,12 @@
     "full_name": "华安纳斯达克100交易型开放式指数证券投资基金联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "huaan_nq100",
-    "family_name": "华安纳斯达克100ETF联接",
+    "family_id": "华安_nq100",
+    "family_name": "华安纳斯达克100",
     "manager": "华安",
     "siblings": [
-      "040046",
-      "014978"
+      "014978",
+      "040046"
     ],
     "scale": 23.24,
     "mgmt_fee": 0.006,
@@ -803,7 +829,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "华安基金"
   },
   {
     "code": "000834",
@@ -811,8 +838,8 @@
     "full_name": "大成纳斯达克100交易型开放式指数证券投资基金联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "dacheng_nq100",
-    "family_name": "大成纳斯达克100ETF联接",
+    "family_id": "大成_nq100",
+    "family_name": "大成纳斯达克100",
     "manager": "大成",
     "siblings": [
       "000834",
@@ -822,7 +849,7 @@
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.01,
     "return_1yr": 0.1451,
     "return_3yr": 0.648,
@@ -832,7 +859,8 @@
     "daily_limit": 10,
     "direct_limit_status": "限100元/日",
     "direct_daily_limit": 100,
-    "inception_date": "2014-11-13"
+    "inception_date": "2014-11-13",
+    "manager_company": "大成基金"
   },
   {
     "code": "008971",
@@ -840,8 +868,8 @@
     "full_name": "大成纳斯达克100交易型开放式指数证券投资基金联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "dacheng_nq100",
-    "family_name": "大成纳斯达克100ETF联接",
+    "family_id": "大成_nq100",
+    "family_name": "大成纳斯达克100",
     "manager": "大成",
     "siblings": [
       "000834",
@@ -861,7 +889,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "大成基金"
   },
   {
     "code": "161130",
@@ -869,18 +898,18 @@
     "full_name": "易方达纳斯达克100交易型开放式指数证券投资基金联接基金(LOF)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "yifangda_nq100",
-    "family_name": "易方达纳斯达克100ETF联接",
+    "family_id": "易方达_nq100",
+    "family_name": "易方达纳斯达克100",
     "manager": "易方达",
     "siblings": [
-      "161130",
-      "012870"
+      "012870",
+      "161130"
     ],
     "scale": 17.83,
     "mgmt_fee": 0.005,
     "custody_fee": 0.001,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0144,
     "return_1yr": 0.1503,
     "return_3yr": 0.6989,
@@ -890,7 +919,8 @@
     "daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "direct_daily_limit": 0,
-    "inception_date": "2017-06-23"
+    "inception_date": "2017-06-23",
+    "manager_company": "易方达基金"
   },
   {
     "code": "012870",
@@ -898,12 +928,12 @@
     "full_name": "易方达纳斯达克100交易型开放式指数证券投资基金联接基金(LOF)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "yifangda_nq100",
-    "family_name": "易方达纳斯达克100ETF联接",
+    "family_id": "易方达_nq100",
+    "family_name": "易方达纳斯达克100",
     "manager": "易方达",
     "siblings": [
-      "161130",
-      "012870"
+      "012870",
+      "161130"
     ],
     "scale": 7.13,
     "mgmt_fee": 0.005,
@@ -919,7 +949,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "易方达基金"
   },
   {
     "code": "270042",
@@ -927,18 +958,18 @@
     "full_name": "广发纳斯达克100交易型开放式指数证券投资基金联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "guangfa_nq100",
-    "family_name": "广发纳斯达克100ETF联接",
+    "family_id": "广发_nq100",
+    "family_name": "广发纳斯达克100",
     "manager": "广发",
     "siblings": [
-      "270042",
-      "006479"
+      "006479",
+      "270042"
     ],
     "scale": 122.23,
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.013000000000000001,
     "tracking_error": 0.0103,
     "return_1yr": 0.1464,
     "return_3yr": 0.6435,
@@ -948,7 +979,8 @@
     "daily_limit": 2,
     "direct_limit_status": "限2元/日",
     "direct_daily_limit": 2,
-    "inception_date": "2012-08-15"
+    "inception_date": "2012-08-15",
+    "manager_company": "广发基金"
   },
   {
     "code": "006479",
@@ -956,12 +988,12 @@
     "full_name": "广发纳斯达克100交易型开放式指数证券投资基金联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "guangfa_nq100",
-    "family_name": "广发纳斯达克100ETF联接",
+    "family_id": "广发_nq100",
+    "family_name": "广发纳斯达克100",
     "manager": "广发",
     "siblings": [
-      "270042",
-      "006479"
+      "006479",
+      "270042"
     ],
     "scale": 48.89,
     "mgmt_fee": 0.008,
@@ -977,7 +1009,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "广发基金"
   },
   {
     "code": "015299",
@@ -985,9 +1018,9 @@
     "full_name": "华夏纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "zhaoshang_nq100",
-    "family_name": "招商纳斯达克100ETF联接",
-    "manager": "招商",
+    "family_id": "华夏_nq100",
+    "family_name": "华夏纳斯达克100",
+    "manager": "华夏",
     "siblings": [
       "015299",
       "015300"
@@ -996,7 +1029,7 @@
     "mgmt_fee": 0.006,
     "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0243,
     "return_1yr": 0.1474,
     "return_3yr": 0.6476,
@@ -1006,7 +1039,8 @@
     "daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "direct_daily_limit": 0,
-    "inception_date": "2022-04-14"
+    "inception_date": "2022-04-14",
+    "manager_company": "华夏基金"
   },
   {
     "code": "015300",
@@ -1014,9 +1048,9 @@
     "full_name": "华夏纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "zhaoshang_nq100",
-    "family_name": "招商纳斯达克100ETF联接",
-    "manager": "招商",
+    "family_id": "华夏_nq100",
+    "family_name": "华夏纳斯达克100",
+    "manager": "华夏",
     "siblings": [
       "015299",
       "015300"
@@ -1035,7 +1069,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "华夏基金"
   },
   {
     "code": "019172",
@@ -1043,9 +1078,9 @@
     "full_name": "摩根纳斯达克100指数型发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "morgan_nq100",
-    "family_name": "摩根纳斯达克100指数",
-    "manager": "摩根",
+    "family_id": "摩根(中国)_nq100",
+    "family_name": "摩根(中国)纳斯达克100",
+    "manager": "摩根(中国)",
     "siblings": [
       "019172",
       "019173"
@@ -1054,7 +1089,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.001,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0233,
     "return_1yr": 0.1559,
     "return_3yr": null,
@@ -1064,7 +1099,8 @@
     "daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "direct_daily_limit": 10,
-    "inception_date": "2023-09-25"
+    "inception_date": "2023-09-25",
+    "manager_company": "摩根基金(中国)"
   },
   {
     "code": "019173",
@@ -1072,9 +1108,9 @@
     "full_name": "摩根纳斯达克100指数型发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "morgan_nq100",
-    "family_name": "摩根纳斯达克100指数",
-    "manager": "摩根",
+    "family_id": "摩根(中国)_nq100",
+    "family_name": "摩根(中国)纳斯达克100",
+    "manager": "摩根(中国)",
     "siblings": [
       "019172",
       "019173"
@@ -1093,7 +1129,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "摩根基金(中国)"
   },
   {
     "code": "019441",
@@ -1101,9 +1138,9 @@
     "full_name": "万家纳斯达克100指数型发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "fuguo_nq100",
-    "family_name": "富国纳斯达克100指数增强",
-    "manager": "富国",
+    "family_id": "万家_nq100",
+    "family_name": "万家纳斯达克100",
+    "manager": "万家",
     "siblings": [
       "019441",
       "019442"
@@ -1112,7 +1149,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.01,
     "tracking_error": 0.0211,
     "return_1yr": 0.1576,
     "return_3yr": null,
@@ -1122,7 +1159,8 @@
     "daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "direct_daily_limit": 100,
-    "inception_date": "2023-09-27"
+    "inception_date": "2023-09-27",
+    "manager_company": "万家基金"
   },
   {
     "code": "019442",
@@ -1130,9 +1168,9 @@
     "full_name": "万家纳斯达克100指数型发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "fuguo_nq100",
-    "family_name": "富国纳斯达克100指数增强",
-    "manager": "富国",
+    "family_id": "万家_nq100",
+    "family_name": "万家纳斯达克100",
+    "manager": "万家",
     "siblings": [
       "019441",
       "019442"
@@ -1151,7 +1189,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "万家基金"
   },
   {
     "code": "019736",
@@ -1159,9 +1198,9 @@
     "full_name": "宝盈纳斯达克100指数型发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "icbc_nq100",
-    "family_name": "工银瑞信纳斯达克100指数",
-    "manager": "工银瑞信",
+    "family_id": "宝盈_nq100",
+    "family_name": "宝盈纳斯达克100",
+    "manager": "宝盈",
     "siblings": [
       "019736",
       "019737"
@@ -1170,7 +1209,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0165,
     "return_1yr": 0.1488,
     "return_3yr": null,
@@ -1180,7 +1219,8 @@
     "daily_limit": 200,
     "direct_limit_status": "限200元/日",
     "direct_daily_limit": 200,
-    "inception_date": "2024-03-22"
+    "inception_date": "2024-03-22",
+    "manager_company": "宝盈基金"
   },
   {
     "code": "019737",
@@ -1188,9 +1228,9 @@
     "full_name": "宝盈纳斯达克100指数型发起式证券投资基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "icbc_nq100",
-    "family_name": "工银瑞信纳斯达克100指数",
-    "manager": "工银瑞信",
+    "family_id": "宝盈_nq100",
+    "family_name": "宝盈纳斯达克100",
+    "manager": "宝盈",
     "siblings": [
       "019736",
       "019737"
@@ -1209,7 +1249,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "宝盈基金"
   },
   {
     "code": "019547",
@@ -1217,9 +1258,9 @@
     "full_name": "招商纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "A",
-    "family_id": "huitianfu2_nq100",
-    "family_name": "汇添富纳斯达克100ETF联接(综合)",
-    "manager": "汇添富",
+    "family_id": "招商_nq100",
+    "family_name": "招商纳斯达克100",
+    "manager": "招商",
     "siblings": [
       "019547",
       "019548"
@@ -1228,7 +1269,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0173,
     "return_1yr": 0.1525,
     "return_3yr": null,
@@ -1238,7 +1279,8 @@
     "daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "direct_daily_limit": 10,
-    "inception_date": "2023-11-29"
+    "inception_date": "2023-11-29",
+    "manager_company": "招商基金"
   },
   {
     "code": "019548",
@@ -1246,9 +1288,9 @@
     "full_name": "招商纳斯达克100交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "纳斯达克100",
     "share_class": "C",
-    "family_id": "huitianfu2_nq100",
-    "family_name": "汇添富纳斯达克100ETF联接(综合)",
-    "manager": "汇添富",
+    "family_id": "招商_nq100",
+    "family_name": "招商纳斯达克100",
+    "manager": "招商",
     "siblings": [
       "019547",
       "019548"
@@ -1267,7 +1309,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "招商基金"
   },
   {
     "code": "050025",
@@ -1275,19 +1318,19 @@
     "full_name": "博时标普500交易型开放式指数证券投资基金联接基金",
     "index_type": "标普500",
     "share_class": "A",
-    "family_id": "boshi_sp500",
-    "family_name": "博时标普500ETF联接",
+    "family_id": "博时_sp500",
+    "family_name": "博时标普500",
     "manager": "博时",
     "siblings": [
-      "050025",
       "006075",
-      "018738"
+      "018738",
+      "050025"
     ],
     "scale": 64.67,
     "mgmt_fee": 0.006,
     "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0125,
     "return_1yr": 0.1079,
     "return_3yr": 0.5322,
@@ -1297,7 +1340,8 @@
     "daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "direct_daily_limit": 0,
-    "inception_date": "2012-06-14"
+    "inception_date": "2012-06-14",
+    "manager_company": "博时基金"
   },
   {
     "code": "006075",
@@ -1305,18 +1349,18 @@
     "full_name": "博时标普500交易型开放式指数证券投资基金联接基金",
     "index_type": "标普500",
     "share_class": "C",
-    "family_id": "boshi_sp500",
-    "family_name": "博时标普500ETF联接",
+    "family_id": "博时_sp500",
+    "family_name": "博时标普500",
     "manager": "博时",
     "siblings": [
-      "050025",
       "006075",
-      "018738"
+      "018738",
+      "050025"
     ],
     "scale": 25.87,
     "mgmt_fee": 0.006,
     "custody_fee": 0.002,
-    "sales_fee": 0.0035,
+    "sales_fee": 0.0034999999999999996,
     "purchase_fee": 0.0,
     "tracking_error": 0.0125,
     "return_1yr": 0.1079,
@@ -1327,7 +1371,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "博时基金"
   },
   {
     "code": "018738",
@@ -1335,13 +1380,13 @@
     "full_name": "博时标普500交易型开放式指数证券投资基金联接基金",
     "index_type": "标普500",
     "share_class": "E",
-    "family_id": "boshi_sp500",
-    "family_name": "博时标普500ETF联接",
+    "family_id": "博时_sp500",
+    "family_name": "博时标普500",
     "manager": "博时",
     "siblings": [
-      "050025",
       "006075",
-      "018738"
+      "018738",
+      "050025"
     ],
     "scale": 25.87,
     "mgmt_fee": 0.006,
@@ -1357,7 +1402,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "博时基金"
   },
   {
     "code": "161125",
@@ -1365,18 +1411,18 @@
     "full_name": "易方达标普500指数证券投资基金(LOF)",
     "index_type": "标普500",
     "share_class": "A",
-    "family_id": "yifangda_sp500",
-    "family_name": "易方达标普500指数",
+    "family_id": "易方达_sp500",
+    "family_name": "易方达标普500",
     "manager": "易方达",
     "siblings": [
-      "161125",
-      "012860"
+      "012860",
+      "161125"
     ],
     "scale": 15.43,
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0119,
     "return_1yr": 0.1052,
     "return_3yr": 0.5435,
@@ -1386,7 +1432,8 @@
     "daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "direct_daily_limit": 0,
-    "inception_date": "2016-12-02"
+    "inception_date": "2016-12-02",
+    "manager_company": "易方达基金"
   },
   {
     "code": "012860",
@@ -1394,17 +1441,17 @@
     "full_name": "易方达标普500指数证券投资基金(LOF)",
     "index_type": "标普500",
     "share_class": "C",
-    "family_id": "yifangda_sp500",
-    "family_name": "易方达标普500指数",
+    "family_id": "易方达_sp500",
+    "family_name": "易方达标普500",
     "manager": "易方达",
     "siblings": [
-      "161125",
-      "012860"
+      "012860",
+      "161125"
     ],
     "scale": 6.17,
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
-    "sales_fee": 0.0035,
+    "sales_fee": 0.0034999999999999996,
     "purchase_fee": 0.0,
     "tracking_error": 0.0119,
     "return_1yr": 0.1052,
@@ -1415,7 +1462,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "易方达基金"
   },
   {
     "code": "017641",
@@ -1423,9 +1471,9 @@
     "full_name": "摩根标普500指数型发起式证券投资基金(QDII)",
     "index_type": "标普500",
     "share_class": "A",
-    "family_id": "morgan_sp500",
-    "family_name": "摩根标普500指数",
-    "manager": "摩根",
+    "family_id": "摩根(中国)_sp500",
+    "family_name": "摩根(中国)标普500",
+    "manager": "摩根(中国)",
     "siblings": [
       "017641",
       "019305"
@@ -1434,7 +1482,7 @@
     "mgmt_fee": 0.005,
     "custody_fee": 0.0015,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0164,
     "return_1yr": 0.1092,
     "return_3yr": 0.523,
@@ -1444,7 +1492,8 @@
     "daily_limit": 10,
     "direct_limit_status": "限10元/日",
     "direct_daily_limit": 10,
-    "inception_date": "2023-04-06"
+    "inception_date": "2023-04-06",
+    "manager_company": "摩根基金(中国)"
   },
   {
     "code": "019305",
@@ -1452,9 +1501,9 @@
     "full_name": "摩根标普500指数型发起式证券投资基金(QDII)",
     "index_type": "标普500",
     "share_class": "C",
-    "family_id": "morgan_sp500",
-    "family_name": "摩根标普500指数",
-    "manager": "摩根",
+    "family_id": "摩根(中国)_sp500",
+    "family_name": "摩根(中国)标普500",
+    "manager": "摩根(中国)",
     "siblings": [
       "017641",
       "019305"
@@ -1473,7 +1522,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "摩根基金(中国)"
   },
   {
     "code": "017028",
@@ -1481,9 +1531,9 @@
     "full_name": "国泰标普500交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "标普500",
     "share_class": "A",
-    "family_id": "huaan_sp500",
-    "family_name": "华安标普500ETF联接",
-    "manager": "华安",
+    "family_id": "国泰_sp500",
+    "family_name": "国泰标普500",
+    "manager": "国泰",
     "siblings": [
       "017028",
       "017030"
@@ -1492,7 +1542,7 @@
     "mgmt_fee": 0.006,
     "custody_fee": 0.0015,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.01,
     "tracking_error": 0.0155,
     "return_1yr": 0.1026,
     "return_3yr": 0.5015,
@@ -1502,7 +1552,8 @@
     "daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "direct_daily_limit": 0,
-    "inception_date": "2022-11-02"
+    "inception_date": "2022-11-02",
+    "manager_company": "国泰基金"
   },
   {
     "code": "017030",
@@ -1510,9 +1561,9 @@
     "full_name": "国泰标普500交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "标普500",
     "share_class": "C",
-    "family_id": "huaan_sp500",
-    "family_name": "华安标普500ETF联接",
-    "manager": "华安",
+    "family_id": "国泰_sp500",
+    "family_name": "国泰标普500",
+    "manager": "国泰",
     "siblings": [
       "017028",
       "017030"
@@ -1531,7 +1582,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "国泰基金"
   },
   {
     "code": "018064",
@@ -1539,9 +1591,9 @@
     "full_name": "华夏标普500交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "标普500",
     "share_class": "A",
-    "family_id": "guotai_sp500",
-    "family_name": "国泰标普500ETF联接",
-    "manager": "国泰",
+    "family_id": "华夏_sp500",
+    "family_name": "华夏标普500",
+    "manager": "华夏",
     "siblings": [
       "018064",
       "018065"
@@ -1550,7 +1602,7 @@
     "mgmt_fee": 0.006,
     "custody_fee": 0.0015,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.012,
     "tracking_error": 0.0218,
     "return_1yr": 0.0955,
     "return_3yr": 0.4938,
@@ -1560,7 +1612,8 @@
     "daily_limit": 0,
     "direct_limit_status": "暂停申购",
     "direct_daily_limit": 0,
-    "inception_date": "2023-05-10"
+    "inception_date": "2023-05-10",
+    "manager_company": "华夏基金"
   },
   {
     "code": "018065",
@@ -1568,9 +1621,9 @@
     "full_name": "华夏标普500交易型开放式指数证券投资基金发起式联接基金(QDII)",
     "index_type": "标普500",
     "share_class": "C",
-    "family_id": "guotai_sp500",
-    "family_name": "国泰标普500ETF联接",
-    "manager": "国泰",
+    "family_id": "华夏_sp500",
+    "family_name": "华夏标普500",
+    "manager": "华夏",
     "siblings": [
       "018064",
       "018065"
@@ -1589,7 +1642,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "华夏基金"
   },
   {
     "code": "096001",
@@ -1597,18 +1651,18 @@
     "full_name": "大成标普500等权重指数证券投资基金",
     "index_type": "标普500",
     "share_class": "A",
-    "family_id": "dacheng_sp500",
-    "family_name": "大成标普500等权重指数",
+    "family_id": "大成_sp500",
+    "family_name": "大成标普500",
     "manager": "大成",
     "siblings": [
-      "096001",
-      "008401"
+      "008401",
+      "096001"
     ],
     "scale": 7.3,
     "mgmt_fee": 0.01,
     "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.015,
     "tracking_error": 0.0143,
     "return_1yr": 0.0841,
     "return_3yr": 0.2668,
@@ -1618,7 +1672,8 @@
     "daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "direct_daily_limit": 100,
-    "inception_date": "2011-03-23"
+    "inception_date": "2011-03-23",
+    "manager_company": "大成基金"
   },
   {
     "code": "008401",
@@ -1626,12 +1681,12 @@
     "full_name": "大成标普500等权重指数证券投资基金",
     "index_type": "标普500",
     "share_class": "C",
-    "family_id": "dacheng_sp500",
-    "family_name": "大成标普500等权重指数",
+    "family_id": "大成_sp500",
+    "family_name": "大成标普500",
     "manager": "大成",
     "siblings": [
-      "096001",
-      "008401"
+      "008401",
+      "096001"
     ],
     "scale": 2.92,
     "mgmt_fee": 0.01,
@@ -1647,7 +1702,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "大成基金"
   },
   {
     "code": "007721",
@@ -1655,9 +1711,9 @@
     "full_name": "天弘标普500发起式证券投资基金(QDII-FOF)",
     "index_type": "标普500",
     "share_class": "A",
-    "family_id": "shenwan_sp500",
-    "family_name": "申万菱信标普500指数(QDII-FOF)",
-    "manager": "申万菱信",
+    "family_id": "天弘_sp500",
+    "family_name": "天弘标普500",
+    "manager": "天弘",
     "siblings": [
       "007721",
       "007722",
@@ -1667,7 +1723,7 @@
     "mgmt_fee": 0.006,
     "custody_fee": 0.002,
     "sales_fee": 0.0,
-    "purchase_fee": 0.001,
+    "purchase_fee": 0.01,
     "tracking_error": 0.015,
     "return_1yr": 0.1007,
     "return_3yr": 0.4929,
@@ -1677,7 +1733,8 @@
     "daily_limit": 100,
     "direct_limit_status": "限100元/日",
     "direct_daily_limit": 100,
-    "inception_date": "2019-09-24"
+    "inception_date": "2019-09-24",
+    "manager_company": "天弘基金"
   },
   {
     "code": "007722",
@@ -1685,9 +1742,9 @@
     "full_name": "天弘标普500发起式证券投资基金(QDII-FOF)",
     "index_type": "标普500",
     "share_class": "C",
-    "family_id": "shenwan_sp500",
-    "family_name": "申万菱信标普500指数(QDII-FOF)",
-    "manager": "申万菱信",
+    "family_id": "天弘_sp500",
+    "family_name": "天弘标普500",
+    "manager": "天弘",
     "siblings": [
       "007721",
       "007722",
@@ -1707,7 +1764,8 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "天弘基金"
   },
   {
     "code": "022523",
@@ -1715,9 +1773,9 @@
     "full_name": "天弘标普500发起式证券投资基金(QDII-FOF)",
     "index_type": "标普500",
     "share_class": "D",
-    "family_id": "shenwan_sp500",
-    "family_name": "申万菱信标普500指数(QDII-FOF)",
-    "manager": "申万菱信",
+    "family_id": "天弘_sp500",
+    "family_name": "天弘标普500",
+    "manager": "天弘",
     "siblings": [
       "007721",
       "007722",
@@ -1737,6 +1795,7 @@
     "daily_limit": 100,
     "direct_limit_status": "暂停(限1000)",
     "direct_daily_limit": 1000,
-    "inception_date": "2023-01-01"
+    "inception_date": "2023-01-01",
+    "manager_company": "天弘基金"
   }
 ]
