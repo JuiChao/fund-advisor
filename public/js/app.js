@@ -23,6 +23,7 @@ const App = (() => {
     function stars(n) { return (!n || n === 0) ? '-' : '★'.repeat(n); }
     function pill(s) {
         if (!s) return '<span class="pill pb">未知</span>';
+        if (s.includes('未开通')) return '<span class="pill" style="background:rgba(148,163,184,0.12);color:var(--txt3);border:1px solid rgba(148,163,184,0.3)">未开通</span>';
         if (s.includes('暂停')) return '<span class="pill pr">' + s + '</span>';
         if (s.includes('限')) return '<span class="pill py">' + s + '</span>';
         return '<span class="pill pg">' + s + '</span>';
@@ -115,8 +116,8 @@ const App = (() => {
     function renderHome() {
         const nq = FUND_DATA.filter(f => f.index_type === '纳斯达克100');
         const sp = FUND_DATA.filter(f => f.index_type === '标普500');
-        const availAgency = FUND_DATA.filter(f => !(f.limit_status || '').includes('暂停'));
-        const availDirect = FUND_DATA.filter(f => f.direct_limit_status && !f.direct_limit_status.includes('暂停'));
+        const availAgency = FUND_DATA.filter(f => !(f.limit_status || '').includes('暂停') && !(f.limit_status || '').includes('未开通'));
+        const availDirect = FUND_DATA.filter(f => f.direct_limit_status && !f.direct_limit_status.includes('暂停') && !f.direct_limit_status.includes('未开通'));
         const minFee = Math.min(...FUND_DATA.map(f => (f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0)));
 
         document.getElementById('home-stats').innerHTML = `
@@ -355,8 +356,14 @@ const App = (() => {
             if (classFilter === 'C' && f.share_class !== 'C') return false;
             if (classFilter === 'OTHER' && (f.share_class === 'A' || f.share_class === 'C')) return false;
 
-            if (quotaFilter === 'BUYABLE' && (f.limit_status || '').includes('暂停')) return false;
-            if (quotaFilter === 'DIRECT' && ((f.direct_limit_status || '').includes('暂停') || (!f.direct_limit_status && (f.limit_status || '').includes('暂停')))) return false;
+            if (quotaFilter === 'BUYABLE') {
+                const ls = f.limit_status || '';
+                if (ls.includes('暂停') || ls.includes('未开通')) return false;
+            }
+            if (quotaFilter === 'DIRECT') {
+                const dls = f.direct_limit_status || f.limit_status || '';
+                if (dls.includes('暂停') || dls.includes('未开通')) return false;
+            }
 
             if (kw) {
                 const matchCode = (f.code || '').toLowerCase().includes(kw);
@@ -378,7 +385,9 @@ const App = (() => {
         function draw() {
             const tbody = document.querySelector('#rank-table tbody');
             tbody.innerHTML = rankData.map((r, i) => {
-                const cls = i < 3 ? ' class="hl"' : (r.limit_status || '').includes('暂停') ? ' class="wr"' : '';
+                const isPaused = ((r.limit_status || '').includes('暂停') || (r.limit_status || '').includes('未开通')) &&
+                                 ((r.direct_limit_status || '').includes('暂停') || !r.direct_limit_status);
+                const cls = i < 3 ? ' class="hl"' : isPaused ? ' class="wr"' : '';
                 return '<tr' + cls + '>' + rankCols.map(c => '<td>' + (c.render ? c.render(r) : (r[c.key] ?? '-')) + '</td>').join('') + '</tr>';
             }).join('');
         }
@@ -1110,7 +1119,7 @@ const App = (() => {
         function isBuyable(f) {
             const status = f.limit_status || '';
             const limit = f.daily_limit;
-            return !(status.includes('暂停申购') || (status.includes('暂停') && limit == null));
+            return !(status.includes('暂停申购') || (status.includes('暂停') && limit == null) || status.includes('未开通'));
         }
 
         function pickFundsByStyle(nqPct, onlyBuyable = false) {

@@ -139,7 +139,9 @@ for fund in funds:
         review_fee_desc = "在同类产品中偏高，建议对比其他低费率平替产品"
         
     review_status_desc = f"目前该基金的代销渠道状态为“{agency_status}”，直销渠道状态为“{direct_status}”。"
-    if "暂停" in agency_status and "暂停" not in direct_status:
+    if "未开通" in agency_status and "暂停" not in direct_status:
+        review_status_desc += "该份额为基金公司直销专属份额（第三方代销平台未开通销售），如需买入可前往基金公司官网或官方APP直销渠道购买。"
+    elif "暂停" in agency_status and "暂停" not in direct_status:
         review_status_desc += "如果您发现无法在天天基金或支付宝等平台买入，建议前往基金公司官网或官方APP通过直销渠道申购，通常可以突破代销限额。"
     elif "暂停" in agency_status and "暂停" in direct_status:
         review_status_desc += "由于外汇额度等原因，目前可能无法大额申购，建议关注本站的平替基金推荐。"

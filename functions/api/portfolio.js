@@ -77,7 +77,7 @@ export async function onRequest(context) {
 
     function isBuyable(f) {
       const status = f.limit_status || '';
-      return !status.includes('暂停');
+      return !status.includes('暂停') && !status.includes('未开通');
     }
 
     function pickFundsByStyle(nqPct, onlyBuyable = false) {

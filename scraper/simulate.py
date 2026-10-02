@@ -225,7 +225,7 @@ def allocate_practical(items, budget, all_funds=None):
         limit = f.get('daily_limit')
 
         # 判断是否可买
-        is_suspended = '暂停申购' in status or ('暂停' in status and limit is None)
+        is_suspended = '暂停申购' in status or ('暂停' in status and limit is None) or '未开通' in status
 
         allocs.append({
             'fund': f,
@@ -339,9 +339,9 @@ def allocate_practical(items, budget, all_funds=None):
 # ---- 3种风格 × 2种子方案 ----
 
 def is_buyable(fund):
-    """判断基金是否可购买（暂停的不能买，限购的可以限额买）"""
+    """判断基金是否代销渠道可购买（暂停或未开通的不能买，限购的可以限额买）"""
     status = fund.get('limit_status', '')
-    return '暂停' not in status
+    return '暂停' not in status and '未开通' not in status
 
 
 def pick_funds_by_style(funds, nq_pct, only_buyable=False):

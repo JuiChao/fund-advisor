@@ -174,6 +174,14 @@ def scrape_fund_page(code):
             data['morningstar'] = 0
 
         # 限额限购解析
+        # 1. 检查是否为直销专属 / 尚未开通天天基金代销
+        is_sale_false = 'fundIsSale = false' in text
+        not_agency = ('尚未开通天天基金代销' in text) or ('不开放购买' in text and 'fundBuyStatus = "4"' in text)
+        if is_sale_false or not_agency:
+            data['daily_limit'] = 0
+            data['limit_status'] = '未开通代销'
+            return data
+
         # 优先使用天天基金官方页面底层状态变量 fundBuyStatus（权威第一信源）："4"=暂停申购, "1"=开放/限额
         m_buy = re.search(r'var\s+fundBuyStatus\s*=\s*"([^"]+)"', text)
         buy_code = m_buy.group(1) if m_buy else None
@@ -376,7 +384,11 @@ def scrape_limit_announcement(code):
         }
 
         # === 多模式提取直销限额 ===
-        # 模式0: 优先匹配本份额专属直销限额
+        # 模式0: 基金代码精准匹配表格（如南方021000公告表格）
+        m_code = re.search(rf'{code}\D{{0,60}}?(?:该基金份额的)?(?:限制金额|限额)\s*(\d+(?:\.\d+)?)\s*元', text_norm) or \
+                 re.search(rf'(?:限制金额|限额)\D{{0,60}}?{code}\D{{0,20}}?(\d+(?:\.\d+)?)\s*元', text_norm)
+
+        # 模式0b: 优先匹配本份额专属直销限额或公告
         m0 = None
         if my_class:
             m0 = re.search(
@@ -389,7 +401,16 @@ def scrape_limit_announcement(code):
                 r'(?:通过|经由?|在)?(?:本)?(?:公司|基金管理人)?直销(?:机构|渠道|平台|柜台)?.*?'
                 r'(?:不超过|限额为?|上限为?)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)',
                 text_norm
+            ) or re.search(
+                rf'单个基金账户单日累计申购\s*{my_class}\s*类.*?金额不得超过\s*(\d+(?:\.\d+)?)\s*元',
+                text_norm
             )
+
+        # 模式0c: 若公告标题指明了本份额（如"I类基金份额申购...金额限制的公告"），提取该公告中的金额
+        m_title_class = None
+        if my_class and f'{my_class}类' in text_norm[:200]:
+            m_title_class = re.search(r'(?:调整后)?限额\s*(\d+(?:\.\d+)?)\s*元', text_norm) or \
+                            re.search(r'限制金额\s*(\d+(?:\.\d+)?)\s*元', text_norm)
 
         # 模式1: "通过本公司直销机构...不超过 X 元"
         m1 = re.search(
@@ -417,7 +438,7 @@ def scrape_limit_announcement(code):
         m5 = re.search(r'直销电子交易平台.{0,500}?(?:不超过|上限为?)\s*(?:人民币)?\s*(\d+(?:\.\d+)?)\s*(?:元|元人民币)', text_norm)
 
         # 按优先级取值
-        match_candidates = ([m0] if m0 else []) + [m1, m2, m3, m5, m4]
+        match_candidates = ([m_code] if m_code else []) + ([m0] if m0 else []) + ([m_title_class] if m_title_class else []) + [m1, m2, m3, m5, m4]
         for match in match_candidates:
             if match:
                 dl = int(float(match.group(1)))
@@ -428,7 +449,10 @@ def scrape_limit_announcement(code):
 
         # 检查直销渠道是否全面暂停（仅当未提取到限额时才判定）
         if not result['direct_daily_limit']:
-            if re.search(r'(?:在)?直销(?:机构|渠道|平台)?.{0,10}?暂停', text_norm):
+            if my_class and re.search(rf'{my_class}\s*类基金份额暂停申购', text_norm):
+                result['direct_daily_limit'] = 0
+                result['direct_limit_status'] = '暂停申购'
+            elif re.search(r'(?:在)?直销(?:机构|渠道|平台)?.{0,10}?暂停', text_norm):
                 result['direct_daily_limit'] = 0
                 result['direct_limit_status'] = '暂停申购'
 
@@ -494,11 +518,16 @@ def main():
         # 先合并除限额公告外的所有数据（以获取最准确的代销状态，包含兜底逻辑）
         merged = {**base, **page_data, **f10_data, **fee_data}
 
-        # 如果直销限额未能单独提取，则说明该限购公告是全渠道适用的（未区分代销/直销）
-        # 此时直销的限购状态和额度与代销完全一致
+        # 如果直销限额未能单独提取：
+        # 1. 若代销是"未开通代销"，说明代销渠道未开放，不能将直销回退为代销状态（应保留兜底中的直销限额数据）
+        # 2. 否则说明该限购公告是全渠道适用的（未区分代销/直销），此时直销的限购状态和额度与代销一致
         if limit_data.get('direct_daily_limit') is None:
-            limit_data['direct_daily_limit'] = merged.get('daily_limit')
-            limit_data['direct_limit_status'] = merged.get('limit_status')
+            if merged.get('limit_status') == '未开通代销':
+                limit_data['direct_daily_limit'] = base.get('direct_daily_limit', 0)
+                limit_data['direct_limit_status'] = base.get('direct_limit_status', '暂停申购')
+            else:
+                limit_data['direct_daily_limit'] = merged.get('daily_limit')
+                limit_data['direct_limit_status'] = merged.get('limit_status')
 
         # 合并限额公告数据
         merged.update(limit_data)
