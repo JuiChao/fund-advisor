@@ -257,12 +257,20 @@
         <p>基金定投后理论上随时可以赎回，但<strong>持有时间越短，赎回费越高</strong>。通常持有7天内赎回费高达1.5%（惩罚性费用），持有30天以上降至0.5%左右，持有1-2年以上减免为0。QDII基金的赎回到账时间通常为T+7至T+10个工作日，比A股基金慢。建议至少持有1年以上再考虑赎回，避免高额赎回费侵蚀收益。</p>
     </details>
     <details>
-        <summary>A类基金和C类基金有什么区别？</summary>
-        <p><strong>A类基金</strong>收取申购费（买入时一次性收取），不收销售服务费，适合<strong>长期定投</strong>（1年以上）。<strong>C类基金</strong>不收申购费，但每年收取0.2%-0.4%的销售服务费，适合短期持有。对于定投投资者，A类基金的长期成本显著低于C类。本站默认展示A类基金，正是因为定投策略以长期持有为前提。</p>
+        <summary>A类、C类、D类、E类、I类份额有什么区别？</summary>
+        <p>同一只基金的不同份额代码代表不同的收费机制与销售渠道：
+        <br>• <strong>A类份额</strong>：收取前端申购费（通常1折后仅0.10%），<strong>无销售服务费</strong>，持有1年以上综合成本最低，是长期定投的黄金基石；
+        <br>• <strong>C类份额</strong>：<strong>免申购费</strong>，按日计提销售服务费（年化约0.20%~0.40%），持有7天以上免赎回费，适合波段操作或在A类限购时作为额度补充；
+        <br>• <strong>D类/E类份额</strong>：通常为特定互联网销售平台或官方特惠渠道定制份额，费率结构接近C类；
+        <br>• <strong>I类份额</strong>：主要针对机构或直销客户，通常具备更优惠的销售服务费或更高的单日大额限购上限。</p>
+    </details>
+    <details>
+        <summary>QDII基金限购严重，如何利用 A+C/D/E/I 多份额组合打满每月定投预算？</summary>
+        <p>在QDII外汇额度紧缺的常态下，单一A类份额可能遭遇单日限额10元或100元的限制，导致月定投预算无法达成。<strong>多份额额度叠加策略</strong>通过在主流A类份额打满限额后，自动将剩余资金配置到同一基金的C类或其它高评级可买份额上。虽然C类份额多出微量年化销售服务费，但它能确保您的定投现金流持续进场，避免因踏空行情而错失长期复利机会。本平台的<a href="#portfolio">定投方案推荐</a>已全面集成智能额度拼单算法，自动为您算出最优份额组合。</p>
     </details>
     <details>
         <summary>QDII基金暂停申购后还能继续定投吗？</summary>
-        <p>QDII基金暂停申购是由于基金公司的外汇额度用尽导致的，暂停期间确实无法买入。此时您有两个选择：①<strong>等待恢复</strong>，基金公司获得新额度后会重新开放；②<strong>切换到平替基金</strong>，通过本站<a href="#ranking">排名页</a>筛选同类型中尚未限购、评分较高的基金继续定投，确保投资计划不中断。</p>
+        <p>QDII基金暂停申购通常是因为基金公司的外汇额度用尽。此时您有两个选择：①<strong>检查直销渠道</strong>：通过本站查看直销状态，直销渠道常有独立未暂停额度；②<strong>多份额拼单与平替</strong>：通过本站<a href="#ranking">排名页</a>筛选同门C/D/E类或其它低费率优质平替基金继续定投，确保投资计划不中断。</p>
     </details>
 </section>
 
@@ -379,13 +387,31 @@
         </div>
     </div>
 
-    <div class="seg-control" id="rank-filter">
-        <button class="seg-btn on" data-value="纳斯达克100">
-            <span class="seg-icon">📈</span> 纳斯达克100
-        </button>
-        <button class="seg-btn" data-value="标普500">
-            <span class="seg-icon">📊</span> 标普500
-        </button>
+    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center">
+            <div class="seg-control" id="rank-filter" style="margin-bottom:0">
+                <button class="seg-btn on" data-value="纳斯达克100">
+                    <span class="seg-icon">📈</span> 纳斯达克100
+                </button>
+                <button class="seg-btn" data-value="标普500">
+                    <span class="seg-icon">📊</span> 标普500
+                </button>
+            </div>
+            <div class="seg-control" id="class-filter" style="margin-bottom:0">
+                <button class="seg-btn on" data-value="ALL">全部份额</button>
+                <button class="seg-btn" data-value="A">A类 (免销售费)</button>
+                <button class="seg-btn" data-value="C">C类 (免申购费)</button>
+                <button class="seg-btn" data-value="OTHER">其他 (D/E/I)</button>
+            </div>
+            <div class="seg-control" id="quota-filter" style="margin-bottom:0">
+                <button class="seg-btn on" data-value="ALL">全部状态</button>
+                <button class="seg-btn" data-value="BUYABLE">代销可买</button>
+                <button class="seg-btn" data-value="DIRECT">直销有额度</button>
+            </div>
+        </div>
+        <div style="position:relative;min-width:200px;flex:1;max-width:320px">
+            <input type="text" id="rank-search" placeholder="🔍 搜索代码、名称、管理人..." style="width:100%;padding:0.55rem 0.85rem;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);font-size:0.85rem;color:var(--txt);outline:none;transition:var(--transition)">
+        </div>
     </div>
 
     <div class="table-wrap"><table id="rank-table"><thead></thead><tbody></tbody></table></div>

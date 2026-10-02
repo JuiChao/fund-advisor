@@ -51,7 +51,7 @@ function simulate(funds, weights, years, budget, cfg) {
         const fundBudget = budget * weight;
         const isSP = (fund.index_type || '').includes('标普');
         const te = fund.tracking_error || defaults.tracking_error_for_simulation;
-        const fee = (fund.mgmt_fee || defaults.mgmt_fee) + (fund.custody_fee || defaults.custody_fee);
+        const fee = (fund.mgmt_fee || defaults.mgmt_fee) + (fund.custody_fee || defaults.custody_fee) + (fund.sales_fee || 0);
 
         const retM = (isSP ? params.sp500_return : params.nasdaq_return) / 12;
         const volM = (isSP ? params.sp500_vol : params.nasdaq_vol) / Math.sqrt(12);

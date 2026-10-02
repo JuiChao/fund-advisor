@@ -115,13 +115,14 @@ const App = (() => {
     function renderHome() {
         const nq = FUND_DATA.filter(f => f.index_type === '纳斯达克100');
         const sp = FUND_DATA.filter(f => f.index_type === '标普500');
-        const avail = FUND_DATA.filter(f => !(f.limit_status || '').includes('暂停'));
-        const minFee = Math.min(...FUND_DATA.map(f => (f.mgmt_fee || 0) + (f.custody_fee || 0)));
+        const availAgency = FUND_DATA.filter(f => !(f.limit_status || '').includes('暂停'));
+        const availDirect = FUND_DATA.filter(f => f.direct_limit_status && !f.direct_limit_status.includes('暂停'));
+        const minFee = Math.min(...FUND_DATA.map(f => (f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0)));
 
         document.getElementById('home-stats').innerHTML = `
-            <div class="stat"><div class="lb">基金总数</div><div class="vl">${FUND_DATA.length}</div><div class="sub">纳指 ${nq.length} · 标普 ${sp.length}</div></div>
-            <div class="stat"><div class="lb">可购买</div><div class="vl">${avail.length}</div><div class="sub">代销未暂停</div></div>
-            <div class="stat"><div class="lb">最低费率</div><div class="vl">${(minFee * 100).toFixed(2)}%</div><div class="sub">管理费 + 托管费</div></div>
+            <div class="stat"><div class="lb">收录份额</div><div class="vl">${FUND_DATA.length}</div><div class="sub">纳指 ${nq.length} · 标普 ${sp.length} (涵盖A/C/D/E/I)</div></div>
+            <div class="stat"><div class="lb">可购份额</div><div class="vl">${availAgency.length}</div><div class="sub">代销可买 (直销可买${availDirect.length})</div></div>
+            <div class="stat"><div class="lb">最低综合年费</div><div class="vl">${(minFee * 100).toFixed(2)}%</div><div class="sub">管理+托管+销售费</div></div>
             <div class="stat"><div class="lb">数据更新</div><div class="vl" style="font-size:1rem">${FUND_DATA[0]?.updated_at?.split('T')[0] || '-'}</div><div class="sub">每日自动抓取</div></div>
         `;
 
@@ -130,7 +131,7 @@ const App = (() => {
             const data = list.map(f => ({
                 code: f.code,
                 name: f.name,
-                fee: ((f.mgmt_fee || 0) + (f.custody_fee || 0)) * 100,
+                fee: ((f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0)) * 100,
                 status: f.limit_status || ''
             })).sort((a, b) => a.fee - b.fee);
             if (chartPool[id]) chartPool[id].destroy();
@@ -238,14 +239,39 @@ const App = (() => {
         return resp.json();
     }
 
+    // ===== 份额徽章助手 =====
+    function shareBadge(sclass) {
+        const c = (sclass || 'A').toUpperCase();
+        const map = {
+            'A': 'badge-a',
+            'C': 'badge-c',
+            'D': 'badge-d',
+            'E': 'badge-e',
+            'I': 'badge-i'
+        };
+        const cls = map[c] || 'badge-a';
+        return `<span class="badge-share ${cls}">${c}类</span>`;
+    }
+
     // ===== 排名页 =====
     let rankData = [];
     let rankSortDir = {};
     const rankCols = [
         { key: 'rank', label: '#' },
         { key: 'code', label: '代码' },
-        { key: 'name', label: '名称', render: r => `<a href="fund/${r.code}.html" style="color:var(--accent2);cursor:pointer;text-decoration:none;font-weight:600" class="fund-name-link" data-code="${r.code}" title="点击查看详情">` + r.name + ' <span style="font-size:0.7em;opacity:0.5">▸</span></a>' },
-        { key: 'fee', label: '费率', render: r => { const f = (r.mgmt_fee || 0) + (r.custody_fee || 0); return '<span style="' + feeC(f) + '">' + fmt(f) + '</span>'; } },
+        { key: 'name', label: '名称', render: r => shareBadge(r.share_class) + `<a href="fund/${r.code}.html" style="color:var(--accent2);cursor:pointer;text-decoration:none;font-weight:600" class="fund-name-link" data-code="${r.code}" title="点击查看详情">` + r.name + ' <span style="font-size:0.7em;opacity:0.5">▸</span></a>' },
+        { key: 'fee', label: '综合费率', render: r => {
+            const mgmt = r.mgmt_fee || 0;
+            const cust = r.custody_fee || 0;
+            const sales = r.sales_fee || 0;
+            const total = mgmt + cust + sales;
+            const tip = `管理费${(mgmt*100).toFixed(2)}% + 托管费${(cust*100).toFixed(2)}%` + (sales > 0 ? ` + 销售服务费${(sales*100).toFixed(2)}%` : '');
+            return `<span class="fee-tooltip-trigger" title="${tip}" style="${feeC(total)}">${fmt(total)}</span>`;
+        } },
+        { key: 'purchase_fee', label: '申购费', render: r => {
+            const pf = r.purchase_fee || 0;
+            return pf > 0 ? `${(pf*100).toFixed(2)}%` : '<span style="color:var(--ok);font-weight:600">0.00%</span>';
+        } },
         { key: 'tracking_error', label: '跟踪误差', render: r => fmt(r.tracking_error) },
         { key: 'scale', label: '规模', render: r => r.scale ? r.scale.toFixed(1) + '亿' : '-' },
         { key: 'return_3yr', label: '近3年', render: r => { 
@@ -263,7 +289,7 @@ const App = (() => {
             return '-'; 
         } },
         { key: 'morningstar', label: '晨星', render: r => { const n = r.morningstar; return n > 0 ? '<span style="color:var(--warn)">' + '★'.repeat(n) + '</span>' : '-'; } },
-        { key: 'limit_status', label: '限购', render: r => {
+        { key: 'limit_status', label: '限购(代/直)', render: r => {
             let html = '<div style="display:flex;flex-direction:column;gap:2px;align-items:center">';
             html += '<div style="font-size:0.7rem;color:var(--txt3)">代销</div>' + pill(r.limit_status);
             if (r.direct_limit_status) {
@@ -279,7 +305,7 @@ const App = (() => {
         const cfg = ALGO_CONFIG;
         const d = cfg.defaults;
         const s = cfg.scoring;
-        const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0);
+        const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0);
         const te = f.tracking_error || d.tracking_error_for_scoring;
         const scale = f.scale || d.scale;
         const y3 = f.return_3yr;
@@ -317,9 +343,34 @@ const App = (() => {
 
     function renderRanking() {
         const type = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
-        const funds = FUND_DATA.filter(f => f.index_type === type);
-        const medianTE = calcMedianTE(funds);
-        rankData = funds.map(f => ({ ...f, score: scoreFund(f, medianTE) })).sort((a, b) => b.score - a.score).map((f, i) => ({ ...f, rank: i + 1 }));
+        const classFilter = document.querySelector('#class-filter .seg-btn.on')?.dataset.value || 'ALL';
+        const quotaFilter = document.querySelector('#quota-filter .seg-btn.on')?.dataset.value || 'ALL';
+        const kw = (document.getElementById('rank-search')?.value || '').trim().toLowerCase();
+
+        const allTypeFunds = FUND_DATA.filter(f => f.index_type === type);
+        const medianTE = calcMedianTE(allTypeFunds);
+
+        const filtered = allTypeFunds.filter(f => {
+            if (classFilter === 'A' && f.share_class !== 'A') return false;
+            if (classFilter === 'C' && f.share_class !== 'C') return false;
+            if (classFilter === 'OTHER' && (f.share_class === 'A' || f.share_class === 'C')) return false;
+
+            if (quotaFilter === 'BUYABLE' && (f.limit_status || '').includes('暂停')) return false;
+            if (quotaFilter === 'DIRECT' && ((f.direct_limit_status || '').includes('暂停') || (!f.direct_limit_status && (f.limit_status || '').includes('暂停')))) return false;
+
+            if (kw) {
+                const matchCode = (f.code || '').toLowerCase().includes(kw);
+                const matchName = (f.name || '').toLowerCase().includes(kw);
+                const matchMgr = (f.manager || '').toLowerCase().includes(kw);
+                const matchFam = (f.family_name || '').toLowerCase().includes(kw);
+                if (!matchCode && !matchName && !matchMgr && !matchFam) return false;
+            }
+            return true;
+        });
+
+        rankData = filtered.map(f => ({ ...f, score: scoreFund(f, medianTE) }))
+                           .sort((a, b) => b.score - a.score)
+                           .map((f, i) => ({ ...f, rank: i + 1 }));
 
         const thead = document.querySelector('#rank-table thead');
         thead.innerHTML = '<tr>' + rankCols.map(c => `<th data-key="${c.key}">${c.label} <span class="arr">⇅</span></th>`).join('') + '</tr>';
@@ -340,8 +391,13 @@ const App = (() => {
                 const dir = rankSortDir[key] === 'desc' ? -1 : 1;
                 rankData.sort((a, b) => {
                     let va, vb;
-                    if (isFee) { va = (a.mgmt_fee || 0) + (a.custody_fee || 0); vb = (b.mgmt_fee || 0) + (b.custody_fee || 0); }
-                    else { va = a[key]; vb = b[key]; }
+                    if (isFee) {
+                        va = (a.mgmt_fee || 0) + (a.custody_fee || 0) + (a.sales_fee || 0);
+                        vb = (b.mgmt_fee || 0) + (b.custody_fee || 0) + (b.sales_fee || 0);
+                    } else {
+                        va = a[key];
+                        vb = b[key];
+                    }
                     if (va == null) va = Infinity; if (vb == null) vb = Infinity;
                     return dir * (typeof va === 'string' ? va.localeCompare(vb) : va - vb);
                 });
@@ -492,7 +548,7 @@ const App = (() => {
         const search = document.getElementById('sim-sel-search');
         const textEl = document.getElementById('sim-sel-text');
 
-        function feeStr(f) { return (((f.mgmt_fee||0)+(f.custody_fee||0))*100).toFixed(2) + '%'; }
+        function feeStr(f) { return (((f.mgmt_fee||0)+(f.custody_fee||0)+(f.sales_fee||0))*100).toFixed(2) + '%'; }
         function renderList(filter) {
             const q = (filter || '').toLowerCase();
             const nqMedianTE = calcMedianTE(FUND_DATA.filter(f => f.index_type === '纳斯达克100'));
@@ -502,7 +558,7 @@ const App = (() => {
                 score: scoreFund(f, f.index_type === '标普500' ? spMedianTE : nqMedianTE)
             })).filter(f => {
                 if (!q) return true;
-                return f.code.includes(q) || f.name.toLowerCase().includes(q);
+                return f.code.includes(q) || f.name.toLowerCase().includes(q) || (f.family_name || '').toLowerCase().includes(q);
             }).sort((a, b) => {
                 // 先按指数类型分组：纳斯达克100在前，标普500在后
                 const typeOrder = { '纳斯达克100': 0, '标普500': 1 };
@@ -528,8 +584,8 @@ const App = (() => {
                 html += `<div class="ms-opt${sel}" data-code="${f.code}">
                     <div class="ms-cb"></div>
                     <div class="ms-opt-info">
-                        <div class="ms-opt-name"><span class="ms-opt-rank">#${rankInGroup}</span> ${f.code} ${f.name}</div>
-                        <div class="ms-opt-meta">评分 <strong style="color:var(--accent2)">${f.score}</strong> · 费率 ${feeStr(f)} · ${f.index_type}</div>
+                        <div class="ms-opt-name"><span class="ms-opt-rank">#${rankInGroup}</span> ${shareBadge(f.share_class)} ${f.code} ${f.name}</div>
+                        <div class="ms-opt-meta">评分 <strong style="color:var(--accent2)">${f.score}</strong> · 综合年费 ${feeStr(f)} · 申购 ${(f.purchase_fee*100).toFixed(2)}% · ${f.index_type}</div>
                     </div>
                 </div>`;
             });
@@ -692,14 +748,17 @@ const App = (() => {
         const allocs = variant.allocations || [];
         const rows = allocs.map(a => `<tr class="${a.exceeds_limit ? 'wr' : ''}">
             <td style="color:var(--txt2)">${a.code}</td>
-            <td style="text-align:left;font-weight:500">${a.name}</td>
+            <td style="text-align:left;font-weight:500">
+                ${shareBadge(a.share_class)}${a.name}
+                ${a.is_stacked ? '<span class="badge-stacked" title="额度用尽时自动补充的优质份额">额度叠加</span>' : ''}
+            </td>
             <td style="${feeC(a.fee)}">${(a.fee*100).toFixed(2)}%</td>
             <td>${a.daily}元</td>
             <td style="font-weight:600">${a.monthly}元</td>
             <td>${(a.actual_weight*100).toFixed(0)}%</td>
             <td>${pill(a.limit_status)}${a.direct_limit_status ? '<div style="margin-top:2px">' + pill(a.direct_limit_status) + '</div>' : ''}</td>
         </tr>`).join('');
-        return `<div class="table-wrap"><table><thead><tr><th>代码</th><th>名称</th><th>费率</th><th>每日</th><th>月合计</th><th>占比</th><th>代销/直销</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        return `<div class="table-wrap"><table><thead><tr><th>代码</th><th>名称</th><th>综合费率</th><th>每日</th><th>月合计</th><th>占比</th><th>代销/直销</th></tr></thead><tbody>${rows}</tbody></table></div>`;
     }
 
     function renderVariantSim(variant, years) {
@@ -787,7 +846,7 @@ const App = (() => {
                     </div>
 
                     <div class="pf-panel" id="pf-${s.key}-practical" style="display:none">
-                        <p style="color:var(--txt3);font-size:.75rem;margin:.5rem 0">${s.practical?.note || ''}</p>
+                        <p style="color:${(s.practical?.note || '').includes('额度叠加') ? 'var(--ok)' : 'var(--txt3)'};font-size:.78rem;font-weight:500;margin:.5rem 0">${s.practical?.note || ''}</p>
                         <div class="g2">
                             <div>${renderVariantTable(s.practical, s.key)}</div>
                             <div>
@@ -1065,10 +1124,24 @@ const App = (() => {
             const spMedianTE = calcMedianTE(sp);
             const nqScored = nq.map(f => ({ ...f, score: scoreFund(f, nqMedianTE) })).sort((a, b) => b.score - a.score);
             const spScored = sp.map(f => ({ ...f, score: scoreFund(f, spMedianTE) })).sort((a, b) => b.score - a.score);
-            
-            const rnq = nqScored.slice(0, fundSel.nasdaq_top_n);
-            const rsp = spScored.slice(0, fundSel.sp500_top_n);
-            
+
+            function selectDistinctFamilies(rankedList, topN) {
+                const seen = new Set();
+                const selected = [];
+                for (const f of rankedList) {
+                    const fam = f.family_id || f.code;
+                    if (!seen.has(fam)) {
+                        seen.add(fam);
+                        selected.push(f);
+                        if (selected.length >= topN) break;
+                    }
+                }
+                return selected;
+            }
+
+            const rnq = selectDistinctFamilies(nqScored, fundSel.nasdaq_top_n);
+            const rsp = selectDistinctFamilies(spScored, fundSel.sp500_top_n);
+
             const items = [];
             const nqS = rnq.reduce((sum, f) => sum + f.score, 0);
             if (nqS > 0) {
@@ -1087,14 +1160,17 @@ const App = (() => {
                 const w = item.weight;
                 const monthly = budget * w;
                 const daily = monthly / tradingDays;
+                const fee = +((f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0)).toFixed(4);
                 return {
                     code: f.code, name: f.name, index_type: f.index_type || '',
+                    share_class: f.share_class || 'A', family_id: f.family_id || '',
                     weight: +w.toFixed(4), daily: +daily.toFixed(1), monthly: Math.round(monthly),
-                    fee: +((f.mgmt_fee || 0) + (f.custody_fee || 0)).toFixed(4),
+                    fee: fee,
                     tracking_error: f.tracking_error, score: f.score || 0,
                     daily_limit: f.daily_limit || null, limit_status: f.limit_status || '',
                     direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
                     exceeds_limit: false,
+                    is_stacked: false,
                 };
             });
             const total = allocs.reduce((sum, a) => sum + a.monthly, 0);
@@ -1114,19 +1190,20 @@ const App = (() => {
                 return {
                     fund: f, weight: w, limit: (limit !== null && limit !== undefined) ? limit : Infinity,
                     actual_daily: 0.0, actual_monthly: 0.0, exceeds_limit: false, is_suspended: isSuspended,
+                    is_stacked: false,
                 };
             });
 
             let remainingBudget = budget;
             const activeAllocs = allocs.filter(a => !a.is_suspended);
 
-            if (activeAllocs.length > 0) {
+            function waterfall(candidates) {
                 while (remainingBudget > 0.01) {
-                    const available = activeAllocs.filter(a => !a.exceeds_limit);
+                    const available = candidates.filter(a => !a.exceeds_limit);
                     if (available.length === 0) break;
 
                     let totalWeight = available.reduce((sum, a) => sum + a.weight, 0);
-                    if (totalWeight === 0) {
+                    if (totalWeight <= 0) {
                         available.forEach(a => a.weight = 1.0 / available.length);
                         totalWeight = 1.0;
                     }
@@ -1156,16 +1233,62 @@ const App = (() => {
                 }
             }
 
+            if (activeAllocs.length > 0) {
+                waterfall(activeAllocs);
+            }
+
+            // 额度用尽时自动启动多份额额度叠加策略
+            if (remainingBudget > 10) {
+                const existingCodes = new Set(activeAllocs.map(a => a.fund.code));
+                const candidates = [];
+                for (const a of activeAllocs) {
+                    const siblings = a.fund.siblings || [];
+                    for (const sibCode of siblings) {
+                        if (!existingCodes.has(sibCode)) {
+                            const sib = FUND_DATA.find(x => x.code === sibCode);
+                            if (sib && isBuyable(sib)) {
+                                candidates.push(sib);
+                                existingCodes.add(sibCode);
+                            }
+                        }
+                    }
+                }
+                const otherBuyable = FUND_DATA.filter(f => isBuyable(f) && !existingCodes.has(f.code));
+                const medianTENq = calcMedianTE(FUND_DATA.filter(f => f.index_type === '纳斯达克100'));
+                const medianTESp = calcMedianTE(FUND_DATA.filter(f => f.index_type === '标普500'));
+                const scoredOther = otherBuyable.map(f => ({
+                    ...f,
+                    score: scoreFund(f, f.index_type === '标普500' ? medianTESp : medianTENq)
+                })).sort((a, b) => b.score - a.score);
+                candidates.push(...scoredOther);
+
+                for (const cf of candidates) {
+                    if (remainingBudget <= 0.01) break;
+                    const clim = cf.daily_limit;
+                    const newA = {
+                        fund: cf, weight: 1.0, limit: (clim !== null && clim !== undefined) ? clim : Infinity,
+                        actual_daily: 0.0, actual_monthly: 0.0, exceeds_limit: false, is_suspended: false,
+                        is_stacked: true,
+                    };
+                    activeAllocs.push(newA);
+                    allocs.push(newA);
+                    waterfall([newA]);
+                }
+            }
+
             const result = allocs.map(a => {
                 const f = a.fund;
+                const fee = +((f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0)).toFixed(4);
                 return {
                     code: f.code, name: f.name, index_type: f.index_type || '',
+                    share_class: f.share_class || 'A', family_id: f.family_id || '',
                     weight: +a.weight.toFixed(4), daily: +a.actual_daily.toFixed(1), monthly: Math.round(a.actual_monthly),
-                    fee: +((f.mgmt_fee || 0) + (f.custody_fee || 0)).toFixed(4),
+                    fee: fee,
                     tracking_error: f.tracking_error, score: f.score || 0,
                     daily_limit: a.limit !== Infinity ? a.limit : null, limit_status: f.limit_status || '',
                     direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
                     exceeds_limit: a.exceeds_limit,
+                    is_stacked: a.is_stacked || false,
                 };
             });
 
@@ -1181,6 +1304,10 @@ const App = (() => {
         return strategiesDef.map(s => {
             const idealItems = pickFundsByStyle(s.nq_pct, false);
             const practicalItems = pickFundsByStyle(s.nq_pct, true);
+            const practicalAllocations = allocatePractical(practicalItems);
+            const hasStacked = practicalAllocations.some(a => a.is_stacked && a.monthly > 0);
+            const practicalNote = hasStacked ? '💡 算法已自动启动【多份额额度叠加策略】，成功为您打破单日限购封锁，打满 100% 预算！' : '排除暂停基金，遵守每日限购限额。';
+
             return {
                 key: s.key,
                 name: s.name,
@@ -1192,8 +1319,8 @@ const App = (() => {
                     note: '不考虑限购的理论最优配置。'
                 },
                 practical: {
-                    allocations: allocatePractical(practicalItems),
-                    note: '排除暂停基金，遵守每日限购限额。'
+                    allocations: practicalAllocations,
+                    note: practicalNote
                 }
             };
         });
@@ -1230,6 +1357,26 @@ const App = (() => {
                 renderRanking();
             });
         });
+        document.querySelectorAll('#class-filter .seg-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#class-filter .seg-btn').forEach(b => b.classList.remove('on'));
+                btn.classList.add('on');
+                renderRanking();
+            });
+        });
+        document.querySelectorAll('#quota-filter .seg-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#quota-filter .seg-btn').forEach(b => b.classList.remove('on'));
+                btn.classList.add('on');
+                renderRanking();
+            });
+        });
+        const rankSearch = document.getElementById('rank-search');
+        if (rankSearch) {
+            rankSearch.addEventListener('input', () => {
+                renderRanking();
+            });
+        }
         document.getElementById('sim-m').addEventListener('input', e => {
             document.getElementById('sim-mv').textContent = fmtMoney(e.target.value);
             updateWeightDisplays();
@@ -1260,14 +1407,64 @@ const App = (() => {
             const detailTr = document.createElement('tr');
             detailTr.className = 'fund-detail-row';
             const colSpan = rankCols.length;
-            const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0);
+            const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0);
+
+            // 同门多份额横向比对看板
+            let siblingHtml = '';
+            if (f.siblings && f.siblings.length > 1) {
+                const sibFunds = f.siblings.map(sc => FUND_DATA.find(x => x.code === sc)).filter(Boolean);
+                if (sibFunds.length > 1) {
+                    siblingHtml = `
+                    <div class="sibling-box">
+                        <div class="sibling-title">
+                            <span>🔄 同门同标的各份额比对看板（${f.family_name || '同一指数基金家族'}）</span>
+                            <span style="font-size:0.75rem;font-weight:normal;color:var(--txt3);margin-left:auto;">💡 可搭配不同份额合并定投以提升可买额度</span>
+                        </div>
+                        <div class="sibling-card-grid">
+                            ${sibFunds.map(sf => {
+                                const isSelf = sf.code === f.code;
+                                const sFee = (sf.mgmt_fee || 0) + (sf.custody_fee || 0) + (sf.sales_fee || 0);
+                                return `
+                                <div class="sibling-card ${isSelf ? 'active' : ''}" data-code="${sf.code}" title="${isSelf ? '当前查看中' : '点击切换查看此份额详情'}">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem">
+                                        <div style="display:flex;align-items:center;gap:4px">
+                                            ${shareBadge(sf.share_class)}
+                                            <strong style="color:var(--txt)">${sf.code}</strong>
+                                        </div>
+                                        <span style="font-size:0.75rem;font-weight:700;color:var(--ok)">${(sFee*100).toFixed(2)}%/年</span>
+                                    </div>
+                                    <div style="font-size:0.75rem;color:var(--txt2);margin-bottom:0.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${sf.name}">${sf.name}</div>
+                                    <div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:2px">
+                                        <span style="color:var(--txt3)">代销限购:</span>
+                                        <span>${pill(sf.limit_status)}</span>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:4px">
+                                        <span style="color:var(--txt3)">直销限购:</span>
+                                        <span>${sf.direct_limit_status ? pill(sf.direct_limit_status) : '<span style="color:var(--txt3)">—</span>'}</span>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--txt3);border-top:1px dashed var(--border);padding-top:4px;margin-top:4px">
+                                        <span>销售服务费: ${(sf.sales_fee || 0) > 0 ? (sf.sales_fee*100).toFixed(2)+'%' : '免'}</span>
+                                        <span>申购费: ${(sf.purchase_fee || 0) > 0 ? (sf.purchase_fee*100).toFixed(2)+'%' : '免'}</span>
+                                    </div>
+                                </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    `;
+                }
+            }
+
             detailTr.innerHTML = `<td colspan="${colSpan}" style="padding:1.5rem; background:var(--surface2); border-left:4px solid var(--accent2); box-shadow:inset 0 2px 4px rgba(0,0,0,0.02)">
+                ${siblingHtml}
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; font-size:0.85rem; color:var(--txt2); line-height:1.6;">
                     
                     <!-- 基础信息 -->
                     <div>
                         <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">📝 基础信息</div>
+                        <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">份额类别：</strong>${shareBadge(f.share_class)}</div>
                         ${f.full_name ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">全称：</strong>${f.full_name}</div>` : ''}
+                        ${f.family_name ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">所属家族：</strong>${f.family_name}</div>` : ''}
                         ${f.fund_type ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">类型：</strong>${f.fund_type}</div>` : ''}
                         ${f.tracking_index ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">标的：</strong>${f.tracking_index}</div>` : ''}
                     </div>
@@ -1283,10 +1480,11 @@ const App = (() => {
                     <!-- 费率详情 -->
                     <div>
                         <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">💰 费率详情</div>
-                        <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">综合费率：</strong><span style="color:var(--ok);font-weight:700">${(fee*100).toFixed(2)}%/年</span></div>
+                        <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">综合年费率：</strong><span style="color:var(--ok);font-weight:700">${(fee*100).toFixed(2)}%/年</span></div>
                         <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">管理费：</strong>${f.mgmt_fee ? (f.mgmt_fee*100).toFixed(2)+'%/年' : '-'}</div>
                         <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">托管费：</strong>${f.custody_fee ? (f.custody_fee*100).toFixed(2)+'%/年' : '-'}</div>
-                        ${f.purchase_fee != null ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">申购费：</strong>${(f.purchase_fee*100).toFixed(2)}%</div>` : ''}
+                        <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">销售服务费：</strong>${(f.sales_fee || 0) > 0 ? (f.sales_fee*100).toFixed(2)+'%/年' : '0.00% (免)'}</div>
+                        ${f.purchase_fee != null ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">申购费率(前端)：</strong>${(f.purchase_fee*100).toFixed(2)}%</div>` : ''}
                     </div>
 
                     <!-- 规模与时间 -->
@@ -1307,6 +1505,20 @@ const App = (() => {
                 ${f.benchmark ? `<div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border); font-size:0.8rem; color:var(--txt3);"><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
             </td>`;
             tr.after(detailTr);
+
+            // 绑定同门卡片点击切换
+            detailTr.querySelectorAll('.sibling-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const c = card.dataset.code;
+                    if (c && c !== f.code) {
+                        const targetLink = document.querySelector(`.fund-name-link[data-code="${c}"]`);
+                        if (targetLink) {
+                            targetLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            targetLink.click();
+                        }
+                    }
+                });
+            });
         });
     }
 

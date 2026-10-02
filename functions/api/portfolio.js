@@ -37,7 +37,7 @@ export async function onRequest(context) {
     }
 
     function scoreFund(f, medianTE) {
-      const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0);
+      const fee = (f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0);
       const te = f.tracking_error || defaults.tracking_error_for_scoring;
       const scaleVal = f.scale || defaults.scale;
       const y3 = f.return_3yr;
@@ -87,8 +87,25 @@ export async function onRequest(context) {
         nq = nq.filter(isBuyable);
         sp = sp.filter(isBuyable);
       }
-      const rnq = rankFunds(nq).slice(0, fundSel.nasdaq_top_n);
-      const rsp = rankFunds(sp).slice(0, fundSel.sp500_top_n);
+      const rankedNq = rankFunds(nq);
+      const rankedSp = rankFunds(sp);
+
+      function selectDistinctFamilies(rankedList, topN) {
+        const seen = new Set();
+        const selected = [];
+        for (const f of rankedList) {
+          const fam = f.family_id || f.code;
+          if (!seen.has(fam)) {
+            seen.add(fam);
+            selected.push(f);
+            if (selected.length >= topN) break;
+          }
+        }
+        return selected;
+      }
+
+      const rnq = selectDistinctFamilies(rankedNq, fundSel.nasdaq_top_n);
+      const rsp = selectDistinctFamilies(rankedSp, fundSel.sp500_top_n);
       const items = [];
       const nqS = rnq.reduce((sum, f) => sum + f.score, 0);
       if (nqS > 0) {
@@ -108,14 +125,17 @@ export async function onRequest(context) {
         const w = item.weight;
         const monthly = budget * w;
         const daily = monthly / tradingDays;
+        const fee = +((f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0)).toFixed(4);
         return {
           code: f.code, name: f.name, index_type: f.index_type || '',
+          share_class: f.share_class || 'A', family_id: f.family_id || '',
           weight: +w.toFixed(4), daily: +daily.toFixed(1), monthly: Math.round(monthly),
-          fee: +((f.mgmt_fee || 0) + (f.custody_fee || 0)).toFixed(4),
+          fee: fee,
           tracking_error: f.tracking_error, score: f.score || 0,
           daily_limit: f.daily_limit || null, limit_status: f.limit_status || '',
           direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
           exceeds_limit: false,
+          is_stacked: false,
         };
       });
       const total = allocs.reduce((sum, a) => sum + a.monthly, 0);
@@ -136,19 +156,20 @@ export async function onRequest(context) {
         return {
           fund: f, weight: w, limit: (limit !== null && limit !== undefined) ? limit : Infinity,
           actual_daily: 0.0, actual_monthly: 0.0, exceeds_limit: false, is_suspended: isSuspended,
+          is_stacked: false,
         };
       });
 
       let remainingBudget = budget;
       const activeAllocs = allocs.filter(a => !a.is_suspended);
 
-      if (activeAllocs.length > 0) {
+      function waterfall(candidates) {
         while (remainingBudget > 0.01) {
-          const available = activeAllocs.filter(a => !a.exceeds_limit);
+          const available = candidates.filter(a => !a.exceeds_limit);
           if (available.length === 0) break;
 
           let totalWeight = available.reduce((sum, a) => sum + a.weight, 0);
-          if (totalWeight === 0) {
+          if (totalWeight <= 0) {
             available.forEach(a => a.weight = 1.0 / available.length);
             totalWeight = 1.0;
           }
@@ -178,16 +199,56 @@ export async function onRequest(context) {
         }
       }
 
+      if (activeAllocs.length > 0) {
+        waterfall(activeAllocs);
+      }
+
+      // 额度用尽时自动启动多份额额度叠加策略
+      if (remainingBudget > 10) {
+        const existingCodes = new Set(activeAllocs.map(a => a.fund.code));
+        const candidates = [];
+        for (const a of activeAllocs) {
+          const siblings = a.fund.siblings || [];
+          for (const sibCode of siblings) {
+            if (!existingCodes.has(sibCode)) {
+              const sib = funds.find(x => x.code === sibCode);
+              if (sib && isBuyable(sib)) {
+                candidates.push(sib);
+                existingCodes.add(sibCode);
+              }
+            }
+          }
+        }
+        const otherBuyable = funds.filter(f => isBuyable(f) && !existingCodes.has(f.code));
+        candidates.push(...rankFunds(otherBuyable));
+
+        for (const cf of candidates) {
+          if (remainingBudget <= 0.01) break;
+          const clim = cf.daily_limit;
+          const newA = {
+            fund: cf, weight: 1.0, limit: (clim !== null && clim !== undefined) ? clim : Infinity,
+            actual_daily: 0.0, actual_monthly: 0.0, exceeds_limit: false, is_suspended: false,
+            is_stacked: true,
+          };
+          activeAllocs.push(newA);
+          allocs.push(newA);
+          waterfall([newA]);
+        }
+      }
+
       const result = allocs.map(a => {
         const f = a.fund;
+        const fee = +((f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0)).toFixed(4);
         return {
           code: f.code, name: f.name, index_type: f.index_type || '',
+          share_class: f.share_class || 'A', family_id: f.family_id || '',
           weight: +a.weight.toFixed(4), daily: +a.actual_daily.toFixed(1), monthly: Math.round(a.actual_monthly),
-          fee: +((f.mgmt_fee || 0) + (f.custody_fee || 0)).toFixed(4),
+          fee: fee,
           tracking_error: f.tracking_error, score: f.score || 0,
           daily_limit: a.limit !== Infinity ? a.limit : null, limit_status: f.limit_status || '',
           direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
           exceeds_limit: a.exceeds_limit,
+          is_stacked: a.is_stacked || false,
         };
       });
 
@@ -205,6 +266,8 @@ export async function onRequest(context) {
 
       const idealAllocations = allocateIdeal(idealItems);
       const practicalAllocations = allocatePractical(practicalItems);
+      const hasStacked = practicalAllocations.some(a => a.is_stacked && a.monthly > 0);
+      const practicalNote = hasStacked ? '💡 算法已自动启动【多份额额度叠加策略】，成功为您打破单日限购封锁，打满 100% 预算！' : '排除暂停基金，遵守每日限购限额。';
 
       // 获取该策略在 simulations.json 中对应的预计算收益数据进行线性缩放
       const simStrategy = simsData.strategies.find(x => x.key === sDef.key);

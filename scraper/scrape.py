@@ -82,25 +82,19 @@ FALLBACK = os.path.join(os.path.dirname(__file__), '..', 'data', 'funds_fallback
 # 输出路径
 OUTPUT = os.path.join(os.path.dirname(__file__), '..', 'public', 'data', 'funds.json')
 
-FUND_LIST = [
-    # (code, index_type)
-    ('016532', '纳斯达克100'), ('016055', '纳斯达克100'), ('018043', '纳斯达克100'),
-    ('160213', '纳斯达克100'), ('040046', '纳斯达克100'), ('000834', '纳斯达克100'),
-    ('161130', '纳斯达克100'), ('270042', '纳斯达克100'), ('016452', '纳斯达克100'),
-    ('539001', '纳斯达克100'), ('019547', '纳斯达克100'), ('018966', '纳斯达克100'),
-    ('015299', '纳斯达克100'), ('019172', '纳斯达克100'), ('019441', '纳斯达克100'),
-    ('019524', '纳斯达克100'), ('019736', '纳斯达克100'),
-    ('050025', '标普500'), ('161125', '标普500'), ('017641', '标普500'),
-    ('017028', '标普500'), ('018064', '标普500'), ('096001', '标普500'),
-    ('007721', '标普500'),
-]
-
-
 def load_fallback():
     """加载兜底数据"""
     with open(FALLBACK, 'r', encoding='utf-8') as f:
         data = json.load(f)
     return {item['code']: item for item in data}
+
+
+# 全量标的池：从 data/funds_fallback.json 自动提取（涵盖A/C/D/E/I全量份额）
+_FB_DATA = load_fallback()
+FUND_LIST = [
+    (item['code'], item['index_type'])
+    for item in sorted(_FB_DATA.values(), key=lambda x: (0 if x.get('index_type') == '纳斯达克100' else 1, x.get('family_id', ''), x['code']))
+]
 
 
 def scrape_fund_page(code):
@@ -315,7 +309,12 @@ def scrape_limit_announcement(code):
             '直销电子交易平台', '直销渠道',
         ]
         target_ann_id = None
-        exclude_keywords = ['E类', 'I类', 'F类', 'H类']
+        # 根据当前基金份额类型，动态排除其他互斥份额的专属公告
+        fallback_item = _FB_DATA.get(code, {})
+        my_class = fallback_item.get('share_class', '')
+        all_classes = {'A', 'C', 'D', 'E', 'I', 'F', 'H'}
+        other_classes = all_classes - {my_class} if my_class else {'E', 'I', 'F', 'H'}
+        exclude_keywords = [f'{c}类' for c in other_classes]
         for item in data.get('Data', []):
             title = item.get('TITLE', '')
             # 排除专门针对其他份额的公告

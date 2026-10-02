@@ -131,7 +131,7 @@ def calc_dynamic_params(funds):
 
 
 def score_fund(fund, median_te=None):
-    fee = (fund.get('mgmt_fee') or 0) + (fund.get('custody_fee') or 0)
+    fee = (fund.get('mgmt_fee') or 0) + (fund.get('custody_fee') or 0) + (fund.get('sales_fee') or 0)
     te = fund.get('tracking_error') or DEFAULTS['tracking_error_for_scoring']
     scale = fund.get('scale') or DEFAULTS['scale']
     y3 = fund.get('return_3yr')
@@ -195,14 +195,17 @@ def allocate_ideal(items, budget):
         w = item['weight']
         monthly = budget * w
         daily = monthly / TRADING_DAYS
+        fee = round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0) + (f.get('sales_fee') or 0), 4)
         allocs.append({
             'code': f['code'], 'name': f['name'], 'index_type': f.get('index_type', ''),
+            'share_class': f.get('share_class', 'A'), 'family_id': f.get('family_id', ''),
             'weight': round(w, 4), 'daily': round(daily, 1), 'monthly': round(monthly),
-            'fee': round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0), 4),
+            'fee': fee,
             'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
             'daily_limit': f.get('daily_limit') or DEFAULTS['daily_limit_fallback'], 'limit_status': f.get('limit_status', ''),
             'direct_daily_limit': f.get('direct_daily_limit'), 'direct_limit_status': f.get('direct_limit_status', ''),
             'exceeds_limit': False,
+            'is_stacked': False,
         })
     total = sum(a['monthly'] for a in allocs)
     if total > 0:
@@ -211,8 +214,8 @@ def allocate_ideal(items, budget):
     return allocs
 
 
-def allocate_practical(items, budget):
-    """实际可买：考虑限购和暂停状态，优化实际可执行性（循环分配超额资金）"""
+def allocate_practical(items, budget, all_funds=None):
+    """实际可买：考虑限购和暂停状态，并在额度打满时自动触发多份额额度叠加策略"""
     allocs = []
 
     for item in items:
@@ -232,32 +235,30 @@ def allocate_practical(items, budget):
             'actual_monthly': 0.0,
             'exceeds_limit': False,
             'is_suspended': is_suspended,
+            'is_stacked': False,
         })
 
     # 循环分配资金
     remaining_budget = budget
     active_allocs = [a for a in allocs if not a['is_suspended']]
 
-    if active_allocs:
+    def _waterfall(candidates):
+        nonlocal remaining_budget
         while remaining_budget > 0.01:
-            # 找到当前未达到上限的基金
-            available = [a for a in active_allocs if not a['exceeds_limit']]
+            available = [a for a in candidates if not a['exceeds_limit']]
             if not available:
-                break  # 所有可用基金都达到上限了，无法分配更多资金
-
+                break
             total_weight = sum(a['weight'] for a in available)
-            if total_weight == 0:
+            if total_weight <= 0:
                 for a in available:
                     a['weight'] = 1.0 / len(available)
                 total_weight = 1.0
 
             allocated_in_this_step = False
             for a in available:
-                # 这一步应该分配给该基金的增量资金
                 extra_monthly = remaining_budget * (a['weight'] / total_weight)
                 target_monthly = a['actual_monthly'] + extra_monthly
                 target_daily = target_monthly / TRADING_DAYS
-
                 limit_monthly = a['limit'] * TRADING_DAYS
 
                 if target_daily >= a['limit']:
@@ -276,18 +277,56 @@ def allocate_practical(items, budget):
             if not allocated_in_this_step:
                 break
 
+    if active_allocs:
+        _waterfall(active_allocs)
+
+    # 额度用尽时自动启动多份额额度叠加策略 (Quota Stacking)
+    if remaining_budget > 10 and all_funds:
+        existing_codes = {a['fund']['code'] for a in active_allocs}
+        candidates = []
+        for a in active_allocs:
+            for sib_code in a['fund'].get('siblings', []):
+                if sib_code not in existing_codes:
+                    sib = next((x for x in all_funds if x['code'] == sib_code), None)
+                    if sib and is_buyable(sib):
+                        candidates.append(sib)
+                        existing_codes.add(sib_code)
+        other_buyable = [f for f in all_funds if is_buyable(f) and f['code'] not in existing_codes]
+        candidates.extend(rank_funds(other_buyable))
+
+        for cf in candidates:
+            if remaining_budget <= 0.01:
+                break
+            clim = cf.get('daily_limit')
+            new_a = {
+                'fund': cf,
+                'weight': 1.0,
+                'limit': clim if clim is not None else float('inf'),
+                'actual_daily': 0.0,
+                'actual_monthly': 0.0,
+                'exceeds_limit': False,
+                'is_suspended': False,
+                'is_stacked': True,
+            }
+            active_allocs.append(new_a)
+            allocs.append(new_a)
+            _waterfall([new_a])
+
     # 格式化输出
     result = []
     for a in allocs:
         f = a['fund']
+        fee = round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0) + (f.get('sales_fee') or 0), 4)
         result.append({
             'code': f['code'], 'name': f['name'], 'index_type': f.get('index_type', ''),
+            'share_class': f.get('share_class', 'A'), 'family_id': f.get('family_id', ''),
             'weight': round(a['weight'], 4), 'daily': round(a['actual_daily'], 1), 'monthly': round(a['actual_monthly']),
-            'fee': round((f.get('mgmt_fee') or 0) + (f.get('custody_fee') or 0), 4),
+            'fee': fee,
             'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
             'daily_limit': a['limit'] if a['limit'] != float('inf') else None, 'limit_status': f.get('limit_status', ''),
             'direct_daily_limit': f.get('direct_daily_limit'), 'direct_limit_status': f.get('direct_limit_status', ''),
             'exceeds_limit': a['exceeds_limit'],
+            'is_stacked': a.get('is_stacked', False),
         })
 
     total = sum(a['monthly'] for a in result)
@@ -307,22 +346,41 @@ def is_buyable(fund):
 
 def pick_funds_by_style(funds, nq_pct, only_buyable=False):
     """按风格选取基金池：纳指nq_pct + 标普(1-nq_pct)
-    only_buyable=True时只选不限购的基金
+    跨基金家族分散选取（同家族优先选取最高分份额）
     """
     nq = [f for f in funds if f.get('index_type') == '纳斯达克100']
     sp = [f for f in funds if f.get('index_type') == '标普500']
     if only_buyable:
         nq = [f for f in nq if is_buyable(f)]
         sp = [f for f in sp if is_buyable(f)]
-    rnq = rank_funds(nq)[:FUND_SEL['nasdaq_top_n']]
-    rsp = rank_funds(sp)[:FUND_SEL['sp500_top_n']]
+
+    ranked_nq = rank_funds(nq)
+    ranked_sp = rank_funds(sp)
+
+    def select_distinct_families(ranked_list, top_n):
+        seen_families = set()
+        selected = []
+        for f in ranked_list:
+            fam = f.get('family_id') or f.get('code')
+            if fam not in seen_families:
+                seen_families.add(fam)
+                selected.append(f)
+                if len(selected) >= top_n:
+                    break
+        return selected
+
+    rnq = select_distinct_families(ranked_nq, FUND_SEL['nasdaq_top_n'])
+    rsp = select_distinct_families(ranked_sp, FUND_SEL['sp500_top_n'])
+
     items = []
     nq_s = sum(f['score'] for f in rnq)
-    for f in rnq:
-        items.append({'fund': f, 'weight': (f['score'] / nq_s) * nq_pct})
+    if nq_s > 0:
+        for f in rnq:
+            items.append({'fund': f, 'weight': (f['score'] / nq_s) * nq_pct})
     sp_s = sum(f['score'] for f in rsp)
-    for f in rsp:
-        items.append({'fund': f, 'weight': (f['score'] / sp_s) * (1 - nq_pct)})
+    if sp_s > 0:
+        for f in rsp:
+            items.append({'fund': f, 'weight': (f['score'] / sp_s) * (1 - nq_pct)})
     return items
 
 
@@ -332,7 +390,12 @@ def build_strategy(strat_def, funds, budget):
     items_ideal = pick_funds_by_style(funds, nq_pct, only_buyable=False)
     items_practical = pick_funds_by_style(funds, nq_pct, only_buyable=True)
     ideal = allocate_ideal(items_ideal, budget)
-    practical = allocate_practical(items_practical, budget)  # 排除暂停基金，遵守每日限额
+    practical = allocate_practical(items_practical, budget, all_funds=funds)
+
+    has_stacked = any(a.get('is_stacked') for a in practical if a.get('monthly', 0) > 0)
+    practical_note = '排除暂停基金，遵守每日限购限额。'
+    if has_stacked:
+        practical_note = '💡 算法已自动启动【多份额额度叠加策略】，成功为您打破单日限购封锁，打满 100% 预算！'
 
     return {
         'key': strat_def['key'],
@@ -341,7 +404,7 @@ def build_strategy(strat_def, funds, budget):
         'icon': strat_def['icon'],
         'nq_pct': nq_pct,
         'ideal': {'allocations': ideal, 'note': '不考虑限购的理论最优配置。'},
-        'practical': {'allocations': practical, 'note': '排除暂停基金，遵守每日限购限额。'},
+        'practical': {'allocations': practical, 'note': practical_note},
     }
 
 
@@ -374,7 +437,7 @@ def simulate_portfolio(funds_list, weights, years, budget, sim_params=None):
         fund_budget = budget * weight
         te = fund.get('tracking_error') or DEFAULTS['tracking_error_for_simulation']
         purchase_fee = fund.get('purchase_fee') or DEFAULTS['purchase_fee']
-        annual_fee = (fund.get('mgmt_fee') or DEFAULTS['mgmt_fee']) + (fund.get('custody_fee') or DEFAULTS['custody_fee'])
+        annual_fee = (fund.get('mgmt_fee') or DEFAULTS['mgmt_fee']) + (fund.get('custody_fee') or DEFAULTS['custody_fee']) + (fund.get('sales_fee') or 0)
         is_sp = fund.get('index_type') == '标普500'
 
         idx_ret_mean = (p['sp500_return'] if is_sp else p['nasdaq_return']) / 12

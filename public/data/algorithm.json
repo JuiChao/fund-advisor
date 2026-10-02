@@ -57,6 +57,7 @@
     "purchase_fee": 0.0012,
     "mgmt_fee": 0.008,
     "custody_fee": 0.002,
+    "sales_fee": 0.0,
     "morningstar": 0,
     "daily_limit_fallback": 10,
     "direct_daily_limit_fallback": 100

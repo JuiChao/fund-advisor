@@ -27,8 +27,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="robots" content="noindex, follow">
 <title>{fund_name} ({fund_code}) 费率_限购_历史收益 - Fund Advisor</title>
-<meta name="description" content="{fund_name}({fund_code})是跟踪{index_type}指数的优质QDII基金。当前代销状态：{agency_status}，直销状态：{direct_status}。管理费{mgmt_fee}%，托管费{custody_fee}%。近3年收益率{return_3yr}%。点击查看详细定投模拟与评分排名。">
-<meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, 费率, 限购, 收益率, 定投, Fund Advisor">
+<meta name="description" content="{fund_name}({fund_code})是跟踪{index_type}指数的优质QDII基金({share_class}类份额)。当前代销状态：{agency_status}，直销状态：{direct_status}。综合年费率{total_fee}%。近3年收益率{return_3yr}%。点击查看详细定投模拟与评分排名。">
+<meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, {share_class}类份额, 费率, 限购, 收益率, 定投, Fund Advisor">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="/css/style.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
@@ -54,14 +54,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </header>
 <main class="container">
     <div class="card" style="margin-top:2rem">
-        <h1 style="font-size:1.5rem;margin-bottom:0.5rem">{fund_name} (<span style="color:var(--txt2)">{fund_code}</span>)</h1>
+        <h1 style="font-size:1.5rem;margin-bottom:0.5rem"><span class="badge-share badge-{share_class_lower}">{share_class}类</span> {fund_name} (<span style="color:var(--txt2)">{fund_code}</span>)</h1>
         <p style="color:var(--txt2);margin-bottom:1.5rem">{full_name} | {manager_company} | 成立日期: {inception_date}</p>
         
         <div class="g2" style="margin-bottom:1.5rem">
             <div style="background:var(--bg2);padding:1rem;border-radius:8px">
                 <div style="color:var(--txt3);font-size:0.85rem">综合费率</div>
                 <div style="font-size:1.25rem;font-weight:600;color:var(--txt)">{total_fee}%/年</div>
-                <div style="font-size:0.8rem;color:var(--txt3);margin-top:0.25rem">管理费 {mgmt_fee}% + 托管费 {custody_fee}%</div>
+                <div style="font-size:0.8rem;color:var(--txt3);margin-top:0.25rem">管理费 {mgmt_fee}% + 托管费 {custody_fee}%{sales_fee_str}</div>
             </div>
             <div style="background:var(--bg2);padding:1rem;border-radius:8px">
                 <div style="color:var(--txt3);font-size:0.85rem">代销限购状态</div>
@@ -106,7 +106,11 @@ generated_count = 0
 
 for fund in funds:
     code = fund['code']
-    total_fee = fund.get('mgmt_fee', 0) + fund.get('custody_fee', 0)
+    share_class = fund.get('share_class', 'A')
+    sales_fee = fund.get('sales_fee', 0.0) or 0.0
+    total_fee = fund.get('mgmt_fee', 0) + fund.get('custody_fee', 0) + sales_fee
+    
+    sales_fee_str = f" + 销售服务费 {format_pct(sales_fee)}%" if sales_fee > 0 else ""
     
     r3 = fund.get('return_3yr')
     if r3 is not None:
@@ -124,8 +128,8 @@ for fund in funds:
         "@type": "FinancialProduct",
         "name": fund.get('name', ''),
         "productID": code,
-        "description": f"{fund.get('name', '')} 是一只跟踪 {fund.get('index_type', '')} 指数的基金。",
-        "feesAndCommissionsSpecification": f"管理费 {format_pct(fund.get('mgmt_fee'))}%, 托管费 {format_pct(fund.get('custody_fee'))}%"
+        "description": f"{fund.get('name', '')} 是一只跟踪 {fund.get('index_type', '')} 指数的基金({share_class}类份额)。",
+        "feesAndCommissionsSpecification": f"管理费 {format_pct(fund.get('mgmt_fee'))}%, 托管费 {format_pct(fund.get('custody_fee'))}%" + (f", 销售服务费 {format_pct(sales_fee)}%" if sales_fee > 0 else "")
     }
 
     review_fee_desc = "在同类产品中属于中等水平"
@@ -146,10 +150,10 @@ for fund in funds:
         <div class="fund-seo-review" style="margin-top:2rem;line-height:1.7;color:var(--txt2);font-size:1.05rem;">
             <h2 style="font-size:1.25rem;color:var(--txt);margin-bottom:1rem;font-weight:600;">{fund.get('name', '')} 深度评测</h2>
             <p style="margin-bottom:1rem;">
-                <strong>{fund.get('name', '')} ({code})</strong> 是一只由{fund.get('manager_company', '')}发行的优质指数产品，主要追踪 <strong>{fund.get('index_type', '')}</strong> 指数。成立于 {fund.get('inception_date', '-')}。作为一只紧密跟踪海外核心资产的 QDII 基金，它为境内投资者提供了便捷的全球资产配置渠道。
+                <strong>{fund.get('name', '')} ({code})</strong> 是一只由{fund.get('manager_company', '')}发行的优质指数产品，属于该基金的 <strong>{share_class}类份额</strong>，主要追踪 <strong>{fund.get('index_type', '')}</strong> 指数。成立于 {fund.get('inception_date', '-')}。作为一只紧密跟踪海外核心资产的 QDII 基金，它为境内投资者提供了便捷的全球资产配置渠道。
             </p>
             <p style="margin-bottom:1rem;">
-                在费率方面，该基金的综合费率为每年 <strong>{format_pct(total_fee)}%</strong>（其中管理费 {format_pct(fund.get('mgmt_fee'))}%，托管费 {format_pct(fund.get('custody_fee'))}%）。这一费率结构{review_fee_desc}。在长达数十年的定投复利过程中，费率是影响最终财富积累的核心因素之一。
+                在费率方面，该基金的综合费率为每年 <strong>{format_pct(total_fee)}%</strong>（其中管理费 {format_pct(fund.get('mgmt_fee'))}%，托管费 {format_pct(fund.get('custody_fee'))}%{sales_fee_str}）。这一费率结构{review_fee_desc}。在长达数十年的定投复利过程中，费率是影响最终财富积累的核心因素之一。
             </p>
             <p style="margin-bottom:1rem;">
                 {review_status_desc} QDII基金由于受国家外汇管理局的QDII额度审批限制，常常会根据额度余量调整限购政策，这是投资海外市场特有的现象。
@@ -163,12 +167,15 @@ for fund in funds:
     html = HTML_TEMPLATE.format(
         fund_name=fund.get('name', ''),
         fund_code=code,
+        share_class=share_class,
+        share_class_lower=share_class.lower(),
         full_name=fund.get('full_name', ''),
         index_type=fund.get('index_type', ''),
         manager_company=fund.get('manager_company', ''),
         inception_date=fund.get('inception_date', '-'),
         mgmt_fee=format_pct(fund.get('mgmt_fee')),
         custody_fee=format_pct(fund.get('custody_fee')),
+        sales_fee_str=sales_fee_str,
         total_fee=format_pct(total_fee),
         agency_status=agency_status,
         direct_status=direct_status,
