@@ -5,9 +5,192 @@ const App = (() => {
     let FUND_DATA = [];
     let ALGO_CONFIG = null;
     let chartPool = {};
+    let pfCharts = {};
     const API_BASE = '';
 
-    // ===== 明亮主题 Chart.js 默认配置 =====
+    // ===== 主题管理 (Dark / Light Theme) =====
+    function getPreferredTheme() {
+        const saved = localStorage.getItem('fa_theme');
+        if (saved) return saved;
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('fa_theme', theme);
+        const iconEl = document.querySelector('#theme-toggle .theme-icon');
+        if (iconEl) iconEl.textContent = theme === 'dark' ? '☀️' : '🌙';
+
+        if (theme === 'dark') {
+            Chart.defaults.color = '#cbd5e1';
+            Chart.defaults.borderColor = 'rgba(129, 140, 248, 0.15)';
+        } else {
+            Chart.defaults.color = '#475569';
+            Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.08)';
+        }
+
+        Object.values(chartPool).forEach(ch => {
+            if (ch && typeof ch.update === 'function') ch.update();
+        });
+        Object.values(pfCharts).forEach(ch => {
+            if (ch && typeof ch.update === 'function') ch.update();
+        });
+    }
+
+    function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        showToast(next === 'dark' ? '🌙 已切换至暗夜科技模式' : '☀️ 已切换至清新明亮模式', 'info');
+    }
+
+    function initTheme() {
+        applyTheme(getPreferredTheme());
+        const themeBtn = document.getElementById('theme-toggle');
+        if (themeBtn) {
+            themeBtn.onclick = toggleTheme;
+        }
+    }
+
+    // ===== 优雅悬浮 Toast 提示系统 =====
+    function showToast(msg, type = 'info') {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        const icon = type === 'success' ? '✅' : '💡';
+        toast.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.remove();
+        }, 3200);
+    }
+
+    // ===== 滑块快捷胶囊 (Quick Preset Chips) =====
+    function initPresetChips() {
+        document.querySelectorAll('.preset-chips').forEach(chipsWrap => {
+            const targetId = chipsWrap.dataset.for;
+            const slider = document.getElementById(targetId);
+            if (!slider) return;
+
+            chipsWrap.querySelectorAll('.preset-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    chipsWrap.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    const val = chip.dataset.val;
+                    slider.value = val;
+                    slider.dispatchEvent(new Event('input', { bubbles: true }));
+
+                    // 若在定投方案页，点击预算或年限芯片自动触发方案重算
+                    if (targetId.startsWith('pf-')) {
+                        computePortfolio();
+                    }
+                });
+            });
+
+            // 监听滑块拖动同步芯片的高亮状态
+            slider.addEventListener('input', () => {
+                const currentVal = slider.value;
+                chipsWrap.querySelectorAll('.preset-chip').forEach(c => {
+                    if (c.dataset.val === currentVal) {
+                        c.classList.add('active');
+                    } else {
+                        c.classList.remove('active');
+                    }
+                });
+            });
+        });
+    }
+
+    // ===== 跨页面联动调度器：将任意组合一键装载至模拟器并运行 =====
+    async function loadFundsIntoSimulator(fundWeightMap, autoRun = true, strategyName = '') {
+        const codes = Object.keys(fundWeightMap);
+        if (!codes.length) return;
+
+        // 1. 切换到模拟器页面
+        window.location.hash = '#simulator';
+        switchPage('simulator');
+
+        // 2. 初始化/填充多选
+        initMultiSelect();
+        msSelected.clear();
+        codes.forEach(c => msSelected.add(c));
+
+        // 更新多选框UI显示
+        const textEl = document.getElementById('sim-sel-text');
+        if (textEl) {
+            textEl.innerHTML = `<span class="ms-count">${codes.length}</span>已选择 ${codes.length} 只基金`;
+            textEl.style.color = 'var(--txt)';
+        }
+
+        // 3. 渲染权重滑块并填入精确权重
+        renderWeightSliders();
+        const listEl = document.getElementById('sim-weights-list');
+        if (listEl) {
+            const rows = listEl.querySelectorAll('.sim-weight-row');
+            rows.forEach(row => {
+                const code = row.dataset.code;
+                if (fundWeightMap[code] !== undefined) {
+                    const pct = Math.round(fundWeightMap[code] * 100);
+                    const inp = row.querySelector('.sim-weight-input');
+                    if (inp) inp.value = pct;
+                }
+            });
+            updateWeightDisplays();
+        }
+
+        // 4. 自动运行模拟推演
+        if (autoRun) {
+            await runSimulation();
+        }
+
+        // 5. 提示用户
+        showToast(`已成功载入【${strategyName || '目标配置'}】，并完成全周期推演！`, 'success');
+    }
+
+    // ===== 模拟器顶部快捷方案预设 =====
+    function initSimQuickPresets() {
+        document.querySelectorAll('.btn-sim-preset').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const preset = btn.dataset.preset;
+                const isBuyableFund = f => {
+                    const s = f.limit_status || '';
+                    return !s.includes('暂停') && !s.includes('未开通');
+                };
+
+                const nqFunds = FUND_DATA.filter(f => f.index_type === '纳斯达克100');
+                const spFunds = FUND_DATA.filter(f => f.index_type === '标普500');
+
+                // 优先可买且评分最高
+                const topNq = [...nqFunds].sort((a,b) => (isBuyableFund(b) ? 1 : 0) - (isBuyableFund(a) ? 1 : 0) || (b.score||0) - (a.score||0))[0];
+                const topSp = [...spFunds].sort((a,b) => (isBuyableFund(b) ? 1 : 0) - (isBuyableFund(a) ? 1 : 0) || (b.score||0) - (a.score||0))[0];
+
+                const fee = f => (f.mgmt_fee||0) + (f.custody_fee||0) + (f.sales_fee||0);
+                const minFeeNq = [...nqFunds].sort((a,b) => fee(a) - fee(b))[0];
+                const minFeeSp = [...spFunds].sort((a,b) => fee(a) - fee(b))[0];
+
+                if (!topNq || !topSp) return;
+
+                if (preset === 'risk_parity') {
+                    loadFundsIntoSimulator({ [topNq.code]: 0.38, [topSp.code]: 0.62 }, true, '量化风险平价 (38:62)');
+                } else if (preset === 'max_sharpe') {
+                    loadFundsIntoSimulator({ [topNq.code]: 0.30, [topSp.code]: 0.70 }, true, '最大夏普最优');
+                } else if (preset === 'balanced') {
+                    loadFundsIntoSimulator({ [topNq.code]: 0.50, [topSp.code]: 0.50 }, true, '传统平衡型 (50:50)');
+                } else if (preset === 'aggressive') {
+                    loadFundsIntoSimulator({ [topNq.code]: 0.70, [topSp.code]: 0.30 }, true, '科技进取型 (70:30)');
+                } else if (preset === 'low_fee') {
+                    loadFundsIntoSimulator({ [minFeeNq.code]: 0.50, [minFeeSp.code]: 0.50 }, true, '同类极低费率组合');
+                }
+            });
+        });
+    }
+
+    // ===== 默认主题 Chart.js 配置 =====
     Chart.defaults.color = '#475569';
     Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.08)';
     Chart.defaults.font.family = "'Inter',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif";
@@ -209,28 +392,110 @@ const App = (() => {
             });
             await Promise.all(simPromises);
 
-            let html = '<div class="table-wrap"><table><thead><tr><th>策略</th><th>类型</th><th>风格描述</th><th>子方案</th><th>预期年化</th><th>20年终值</th></tr></thead><tbody>';
-            strategies.forEach(s => {
-                ['ideal', 'practical'].forEach(vk => {
-                    const v = s[vk];
-                    const sim = v?.simulation || {};
-                    const label = vk === 'ideal' ? '理论最优' : '实际可买';
-                    const typeBadge = s.category === 'quant'
-                        ? `<span class="pill" style="background:rgba(99,102,241,0.15);color:#818cf8;font-weight:600">💎 ${s.tag || '量化'}</span>`
-                        : `<span class="pill" style="background:var(--surface2);color:var(--txt3)">${s.tag || '经典'}</span>`;
-                    html += `<tr>
-                        <td style="font-weight:600;color:var(--accent2)">${s.icon || ''} ${s.name}</td>
-                        <td>${typeBadge}</td>
-                        <td style="font-size:.8125rem;color:var(--txt2)">${s.description || ''}</td>
-                        <td><span class="pill ${vk === 'ideal' ? 'pb' : 'pg'}">${label}</span></td>
-                        <td style="color:var(--ok);font-weight:600">${sim.annualReturn ? sim.annualReturn + '%' : '-'}</td>
-                        <td style="font-weight:600">${sim.medianFinal ? money(sim.medianFinal) : '-'}</td>
-                    </tr>`;
-                });
-            });
-            html += '</tbody></table></div>';
+            let html = `
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:1rem;margin-bottom:1.5rem">
+                ${strategies.map(s => {
+                    const ra = s.practical?.risk_analysis || s.ideal?.risk_analysis || {};
+                    const nqW = Math.round((ra.nq_weight != null ? ra.nq_weight : s.nq_pct || 0) * 100);
+                    const spW = Math.round((ra.sp_weight != null ? ra.sp_weight : (1 - s.nq_pct) || 0) * 100);
+                    const sim = s.practical?.simulation || s.ideal?.simulation || {};
+                    const isQuant = s.category === 'quant';
+                    return `
+                    <div class="card" style="margin-bottom:0;padding:1.25rem;display:flex;flex-direction:column;border:${isQuant ? '1px solid rgba(99,102,241,0.3)' : '1px solid var(--border)'};background:${isQuant ? 'linear-gradient(180deg, var(--surface) 0%, var(--surface2) 100%)' : 'var(--surface)'}">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                            <span style="font-weight:750;font-size:0.95rem;color:var(--txt)">${s.icon || ''} ${s.name}</span>
+                            <span class="tag" style="${isQuant ? 'background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;' : 'background:var(--surface2);color:var(--txt3);'}font-size:0.68rem;margin:0">${isQuant ? '💎 量化' : '经典'}</span>
+                        </div>
+                        <div style="font-size:0.75rem;color:var(--txt2);margin-bottom:0.75rem;flex:1;line-height:1.5">${s.description || ''}</div>
+                        <div style="background:var(--surface2);border-radius:8px;padding:0.6rem 0.8rem;margin-bottom:0.85rem;display:flex;justify-content:space-between;align-items:center">
+                            <div>
+                                <div style="font-size:0.68rem;color:var(--txt3)">资金配比 (纳:标)</div>
+                                <div style="font-weight:700;font-size:0.85rem;color:var(--txt)">${nqW}% : ${spW}%</div>
+                            </div>
+                            <div style="text-align:right">
+                                <div style="font-size:0.68rem;color:var(--txt3)">20年终值中位</div>
+                                <div style="font-weight:800;font-size:0.85rem;color:var(--ok)">${sim.medianFinal ? money(sim.medianFinal) : '-'}</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:0.5rem">
+                            <a href="#portfolio" class="btn-jump-strat btn-jump-strat-home" style="flex:1;text-align:center;padding:0.45rem 0.5rem;font-size:0.75rem;text-decoration:none" data-strategy="${s.key}" data-category="${s.category || 'traditional'}">查看配置 ▸</a>
+                            <button class="btn-simulate-action btn-sim-from-home" data-strategy="${s.key}" style="flex:1;padding:0.45rem 0.5rem;font-size:0.75rem;justify-content:center" title="带入模拟器推演">推演 🚀</button>
+                        </div>
+                    </div>
+                    `;
+                }).join('')}
+            </div>
+
+            <details style="margin-top:0.5rem">
+                <summary style="font-size:0.82rem;font-weight:600;color:var(--txt2);cursor:pointer;padding:0.5rem 0;user-select:none">📋 查看全方案数据对比表 (包含理论最优与实际可买)</summary>
+                <div class="table-wrap" style="margin-top:0.5rem">
+                    <table>
+                        <thead>
+                            <tr><th>策略</th><th>类型</th><th>风格描述</th><th>子方案</th><th>预期年化</th><th>20年终值</th></tr>
+                        </thead>
+                        <tbody>
+                            ${strategies.map(s => {
+                                return ['ideal', 'practical'].map(vk => {
+                                    const v = s[vk];
+                                    const sim = v?.simulation || {};
+                                    const label = vk === 'ideal' ? '理论最优' : '实际可买';
+                                    const typeBadge = s.category === 'quant'
+                                        ? `<span class="pill" style="background:rgba(99,102,241,0.15);color:#818cf8;font-weight:600">💎 ${s.tag || '量化'}</span>`
+                                        : `<span class="pill" style="background:var(--surface2);color:var(--txt3)">${s.tag || '经典'}</span>`;
+                                    return `<tr>
+                                        <td style="font-weight:600;color:var(--accent2)">${s.icon || ''} ${s.name}</td>
+                                        <td>${typeBadge}</td>
+                                        <td style="font-size:.8125rem;color:var(--txt2)">${s.description || ''}</td>
+                                        <td><span class="pill ${vk === 'ideal' ? 'pb' : 'pg'}">${label}</span></td>
+                                        <td style="color:var(--ok);font-weight:600">${sim.annualReturn ? sim.annualReturn + '%' : '-'}</td>
+                                        <td style="font-weight:600">${sim.medianFinal ? money(sim.medianFinal) : '-'}</td>
+                                    </tr>`;
+                                }).join('');
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+            `;
             document.getElementById('home-strategies').innerHTML = html;
             document.getElementById('home-strategies').classList.remove('ld');
+
+            // 绑定首页卡片“推演 🚀”按钮
+            document.querySelectorAll('.btn-sim-from-home').forEach(btn => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    const stratKey = btn.dataset.strategy;
+                    const strat = strategies.find(s => s.key === stratKey);
+                    if (!strat) return;
+                    const allocs = strat.practical?.allocations || strat.ideal?.allocations || [];
+                    if (!allocs.length) return;
+                    const weightMap = {};
+                    allocs.forEach(a => {
+                        weightMap[a.code] = a.actual_weight != null ? a.actual_weight : a.weight;
+                    });
+                    loadFundsIntoSimulator(weightMap, true, strat.name);
+                };
+            });
+
+            // 绑定首页卡片“查看配置 ▸”直达按钮
+            document.querySelectorAll('.btn-jump-strat-home').forEach(btn => {
+                btn.onclick = () => {
+                    const stratKey = btn.dataset.strategy;
+                    const stratCat = btn.dataset.category;
+                    window.location.hash = '#portfolio';
+                    setTimeout(() => {
+                        const targetFilterBtn = document.querySelector(`#pf-category-filter .seg-btn[data-category="${stratCat}"]`) ||
+                                                document.querySelector('#pf-category-filter .seg-btn[data-category="ALL"]');
+                        if (targetFilterBtn) targetFilterBtn.click();
+                        const targetCard = document.getElementById(`pf-card-${stratKey}`);
+                        if (targetCard) {
+                            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            targetCard.classList.add('highlight-pulse');
+                            setTimeout(() => targetCard.classList.remove('highlight-pulse'), 3000);
+                        }
+                    }, 100);
+                };
+            });
         } catch (e) {
             document.getElementById('home-strategies').innerHTML = '<p style="color:var(--err)">加载失败: ' + e.message + '</p>';
             document.getElementById('home-strategies').classList.remove('ld');
@@ -263,7 +528,7 @@ const App = (() => {
     let rankSortDir = {};
     const rankCols = [
         { key: 'rank', label: '#' },
-        { key: 'code', label: '代码' },
+        { key: 'code', label: '代码', render: r => `<span style="font-family:monospace;font-weight:600">${r.code}</span><button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button>` },
         { key: 'name', label: '名称', render: r => shareBadge(r.share_class) + `<a href="fund/${r.code}.html" style="color:var(--accent2);cursor:pointer;text-decoration:none;font-weight:600" class="fund-name-link" data-code="${r.code}" title="点击查看详情">` + r.name + ' <span style="font-size:0.7em;opacity:0.5">▸</span></a>' },
         { key: 'fee', label: '综合费率', render: r => {
             const mgmt = r.mgmt_fee || 0;
@@ -768,7 +1033,7 @@ const App = (() => {
     }
 
     // ===== 定投方案 =====
-    let pfCharts = {};
+    // pfCharts declared at top level
 
     function renderVariantTable(variant, prefix) {
         if (!variant) return '';
@@ -977,7 +1242,10 @@ const App = (() => {
                         <td style="font-weight:700;color:var(--accent2)">${sharpe}</td>
                         <td style="white-space:nowrap">${retStr} / ${medFinal}</td>
                         <td style="font-size:0.75rem;color:var(--txt2)">${highlightLogic}</td>
-                        <td style="text-align:center"><button class="btn-jump-strat" data-strategy="${s.key}" data-category="${s.category || 'traditional'}">查看方案 ▸</button></td>
+                        <td style="text-align:center;white-space:nowrap">
+                            <button class="btn-jump-strat" data-strategy="${s.key}" data-category="${s.category || 'traditional'}">方案 ▸</button>
+                            <button class="btn-sim-matrix" data-strategy="${s.key}" title="以此方案配置直接启动蒙特卡洛推演" style="margin-left:6px;padding:4px 8px;font-size:0.75rem;border-radius:4px;border:1px solid rgba(99,102,241,0.3);background:rgba(99,102,241,0.08);color:var(--accent2);cursor:pointer;font-weight:600;">推演 🚀</button>
+                        </td>
                     </tr>`;
                 });
                 matrixTbody.innerHTML = mHtml;
@@ -1005,6 +1273,21 @@ const App = (() => {
                             targetCard.classList.add('highlight-pulse');
                             setTimeout(() => targetCard.classList.remove('highlight-pulse'), 3500);
                         }
+                    };
+                });
+
+                // 绑定矩阵方案一键推演事件
+                matrixTbody.querySelectorAll('.btn-sim-matrix').forEach(btn => {
+                    btn.onclick = () => {
+                        const stratKey = btn.dataset.strategy;
+                        const s = strategies.find(x => x.key === stratKey);
+                        if (!s) return;
+                        const target = (s.practical?.allocations?.length) ? s.practical : s.ideal;
+                        const fundWeightMap = {};
+                        (target?.allocations || []).forEach(a => {
+                            fundWeightMap[a.code] = a.actual_weight || a.weight || (1 / (target.allocations.length || 1));
+                        });
+                        loadFundsIntoSimulator(fundWeightMap, true, `${s.name}`);
                     };
                 });
             }
@@ -1037,6 +1320,10 @@ const App = (() => {
                                 ${renderRiskContribution(s.ideal, s)}
                             </div>
                         </div>
+                        <div style="margin-top:1.25rem;padding-top:0.85rem;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                            <span style="font-size:0.75rem;color:var(--txt3)">💡 想要自定义定投预算、年限或测试极端市场压力？</span>
+                            <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="ideal">🚀 以该理论配置启动蒙特卡洛推演 ➔</button>
+                        </div>
                     </div>
 
                     <div class="pf-panel" id="pf-${s.key}-practical" style="display:none">
@@ -1048,6 +1335,10 @@ const App = (() => {
                                 ${renderVariantSim(s.practical, years)}
                                 ${renderRiskContribution(s.practical, s)}
                             </div>
+                        </div>
+                        <div style="margin-top:1.25rem;padding-top:0.85rem;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                            <span style="font-size:0.75rem;color:var(--txt3)">💡 想要自定义定投预算、年限或测试极端市场压力？</span>
+                            <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="practical">🚀 以该可买配置启动蒙特卡洛推演 ➔</button>
                         </div>
                     </div>
                 </div>`;
@@ -1071,6 +1362,22 @@ const App = (() => {
                         if (panel) panel.style.display = '';
                     });
                 });
+            });
+
+            // 绑定方案卡片一键启动模拟推演事件
+            document.querySelectorAll('.btn-sim-from-strat').forEach(btn => {
+                btn.onclick = () => {
+                    const stratKey = btn.dataset.strategy;
+                    const variant = btn.dataset.variant;
+                    const s = strategies.find(x => x.key === stratKey);
+                    if (!s) return;
+                    const target = s[variant];
+                    const fundWeightMap = {};
+                    (target?.allocations || []).forEach(a => {
+                        fundWeightMap[a.code] = a.actual_weight || a.weight || (1 / (target.allocations.length || 1));
+                    });
+                    loadFundsIntoSimulator(fundWeightMap, true, `${s.name} (${variant === 'practical' ? '实际可买' : '理论最优'})`);
+                };
             });
 
             // 画饼图
@@ -1598,6 +1905,7 @@ const App = (() => {
 
     // ===== 初始化 =====
     async function init() {
+        initTheme();
         try {
             const [fundsResp, algoResp] = await Promise.all([
                 fetch('data/funds.json'),
@@ -1608,9 +1916,38 @@ const App = (() => {
 
             renderHome();
             initNav();
+            initPresetChips();
+            initSimQuickPresets();
         } catch (e) {
             document.getElementById('home-stats').innerHTML = '<div class="card"><p style="color:var(--err)">数据加载失败: ' + e.message + '</p></div>';
         }
+
+        // 全局基金代码快速复制监听
+        document.addEventListener('click', e => {
+            const copyBtn = e.target.closest('.btn-copy-code, .btn-copy-code-action');
+            if (copyBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const code = copyBtn.dataset.code;
+                if (code) {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(code).then(() => {
+                            showToast(`基金代码 ${code} 已复制到剪贴板！`, 'success');
+                        }).catch(() => {
+                            showToast(`基金代码: ${code}`, 'info');
+                        });
+                    } else {
+                        const input = document.createElement('input');
+                        input.value = code;
+                        document.body.appendChild(input);
+                        input.select();
+                        document.execCommand('copy');
+                        input.remove();
+                        showToast(`基金代码 ${code} 已复制到剪贴板！`, 'success');
+                    }
+                }
+            }
+        });
 
         const fmtMoney = v => '¥' + Number(v).toLocaleString('zh-CN');
         // 算法说明折叠
@@ -1806,8 +2143,21 @@ const App = (() => {
                     </div>
                 </div>
                 ${f.benchmark ? `<div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border); font-size:0.8rem; color:var(--txt3);"><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
+                <div class="fund-detail-actions" style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;align-items:center;gap:12px;flex-wrap:wrap;">
+                    <button type="button" class="btn-copy-code-action" data-code="${f.code}" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--txt);cursor:pointer;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;">
+                        📋 复制基金代码 (${f.code})
+                    </button>
+                    <button type="button" class="btn-simulate-action btn-sim-single" data-code="${f.code}" style="padding:6px 16px;border-radius:6px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;cursor:pointer;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;">
+                        🚀 将此基金带入模拟器测试 ➔
+                    </button>
+                </div>
             </td>`;
             tr.after(detailTr);
+
+            // 绑定单基金一键启动模拟器
+            detailTr.querySelector('.btn-sim-single')?.addEventListener('click', () => {
+                loadFundsIntoSimulator({ [f.code]: 1.0 }, true, `${f.name} (单基推演)`);
+            });
 
             // 绑定同门卡片点击切换
             detailTr.querySelectorAll('.sibling-card').forEach(card => {
