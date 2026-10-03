@@ -123,6 +123,54 @@ class TestVerifyQuotas(unittest.TestCase):
         }
         self.assertGreater(len(verify_fund_fees(bad_fee_fund)), 0)
 
+    def test_verify_fund_logic_channel_invariant(self):
+        # 直销额度低于代销额度时（如直销10元 vs 代销100元），违背渠道常理，应报错阻断
+        abnormal_fund = {
+            'code': '999999',
+            'name': '异常渠道基金',
+            'limit_status': '限100元/日',
+            'daily_limit': 100,
+            'direct_limit_status': '限10元/日',
+            'direct_daily_limit': 10,
+        }
+        issues = verify_fund_logic(abnormal_fund)
+        self.assertTrue(any('违背渠道常理' in iss for iss in issues))
+
+        # 直销额度 >= 代销额度时，正常通过
+        normal_fund = {
+            'code': '999999',
+            'name': '正常渠道基金',
+            'limit_status': '限10元/日',
+            'daily_limit': 10,
+            'direct_limit_status': '限100元/日',
+            'direct_daily_limit': 100,
+        }
+        self.assertEqual(len(verify_fund_logic(normal_fund)), 0)
+
+    def test_dacheng_nasdaq_quotas(self):
+        # 验证大成纳指 000834/008971 代销10元/日、直销100元/日及公告ID
+        fallback = load_dataset(DATA_FALLBACK)
+        for code in ['000834', '008971']:
+            fund = fallback[code]
+            self.assertEqual(fund['daily_limit'], 10, f"{code} agency daily limit should be 10")
+            self.assertEqual(fund['limit_status'], '限10元/日', f"{code} agency status mismatch")
+            self.assertEqual(fund['direct_daily_limit'], 100, f"{code} direct daily limit should be 100")
+            self.assertEqual(fund['direct_limit_status'], '限100元/日', f"{code} direct status mismatch")
+            self.assertEqual(fund['limit_announcement_id'], 'AN202606031823188725')
+
+    def test_extract_independent_clause_quotas(self):
+        # 验证独立子句语义隔离：直销与代销同篇公告中绝不串行穿透
+        from verify_quotas import extract_independent_clause_quotas
+        notice_text = (
+            "自2026年06月04日起，投资者通过本公司直销机构（APP、微信公众号和直销柜台等）"
+            "申购本基金A/C类份额单日每个账户累计申购金额应不超过100元人民币。"
+            "自2026年06月04日起，投资者通过代销渠道申购本基金A/C类份额单日每个账户"
+            "累计申购金额应不超过10元人民币。"
+        )
+        res = extract_independent_clause_quotas(notice_text)
+        self.assertEqual(res['direct'], [100])
+        self.assertEqual(res['agency'], [10])
+
     def test_all_funds_sync_and_valid(self):
         fallback = load_dataset(DATA_FALLBACK)
         public_funds = load_dataset(DATA_PUBLIC)
@@ -148,3 +196,4 @@ class TestVerifyQuotas(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+

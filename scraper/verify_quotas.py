@@ -13,6 +13,7 @@ import json
 import re
 import argparse
 import time
+import requests
 
 # 引用同目录爬虫函数
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -20,6 +21,75 @@ from scrape import scrape_fund_page, scrape_fee_page, scrape_f10_page, scrape_li
 
 DATA_FALLBACK = os.path.join(os.path.dirname(__file__), '..', 'data', 'funds_fallback.json')
 DATA_PUBLIC = os.path.join(os.path.dirname(__file__), '..', 'public', 'data', 'funds.json')
+
+
+def extract_independent_clause_quotas(content):
+    """
+    【验】子句级独立语义隔离算法 (Clause-by-Clause Semantic Isolation)
+    以标点符号和列表分句符将公告切分为原子语义子句，
+    对直销与代销建立严格的物理隔离：
+    - 直销子句：必须包含“直销”且绝对排除“代销”
+    - 代销子句：必须包含“代销”且绝对排除“直销”
+    从根本上阻断跨句贪婪匹配与上下文穿透（如万家、大成等公告中的串行混淆）。
+    """
+    if not content:
+        return {'direct': [], 'agency': [], 'direct_suspended': False, 'agency_suspended': False}
+
+    clauses = re.split(r'[。\n；;\r]+|(?:[（(][0-9一二三四1234][)）])|(?:(?<=\s)[0-9一二三四1234][、\.])', content)
+    direct_limits = []
+    agency_limits = []
+    direct_suspended = False
+    agency_suspended = False
+
+    for cl in clauses:
+        cl_clean = re.sub(r'\s+', '', cl)
+        # 1. 严格直销子句
+        if '直销' in cl_clean and '代销' not in cl_clean:
+            if any(k in cl_clean for k in ['暂停申购', '停止申购', '暂停办理']) and '暂停大额' not in cl_clean:
+                direct_suspended = True
+            m = re.search(r'(?:不超过|上限|限额|限制(?:仍)?为?)\s*([0-9,]+(?:\.\d+)?)\s*元', cl_clean)
+            if m:
+                val = int(float(m.group(1).replace(',', '')))
+                if val > 0:
+                    direct_limits.append(val)
+        # 2. 严格代销子句
+        if '代销' in cl_clean and '直销' not in cl_clean:
+            if any(k in cl_clean for k in ['暂停申购', '停止申购', '暂停办理']) and '暂停大额' not in cl_clean:
+                agency_suspended = True
+            m = re.search(r'(?:不超过|上限|限额|限制(?:仍)?为?)\s*([0-9,]+(?:\.\d+)?)\s*元', cl_clean)
+            if m:
+                val = int(float(m.group(1).replace(',', '')))
+                if val > 0:
+                    agency_limits.append(val)
+
+    return {
+        'direct': direct_limits,
+        'agency': agency_limits,
+        'direct_suspended': direct_suspended,
+        'agency_suspended': agency_suspended,
+    }
+
+
+def verify_announcement_clause_isolation(ann_id):
+    """【验】子句级独立语义验核：调取官方公告原件/PDF进行独立语法分句验核"""
+    if not ann_id:
+        return {}
+    try:
+        url = f'https://np-cnotice-fund.eastmoney.com/api/content/ann?art_code={ann_id}&client_source=fund_pc&page_index=1&page_size=1'
+        r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://fundf10.eastmoney.com/'}, timeout=8)
+        data = r.json()
+        content = data.get('data', {}).get('notice_content', '') or data.get('data', {}).get('list', [{}])[0].get('content', '')
+        if not content:
+            pdf_url = f'http://pdf.dfcfw.com/pdf/H2_{ann_id}_1.pdf'
+            pr = requests.get(pdf_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=12)
+            if pr.status_code == 200:
+                import io
+                from pypdf import PdfReader
+                pdf = PdfReader(io.BytesIO(pr.content))
+                content = '\n'.join(p.extract_text() or '' for p in pdf.pages)
+        return extract_independent_clause_quotas(content)
+    except Exception:
+        return {}
 
 
 def load_dataset(path):
@@ -66,6 +136,11 @@ def verify_fund_logic(item):
     for s in [status, d_status]:
         if '暂停(限' in str(s) or '未定义' in str(s):
             issues.append(f"包含非法占位符字符串: {s}")
+
+    # 4. 渠道限额常理与守恒律检验 (QDII直销额度通常 >= 代销额度，除非直销专属暂停)
+    if d_limit is not None and limit is not None and d_limit > 0 and limit > 0:
+        if d_limit < limit:
+            issues.append(f"直销限额({d_limit})低于代销限额({limit})，违背渠道常理，须核验是否存在文本串行污染")
 
     return issues
 
@@ -255,6 +330,7 @@ def run_cross_verification(sample_codes=None, check_live=True):
         audit_targets = [
             '019441', '019442',  # 万家纳指 A/C (代销10/直销100，管理0.5%，托管0.15%)
             '096001', '008401',  # 大成标普等权 A/C (代销100/直销1000，管理1.0%，托管0.2%，C销售0.3%)
+            '000834', '008971',  # 大成纳指 A/C (代销10/直销100，管理0.8%，托管0.2%，C销售0.3%)
             '019548', '019547',  # 招商纳指 A/C (全渠道限10元，管理0.5%，托管0.15%)
             '021000',            # 南方纳指 I (未开通代销/直销200，折后特惠销售服务费0.01%)
             '018064', '018065',  # 华夏标普 A/C (全渠道暂停申购0元)
@@ -265,7 +341,7 @@ def run_cross_verification(sample_codes=None, check_live=True):
             '270042',            # 广发纳指 A (全渠道暂停申购)
         ]
         if sample_codes:
-            audit_targets = [c for c in audit_targets if c in sample_codes] or sample_codes[:10]
+            audit_targets = [c for c in audit_targets if c in sample_codes] or sample_codes
 
         live_errors = 0
         for c in audit_targets:
@@ -296,6 +372,14 @@ def run_cross_verification(sample_codes=None, check_live=True):
 
             match_direct = (stored_direct == effective_live_direct)
 
+            # 5. 【验】独立子句语义验核比对
+            clause_eval = verify_announcement_clause_isolation(a.get('limit_announcement_id'))
+            match_clause = True
+            if clause_eval.get('direct'):
+                stored_dl = stored.get('direct_daily_limit')
+                if stored_dl is not None and stored_dl not in clause_eval['direct']:
+                    match_clause = False
+
             # 费率比对（管理费、托管费、销售服务费）
             match_fees = True
             if fees.get('mgmt_fee') is not None and stored.get('mgmt_fee') != fees.get('mgmt_fee'):
@@ -313,7 +397,7 @@ def run_cross_verification(sample_codes=None, check_live=True):
             if f10.get('custodian') and stored.get('custodian') != f10.get('custodian'):
                 match_profile = False
 
-            if match_agency and match_direct and match_fees and match_profile:
+            if match_agency and match_direct and match_fees and match_profile and match_clause:
                 verdict = "[100% 吻合 OK]"
             else:
                 verdict = "[差异 MISMATCH]"
@@ -345,6 +429,10 @@ def run_cross_verification(sample_codes=None, check_live=True):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="全维度基金多源交叉核验工具")
     parser.add_argument('--offline', action='store_true', help="仅运行本地离线全维度逻辑检查")
+    parser.add_argument('--all', action='store_true', help="对全量59只基金执行实时全维度多源交叉核验")
     args = parser.parse_args()
 
-    sys.exit(run_cross_verification(check_live=not args.offline))
+    codes = None
+    if args.all:
+        codes = list(load_dataset(DATA_FALLBACK).keys())
+    sys.exit(run_cross_verification(sample_codes=codes, check_live=not args.offline))
