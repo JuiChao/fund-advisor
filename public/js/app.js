@@ -277,7 +277,21 @@ const App = (() => {
             const pf = r.purchase_fee || 0;
             return pf > 0 ? `${(pf*100).toFixed(2)}%` : '<span style="color:var(--ok);font-weight:600">0.00%</span>';
         } },
-        { key: 'tracking_error', label: '跟踪误差', render: r => fmt(r.tracking_error) },
+        { key: 'tracking_error', label: '跟踪误差 / IR', render: r => {
+            const teStr = fmt(r.tracking_error);
+            const ir = r.information_ratio;
+            const td = r.tracking_difference;
+            let sub = '';
+            if (ir != null) {
+                const irColor = ir >= 1.0 ? 'var(--ok)' : (ir < 0 ? 'var(--down)' : 'var(--txt3)');
+                sub += `<span title="信息比率 (IR): 承担单位跟踪风险下的超额收益" style="color:${irColor};margin-right:4px">IR: <strong>${ir.toFixed(2)}</strong></span>`;
+            }
+            if (td != null) {
+                const tdColor = td >= 0 ? 'var(--up)' : 'var(--down)';
+                sub += `<span title="跟踪偏离度 (TD/1年): 相对基准的超额或偏离" style="color:${tdColor}">TD: ${(td>=0?'+':'')+(td*100).toFixed(1)}%</span>`;
+            }
+            return `<div style="text-align:center">${teStr}${sub ? '<div style="font-size:0.68rem;margin-top:2px;white-space:nowrap">' + sub + '</div>' : ''}</div>`;
+        } },
         { key: 'scale', label: '规模', render: r => r.scale ? r.scale.toFixed(1) + '亿' : '-' },
         { key: 'return_3yr', label: '近3年', render: r => { 
             const v = r.return_3yr; 
@@ -796,23 +810,32 @@ const App = (() => {
         const vol = ra.portfolio_vol != null ? (ra.portfolio_vol * 100).toFixed(1) : '-';
         const sharpe = ra.sharpe_ratio != null ? ra.sharpe_ratio.toFixed(2) : null;
 
+        let statusTag = '';
         let note = '';
         if (s.key === 'risk_parity') {
+            statusTag = '<span class="tag" style="background:rgba(16,185,129,0.15);color:#059669;font-weight:700">✅ 达成等风险贡献 (ERC)</span>';
             note = '💡 <strong>等风险贡献 (ERC) 达成：</strong>均衡纳指与标普的边际风险贡献各约 50%，消除单一市场暴跌对净值的非对称冲击。';
         } else if (s.key === 'max_sharpe') {
+            statusTag = `<span class="tag" style="background:rgba(99,102,241,0.15);color:#4f46e5;font-weight:700">🎯 最优夏普组合 (SR ${sharpe || ''})</span>`;
             note = `🎯 <strong>最优风险收益比 (夏普 ${sharpe || ''})：</strong>基于 Ledoit-Wolf 收缩协方差优化，在控制波动率的同时最大化超额收益。`;
         } else if (s.key === 'balanced') {
+            statusTag = `<span class="tag" style="background:rgba(239,68,68,0.12);color:#dc2626;font-weight:700">⚠️ 风险非对称 (纳指占 ${nqRiskPct}%)</span>`;
             note = `⚠️ <strong>风险非对称警示：</strong>虽然资金按 50/50 均分，但因纳指波动大，纳指实际承担了 <strong>${nqRiskPct}%</strong> 的组合风险。`;
         } else if (s.key === 'growth') {
+            statusTag = `<span class="tag" style="background:rgba(59,130,246,0.15);color:#2563eb;font-weight:700">🚀 弹性进攻型 (纳指占 ${nqRiskPct}%)</span>`;
             note = `🚀 <strong>进取型进攻敞口：</strong>大幅超配纳斯达克100，纳指贡献了 <strong>${nqRiskPct}%</strong> 的波动风险，获取充沛牛市弹性。`;
         } else if (s.key === 'conservative') {
+            statusTag = `<span class="tag" style="background:rgba(16,185,129,0.12);color:#059669;font-weight:700">🛡️ 低波防守型 (标普占 ${spRiskPct}%)</span>`;
             note = `🛡️ <strong>低波动压舱石：</strong>标普500主导组合 <strong>${spRiskPct}%</strong> 的风险与收益，组合年化波动率低至 <strong>${vol}%</strong>。`;
         }
 
         return `
         <div style="margin-top:1.25rem;padding:0.85rem 1rem;background:var(--surface2, var(--bg2));border-radius:var(--radius-sm, 8px);border:1px solid var(--border)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
-                <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">📊 资金配置 vs 实际波动风险贡献</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;gap:6px">
+                    <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">📊 资金配置 vs 实际波动风险贡献</span>
+                    ${statusTag}
+                </div>
                 <span style="font-size:0.75rem;color:var(--txt3)">组合年化波动: <strong>${vol}%</strong>${sharpe ? ' · 夏普比率: <strong>' + sharpe + '</strong>' : ''}</span>
             </div>
             
@@ -900,6 +923,92 @@ const App = (() => {
             await Promise.all(simPromises);
             const pieColors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#f43f5e', '#06b6d4'];
 
+            // 渲染现代组合理论 (MPT) 5大定投策略全景矩阵看板
+            const matrixTbody = document.getElementById('quant-matrix-tbody');
+            if (matrixTbody) {
+                let mHtml = '';
+                strategies.forEach(s => {
+                    const ra = s.practical?.risk_analysis || s.ideal?.risk_analysis || {};
+                    const nqW = Math.round((ra.nq_weight != null ? ra.nq_weight : s.nq_pct || 0) * 100);
+                    const spW = Math.round((ra.sp_weight != null ? ra.sp_weight : (1 - s.nq_pct) || 0) * 100);
+                    const nqRC = Math.round((ra.nq_risk_contrib || 0) * 100);
+                    const spRC = Math.round((ra.sp_risk_contrib || 0) * 100);
+                    const vol = ra.portfolio_vol != null ? (ra.portfolio_vol * 100).toFixed(1) + '%' : '-';
+                    const sharpe = ra.sharpe_ratio != null ? ra.sharpe_ratio.toFixed(2) : '-';
+                    const sim = s.practical?.simulation || s.ideal?.simulation;
+                    const retStr = sim?.annualReturn != null ? `<strong style="color:var(--accent2)">${sim.annualReturn}%</strong>` : '-';
+                    const medFinal = sim?.medianFinal != null ? `<span style="color:var(--ok);font-weight:600">${money(sim.medianFinal)}</span>` : '-';
+
+                    let typeBadge = '';
+                    if (s.category === 'quant') {
+                        typeBadge = `<span class="tag" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:600">💎 ${s.tag || '量化专区'}</span>`;
+                    } else {
+                        typeBadge = `<span class="tag" style="background:var(--surface2);color:var(--txt2)">${s.tag || '经典传统'}</span>`;
+                    }
+
+                    let riskBadge = '';
+                    if (s.key === 'risk_parity') {
+                        riskBadge = `<span style="color:var(--ok);font-weight:700" title="达成等风险贡献：纳指与标普风险各50%">50% : 50% ✨</span>`;
+                    } else if (s.key === 'balanced') {
+                        riskBadge = `<span style="color:var(--down);font-weight:600" title="纳指波动大导致风险显著主导">${nqRC}% : ${spRC}% ⚠️</span>`;
+                    } else {
+                        riskBadge = `<span>${nqRC}% : ${spRC}%</span>`;
+                    }
+
+                    let highlightLogic = '';
+                    if (s.key === 'risk_parity') {
+                        highlightLogic = '<strong>等风险贡献 (ERC)：</strong>平滑波动与最大回撤，实现真正风险中性';
+                    } else if (s.key === 'max_sharpe') {
+                        highlightLogic = '<strong>Ledoit-Wolf 收缩最大夏普：</strong>在给定约束下求解最高超额收益风险比';
+                    } else if (s.key === 'balanced') {
+                        highlightLogic = '<strong>传统资金对半平分：</strong>资金均衡，但纳指波动大导致承担了61%方差风险';
+                    } else if (s.key === 'growth') {
+                        highlightLogic = '<strong>进取型成长进攻：</strong>高贝塔科技敞口，享受牛市最强成长弹性';
+                    } else if (s.key === 'conservative') {
+                        highlightLogic = '<strong>稳健底仓压舱石：</strong>以标普500低波动为主，防守回撤最强';
+                    }
+
+                    mHtml += `<tr class="quant-matrix-row">
+                        <td style="font-weight:600;white-space:nowrap">${s.icon || ''} ${s.name}</td>
+                        <td>${typeBadge}</td>
+                        <td style="font-weight:600">${nqW}% : ${spW}%</td>
+                        <td>${riskBadge}</td>
+                        <td><strong>${vol}</strong></td>
+                        <td style="font-weight:700;color:var(--accent2)">${sharpe}</td>
+                        <td style="white-space:nowrap">${retStr} / ${medFinal}</td>
+                        <td style="font-size:0.75rem;color:var(--txt2)">${highlightLogic}</td>
+                        <td style="text-align:center"><button class="btn-jump-strat" data-strategy="${s.key}" data-category="${s.category || 'traditional'}">查看方案 ▸</button></td>
+                    </tr>`;
+                });
+                matrixTbody.innerHTML = mHtml;
+
+                // 绑定直达方案点击事件
+                matrixTbody.querySelectorAll('.btn-jump-strat').forEach(btn => {
+                    btn.onclick = () => {
+                        const stratKey = btn.dataset.strategy;
+                        const stratCat = btn.dataset.category;
+                        const activeFilterBtn = document.querySelector('#pf-category-filter .seg-btn.on');
+                        const currentCat = activeFilterBtn?.dataset?.category || 'ALL';
+
+                        // 若当前过滤隐藏了目标策略，切换到相应分类或全部
+                        if (currentCat !== 'ALL' && currentCat !== stratCat) {
+                            const targetFilterBtn = document.querySelector(`#pf-category-filter .seg-btn[data-category="${stratCat}"]`) ||
+                                                    document.querySelector('#pf-category-filter .seg-btn[data-category="ALL"]');
+                            if (targetFilterBtn) targetFilterBtn.click();
+                        }
+
+                        const targetCard = document.getElementById(`pf-card-${stratKey}`);
+                        if (targetCard) {
+                            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            targetCard.classList.remove('highlight-pulse');
+                            void targetCard.offsetWidth; // 触发 reflow 重新执行动画
+                            targetCard.classList.add('highlight-pulse');
+                            setTimeout(() => targetCard.classList.remove('highlight-pulse'), 3500);
+                        }
+                    };
+                });
+            }
+
             let html = '';
             strategies.forEach(s => {
                 const idealAllocs = s.ideal?.allocations || [];
@@ -909,7 +1018,7 @@ const App = (() => {
                     ? `<span class="tag" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:600;margin-left:6px">💎 ${s.tag || '量化专区'}</span>`
                     : `<span class="tag" style="background:var(--surface2);color:var(--txt2);margin-left:6px">${s.tag || '经典风格'}</span>`;
 
-                html += `<div class="card pf-card" data-category="${cat}">
+                html += `<div class="card pf-card" id="pf-card-${s.key}" data-category="${cat}">
                     <h3>${s.icon || ''} ${s.name} <span class="tag">${Math.round((s.nq_pct||0)*100)}% 纳指 + ${Math.round((1-(s.nq_pct||0))*100)}% 标普</span>${catBadge}</h3>
                     <p style="color:var(--txt2);font-size:.8125rem;margin-bottom:1rem">${s.description || ''}</p>
 
@@ -1334,8 +1443,10 @@ const App = (() => {
             // 额度用尽时自动启动多份额额度叠加策略
             if (remainingBudget > 10) {
                 const existingCodes = new Set(activeAllocs.map(a => a.fund.code));
-                const candidates = [];
-                for (const a of activeAllocs) {
+                // 优先从受限额度封顶 (exceeds_limit) 的标的提取同门份额，保持策略的纳指/标普资产类别权重平衡
+                const cappedAllocs = activeAllocs.filter(a => a.exceeds_limit);
+                const uncappedAllocs = activeAllocs.filter(a => !a.exceeds_limit);
+                for (const a of [...cappedAllocs, ...uncappedAllocs]) {
                     const siblings = a.fund.siblings || [];
                     for (const sibCode of siblings) {
                         if (!existingCodes.has(sibCode)) {
@@ -1555,6 +1666,18 @@ const App = (() => {
                     btn.classList.add('on');
                     applyPortfolioCategoryFilter(btn.dataset.category);
                 });
+            });
+        }
+
+        // 量化全景矩阵折叠/展开
+        const qfToggle = document.getElementById('quant-frontier-toggle');
+        const qfBody = document.getElementById('quant-frontier-body');
+        const qfArrow = document.getElementById('quant-frontier-arrow');
+        if (qfToggle && qfBody) {
+            qfToggle.addEventListener('click', () => {
+                const isHidden = qfBody.style.display === 'none';
+                qfBody.style.display = isHidden ? 'block' : 'none';
+                if (qfArrow) qfArrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
             });
         }
 

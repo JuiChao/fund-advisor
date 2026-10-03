@@ -1228,3 +1228,55 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .stats { grid-template-columns: 1fr; }
     .stat .vl { font-size: 1.25rem; }
 }
+
+/* ===== 阶段4：量化有效前沿与策略矩阵看板 ===== */
+.quant-frontier-card {
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    background: linear-gradient(180deg, var(--surface) 0%, var(--surface2) 100%);
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.05);
+    transition: all 0.3s ease;
+}
+.quant-frontier-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+.quant-matrix-table th {
+    background: var(--surface2);
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+.quant-matrix-table td {
+    font-size: 0.8rem;
+    vertical-align: middle;
+}
+.quant-matrix-row:hover {
+    background: rgba(99, 102, 241, 0.05);
+}
+.btn-jump-strat {
+    padding: 0.25rem 0.65rem;
+    font-size: 0.72rem;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--accent2);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.btn-jump-strat:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.highlight-pulse {
+    animation: pulseBorder 1.5s ease-out 2;
+}
+@keyframes pulseBorder {
+    0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+    50% { box-shadow: 0 0 0 12px rgba(99, 102, 241, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+

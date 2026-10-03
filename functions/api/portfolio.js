@@ -209,8 +209,11 @@ export async function onRequest(context) {
       // 额度用尽时自动启动多份额额度叠加策略
       if (remainingBudget > 10) {
         const existingCodes = new Set(activeAllocs.map(a => a.fund.code));
+        // 优先从受限额度封顶 (exceeds_limit) 的标的提取同门份额，保持策略的纳指/标普资产类别权重平衡
+        const cappedAllocs = activeAllocs.filter(a => a.exceeds_limit);
+        const uncappedAllocs = activeAllocs.filter(a => !a.exceeds_limit);
         const candidates = [];
-        for (const a of activeAllocs) {
+        for (const a of [...cappedAllocs, ...uncappedAllocs]) {
           const siblings = a.fund.siblings || [];
           for (const sibCode of siblings) {
             if (!existingCodes.has(sibCode)) {

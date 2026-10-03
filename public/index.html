@@ -348,9 +348,9 @@
                 <div class="algo-item">
                     <div class="algo-header">
                         <span class="algo-weight" style="background:linear-gradient(135deg,#6366f1,#a78bfa)">20%</span>
-                        <strong>跟踪误差</strong>
+                        <strong>跟踪误差与信息比率 (TE / IR)</strong>
                     </div>
-                    <p>基金收益率与指数收益率的标准差。本站采用同类相对评分法，将基金的跟踪误差与同指数其它基金的中位数进行对比，消除新老基金的计算偏差，误差越小说明管理越精确。</p>
+                    <p>基金收益率与指数收益率的标准差。结合信息比率 (IR = 跟踪偏离度均值 / 跟踪误差) 与同类中位数相对评分法，精准评估基金经理在承担跟踪风险下的稳定超额收益能力，误差越小、IR越高说明管理越卓越。</p>
                 </div>
                 <div class="algo-item">
                     <div class="algo-header">
@@ -471,6 +471,49 @@
             <button class="seg-btn" data-category="quant">💎 量化专区 (2)</button>
         </div>
     </div>
+
+    <!-- 现代量化组合理论 (MPT) 5大定投策略全景矩阵看板 -->
+    <div class="card quant-frontier-card" id="quant-frontier-card" style="margin-bottom:1.5rem">
+        <div class="quant-frontier-header" id="quant-frontier-toggle" style="cursor:pointer">
+            <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:1.3rem">📐</span>
+                <div>
+                    <h3 style="margin:0;font-size:1.05rem;color:var(--txt)">现代组合理论 (MPT) 5大定投策略全景矩阵</h3>
+                    <p style="margin:3px 0 0;font-size:0.75rem;color:var(--txt3)">资金配比 vs 真实波动风险贡献 · 协方差收缩与有效前沿深度解析</p>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+                <span class="tag" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:600">量化前沿面</span>
+                <span class="algo-arrow" id="quant-frontier-arrow" style="transform:rotate(0deg);transition:transform .2s">▼</span>
+            </div>
+        </div>
+        <div class="quant-frontier-body" id="quant-frontier-body" style="margin-top:1rem">
+            <div class="table-wrap">
+                <table class="quant-matrix-table">
+                    <thead>
+                        <tr>
+                            <th>策略方案</th>
+                            <th>策略类型</th>
+                            <th>资金比例 (纳指:标普)</th>
+                            <th>风险贡献 (纳指:标普)</th>
+                            <th>组合年化波动</th>
+                            <th>夏普比率</th>
+                            <th>预期年化 / 终值中位</th>
+                            <th>核心特征与定位</th>
+                            <th style="text-align:center">直达</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quant-matrix-tbody">
+                        <tr><td colspan="9" style="text-align:center;padding:1.5rem;color:var(--txt3)">正在通算有效前沿与风险矩阵…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="quant-callout" style="margin-top:0.85rem;padding:0.85rem 1rem;background:var(--surface2);border-radius:6px;border-left:3px solid var(--accent);font-size:0.78rem;color:var(--txt2);line-height:1.6">
+                💡 <strong>量化核心发现与数学启示：</strong>传统 50/50 资金平分平衡型由于纳指历史年化波动率（~19.4%）显著高于标普（~12.5%），导致纳斯达克实际主导了 <strong>61% 以上的组合方差风险</strong>。而【💎 风险平价策略】利用凸优化求解器动态解出 <strong>38% 纳指 + 62% 标普</strong>，使两者的绝对风险贡献各精准为 <strong>50%</strong>，真正达成了资产配置层面的风险中性，平滑深度回调风险！
+            </div>
+        </div>
+    </div>
+
     <div id="pf-container" class="ld"></div>
 </div>
 

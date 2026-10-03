@@ -336,8 +336,11 @@ def allocate_practical(items, budget, all_funds=None):
     # 额度用尽时自动启动多份额额度叠加策略 (Quota Stacking)
     if remaining_budget > 10 and all_funds:
         existing_codes = {a['fund']['code'] for a in active_allocs}
+        # 优先从受限额度封顶 (exceeds_limit) 的标的提取同门份额，保持策略的纳指/标普资产类别权重平衡
+        capped_allocs = [a for a in active_allocs if a['exceeds_limit']]
+        uncapped_allocs = [a for a in active_allocs if not a['exceeds_limit']]
         candidates = []
-        for a in active_allocs:
+        for a in capped_allocs + uncapped_allocs:
             for sib_code in a['fund'].get('siblings', []):
                 if sib_code not in existing_codes:
                     sib = next((x for x in all_funds if x['code'] == sib_code), None)
