@@ -203,7 +203,7 @@
         </p>
     </div>
     <div class="stats" id="home-stats"></div>
-    <div class="card"><h3>六种策略预览</h3><div id="home-strategies" class="ld"></div></div>
+    <div class="card"><h3>策略方案全览</h3><div id="home-strategies" class="ld"></div></div>
     <div class="g2">
         <div class="card"><h3>纳斯达克100 费率分布</h3><div class="cht"><canvas id="ch-nq"></canvas></div><div class="fund-list" id="ch-nq-list"></div></div>
         <div class="card"><h3>标普500 费率分布</h3><div class="cht"><canvas id="ch-sp"></canvas></div><div class="fund-list" id="ch-sp-list"></div></div>
@@ -458,12 +458,19 @@
 <!-- ===== 定投方案 ===== -->
 <div id="page-portfolio" style="display:none" class="fade-in">
     <h1 class="page-title">多策略定投方案</h1>
-    <p class="page-sub">六种策略自动生成 · 蒙特卡洛模拟计算预期收益</p>
+    <p class="page-sub">经典策略与量化模型 · 蒙特卡洛模拟全周期通算</p>
     <div class="g2" style="margin-bottom:1.25rem">
         <div class="fg"><label>每月预算</label><input type="range" id="pf-m" min="500" max="10000" step="100" value="2000"><div class="rd"><span>¥500</span><strong id="pf-mv">¥2,000</strong><span>¥10,000</span></div></div>
         <div class="fg"><label>投资年限</label><input type="range" id="pf-y" min="5" max="30" step="1" value="20"><div class="rd"><span>5年</span><strong id="pf-yv">20年</strong><span>30年</span></div></div>
     </div>
-    <button class="btn btn-p" id="btn-pf" style="margin-bottom:1.5rem">重新计算</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+        <button class="btn btn-p" id="btn-pf">重新计算</button>
+        <div class="seg-control" id="pf-category-filter" style="margin-bottom:0">
+            <button class="seg-btn on" data-category="ALL">全部策略 (5)</button>
+            <button class="seg-btn" data-category="traditional">经典传统 (3)</button>
+            <button class="seg-btn" data-category="quant">💎 量化专区 (2)</button>
+        </div>
+    </div>
     <div id="pf-container" class="ld"></div>
 </div>
 

@@ -259,18 +259,19 @@ export async function onRequest(context) {
       return result;
     }
 
-    // 3. 构建结果并合并预计算的模拟收益
+    // 3. 构建结果并合并预计算的模拟收益与量化风险分解
     const results = strategiesDef.map(sDef => {
-      const idealItems = pickFundsByStyle(sDef.nq_pct, false);
-      const practicalItems = pickFundsByStyle(sDef.nq_pct, true);
+      // 获取该策略在 simulations.json 中对应的预计算收益与量化指标
+      const simStrategy = simsData.strategies.find(x => x.key === sDef.key);
+      const nqPct = simStrategy?.nq_pct ?? sDef.nq_pct;
+
+      const idealItems = pickFundsByStyle(nqPct, false);
+      const practicalItems = pickFundsByStyle(nqPct, true);
 
       const idealAllocations = allocateIdeal(idealItems);
       const practicalAllocations = allocatePractical(practicalItems);
       const hasStacked = practicalAllocations.some(a => a.is_stacked && a.monthly > 0);
       const practicalNote = hasStacked ? '💡 算法已自动启动【多份额额度叠加策略】，成功为您打破单日限购封锁，打满 100% 预算！' : '排除暂停基金，遵守每日限购限额。';
-
-      // 获取该策略在 simulations.json 中对应的预计算收益数据进行线性缩放
-      const simStrategy = simsData.strategies.find(x => x.key === sDef.key);
 
       function scaleSimulation(variantKey) {
         const variantData = simStrategy?.[variantKey];
@@ -294,15 +295,19 @@ export async function onRequest(context) {
         name: sDef.name,
         description: sDef.description,
         icon: sDef.icon,
-        nq_pct: sDef.nq_pct,
+        nq_pct: nqPct,
+        category: sDef.category || 'traditional',
+        tag: sDef.tag || '',
         ideal: {
           allocations: idealAllocations,
           note: '不考虑限购的理论最优配置。',
+          risk_analysis: simStrategy?.ideal?.risk_analysis || null,
           simulation: scaleSimulation('ideal')
         },
         practical: {
           allocations: practicalAllocations,
-          note: '排除暂停基金，遵守每日限购限额。',
+          note: practicalNote,
+          risk_analysis: simStrategy?.practical?.risk_analysis || null,
           simulation: scaleSimulation('practical')
         }
       };

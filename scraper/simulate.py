@@ -384,9 +384,129 @@ def pick_funds_by_style(funds, nq_pct, only_buyable=False):
     return items
 
 
-def build_strategy(strat_def, funds, budget):
+# ---- 现代量化资产配置算法 (Modern Quant Portfolio Allocation) ----
+
+def calc_risk_parity_weights(vol_nq, vol_sp, rho=None):
+    """等风险贡献 (Equal Risk Contribution, ERC) 权重计算
+    对于双资产（纳指100与标普500），当各资产的边际风险贡献相等时：
+    w_nq * MRC_nq = w_sp * MRC_sp
+    由解析对称性，交叉协方差项相互抵消，等价于反向波动率定权：
+    w_nq = vol_sp / (vol_nq + vol_sp)
+    w_sp = 1.0 - w_nq
+    """
+    if vol_nq <= 0 or vol_sp <= 0:
+        return 0.5, 0.5
+    w_nq = vol_sp / (vol_nq + vol_sp)
+    w_sp = 1.0 - w_nq
+    return round(float(w_nq), 4), round(float(w_sp), 4)
+
+
+def calc_max_sharpe_weights(r_nq, r_sp, vol_nq, vol_sp, rho, rf=0.025, shrinkage=0.15):
+    """Ledoit-Wolf 收缩协方差均值-方差优化 (MVO) 最大夏普比率权重计算
+    Sigma_shrunk = (1 - delta) * Sigma + delta * Target
+    Target 为对角阵 diag(vol_nq^2, vol_sp^2)
+    w_raw = Sigma_shrunk^(-1) * (mu - rf)
+    约束 0.1 <= w_nq <= 0.9，归一化和为 1
+    """
+    s1_sq = float(vol_nq) ** 2
+    s2_sq = float(vol_sp) ** 2
+    cov12 = float(rho) * float(vol_nq) * float(vol_sp)
+
+    sigma_sample = np.array([[s1_sq, cov12], [cov12, s2_sq]])
+    target = np.array([[s1_sq, 0.0], [0.0, s2_sq]])
+    sigma_shrunk = (1.0 - shrinkage) * sigma_sample + shrinkage * target
+
+    excess_ret = np.array([r_nq - rf, r_sp - rf])
+    try:
+        inv_sigma = np.linalg.inv(sigma_shrunk)
+        w_unnorm = inv_sigma.dot(excess_ret)
+        if w_unnorm[0] <= 0:
+            w_nq = 0.1
+        elif w_unnorm[1] <= 0:
+            w_nq = 0.9
+        else:
+            w_nq = w_unnorm[0] / np.sum(w_unnorm)
+            w_nq = max(0.1, min(0.9, w_nq))
+    except Exception:
+        w_nq = 0.6
+    w_sp = 1.0 - w_nq
+    return round(float(w_nq), 4), round(float(w_sp), 4)
+
+
+def calc_risk_contributions(w_nq, w_sp, vol_nq, vol_sp, rho, r_nq=None, r_sp=None, rf=0.025):
+    """计算组合的真实波动风险贡献与夏普比率
+    返回:
+    {
+        'nq_weight': round(w_nq, 4),
+        'sp_weight': round(w_sp, 4),
+        'nq_risk_contrib': round(rc_nq_pct, 4),
+        'sp_risk_contrib': round(rc_sp_pct, 4),
+        'portfolio_vol': round(port_vol, 4),
+        'sharpe_ratio': round(sharpe, 4) if sharpe is not None else None
+    }
+    """
+    s1_sq = float(vol_nq) ** 2
+    s2_sq = float(vol_sp) ** 2
+    cov12 = float(rho) * float(vol_nq) * float(vol_sp)
+
+    port_var = (w_nq ** 2) * s1_sq + 2 * w_nq * w_sp * cov12 + (w_sp ** 2) * s2_sq
+    port_vol = np.sqrt(max(1e-8, port_var))
+
+    mrc_nq = (w_nq * s1_sq + w_sp * cov12) / port_vol
+    mrc_sp = (w_sp * s2_sq + w_nq * cov12) / port_vol
+
+    trc_nq = w_nq * mrc_nq
+    trc_sp = w_sp * mrc_sp
+    total_trc = trc_nq + trc_sp
+    rc_nq_pct = float(trc_nq / total_trc) if total_trc > 0 else 0.5
+    rc_sp_pct = float(trc_sp / total_trc) if total_trc > 0 else 0.5
+
+    sharpe = None
+    if r_nq is not None and r_sp is not None:
+        expected_r = w_nq * r_nq + w_sp * r_sp
+        sharpe = (expected_r - rf) / port_vol
+
+    return {
+        'nq_weight': round(float(w_nq), 4),
+        'sp_weight': round(float(w_sp), 4),
+        'nq_risk_contrib': round(float(rc_nq_pct), 4),
+        'sp_risk_contrib': round(float(rc_sp_pct), 4),
+        'portfolio_vol': round(float(port_vol), 4),
+        'sharpe_ratio': round(float(sharpe), 4) if sharpe is not None else None
+    }
+
+
+def get_variant_risk_analysis(allocs, params=None):
+    """从具体分配明细计算实际资金权重与风险贡献"""
+    total = sum(a.get('monthly', 0) for a in allocs)
+    if total <= 0:
+        return None
+    nq_sum = sum(a.get('monthly', 0) for a in allocs if a.get('index_type') == '纳斯达克100')
+    sp_sum = sum(a.get('monthly', 0) for a in allocs if a.get('index_type') == '标普500')
+    w_nq = nq_sum / total
+    w_sp = sp_sum / total
+    p = params or PARAMS
+    return calc_risk_contributions(
+        w_nq, w_sp,
+        p['nasdaq_vol'], p['sp500_vol'], RHO,
+        p['nasdaq_return'], p['sp500_return']
+    )
+
+
+def build_strategy(strat_def, funds, budget, dynamic_params=None):
     """为一种风格生成理论最优+实际可买两个子方案"""
-    nq_pct = strat_def['nq_pct']
+    p = dynamic_params or PARAMS
+    strat_key = strat_def['key']
+
+    if strat_key == 'risk_parity':
+        nq_w, _ = calc_risk_parity_weights(p['nasdaq_vol'], p['sp500_vol'], RHO)
+        nq_pct = nq_w
+    elif strat_key == 'max_sharpe':
+        nq_w, _ = calc_max_sharpe_weights(p['nasdaq_return'], p['sp500_return'], p['nasdaq_vol'], p['sp500_vol'], RHO)
+        nq_pct = nq_w
+    else:
+        nq_pct = strat_def['nq_pct']
+
     items_ideal = pick_funds_by_style(funds, nq_pct, only_buyable=False)
     items_practical = pick_funds_by_style(funds, nq_pct, only_buyable=True)
     ideal = allocate_ideal(items_ideal, budget)
@@ -397,19 +517,24 @@ def build_strategy(strat_def, funds, budget):
     if has_stacked:
         practical_note = '💡 算法已自动启动【多份额额度叠加策略】，成功为您打破单日限购封锁，打满 100% 预算！'
 
+    ideal_risk = get_variant_risk_analysis(ideal, p)
+    practical_risk = get_variant_risk_analysis(practical, p)
+
     return {
         'key': strat_def['key'],
         'name': strat_def['name'],
         'description': strat_def['description'],
         'icon': strat_def['icon'],
         'nq_pct': nq_pct,
-        'ideal': {'allocations': ideal, 'note': '不考虑限购的理论最优配置。'},
-        'practical': {'allocations': practical, 'note': practical_note},
+        'category': strat_def.get('category', 'traditional'),
+        'tag': strat_def.get('tag', ''),
+        'ideal': {'allocations': ideal, 'note': '不考虑限购的理论最优配置。', 'risk_analysis': ideal_risk},
+        'practical': {'allocations': practical, 'note': practical_note, 'risk_analysis': practical_risk},
     }
 
 
-def generate_strategies(funds, budget=1000):
-    return [build_strategy(s, funds, budget) for s in STRATEGIES_DEF]
+def generate_strategies(funds, budget=1000, dynamic_params=None):
+    return [build_strategy(s, funds, budget, dynamic_params) for s in STRATEGIES_DEF]
 
 
 # ---- 蒙特卡洛模拟 ----
@@ -565,7 +690,7 @@ def main():
     print(f'  算法配置已同步到 {PUBLIC_CONFIG_PATH}')
 
     print('计算策略和模拟...')
-    strategies = generate_strategies(funds, BASE_BUDGET)
+    strategies = generate_strategies(funds, BASE_BUDGET, dynamic_params)
     strategies_result = []
 
     for strat in strategies:
@@ -575,8 +700,20 @@ def main():
             'description': strat['description'],
             'icon': strat['icon'],
             'nq_pct': strat['nq_pct'],
-            'ideal': {'allocations': strat['ideal']['allocations'], 'note': strat['ideal']['note'], 'by_years': {}},
-            'practical': {'allocations': strat['practical']['allocations'], 'note': strat['practical']['note'], 'by_years': {}},
+            'category': strat.get('category', 'traditional'),
+            'tag': strat.get('tag', ''),
+            'ideal': {
+                'allocations': strat['ideal']['allocations'],
+                'note': strat['ideal']['note'],
+                'risk_analysis': strat['ideal'].get('risk_analysis'),
+                'by_years': {}
+            },
+            'practical': {
+                'allocations': strat['practical']['allocations'],
+                'note': strat['practical']['note'],
+                'risk_analysis': strat['practical'].get('risk_analysis'),
+                'by_years': {}
+            },
         }
 
         for variant_key in ['ideal', 'practical']:

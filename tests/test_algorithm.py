@@ -22,6 +22,7 @@ os.chdir(PROJECT_ROOT)
 from scraper.simulate import (
     score_fund, rank_funds, allocate_ideal, allocate_practical,
     pick_funds_by_style, simulate_portfolio, simulate_portfolio_all_years,
+    calc_risk_parity_weights, calc_max_sharpe_weights, calc_risk_contributions,
     CONFIG, TRADING_DAYS, BASE_BUDGET
 )
 
@@ -360,6 +361,52 @@ class TestSimulatePortfolioAllYears(unittest.TestCase):
         res = simulate_portfolio_all_years(self.sample_funds, weights_with_zero, [5], self.budget)
         self.assertIn(5, res)
         self.assertGreater(res[5]['median'], res[5]['totalInvested'] * 0.5)
+
+
+class TestQuantStrategies(unittest.TestCase):
+    """测试现代量化资产配置模型 (Risk Parity ERC & Ledoit-Wolf Max Sharpe)"""
+
+    def test_risk_parity_equalizes_risk_contribution(self):
+        """等风险贡献策略计算出的权重应使纳指与标普的真实风险贡献各≈50%"""
+        vol_nq = 0.22
+        vol_sp = 0.18
+        rho = 0.75
+        w_nq, w_sp = calc_risk_parity_weights(vol_nq, vol_sp, rho)
+        self.assertAlmostEqual(w_nq + w_sp, 1.0, places=4, msg="权重和应为1.0")
+
+        rc = calc_risk_contributions(w_nq, w_sp, vol_nq, vol_sp, rho)
+        self.assertAlmostEqual(rc['nq_risk_contrib'], 0.50, delta=0.01,
+                               msg=f"纳指风险贡献应≈50%，实际 {rc['nq_risk_contrib']}")
+        self.assertAlmostEqual(rc['sp_risk_contrib'], 0.50, delta=0.01,
+                               msg=f"标普风险贡献应≈50%，实际 {rc['sp_risk_contrib']}")
+
+    def test_balanced_strategy_risk_asymmetry(self):
+        """传统50/50资金平分下，高波动的纳指应主导>55%的组合风险"""
+        vol_nq = 0.22
+        vol_sp = 0.18
+        rho = 0.75
+        rc = calc_risk_contributions(0.5, 0.5, vol_nq, vol_sp, rho)
+        self.assertGreater(rc['nq_risk_contrib'], 0.55,
+                           f"50/50资金权重下纳指风险贡献应>55%，实际 {rc['nq_risk_contrib']}")
+        self.assertLess(rc['sp_risk_contrib'], 0.45,
+                        f"50/50资金权重下标普风险贡献应<45%，实际 {rc['sp_risk_contrib']}")
+
+    def test_max_sharpe_weights_bounded(self):
+        """最大夏普比率权重应在合理边界[0.1, 0.9]内且和为1"""
+        w_nq, w_sp = calc_max_sharpe_weights(0.14, 0.11, 0.22, 0.18, 0.75)
+        self.assertGreaterEqual(w_nq, 0.1)
+        self.assertLessEqual(w_nq, 0.9)
+        self.assertAlmostEqual(w_nq + w_sp, 1.0, places=4)
+
+    def test_quant_strategies_metadata(self):
+        """算法配置中应包含量化策略专区定义"""
+        keys = [s['key'] for s in CONFIG['strategies']]
+        self.assertIn('risk_parity', keys)
+        self.assertIn('max_sharpe', keys)
+        rp = next(s for s in CONFIG['strategies'] if s['key'] == 'risk_parity')
+        ms = next(s for s in CONFIG['strategies'] if s['key'] == 'max_sharpe')
+        self.assertEqual(rp.get('category'), 'quant')
+        self.assertEqual(ms.get('category'), 'quant')
 
 
 if __name__ == '__main__':

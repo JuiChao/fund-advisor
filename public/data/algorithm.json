@@ -85,21 +85,45 @@
       "name": "进取型",
       "description": "纳指70%+标普30%，追求高成长",
       "icon": "🚀",
-      "nq_pct": 0.7
+      "nq_pct": 0.7,
+      "category": "traditional",
+      "tag": "经典"
     },
     {
       "key": "balanced",
       "name": "平衡型",
       "description": "纳指50%+标普50%，攻守兼备",
       "icon": "⚖️",
-      "nq_pct": 0.5
+      "nq_pct": 0.5,
+      "category": "traditional",
+      "tag": "经典"
     },
     {
       "key": "conservative",
       "name": "稳健型",
       "description": "纳指30%+标普70%，注重稳定性",
       "icon": "🛡️",
-      "nq_pct": 0.3
+      "nq_pct": 0.3,
+      "category": "traditional",
+      "tag": "经典"
+    },
+    {
+      "key": "risk_parity",
+      "name": "风险平价",
+      "description": "等风险贡献 (ERC)，消除单一指数高波动主导风险",
+      "icon": "☯️",
+      "nq_pct": 0.45,
+      "category": "quant",
+      "tag": "量化 ERC"
+    },
+    {
+      "key": "max_sharpe",
+      "name": "最大夏普",
+      "description": "Ledoit-Wolf 收缩有效前沿最优夏普比率，兼顾额度约束",
+      "icon": "🎯",
+      "nq_pct": 0.60,
+      "category": "quant",
+      "tag": "量化 MVO"
     }
   ],
 

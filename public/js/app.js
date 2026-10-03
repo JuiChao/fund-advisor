@@ -209,14 +209,18 @@ const App = (() => {
             });
             await Promise.all(simPromises);
 
-            let html = '<div class="table-wrap"><table><thead><tr><th>策略</th><th>风格</th><th>子方案</th><th>预期年化</th><th>20年终值</th></tr></thead><tbody>';
+            let html = '<div class="table-wrap"><table><thead><tr><th>策略</th><th>类型</th><th>风格描述</th><th>子方案</th><th>预期年化</th><th>20年终值</th></tr></thead><tbody>';
             strategies.forEach(s => {
                 ['ideal', 'practical'].forEach(vk => {
                     const v = s[vk];
                     const sim = v?.simulation || {};
                     const label = vk === 'ideal' ? '理论最优' : '实际可买';
+                    const typeBadge = s.category === 'quant'
+                        ? `<span class="pill" style="background:rgba(99,102,241,0.15);color:#818cf8;font-weight:600">💎 ${s.tag || '量化'}</span>`
+                        : `<span class="pill" style="background:var(--surface2);color:var(--txt3)">${s.tag || '经典'}</span>`;
                     html += `<tr>
                         <td style="font-weight:600;color:var(--accent2)">${s.icon || ''} ${s.name}</td>
+                        <td>${typeBadge}</td>
                         <td style="font-size:.8125rem;color:var(--txt2)">${s.description || ''}</td>
                         <td><span class="pill ${vk === 'ideal' ? 'pb' : 'pg'}">${label}</span></td>
                         <td style="color:var(--ok);font-weight:600">${sim.annualReturn ? sim.annualReturn + '%' : '-'}</td>
@@ -782,6 +786,62 @@ const App = (() => {
         </div>`;
     }
 
+    function renderRiskContribution(variant, s) {
+        const ra = variant?.risk_analysis;
+        if (!ra) return '';
+        const nqCapitalPct = Math.round((ra.nq_weight || 0) * 100);
+        const spCapitalPct = Math.round((ra.sp_weight || 0) * 100);
+        const nqRiskPct = Math.round((ra.nq_risk_contrib || 0) * 100);
+        const spRiskPct = Math.round((ra.sp_risk_contrib || 0) * 100);
+        const vol = ra.portfolio_vol != null ? (ra.portfolio_vol * 100).toFixed(1) : '-';
+        const sharpe = ra.sharpe_ratio != null ? ra.sharpe_ratio.toFixed(2) : null;
+
+        let note = '';
+        if (s.key === 'risk_parity') {
+            note = '💡 <strong>等风险贡献 (ERC) 达成：</strong>均衡纳指与标普的边际风险贡献各约 50%，消除单一市场暴跌对净值的非对称冲击。';
+        } else if (s.key === 'max_sharpe') {
+            note = `🎯 <strong>最优风险收益比 (夏普 ${sharpe || ''})：</strong>基于 Ledoit-Wolf 收缩协方差优化，在控制波动率的同时最大化超额收益。`;
+        } else if (s.key === 'balanced') {
+            note = `⚠️ <strong>风险非对称警示：</strong>虽然资金按 50/50 均分，但因纳指波动大，纳指实际承担了 <strong>${nqRiskPct}%</strong> 的组合风险。`;
+        } else if (s.key === 'growth') {
+            note = `🚀 <strong>进取型进攻敞口：</strong>大幅超配纳斯达克100，纳指贡献了 <strong>${nqRiskPct}%</strong> 的波动风险，获取充沛牛市弹性。`;
+        } else if (s.key === 'conservative') {
+            note = `🛡️ <strong>低波动压舱石：</strong>标普500主导组合 <strong>${spRiskPct}%</strong> 的风险与收益，组合年化波动率低至 <strong>${vol}%</strong>。`;
+        }
+
+        return `
+        <div style="margin-top:1.25rem;padding:0.85rem 1rem;background:var(--surface2, var(--bg2));border-radius:var(--radius-sm, 8px);border:1px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+                <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">📊 资金配置 vs 实际波动风险贡献</span>
+                <span style="font-size:0.75rem;color:var(--txt3)">组合年化波动: <strong>${vol}%</strong>${sharpe ? ' · 夏普比率: <strong>' + sharpe + '</strong>' : ''}</span>
+            </div>
+            
+            <div style="margin-bottom:0.5rem">
+                <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--txt2);margin-bottom:3px">
+                    <span>资金权重 (Capital Weight)</span>
+                    <span>纳指 ${nqCapitalPct}% / 标普 ${spCapitalPct}%</span>
+                </div>
+                <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--border)">
+                    <div style="width:${nqCapitalPct}%;background:#3b82f6" title="纳指资金占比 ${nqCapitalPct}%"></div>
+                    <div style="width:${spCapitalPct}%;background:#10b981" title="标普资金占比 ${spCapitalPct}%"></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:0.6rem">
+                <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--txt2);margin-bottom:3px">
+                    <span>波动风险贡献 (Risk Contribution)</span>
+                    <span style="font-weight:${s.key === 'risk_parity' ? '700;color:var(--ok)' : 'normal'}">纳指 ${nqRiskPct}% / 标普 ${spRiskPct}%</span>
+                </div>
+                <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--border)">
+                    <div style="width:${nqRiskPct}%;background:linear-gradient(90deg, #3b82f6, #6366f1)" title="纳指风险贡献 ${nqRiskPct}%"></div>
+                    <div style="width:${spRiskPct}%;background:linear-gradient(90deg, #10b981, #059669)" title="标普风险贡献 ${spRiskPct}%"></div>
+                </div>
+            </div>
+
+            <div style="font-size:0.75rem;color:var(--txt2);line-height:1.4">${note}</div>
+        </div>`;
+    }
+
     async function computePortfolio() {
         const btn = document.getElementById('btn-pf');
         btn.disabled = true; btn.textContent = '计算中…';
@@ -833,9 +893,13 @@ const App = (() => {
             strategies.forEach(s => {
                 const idealAllocs = s.ideal?.allocations || [];
                 const practicalAllocs = s.practical?.allocations || [];
+                const cat = s.category || 'traditional';
+                const catBadge = cat === 'quant'
+                    ? `<span class="tag" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:600;margin-left:6px">💎 ${s.tag || '量化专区'}</span>`
+                    : `<span class="tag" style="background:var(--surface2);color:var(--txt2);margin-left:6px">${s.tag || '经典风格'}</span>`;
 
-                html += `<div class="card">
-                    <h3>${s.icon || ''} ${s.name} <span class="tag">${Math.round((s.nq_pct||0)*100)}% 纳指 + ${Math.round((1-(s.nq_pct||0))*100)}% 标普</span></h3>
+                html += `<div class="card pf-card" data-category="${cat}">
+                    <h3>${s.icon || ''} ${s.name} <span class="tag">${Math.round((s.nq_pct||0)*100)}% 纳指 + ${Math.round((1-(s.nq_pct||0))*100)}% 标普</span>${catBadge}</h3>
                     <p style="color:var(--txt2);font-size:.8125rem;margin-bottom:1rem">${s.description || ''}</p>
 
                     <div class="pf-tabs" data-strategy="${s.key}">
@@ -850,6 +914,7 @@ const App = (() => {
                             <div>
                                 <div class="cht"><canvas id="ch-${s.key}-ideal"></canvas></div>
                                 ${renderVariantSim(s.ideal, years)}
+                                ${renderRiskContribution(s.ideal, s)}
                             </div>
                         </div>
                     </div>
@@ -861,6 +926,7 @@ const App = (() => {
                             <div>
                                 <div class="cht"><canvas id="ch-${s.key}-practical"></canvas></div>
                                 ${renderVariantSim(s.practical, years)}
+                                ${renderRiskContribution(s.practical, s)}
                             </div>
                         </div>
                     </div>
@@ -868,6 +934,22 @@ const App = (() => {
             });
             document.getElementById('pf-container').innerHTML = html;
             document.getElementById('pf-container').classList.remove('ld');
+
+            // 绑定分类筛选
+            document.querySelectorAll('#pf-category-filter .seg-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('#pf-category-filter .seg-btn').forEach(b => b.classList.remove('on'));
+                    btn.classList.add('on');
+                    const targetCat = btn.dataset.category;
+                    document.querySelectorAll('#pf-container .pf-card').forEach(card => {
+                        if (targetCat === 'ALL' || card.dataset.category === targetCat) {
+                            card.style.display = '';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                };
+            });
 
             // 绑定 tab 切换
             document.querySelectorAll('.pf-tabs').forEach(tabs => {
@@ -1308,11 +1390,48 @@ const App = (() => {
             return result;
         }
 
+        function calcLocalRiskAnalysis(allocs) {
+            const total = allocs.reduce((sum, a) => sum + (a.monthly || 0), 0);
+            if (total <= 0) return null;
+            const nqSum = allocs.filter(a => a.index_type === '纳斯达克100').reduce((sum, a) => sum + (a.monthly || 0), 0);
+            const spSum = allocs.filter(a => a.index_type === '标普500').reduce((sum, a) => sum + (a.monthly || 0), 0);
+            const w_nq = nqSum / total;
+            const w_sp = spSum / total;
+            const p = cfg.simulation?.params || cfg.simulation?.params_fallback || {
+                nasdaq_vol: 0.1937, sp500_vol: 0.1248, nasdaq_return: 0.2154, sp500_return: 0.1642
+            };
+            const rho = cfg.simulation?.correlation_nq_sp || 0.75;
+            const s1_sq = p.nasdaq_vol ** 2;
+            const s2_sq = p.sp500_vol ** 2;
+            const cov12 = rho * p.nasdaq_vol * p.sp500_vol;
+            const port_var = (w_nq ** 2) * s1_sq + 2 * w_nq * w_sp * cov12 + (w_sp ** 2) * s2_sq;
+            const port_vol = Math.sqrt(Math.max(1e-8, port_var));
+            const mrc_nq = (w_nq * s1_sq + w_sp * cov12) / port_vol;
+            const mrc_sp = (w_sp * s2_sq + w_nq * cov12) / port_vol;
+            const trc_nq = w_nq * mrc_nq;
+            const trc_sp = w_sp * mrc_sp;
+            const total_trc = trc_nq + trc_sp;
+            const rc_nq = total_trc > 0 ? trc_nq / total_trc : 0.5;
+            const rc_sp = total_trc > 0 ? trc_sp / total_trc : 0.5;
+            const rf = 0.025;
+            const exp_r = w_nq * p.nasdaq_return + w_sp * p.sp500_return;
+            const sharpe = (exp_r - rf) / port_vol;
+            return {
+                nq_weight: +w_nq.toFixed(4),
+                sp_weight: +w_sp.toFixed(4),
+                nq_risk_contrib: +rc_nq.toFixed(4),
+                sp_risk_contrib: +rc_sp.toFixed(4),
+                portfolio_vol: +port_vol.toFixed(4),
+                sharpe_ratio: +sharpe.toFixed(4)
+            };
+        }
+
         const strategiesDef = cfg.strategies;
 
         return strategiesDef.map(s => {
             const idealItems = pickFundsByStyle(s.nq_pct, false);
             const practicalItems = pickFundsByStyle(s.nq_pct, true);
+            const idealAllocations = allocateIdeal(idealItems);
             const practicalAllocations = allocatePractical(practicalItems);
             const hasStacked = practicalAllocations.some(a => a.is_stacked && a.monthly > 0);
             const practicalNote = hasStacked ? '💡 算法已自动启动【多份额额度叠加策略】，成功为您打破单日限购封锁，打满 100% 预算！' : '排除暂停基金，遵守每日限购限额。';
@@ -1323,13 +1442,17 @@ const App = (() => {
                 description: s.description,
                 icon: s.icon,
                 nq_pct: s.nq_pct,
+                category: s.category || 'traditional',
+                tag: s.tag || '',
                 ideal: {
-                    allocations: allocateIdeal(idealItems),
-                    note: '不考虑限购的理论最优配置。'
+                    allocations: idealAllocations,
+                    note: '不考虑限购的理论最优配置。',
+                    risk_analysis: calcLocalRiskAnalysis(idealAllocations)
                 },
                 practical: {
                     allocations: practicalAllocations,
-                    note: practicalNote
+                    note: practicalNote,
+                    risk_analysis: calcLocalRiskAnalysis(practicalAllocations)
                 }
             };
         });
