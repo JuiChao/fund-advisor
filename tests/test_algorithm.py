@@ -21,7 +21,8 @@ os.chdir(PROJECT_ROOT)
 
 from scraper.simulate import (
     score_fund, rank_funds, allocate_ideal, allocate_practical,
-    pick_funds_by_style, CONFIG, TRADING_DAYS, BASE_BUDGET
+    pick_funds_by_style, simulate_portfolio, simulate_portfolio_all_years,
+    CONFIG, TRADING_DAYS, BASE_BUDGET
 )
 
 
@@ -302,6 +303,63 @@ class TestConfigConsistency(unittest.TestCase):
         self.assertGreater(CONFIG['simulation']['n_sims_python'], 0)
         self.assertIsInstance(CONFIG['simulation']['n_sims_frontend'], int)
         self.assertGreater(CONFIG['simulation']['n_sims_frontend'], 0)
+
+
+class TestSimulatePortfolioAllYears(unittest.TestCase):
+    """测试 3D 张量化定投全周期通算模拟引擎"""
+
+    def setUp(self):
+        self.sample_funds = [
+            {
+                'code': '000001', 'name': '纳指测试', 'index_type': '纳斯达克100',
+                'mgmt_fee': 0.005, 'custody_fee': 0.001, 'sales_fee': 0.0,
+                'tracking_error': 0.008, 'purchase_fee': 0.0001
+            },
+            {
+                'code': '000002', 'name': '标普测试', 'index_type': '标普500',
+                'mgmt_fee': 0.005, 'custody_fee': 0.001, 'sales_fee': 0.0,
+                'tracking_error': 0.006, 'purchase_fee': 0.0001
+            }
+        ]
+        self.weights = [0.5, 0.5]
+        self.years_range = [5, 10, 20, 30]
+        self.budget = 1000
+
+    def test_all_years_present_in_result(self):
+        """返回结果中必须包含全部请求的年限键"""
+        res = simulate_portfolio_all_years(self.sample_funds, self.weights, self.years_range, self.budget)
+        for y in self.years_range:
+            self.assertIn(y, res, f"结果字典缺少第 {y} 年数据")
+
+    def test_total_invested_formula(self):
+        """定投累计本金应等于 预算 × 12 × 年数"""
+        res = simulate_portfolio_all_years(self.sample_funds, self.weights, self.years_range, self.budget)
+        for y, metrics in res.items():
+            expected_invested = self.budget * y * 12
+            self.assertEqual(metrics['totalInvested'], expected_invested,
+                             f"第 {y} 年累计投资应为 {expected_invested}，实际 {metrics['totalInvested']}")
+
+    def test_quantile_monotonicity(self):
+        """分位数应严格单调递增: p5 <= p25 <= median <= p75 <= p95"""
+        res = simulate_portfolio_all_years(self.sample_funds, self.weights, self.years_range, self.budget)
+        for y, metrics in res.items():
+            self.assertLessEqual(metrics['p5'], metrics['p25'], f"Year {y}: p5 > p25")
+            self.assertLessEqual(metrics['p25'], metrics['median'], f"Year {y}: p25 > median")
+            self.assertLessEqual(metrics['median'], metrics['p75'], f"Year {y}: median > p75")
+            self.assertLessEqual(metrics['p75'], metrics['p95'], f"Year {y}: p75 > p95")
+
+    def test_long_term_growth(self):
+        """长期定投的中位数和均值财富应随年限增加而增长"""
+        res = simulate_portfolio_all_years(self.sample_funds, self.weights, self.years_range, self.budget)
+        medians = [res[y]['median'] for y in sorted(self.years_range)]
+        self.assertEqual(medians, sorted(medians), "更长投资周期的中位净资产应逐步递增")
+
+    def test_zero_weights_handled_safely(self):
+        """权重为0或空的基金应安全跳过，不影响计算"""
+        weights_with_zero = [1.0, 0.0]
+        res = simulate_portfolio_all_years(self.sample_funds, weights_with_zero, [5], self.budget)
+        self.assertIn(5, res)
+        self.assertGreater(res[5]['median'], res[5]['totalInvested'] * 0.5)
 
 
 if __name__ == '__main__':
