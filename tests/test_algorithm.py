@@ -270,6 +270,35 @@ class TestAllocatePractical(unittest.TestCase):
         self.assertLessEqual(total, budget + 1,
                             f"实际分配总额应 <= 预算 {budget}，实际 {total}")
 
+    def test_quota_stacking_prioritizes_capped_siblings(self):
+        """额度用尽触发多份额叠加时，应优先引入受限标的的同门份额以维持资产类别平衡"""
+        fund_a = {'code': 'A1', 'name': '纳指A', 'index_type': '纳斯达克100',
+                  'mgmt_fee': 0.005, 'custody_fee': 0.001, 'tracking_error': 0.01,
+                  'score': 90, 'limit_status': '限10元/日', 'daily_limit': 10,
+                  'siblings': ['A2']}
+        fund_b = {'code': 'B1', 'name': '标普A', 'index_type': '标普500',
+                  'mgmt_fee': 0.005, 'custody_fee': 0.001, 'tracking_error': 0.01,
+                  'score': 85, 'limit_status': '限50元/日', 'daily_limit': 50,
+                  'siblings': ['B2']}
+        fund_a2 = {'code': 'A2', 'name': '纳指C', 'index_type': '纳斯达克100',
+                   'mgmt_fee': 0.005, 'custody_fee': 0.001, 'tracking_error': 0.01,
+                   'score': 80, 'limit_status': '限100元/日', 'daily_limit': 100,
+                   'siblings': ['A1']}
+        fund_b2 = {'code': 'B2', 'name': '标普C', 'index_type': '标普500',
+                   'mgmt_fee': 0.005, 'custody_fee': 0.001, 'tracking_error': 0.01,
+                   'score': 75, 'limit_status': '限1000元/日', 'daily_limit': 1000,
+                   'siblings': ['B1']}
+
+        all_funds = [fund_a, fund_b, fund_a2, fund_b2]
+        items = [
+            {'fund': fund_a, 'weight': 0.5},
+            {'fund': fund_b, 'weight': 0.5},
+        ]
+        # 预算 5000 元，A1 每日限额 10 元 (月度 220 元)，A1 必封顶并剩余大量预算
+        allocs = allocate_practical(items, 5000, all_funds=all_funds)
+        alloc_codes = [a['code'] for a in allocs]
+        self.assertIn('A2', alloc_codes, "A1受限封顶后应优先将同门同指数份额 A2 引入以补充额度")
+
 
 class TestConfigConsistency(unittest.TestCase):
     """测试配置一致性"""
