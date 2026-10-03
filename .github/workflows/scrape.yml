@@ -25,10 +25,10 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4 numpy
+        run: pip install requests beautifulsoup4 numpy pypdf
 
       - name: Run unit tests
-        run: python -m unittest tests.test_algorithm tests.test_validate tests.test_dynamic_params -v
+        run: python -m unittest discover tests -v
 
       - name: Scrape fund data
         id: scrape
@@ -44,6 +44,9 @@ jobs:
 
           # 即使抓取部分失败也继续运行模拟（使用兜底数据）
           exit 0
+
+      - name: Verify data invariants
+        run: python scraper/verify_quotas.py --offline
 
       - name: Pre-compute simulations
         run: python scraper/simulate.py

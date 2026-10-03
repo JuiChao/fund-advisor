@@ -322,8 +322,10 @@ def scrape_limit_announcement(code):
         title_keywords = [
             '大额申购', '暂停大额', '暂停申购', '限制大额', '调整大额', '限制申购',
             '申购业务上限', '金额限制', '限额申购',
+            '恢复申购', '恢复大额', '恢复办理', '取消限额', '取消大额', '取消上限', '取消申购上限',
             '直销电子交易平台', '直销渠道',
             '规模上限', '总规模',
+            '费率优惠', '降低费率', '调整费率',
         ]
         target_ann_id = None
         # 根据当前基金份额类型，动态排除其他互斥份额的专属公告
@@ -420,7 +422,31 @@ def scrape_limit_announcement(code):
                 result['direct_limit_status'] = '暂停申购'
                 return result
 
+        # === 优先匹配恢复申购 / 取消大额申购限制公告 ===
+        is_resumption = ('恢复' in target_title and '申购' in target_title) or \
+                        ('取消' in target_title and any(k in target_title for k in ['限额', '上限', '规模', '额度']))
+        if is_resumption:
+            # 确认是否仅适用于代销渠道
+            if '代销' in target_title and '直销' not in target_title:
+                pass
+            else:
+                result['direct_daily_limit'] = None
+                result['direct_limit_status'] = '开放申购'
+                return result
+
         # === 多模式提取直销限额 ===
+        # 模式0a: "由 X 元调整为 Y 元"（精准提取调整后的目标金额 Y，剔除被替代的原限额 X）
+        m_adjust = re.search(
+            r'(?:直销(?:机构|渠道|平台|柜台)?.*?)?由\D{0,15}?([0-9,]+(?:\.\d+)?)\s*元.*?(?:调整为|上调至|下调至|调整至)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*元',
+            text_norm
+        )
+        if m_adjust:
+            val = int(float(m_adjust.group(2).replace(',', '')))
+            if val > 0:
+                result['direct_daily_limit'] = val
+                result['direct_limit_status'] = f'限{val}元/日'
+                return result
+
         # 模式0: 基金代码精准匹配表格（如南方021000公告表格）
         m_code = re.search(rf'{code}\D{{0,60}}?(?:该基金份额的)?(?:限制金额|限额)\s*([0-9,]+(?:\.\d+)?)\s*元', text_norm) or \
                  re.search(rf'(?:限制金额|限额)\D{{0,60}}?{code}\D{{0,20}}?([0-9,]+(?:\.\d+)?)\s*元', text_norm)
@@ -569,18 +595,19 @@ def main():
             agency_limit = merged.get('daily_limit')
             agency_status = merged.get('limit_status')
             direct_limit = limit_data.get('direct_daily_limit')
+            direct_status = limit_data.get('direct_limit_status')
 
-            # 规则A: 若代销为"暂停申购"，且该基金无明确直销独立额度（仅大成标普明确有独立额度），则直销同步为暂停申购
-            if agency_status == '暂停申购':
-                if code not in ['096001', '008401']:
-                    limit_data['direct_daily_limit'] = 0
-                    limit_data['direct_limit_status'] = '暂停申购'
-            # 规则B: 若代销有限额（如10元），而提取到的直销限额为None或大于代销限额（非大成标普等明确说明直销高额度的特例），则直销必须服从全局限额
+            # 优先采纳从官方公告第一信源提取到的直销限额与政策（彻底废除历史硬编码白名单）
+            if direct_status is not None:
+                pass
+            # 仅当未提取到直销专属公告时，直销渠道默认跟随代销渠道政策：
+            elif agency_status == '暂停申购':
+                limit_data['direct_daily_limit'] = 0
+                limit_data['direct_limit_status'] = '暂停申购'
             elif agency_limit is not None and agency_limit > 0:
-                if direct_limit is None or (direct_limit > agency_limit and code not in ['096001', '008401']):
-                    limit_data['direct_daily_limit'] = agency_limit
-                    limit_data['direct_limit_status'] = agency_status
-            elif direct_limit is None:
+                limit_data['direct_daily_limit'] = agency_limit
+                limit_data['direct_limit_status'] = agency_status
+            else:
                 limit_data['direct_daily_limit'] = agency_limit
                 limit_data['direct_limit_status'] = agency_status
 

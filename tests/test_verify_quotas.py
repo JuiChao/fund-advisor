@@ -171,6 +171,23 @@ class TestVerifyQuotas(unittest.TestCase):
         self.assertEqual(res['direct'], [100])
         self.assertEqual(res['agency'], [10])
 
+    def test_adjustment_and_resumption_patterns(self):
+        import re
+        # 1. 测试“由X元调整为Y元”提取Y
+        text_adjust = "自2026年10月08日起，通过本公司直销机构申购本基金单日累计金额由原来的10元调整为1000元人民币"
+        m_adjust = re.search(
+            r'(?:直销(?:机构|渠道|平台|柜台)?.*?)?由\D{0,15}?([0-9,]+(?:\.\d+)?)\s*元.*?(?:调整为|上调至|下调至|调整至)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*元',
+            text_adjust
+        )
+        self.assertIsNotNone(m_adjust)
+        self.assertEqual(int(m_adjust.group(2)), 1000)
+
+        # 2. 测试恢复申购公告识别（支持基金全称穿插在中间）
+        title_resume = "关于恢复办理万家纳斯达克100指数型发起式证券投资基金(QDII)大额申购业务的公告"
+        is_resumption = ('恢复' in title_resume and '申购' in title_resume) or \
+                        ('取消' in title_resume and any(k in title_resume for k in ['限额', '上限', '规模', '额度']))
+        self.assertTrue(is_resumption)
+
     def test_all_funds_sync_and_valid(self):
         fallback = load_dataset(DATA_FALLBACK)
         public_funds = load_dataset(DATA_PUBLIC)
