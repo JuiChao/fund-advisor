@@ -181,6 +181,7 @@ const App = (() => {
 
     async function loadStrategiesPreview() {
         try {
+            const dynParams = await getDynamicParams();
             let strategies;
             try {
                 strategies = await apiGet('/api/portfolio?years=20&budget=2000');
@@ -190,7 +191,6 @@ const App = (() => {
             }
 
             // 预先算一下预览组合模拟数据，如果API没有返回的话
-            const dynParams = await getDynamicParams();
             const simPromises = [];
             strategies.forEach(s => {
                 ['ideal', 'practical'].forEach(vk => {
@@ -842,6 +842,17 @@ const App = (() => {
         </div>`;
     }
 
+    function applyPortfolioCategoryFilter(targetCat) {
+        const cat = targetCat || document.querySelector('#pf-category-filter .seg-btn.on')?.dataset?.category || 'ALL';
+        document.querySelectorAll('#pf-container .pf-card').forEach(card => {
+            if (cat === 'ALL' || card.dataset.category === cat) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
     async function computePortfolio() {
         const btn = document.getElementById('btn-pf');
         btn.disabled = true; btn.textContent = '计算中…';
@@ -851,6 +862,7 @@ const App = (() => {
             Object.values(pfCharts).forEach(c => c.destroy());
             pfCharts = {};
 
+            const dynParams = await getDynamicParams();
             let strategies;
             try {
                 strategies = await apiGet(`/api/portfolio?years=${years}&budget=${monthly}`);
@@ -860,7 +872,6 @@ const App = (() => {
             }
             
             // 为 ideal 和 practical 方案提供蒙特卡洛组合模拟数据 (仅在 API 未返回模拟结果时执行本地计算)
-            const dynParams = await getDynamicParams();
             const simPromises = [];
             strategies.forEach(s => {
                 const idealAllocs = s.ideal?.allocations || [];
@@ -935,21 +946,8 @@ const App = (() => {
             document.getElementById('pf-container').innerHTML = html;
             document.getElementById('pf-container').classList.remove('ld');
 
-            // 绑定分类筛选
-            document.querySelectorAll('#pf-category-filter .seg-btn').forEach(btn => {
-                btn.onclick = () => {
-                    document.querySelectorAll('#pf-category-filter .seg-btn').forEach(b => b.classList.remove('on'));
-                    btn.classList.add('on');
-                    const targetCat = btn.dataset.category;
-                    document.querySelectorAll('#pf-container .pf-card').forEach(card => {
-                        if (targetCat === 'ALL' || card.dataset.category === targetCat) {
-                            card.style.display = '';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
-                };
-            });
+            // 保持当前选中的分类筛选状态
+            applyPortfolioCategoryFilter();
 
             // 绑定 tab 切换
             document.querySelectorAll('.pf-tabs').forEach(tabs => {
@@ -1033,6 +1031,7 @@ const App = (() => {
     let _msgId = 0;
     const _pendingPromises = new Map();  // id -> { resolve, fallbackArgs }
 
+    let _simulationsData = null;
     // 惰性加载 simulations.json 中的动态参数（失败时回退到 config 静态参数）
     async function getDynamicParams() {
         if (_dynamicParamsFetched) return _dynamicParams;
@@ -1040,6 +1039,7 @@ const App = (() => {
         try {
             const resp = await fetch('data/simulations.json');
             const data = await resp.json();
+            _simulationsData = data;
             _dynamicParams = data.params || null;
         } catch (e) {
             console.warn('无法加载动态参数，使用静态参数:', e);
@@ -1433,6 +1433,25 @@ const App = (() => {
         }
 
         const strategiesDef = cfg.strategies;
+        const scale = budget / (cfg.allocation?.base_budget || 1000);
+        const yearKey = String(years);
+
+        function scaleSimulation(stratKey, variantKey) {
+            const strat = _simulationsData?.strategies?.find(x => x.key === stratKey);
+            const yrData = strat?.[variantKey]?.by_years?.[yearKey];
+            if (!yrData) return null;
+            return {
+                totalInvested: Math.round(yrData.totalInvested * scale),
+                medianFinal: Math.round((yrData.median || 0) * scale),
+                meanFinal: Math.round((yrData.mean || 0) * scale),
+                p5: Math.round((yrData.p5 || 0) * scale),
+                p25: Math.round((yrData.p25 || 0) * scale),
+                p75: Math.round((yrData.p75 || 0) * scale),
+                p95: Math.round((yrData.p95 || 0) * scale),
+                annualReturn: yrData.annualReturn || 0,
+                meanReturnPct: yrData.meanReturnPct || 0,
+            };
+        }
 
         return strategiesDef.map(s => {
             const idealItems = pickFundsByStyle(s.nq_pct, false);
@@ -1453,12 +1472,14 @@ const App = (() => {
                 ideal: {
                     allocations: idealAllocations,
                     note: '不考虑限购的理论最优配置。',
-                    risk_analysis: calcLocalRiskAnalysis(idealAllocations)
+                    risk_analysis: calcLocalRiskAnalysis(idealAllocations),
+                    simulation: scaleSimulation(s.key, 'ideal')
                 },
                 practical: {
                     allocations: practicalAllocations,
                     note: practicalNote,
-                    risk_analysis: calcLocalRiskAnalysis(practicalAllocations)
+                    risk_analysis: calcLocalRiskAnalysis(practicalAllocations),
+                    simulation: scaleSimulation(s.key, 'practical')
                 }
             };
         });
@@ -1524,6 +1545,18 @@ const App = (() => {
         document.getElementById('pf-y').addEventListener('input', e => document.getElementById('pf-yv').textContent = e.target.value + '年');
         document.getElementById('btn-sim').addEventListener('click', runSimulation);
         document.getElementById('btn-pf').addEventListener('click', computePortfolio);
+
+        // 定投方案策略分类筛选（经典 / 量化 / 全部）
+        const pfCatFilter = document.getElementById('pf-category-filter');
+        if (pfCatFilter) {
+            pfCatFilter.querySelectorAll('.seg-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    pfCatFilter.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('on'));
+                    btn.classList.add('on');
+                    applyPortfolioCategoryFilter(btn.dataset.category);
+                });
+            });
+        }
 
         // 基金详情展开（事件委托，只绑定一次）
         document.querySelector('#rank-table').addEventListener('click', e => {
