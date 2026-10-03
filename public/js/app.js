@@ -1257,7 +1257,10 @@ const App = (() => {
                     share_class: f.share_class || 'A', family_id: f.family_id || '',
                     weight: +w.toFixed(4), daily: +daily.toFixed(1), monthly: Math.round(monthly),
                     fee: fee,
-                    tracking_error: f.tracking_error, score: f.score || 0,
+                    tracking_error: f.tracking_error,
+                    tracking_difference: f.tracking_difference != null ? f.tracking_difference : null,
+                    information_ratio: f.information_ratio != null ? f.information_ratio : null,
+                    score: f.score || 0,
                     daily_limit: f.daily_limit || null, limit_status: f.limit_status || '',
                     direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
                     exceeds_limit: false,
@@ -1375,7 +1378,10 @@ const App = (() => {
                     share_class: f.share_class || 'A', family_id: f.family_id || '',
                     weight: +a.weight.toFixed(4), daily: +a.actual_daily.toFixed(1), monthly: Math.round(a.actual_monthly),
                     fee: fee,
-                    tracking_error: f.tracking_error, score: f.score || 0,
+                    tracking_error: f.tracking_error,
+                    tracking_difference: f.tracking_difference != null ? f.tracking_difference : null,
+                    information_ratio: f.information_ratio != null ? f.information_ratio : null,
+                    score: f.score || 0,
                     daily_limit: a.limit !== Infinity ? a.limit : null, limit_status: f.limit_status || '',
                     direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
                     exceeds_limit: a.exceeds_limit,
@@ -1632,6 +1638,15 @@ const App = (() => {
                         <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">🛑 限购状态</div>
                         <div style="margin-bottom:0.25rem;display:flex;align-items:center;gap:6px"><strong style="color:var(--txt3)">代销限购：</strong>${pill(f.limit_status)}</div>
                         <div style="margin-bottom:0.25rem;display:flex;align-items:center;gap:6px"><strong style="color:var(--txt3)">直销限购：</strong>${f.direct_limit_status ? pill(f.direct_limit_status) : '<span style="color:var(--txt3)">—</span>'}</div>
+                    </div>
+
+                    <!-- 量化多因子评估 -->
+                    <div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">📊 量化多因子评估</div>
+                        <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">跟踪偏离度(TD/1年)：</strong><span style="font-weight:700;color:${(f.tracking_difference||0)>=0?'var(--up)':'var(--down)'}">${f.tracking_difference != null ? ((f.tracking_difference>=0?'+':'')+(f.tracking_difference*100).toFixed(2)+'%') : '-'}</span></div>
+                        <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">信息比率(IR)：</strong><span style="font-weight:700;color:${(f.information_ratio||0)>=0?'var(--ok)':'var(--txt2)'}">${f.information_ratio != null ? f.information_ratio.toFixed(2) : '-'}</span> <span style="font-size:0.7rem;color:var(--txt3);">(超额/风险)</span></div>
+                        <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">年化跟踪误差(TE)：</strong>${f.tracking_error ? (f.tracking_error*100).toFixed(2)+'%' : '-'}</div>
+                        ${f.volatility ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">年化波动率：</strong>${(f.volatility*100).toFixed(2)}%</div>` : ''}
                     </div>
                 </div>
                 ${f.benchmark ? `<div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border); font-size:0.8rem; color:var(--txt3);"><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}

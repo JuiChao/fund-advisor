@@ -12,6 +12,9 @@ import os
 import requests
 from bs4 import BeautifulSoup
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from fsm import FinancialEventFSM
+
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Referer': 'https://fund.eastmoney.com/',
@@ -398,6 +401,19 @@ def scrape_limit_announcement(code):
             'limit_announcement_id': target_ann_id
         }
 
+        # === 核心解析：使用金融事件槽位有限状态机 (Financial Slot-Filling FSM) ===
+        fsm_res = FinancialEventFSM.parse_announcement(
+            content=content,
+            title=target_title,
+            fund_code=code,
+            share_class=my_class,
+            ann_id=target_ann_id
+        )
+        if fsm_res.direct_daily_limit is not None or fsm_res.direct_limit_status is not None:
+            result['direct_daily_limit'] = fsm_res.direct_daily_limit
+            result['direct_limit_status'] = fsm_res.direct_limit_status
+            return result
+
         # === 优先匹配直销专属暂停公告（如华夏标普：在华夏直销电子交易平台暂停申购业务） ===
         # 注意：排除“暂停大额申购”（大额限制不等于完全暂停）
         if (re.search(r'在(?:本公司)?直销(?:电子交易平台|机构|渠道)?(?:暂停|停止)(?:办理)?(?:本基金)?.*?(?<!大额)申购', text_norm) or \
@@ -635,6 +651,13 @@ def main():
     timestamp = datetime.now(tz_beijing).strftime('%Y-%m-%dT%H:%M:%S')
     for r in results:
         r['updated_at'] = timestamp
+
+    # 增润量化多因子指标 (TD / IR)
+    try:
+        from simulate import enrich_funds_with_quant_factors
+        results, _ = enrich_funds_with_quant_factors(results)
+    except Exception as ex:
+        print(f'  [WARN] 增润量化多因子指标异常: {ex}')
 
     # 写入 JSON
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)

@@ -12,6 +12,7 @@ from pathlib import Path
 # ===== 路径 =====
 CONFIG_PATH = Path('config/algorithm.json')
 FUNDS_PATH = Path('public/data/funds.json')
+FALLBACK_PATH = Path('data/funds_fallback.json')
 OUTPUT_PATH = Path('public/data/simulations.json')
 PUBLIC_CONFIG_PATH = Path('public/data/algorithm.json')
 
@@ -178,9 +179,58 @@ def _calc_median_te(funds):
     return tes[mid] if len(tes) % 2 else (tes[mid - 1] + tes[mid]) / 2
 
 
+def calc_fund_quant_factors(fund, index_benchmarks=None):
+    """计算被动指数基金多因子量化指标：
+    1. 跟踪偏离度均值 TD (Tracking Difference):
+       TD = R_fund_1yr - R_benchmark_1yr
+    2. 信息比率 IR (Information Ratio):
+       IR = TD / TE (衡量基金经理在承担单位跟踪风险下所创造的超额收益能力)
+    """
+    if index_benchmarks is None:
+        index_benchmarks = {}
+
+    idx_type = fund.get('index_type')
+    r1 = fund.get('return_1yr')
+    te = fund.get('tracking_error') or DEFAULTS.get('tracking_error_for_scoring', 0.02)
+
+    bm_ret = index_benchmarks.get(idx_type)
+    td = None
+    ir = None
+
+    if r1 is not None and bm_ret is not None:
+        td = round(r1 - bm_ret, 4)
+        if te and te > 0:
+            ir = round(td / te, 2)
+
+    return {
+        'tracking_difference': td,
+        'information_ratio': ir,
+    }
+
+
+def enrich_funds_with_quant_factors(funds):
+    """根据同指数基金组中位数计算基准收益并为基金填充多因子指标"""
+    import statistics
+    benchmarks = {}
+    for idx in ['纳斯达克100', '标普500']:
+        rets = [f.get('return_1yr') for f in funds if f.get('index_type') == idx and f.get('return_1yr') is not None]
+        if rets:
+            benchmarks[idx] = round(statistics.median(rets), 4)
+
+    enriched = []
+    for f in funds:
+        factors = calc_fund_quant_factors(f, benchmarks)
+        item = dict(f)
+        item['tracking_difference'] = factors['tracking_difference']
+        item['information_ratio'] = factors['information_ratio']
+        enriched.append(item)
+    return enriched, benchmarks
+
+
 def rank_funds(funds):
     median_te = _calc_median_te(funds)
-    scored = [{**f, 'score': score_fund(f, median_te=median_te)} for f in funds]
+    enriched_funds, _ = enrich_funds_with_quant_factors(funds)
+    scored = [{**f, 'score': score_fund(f, median_te=median_te)} for f in enriched_funds]
     scored.sort(key=lambda x: x['score'], reverse=True)
     for i, f in enumerate(scored):
         f['rank'] = i + 1
@@ -201,7 +251,10 @@ def allocate_ideal(items, budget):
             'share_class': f.get('share_class', 'A'), 'family_id': f.get('family_id', ''),
             'weight': round(w, 4), 'daily': round(daily, 1), 'monthly': round(monthly),
             'fee': fee,
-            'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
+            'tracking_error': f.get('tracking_error'),
+            'tracking_difference': f.get('tracking_difference'),
+            'information_ratio': f.get('information_ratio'),
+            'score': f.get('score', 0),
             'daily_limit': f.get('daily_limit') or DEFAULTS['daily_limit_fallback'], 'limit_status': f.get('limit_status', ''),
             'direct_daily_limit': f.get('direct_daily_limit'), 'direct_limit_status': f.get('direct_limit_status', ''),
             'exceeds_limit': False,
@@ -322,7 +375,10 @@ def allocate_practical(items, budget, all_funds=None):
             'share_class': f.get('share_class', 'A'), 'family_id': f.get('family_id', ''),
             'weight': round(a['weight'], 4), 'daily': round(a['actual_daily'], 1), 'monthly': round(a['actual_monthly']),
             'fee': fee,
-            'tracking_error': f.get('tracking_error'), 'score': f.get('score', 0),
+            'tracking_error': f.get('tracking_error'),
+            'tracking_difference': f.get('tracking_difference'),
+            'information_ratio': f.get('information_ratio'),
+            'score': f.get('score', 0),
             'daily_limit': a['limit'] if a['limit'] != float('inf') else None, 'limit_status': f.get('limit_status', ''),
             'direct_daily_limit': f.get('direct_daily_limit'), 'direct_limit_status': f.get('direct_limit_status', ''),
             'exceeds_limit': a['exceeds_limit'],
@@ -675,8 +731,17 @@ def simulate_portfolio_all_years(funds_list, weights, years_range, budget, sim_p
 
 def main():
     print('加载基金数据...')
-    funds = load_funds()
-    print(f'  {len(funds)} 只基金')
+    raw_funds = load_funds()
+    funds, benchmarks = enrich_funds_with_quant_factors(raw_funds)
+    print(f'  {len(funds)} 只基金，基准收益: {benchmarks}')
+
+    # 写入增润量化多因子后的 funds.json 与 funds_fallback.json
+    with open(FUNDS_PATH, 'w', encoding='utf-8') as f:
+        json.dump(funds, f, ensure_ascii=False, indent=2)
+    if FALLBACK_PATH.exists():
+        with open(FALLBACK_PATH, 'w', encoding='utf-8') as f:
+            json.dump(funds, f, ensure_ascii=False, indent=2)
+    print(f'  已增润 TD/IR 量化因子并保存至 {FUNDS_PATH} 与 {FALLBACK_PATH}')
 
     # 动态计算模拟参数
     dynamic_params, param_source = calc_dynamic_params(funds)

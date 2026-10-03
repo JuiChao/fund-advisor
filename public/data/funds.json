@@ -37,7 +37,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-09-26",
     "limit_announcement_id": "AN202609281829947820",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0087,
+    "information_ratio": 0.4
   },
   {
     "code": "019442",
@@ -77,7 +79,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-09-26",
     "limit_announcement_id": "AN202609281829947820",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0064,
+    "information_ratio": 0.29
   },
   {
     "code": "015299",
@@ -117,7 +121,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-04-06",
     "limit_announcement_id": "AN202608071827734257",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0051,
+    "information_ratio": 0.21
   },
   {
     "code": "015300",
@@ -157,7 +163,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-04-06",
     "limit_announcement_id": "AN202608071827734257",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0016,
+    "information_ratio": 0.07
   },
   {
     "code": "014978",
@@ -197,7 +205,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2013-06-13",
     "limit_announcement_id": "AN202609231829773864",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0031,
+    "information_ratio": -0.31
   },
   {
     "code": "040046",
@@ -237,7 +247,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2013-06-13",
     "limit_announcement_id": "AN202609231829773864",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0009,
+    "information_ratio": -0.09
   },
   {
     "code": "019524",
@@ -277,7 +289,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-10-16",
     "limit_announcement_id": "AN202609221829732369",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0057,
+    "information_ratio": -0.36
   },
   {
     "code": "019525",
@@ -317,7 +331,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-10-16",
     "limit_announcement_id": "AN202609221829732369",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0085,
+    "information_ratio": -0.54
   },
   {
     "code": "022664",
@@ -357,7 +373,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2024-11-22",
     "limit_announcement_id": "AN202609221829732369",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0073,
+    "information_ratio": -0.46
   },
   {
     "code": "016452",
@@ -398,7 +416,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-11-07",
     "limit_announcement_id": "AN202607081826816306",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0,
+    "information_ratio": 0.0
   },
   {
     "code": "016453",
@@ -439,7 +459,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-11-07",
     "limit_announcement_id": "AN202607081826816306",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0012,
+    "information_ratio": -0.08
   },
   {
     "code": "021000",
@@ -478,7 +500,9 @@
     "tracking_index": "纳斯达克100指数",
     "dividend_info": "每份累计0.00元（0次）",
     "limit_announcement_id": "AN202607201827139668",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0005,
+    "information_ratio": -0.03
   },
   {
     "code": "016055",
@@ -518,7 +542,9 @@
     "tracking_index": "纳斯达克100指数",
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-07-18",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0138,
+    "information_ratio": 0.94
   },
   {
     "code": "016057",
@@ -558,7 +584,9 @@
     "tracking_index": "纳斯达克100指数",
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-07-18",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0102,
+    "information_ratio": 0.69
   },
   {
     "code": "024237",
@@ -596,7 +624,9 @@
     "benchmark": "经汇率调整的纳斯达克100指数收益率*95%+活期存款利率(税后)*5%",
     "tracking_index": "纳斯达克100指数",
     "dividend_info": "每份累计0.00元（0次）",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0117,
+    "information_ratio": 0.8
   },
   {
     "code": "016532",
@@ -636,7 +666,9 @@
     "tracking_index": "纳斯达克100指数",
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-09-05",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0039,
+    "information_ratio": 0.26
   },
   {
     "code": "016533",
@@ -676,7 +708,9 @@
     "tracking_index": "纳斯达克100指数",
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-09-05",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.001,
+    "information_ratio": 0.07
   },
   {
     "code": "021838",
@@ -714,7 +748,9 @@
     "benchmark": "经估值汇率调整后的纳斯达克100指数收益率*95%+银行活期存款利率(税后)*5%",
     "tracking_index": "纳斯达克100指数",
     "dividend_info": "每份累计0.00元（0次）",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0009,
+    "information_ratio": 0.06
   },
   {
     "code": "160213",
@@ -753,7 +789,9 @@
     "dividend_info": "每份累计6.30元（8次）",
     "issue_date": "2010-03-22",
     "limit_announcement_id": "AN202609221829740223",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0125,
+    "information_ratio": 1.13
   },
   {
     "code": "000834",
@@ -793,7 +831,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2014-10-20",
     "limit_announcement_id": "AN202606031823188725",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0064,
+    "information_ratio": -0.62
   },
   {
     "code": "008971",
@@ -833,7 +873,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2014-10-20",
     "limit_announcement_id": "AN202606031823188725",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0098,
+    "information_ratio": -0.94
   },
   {
     "code": "018043",
@@ -874,7 +916,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-03-27",
     "limit_announcement_id": "AN202609181829590491",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0029,
+    "information_ratio": 0.19
   },
   {
     "code": "018044",
@@ -915,7 +959,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-03-27",
     "limit_announcement_id": "AN202609181829590491",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0007,
+    "information_ratio": 0.05
   },
   {
     "code": "022525",
@@ -954,7 +1000,9 @@
     "tracking_index": "纳斯达克100指数",
     "dividend_info": "每份累计0.00元（0次）",
     "limit_announcement_id": "AN202609011828848127",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0006,
+    "information_ratio": 0.04
   },
   {
     "code": "019736",
@@ -993,7 +1041,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2024-02-29",
     "limit_announcement_id": "AN202609241829831132",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0018,
+    "information_ratio": -0.11
   },
   {
     "code": "019737",
@@ -1032,7 +1082,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2024-02-29",
     "limit_announcement_id": "AN202609241829831132",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0046,
+    "information_ratio": -0.27
   },
   {
     "code": "006479",
@@ -1072,7 +1124,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2012-07-09",
     "limit_announcement_id": "AN202609301830015639",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0051,
+    "information_ratio": -0.5
   },
   {
     "code": "270042",
@@ -1112,7 +1166,9 @@
     "dividend_info": "每份累计0.27元（2次）",
     "issue_date": "2012-07-09",
     "limit_announcement_id": "AN202609301830015639",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.003,
+    "information_ratio": -0.29
   },
   {
     "code": "012752",
@@ -1153,7 +1209,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2010-08-11",
     "limit_announcement_id": "AN202608191828132673",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0093,
+    "information_ratio": -0.41
   },
   {
     "code": "023422",
@@ -1193,7 +1251,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2010-08-11",
     "limit_announcement_id": "AN202608191828132673",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0093,
+    "information_ratio": -0.41
   },
   {
     "code": "539001",
@@ -1234,7 +1294,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2010-08-11",
     "limit_announcement_id": "AN202608191828132673",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0058,
+    "information_ratio": -0.26
   },
   {
     "code": "019547",
@@ -1273,7 +1335,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-11-13",
     "limit_announcement_id": "AN202609011828847866",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0033,
+    "information_ratio": 0.19
   },
   {
     "code": "019548",
@@ -1312,7 +1376,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-11-13",
     "limit_announcement_id": "AN202609011828847866",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0013,
+    "information_ratio": -0.07
   },
   {
     "code": "019172",
@@ -1352,7 +1418,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-09-11",
     "limit_announcement_id": "AN202607241827315717",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.006,
+    "information_ratio": 0.26
   },
   {
     "code": "019173",
@@ -1392,7 +1460,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-09-11",
     "limit_announcement_id": "AN202607241827315717",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0026,
+    "information_ratio": 0.11
   },
   {
     "code": "012870",
@@ -1432,7 +1502,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2017-04-24",
     "limit_announcement_id": "AN202609011828884696",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0017,
+    "information_ratio": -0.12
   },
   {
     "code": "161130",
@@ -1472,7 +1544,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2017-05-02",
     "limit_announcement_id": "AN202609011828884696",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.002,
+    "information_ratio": 0.14
   },
   {
     "code": "017091",
@@ -1513,7 +1587,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-12-07",
     "limit_announcement_id": "AN202609221829754483",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.1292,
+    "information_ratio": 4.44
   },
   {
     "code": "017093",
@@ -1554,7 +1630,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-12-07",
     "limit_announcement_id": "AN202609221829754483",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.1241,
+    "information_ratio": 4.25
   },
   {
     "code": "019118",
@@ -1595,7 +1673,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-12-07",
     "limit_announcement_id": "AN202609221829754483",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.1266,
+    "information_ratio": 4.34
   },
   {
     "code": "018966",
@@ -1636,7 +1716,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-07-31",
     "limit_announcement_id": "AN202609241829835607",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0303,
+    "information_ratio": -1.7
   },
   {
     "code": "018967",
@@ -1677,7 +1759,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-07-31",
     "limit_announcement_id": "AN202609241829835607",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0348,
+    "information_ratio": -1.94
   },
   {
     "code": "021773",
@@ -1717,7 +1801,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-07-31",
     "limit_announcement_id": "AN202609241829835607",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0314,
+    "information_ratio": -1.76
   },
   {
     "code": "018064",
@@ -1757,7 +1843,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-04-25",
     "limit_announcement_id": "AN202608071827737353",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0008,
+    "information_ratio": 0.04
   },
   {
     "code": "018065",
@@ -1797,7 +1885,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-04-25",
     "limit_announcement_id": "AN202608071827737353",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0024,
+    "information_ratio": -0.11
   },
   {
     "code": "006075",
@@ -1838,7 +1928,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2012-05-15",
     "limit_announcement_id": "AN202605081822057674",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0025,
+    "information_ratio": 0.2
   },
   {
     "code": "018738",
@@ -1878,7 +1970,9 @@
     "tracking_index": "标准普尔500指数",
     "dividend_info": "每份累计0.00元（0次）",
     "limit_announcement_id": "AN202608191828129205",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0063,
+    "information_ratio": 0.5
   },
   {
     "code": "050025",
@@ -1919,7 +2013,9 @@
     "dividend_info": "每份累计0.06元（3次）",
     "issue_date": "2012-05-15",
     "limit_announcement_id": "AN202605081822057674",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0064,
+    "information_ratio": 0.51
   },
   {
     "code": "017028",
@@ -1958,7 +2054,9 @@
     "tracking_index": "标准普尔500指数",
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-11-01",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0007,
+    "information_ratio": 0.05
   },
   {
     "code": "017030",
@@ -1997,7 +2095,9 @@
     "tracking_index": "标准普尔500指数",
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2022-11-01",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0026,
+    "information_ratio": -0.17
   },
   {
     "code": "008401",
@@ -2037,7 +2137,9 @@
     "dividend_info": "每份累计0.23元（3次）",
     "issue_date": "2011-02-21",
     "limit_announcement_id": "AN202609081829112680",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0364,
+    "information_ratio": -2.55
   },
   {
     "code": "096001",
@@ -2077,7 +2179,9 @@
     "dividend_info": "每份累计0.70元（13次）",
     "issue_date": "2011-02-21",
     "limit_announcement_id": "AN202609081829112680",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0332,
+    "information_ratio": -2.32
   },
   {
     "code": "007721",
@@ -2118,7 +2222,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2019-09-16",
     "limit_announcement_id": "AN202609181829580336",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0012,
+    "information_ratio": -0.08
   },
   {
     "code": "007722",
@@ -2159,7 +2265,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2019-09-16",
     "limit_announcement_id": "AN202609181829580336",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0039,
+    "information_ratio": -0.26
   },
   {
     "code": "022523",
@@ -2198,7 +2306,9 @@
     "tracking_index": "该基金无跟踪标的",
     "dividend_info": "每份累计0.00元（0次）",
     "limit_announcement_id": "AN202609011828844257",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.004,
+    "information_ratio": -0.27
   },
   {
     "code": "017641",
@@ -2238,7 +2348,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-03-27",
     "limit_announcement_id": "AN202607241827315718",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0092,
+    "information_ratio": 0.56
   },
   {
     "code": "019305",
@@ -2278,7 +2390,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2023-08-30",
     "limit_announcement_id": "AN202607241827315718",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0059,
+    "information_ratio": 0.36
   },
   {
     "code": "012860",
@@ -2318,7 +2432,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2016-11-14",
     "limit_announcement_id": "AN202609011828884696",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": -0.0007,
+    "information_ratio": -0.06
   },
   {
     "code": "161125",
@@ -2358,6 +2474,8 @@
     "dividend_info": "每份累计0.00元（0次）",
     "issue_date": "2016-11-14",
     "limit_announcement_id": "AN202609011828884696",
-    "updated_at": "2026-10-02T20:01:38"
+    "updated_at": "2026-10-02T20:01:38",
+    "tracking_difference": 0.0032,
+    "information_ratio": 0.27
   }
 ]

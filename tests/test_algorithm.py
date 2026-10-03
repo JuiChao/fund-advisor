@@ -23,6 +23,7 @@ from scraper.simulate import (
     score_fund, rank_funds, allocate_ideal, allocate_practical,
     pick_funds_by_style, simulate_portfolio, simulate_portfolio_all_years,
     calc_risk_parity_weights, calc_max_sharpe_weights, calc_risk_contributions,
+    calc_fund_quant_factors, enrich_funds_with_quant_factors,
     CONFIG, TRADING_DAYS, BASE_BUDGET
 )
 
@@ -407,6 +408,41 @@ class TestQuantStrategies(unittest.TestCase):
         ms = next(s for s in CONFIG['strategies'] if s['key'] == 'max_sharpe')
         self.assertEqual(rp.get('category'), 'quant')
         self.assertEqual(ms.get('category'), 'quant')
+
+
+class TestQuantFactors(unittest.TestCase):
+    """测试被动指数多因子评估指标 (TD / IR)"""
+
+    def test_calc_fund_quant_factors(self):
+        """测试计算跟踪偏离度(TD)与信息比率(IR)"""
+        fund = {
+            'code': '019441',
+            'index_type': '纳斯达克100',
+            'return_1yr': 0.1650,
+            'tracking_error': 0.0200,
+        }
+        benchmarks = {'纳斯达克100': 0.1550}
+        factors = calc_fund_quant_factors(fund, benchmarks)
+        # TD = 0.1650 - 0.1550 = +0.0100
+        self.assertAlmostEqual(factors['tracking_difference'], 0.0100, places=4)
+        # IR = 0.0100 / 0.0200 = 0.5
+        self.assertAlmostEqual(factors['information_ratio'], 0.5, places=2)
+
+    def test_enrich_funds_with_quant_factors(self):
+        """测试批量增润基金多因子指标"""
+        funds = [
+            {'code': '001', 'index_type': '纳斯达克100', 'return_1yr': 0.1600, 'tracking_error': 0.02},
+            {'code': '002', 'index_type': '纳斯达克100', 'return_1yr': 0.1400, 'tracking_error': 0.02},
+            {'code': '003', 'index_type': '标普500', 'return_1yr': 0.1000, 'tracking_error': 0.01},
+        ]
+        enriched, benchmarks = enrich_funds_with_quant_factors(funds)
+        self.assertEqual(len(enriched), 3)
+        self.assertIn('纳斯达克100', benchmarks)
+        self.assertIn('标普500', benchmarks)
+        # 001 return高于中位数(0.1500)，TD为+0.0100，IR为+0.5
+        f1 = next(x for x in enriched if x['code'] == '001')
+        self.assertGreater(f1['tracking_difference'], 0)
+        self.assertGreater(f1['information_ratio'], 0)
 
 
 if __name__ == '__main__':
