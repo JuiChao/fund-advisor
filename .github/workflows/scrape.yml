@@ -34,7 +34,7 @@ jobs:
         id: scrape
         run: |
           set +e
-          python scraper/scrape.py 2>&1 | tee scrape_output.log
+          python scraper/scrape.py --incremental 2>&1 | tee scrape_output.log
           SCRAPE_EXIT=${PIPESTATUS[0]}
           echo "exit_code=${SCRAPE_EXIT}" >> "$GITHUB_OUTPUT"
 

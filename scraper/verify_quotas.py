@@ -362,9 +362,11 @@ def run_cross_verification(sample_codes=None, check_live=True):
         fb_item = fallback.get(code, {})
         pub_item = public_funds.get(code, {})
 
-        # 检查 fallback 与 public 数据是否 100% 同步 (35个字段逐一核验)
+        # 检查 fallback 与 public 数据是否 100% 同步 (35个业务字段逐一核验，忽略运行时间戳 updated_at)
         mismatches = []
         for key in pub_item.keys():
+            if key == 'updated_at':
+                continue
             if fb_item.get(key) != pub_item.get(key):
                 mismatches.append(f"{key}: fallback={fb_item.get(key)} vs public={pub_item.get(key)}")
 

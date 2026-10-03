@@ -9,6 +9,8 @@ import json
 import time
 import sys
 import os
+import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 from bs4 import BeautifulSoup
 
@@ -569,103 +571,282 @@ def validate(data):
     return cleaned
 
 
+def load_cached_funds():
+    """加载已存在的 public/data/funds.json 缓存"""
+    if os.path.exists(OUTPUT):
+        try:
+            with open(OUTPUT, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            if isinstance(data, list):
+                return {item['code']: item for item in data if isinstance(item, dict) and 'code' in item}
+        except Exception as e:
+            print(f'  [WARN] 读取本地缓存失败: {e}')
+    return {}
+
+
+def fetch_market_announcement_feed(max_pages=3, page_size=100, timeout=10):
+    """
+    【CDC增量流】获取全市场最新公告 Feed 流
+    从东财全市场公告接口拉取最近 N 页公告，用于快速检测标的池是否有新公告发布
+    """
+    ann_headers = {**HEADERS, 'Referer': 'https://fundf10.eastmoney.com/'}
+    feed_items = []
+    for page in range(1, max_pages + 1):
+        url = f'http://api.fund.eastmoney.com/f10/JJGG?callback=jQuery&fundcode=&pageIndex={page}&pageSize={page_size}&type=0'
+        try:
+            resp = requests.get(url, headers=ann_headers, timeout=timeout)
+            resp.encoding = 'utf-8'
+            m = re.search(r'jQuery\((.*)\)', resp.text, re.DOTALL)
+            if not m:
+                break
+            data = json.loads(m.group(1))
+            items = data.get('Data', [])
+            if not items:
+                break
+            feed_items.extend(items)
+        except Exception as e:
+            print(f'  [WARN] 获取全市场公告 Feed 第 {page} 页失败: {e}')
+            break
+    return feed_items
+
+
+def detect_cdc_affected_funds(feed_items, universe_codes, fallback_data):
+    """
+    【CDC增量流】从全市场公告中精确定位属于标的池且与申购/限额/费率相关的标的代码
+    """
+    LIMIT_KEYWORDS = [
+        '大额申购', '暂停大额', '暂停申购', '限制大额', '调整大额', '限制申购',
+        '申购业务上限', '金额限制', '限额申购',
+        '恢复申购', '恢复大额', '恢复办理', '取消限额', '取消大额', '取消上限', '取消申购上限',
+        '直销电子交易平台', '直销渠道', '直销柜台',
+        '规模上限', '总规模',
+        '费率优惠', '降低费率', '调整费率',
+    ]
+
+    affected_codes = set()
+    universe_set = set(universe_codes)
+
+    for item in feed_items:
+        fc = item.get('FUNDCODE')
+        title = item.get('TITLE', '')
+        # 排除节假日临时休市和纯美元份额
+        if any(k in title for k in ['节假日', '非交易日', '休市', '主要投资市场节假日']):
+            continue
+        if any(k in title for k in ['美元份额', '美元现汇', '美元现钞']) and '人民币' not in title:
+            continue
+
+        is_quota_event = any(kw in title for kw in LIMIT_KEYWORDS)
+        if not is_quota_event:
+            continue
+
+        # 检查是否直接命中代码
+        if fc in universe_set:
+            affected_codes.add(fc)
+            print(f'  [CDC事件命中] 标的代码 {fc} 发布限购相关公告: {title} ({item.get("PUBLISHDATEDesc")})')
+            continue
+
+        # 检查标题中是否包含代码
+        for code in universe_set:
+            if code in title:
+                affected_codes.add(code)
+                print(f'  [CDC事件命中] 公告标题提及标的代码 {code}: {title}')
+
+    return affected_codes
+
+
+def scrape_single_fund_record(code, index_type, fallback_item, cached_item=None, full_refresh=True):
+    """
+    抓取单只基金的数据。
+    若 full_refresh 为 True，拉取主页、F10、费率、公告原件全文；
+    若 full_refresh 为 False，拉取主页行情并复用缓存中已核验的 F10 档案、费率和直销政策。
+    """
+    base = dict(fallback_item or {})
+    base['code'] = code
+    base['index_type'] = index_type
+
+    page_data = scrape_fund_page(code)
+
+    if full_refresh or not cached_item:
+        f10_data = scrape_f10_page(code)
+        fee_data = scrape_fee_page(code)
+        limit_data = scrape_limit_announcement(code)
+    else:
+        # 增量模式：复用已核验的静态信息与直销公告结论
+        static_keys = ['full_name', 'fund_type', 'manager_company', 'custodian', 'manager_person', 'inception_date']
+        fee_keys = ['mgmt_fee', 'custody_fee', 'sales_fee', 'purchase_fee']
+        ann_keys = ['direct_daily_limit', 'direct_limit_status', 'limit_announcement_id']
+
+        f10_data = {k: cached_item[k] for k in static_keys if k in cached_item}
+        fee_data = {k: cached_item[k] for k in fee_keys if k in cached_item}
+        limit_data = {k: cached_item[k] for k in ann_keys if k in cached_item}
+
+        # 如果主页解析出了代销限购变动，同步更新
+        if 'limit_status' in page_data:
+            limit_data['daily_limit'] = page_data.get('daily_limit')
+            limit_data['limit_status'] = page_data.get('limit_status')
+
+    # 先合并除限额公告外的所有数据（以获取最准确的代销状态，包含兜底逻辑）
+    merged = {**base, **page_data, **f10_data, **fee_data}
+
+    # 交叉验证与限额合并规则：
+    # 1. 若代销是"未开通代销"，说明代销渠道未开放，不能将直销回退为代销状态（应保留直销提取额度或兜底）
+    if merged.get('limit_status') == '未开通代销':
+        if limit_data.get('direct_daily_limit') is None:
+            limit_data['direct_daily_limit'] = base.get('direct_daily_limit', 0)
+            limit_data['direct_limit_status'] = base.get('direct_limit_status', '暂停申购')
+    else:
+        # 代销已开通的情况：
+        agency_limit = merged.get('daily_limit')
+        agency_status = merged.get('limit_status')
+        direct_limit = limit_data.get('direct_daily_limit')
+        direct_status = limit_data.get('direct_limit_status')
+
+        # 优先采纳从官方公告第一信源提取到的直销限额与政策（彻底废除历史硬编码白名单）
+        if direct_status is not None:
+            pass
+        # 仅当未提取到直销专属公告时，直销渠道默认跟随代销渠道政策：
+        elif agency_status == '暂停申购':
+            limit_data['direct_daily_limit'] = 0
+            limit_data['direct_limit_status'] = '暂停申购'
+        elif agency_limit is not None and agency_limit > 0:
+            limit_data['direct_daily_limit'] = agency_limit
+            limit_data['direct_limit_status'] = agency_status
+        else:
+            limit_data['direct_daily_limit'] = agency_limit
+            limit_data['direct_limit_status'] = agency_status
+
+    # 合并限额公告数据
+    merged.update(limit_data)
+    merged = validate(merged)
+
+    # 确保有 name 字段
+    if 'name' not in merged:
+        merged['name'] = base.get('name', f'基金{code}')
+
+    total_fields = len(page_data) + len(f10_data) + len(fee_data) + len(limit_data)
+    return merged, total_fields
+
+
 def main():
+    parser = argparse.ArgumentParser(description="基金数据抓取与量化工程引擎 (含 CDC 增量变更流与并发通算)")
+    parser.add_argument('codes', nargs='*', default=None, help="指定抓取的基金代码列表（如留空则处理标的池全量基金）")
+    parser.add_argument('--full', action='store_true', help="强制全量抓取所有基金的全部4项数据（主页、F10、费率、公告）")
+    parser.add_argument('--incremental', '--cdc', action='store_true', help="启用 CDC 增量变更流模式（推荐，秒级更新）")
+    parser.add_argument('--workers', type=int, default=5, help="并发网络线程数（默认 5）")
+    args = parser.parse_args()
+
     print('=' * 60)
-    print('基金数据抓取开始')
+    print('基金数据抓取与量化工程引擎启动')
     print('=' * 60)
 
     fallback = load_fallback()
-    results = []
+    cached = load_cached_funds()
+
+    # 确定目标标的列表与运行模式
+    if args.codes:
+        target_list = [(c, fallback.get(c, {}).get('index_type', '')) for c in args.codes]
+        force_full = True
+        is_cdc = False
+        print(f"模式: 指定标的抓取 ({len(target_list)} 只标的)")
+    elif args.full:
+        target_list = FUND_LIST
+        force_full = True
+        is_cdc = False
+        print(f"模式: 全量深度抓取 ({len(target_list)} 只标的，全维度并发拉取)")
+    else:
+        target_list = FUND_LIST
+        force_full = False
+        is_cdc = True
+        print(f"模式: CDC 增量变更流模式 (全市场事件驱动，秒级更新)")
+
+    affected_codes = set()
+    if is_cdc:
+        print("[CDC 增量流] 正在拉取全市场最新公告 Feed 流...")
+        feed_items = fetch_market_announcement_feed(max_pages=3, page_size=100)
+        universe_codes = [c for c, _ in FUND_LIST]
+        affected_codes = detect_cdc_affected_funds(feed_items, universe_codes, fallback)
+        if affected_codes:
+            print(f"[CDC 增量流] 发现 {len(affected_codes)} 只基金有最新限额/费率公告，将对这部分标的执行深度重解析: {sorted(list(affected_codes))}")
+        else:
+            print("[CDC 增量流] 全市场 Feed 未检测到标的池限购公告变更，全量 59 只标的将通过并发增量流刷新行情，并复用已审计档案")
+
+    # 并发执行抓取任务
+    results_map = {}
     updated = 0
     errors = []
 
-    for code, index_type in FUND_LIST:
-        print(f'\n[{code}] 抓取中...')
+    def run_fund_task(item):
+        code, index_type = item
+        fb_item = fallback.get(code, {})
+        cached_item = cached.get(code)
+        # 判断是否需要全量深度抓取
+        full_req = force_full or (code in affected_codes) or (cached_item is None)
+        try:
+            fund_dict, total_fields = scrape_single_fund_record(
+                code, index_type, fb_item, cached_item, full_refresh=full_req
+            )
+            return code, fund_dict, total_fields, full_req, None
+        except Exception as e:
+            return code, None, 0, full_req, str(e)
 
-        # 基础数据来自兜底
-        base = fallback.get(code, {})
-        base['code'] = code
-        base['index_type'] = index_type
+    workers = max(1, min(args.workers, len(target_list)))
+    print(f"\n启动并发工作线程池 (Workers={workers})...")
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        futures = {executor.submit(run_fund_task, item): item[0] for item in target_list}
+        for future in as_completed(futures):
+            code = futures[future]
+            try:
+                c, f_dict, total_fields, full_req, err = future.result()
+                if err:
+                    errors.append(f'{code}: 抓取失败: {err}')
+                    # 失败回退到本地缓存或兜底
+                    fb_item = fallback.get(code, {})
+                    results_map[code] = cached.get(code) or fb_item
+                    print(f'  [WARN] [{code}] 抓取异常，使用兜底/缓存: {err}')
+                else:
+                    results_map[code] = f_dict
+                    if total_fields > 0:
+                        updated += 1
+                    status_lbl = "深度抓取" if full_req else "增量行情"
+                    print(f'  [OK] [{code}] {f_dict.get("name", "")} ({status_lbl}, {total_fields} 字段)')
+            except Exception as ex:
+                errors.append(f'{code}: 线程未捕获异常: {ex}')
+                results_map[code] = cached.get(code) or fallback.get(code, {})
 
-        # 抓取最新数据
-        page_data = scrape_fund_page(code)
-        time.sleep(DELAY)
-        f10_data = scrape_f10_page(code)
-        time.sleep(DELAY)
-        fee_data = scrape_fee_page(code)
-        time.sleep(DELAY)
-        limit_data = scrape_limit_announcement(code)
-        time.sleep(DELAY)
-
-        # 先合并除限额公告外的所有数据（以获取最准确的代销状态，包含兜底逻辑）
-        merged = {**base, **page_data, **f10_data, **fee_data}
-
-        # 交叉验证与限额合并规则：
-        # 1. 若代销是"未开通代销"，说明代销渠道未开放，不能将直销回退为代销状态（应保留直销提取额度或兜底）
-        if merged.get('limit_status') == '未开通代销':
-            if limit_data.get('direct_daily_limit') is None:
-                limit_data['direct_daily_limit'] = base.get('direct_daily_limit', 0)
-                limit_data['direct_limit_status'] = base.get('direct_limit_status', '暂停申购')
-        else:
-            # 代销已开通的情况：
-            agency_limit = merged.get('daily_limit')
-            agency_status = merged.get('limit_status')
-            direct_limit = limit_data.get('direct_daily_limit')
-            direct_status = limit_data.get('direct_limit_status')
-
-            # 优先采纳从官方公告第一信源提取到的直销限额与政策（彻底废除历史硬编码白名单）
-            if direct_status is not None:
-                pass
-            # 仅当未提取到直销专属公告时，直销渠道默认跟随代销渠道政策：
-            elif agency_status == '暂停申购':
-                limit_data['direct_daily_limit'] = 0
-                limit_data['direct_limit_status'] = '暂停申购'
-            elif agency_limit is not None and agency_limit > 0:
-                limit_data['direct_daily_limit'] = agency_limit
-                limit_data['direct_limit_status'] = agency_status
+    # 按照 FUND_LIST 原始顺序整理结果，若只抓取特定代码则与现有 public/data/funds.json 合并
+    if args.codes:
+        final_results = []
+        for code, idx_type in FUND_LIST:
+            if code in results_map:
+                final_results.append(results_map[code])
+            elif code in cached:
+                final_results.append(cached[code])
             else:
-                limit_data['direct_daily_limit'] = agency_limit
-                limit_data['direct_limit_status'] = agency_status
-
-        # 合并限额公告数据
-        merged.update(limit_data)
-        merged = validate(merged)
-
-        total_fields = len(page_data) + len(f10_data) + len(fee_data) + len(limit_data)
-        if total_fields > 0:
-            updated += 1
-            print(f'  [OK] 更新了 {total_fields} 个字段')
-        else:
-            errors.append(f'{code}: 未获取到新数据，使用兜底数据')
-            print(f'  [INFO] 使用兜底数据')
-
-        # 确保有 name 字段
-        if 'name' not in merged:
-            merged['name'] = base.get('name', f'基金{code}')
-
-        results.append(merged)
+                final_results.append(fallback.get(code, {}))
+    else:
+        final_results = [results_map[code] for code, _ in FUND_LIST if code in results_map]
 
     # 输出时间戳（强制使用北京时间 UTC+8）
     from datetime import datetime, timezone, timedelta
     tz_beijing = timezone(timedelta(hours=8))
     timestamp = datetime.now(tz_beijing).strftime('%Y-%m-%dT%H:%M:%S')
-    for r in results:
+    for r in final_results:
         r['updated_at'] = timestamp
 
     # 增润量化多因子指标 (TD / IR)
     try:
         from simulate import enrich_funds_with_quant_factors
-        results, _ = enrich_funds_with_quant_factors(results)
+        final_results, _ = enrich_funds_with_quant_factors(final_results)
     except Exception as ex:
         print(f'  [WARN] 增润量化多因子指标异常: {ex}')
 
     # 写入 JSON
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
     with open(OUTPUT, 'w', encoding='utf-8') as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
+        json.dump(final_results, f, ensure_ascii=False, indent=2)
 
     print(f'\n{"=" * 60}')
-    print(f'抓取完成: {updated}/{len(FUND_LIST)} 只基金更新')
+    print(f'抓取完成: {updated}/{len(target_list)} 只基金更新 (总计 {len(final_results)} 只标的)')
     print(f'输出: {OUTPUT}')
     if errors:
         print(f'警告: {len(errors)} 个问题')
@@ -676,7 +857,7 @@ def main():
     # 输出结构化摘要供 CI/CD 解析
     summary = {
         'timestamp': timestamp,
-        'total': len(FUND_LIST),
+        'total': len(target_list),
         'updated': updated,
         'failed': len(errors),
         'errors': errors,
