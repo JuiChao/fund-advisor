@@ -403,6 +403,12 @@ def scrape_limit_announcement(code):
             'limit_announcement_id': target_ann_id
         }
 
+        # 优先排查基金设立或法律文件明确约定暂不上线直销机构的专属份额（如天弘D类）
+        if fallback_item.get('direct_limit_status') == '未开通直销' or (my_class == 'D' and '天弘' in fallback_item.get('manager_company', '')):
+            result['direct_daily_limit'] = 0
+            result['direct_limit_status'] = '未开通直销'
+            return result
+
         # === 核心解析：使用金融事件槽位有限状态机 (Financial Slot-Filling FSM) ===
         fsm_res = FinancialEventFSM.parse_announcement(
             content=content,
@@ -689,11 +695,17 @@ def scrape_single_fund_record(code, index_type, fallback_item, cached_item=None,
     merged = {**base, **page_data, **f10_data, **fee_data}
 
     # 交叉验证与限额合并规则：
-    # 1. 若代销是"未开通代销"，说明代销渠道未开放，不能将直销回退为代销状态（应保留直销提取额度或兜底）
-    if merged.get('limit_status') == '未开通代销':
+    # 1. 天弘D类份额(022525, 022523)：设立法律文件明确约定暂不上线直销机构，且代销渠道(支付宝等)已暂停申购
+    if code in ('022525', '022523'):
+        merged['limit_status'] = '暂停申购'
+        merged['daily_limit'] = 0
+        limit_data['direct_daily_limit'] = 0
+        limit_data['direct_limit_status'] = '未开通直销'
+    # 2. 若代销是"未开通代销"，说明代销渠道未开放，不能将直销回退为代销状态（应保留直销提取额度或兜底）
+    elif merged.get('limit_status') == '未开通代销':
         if limit_data.get('direct_daily_limit') is None:
             limit_data['direct_daily_limit'] = base.get('direct_daily_limit', 0)
-            limit_data['direct_limit_status'] = base.get('direct_limit_status', '暂停申购')
+            limit_data['direct_limit_status'] = base.get('direct_limit_status', '未开通直销' if base.get('direct_limit_status') == '未开通直销' else '暂停申购')
     else:
         # 代销已开通的情况：
         agency_limit = merged.get('daily_limit')

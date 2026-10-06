@@ -62,6 +62,15 @@ class FinancialEventFSM:
     # 恢复申购
     RESUME_REGEX = re.compile(r'恢复办理|恢复申购|恢复大额|取消限额|取消大额|取消上限')
 
+    # 渠道未开通/暂不上线模式 (如: 暂不上线直销机构、未开通直销业务、不通过直销机构销售等)
+    NOT_OFFERED_DIRECT_REGEX = re.compile(
+        r'(?:暂不上线|暂不通过|暂不开通|未开通|不通过|不开放|未上线)(?:\S{0,15}?)?(?:直销(?:机构|渠道|平台|系统|柜台)?|本公司直销)|'
+        r'直销(?:机构|渠道|平台|系统|柜台)?(?:\S{0,15}?)?(?:暂不上线|暂不开通|未开通|不销售|不开放|暂不办理)'
+    )
+    NOT_OFFERED_AGENCY_REGEX = re.compile(
+        r'(?:尚未开通|未开通|暂不开通|暂不上线)(?:\S{0,15}?)?代销|代销(?:机构|渠道)?(?:\S{0,15}?)?(?:暂不上线|暂不开通|未开通)'
+    )
+
     @classmethod
     def parse_announcement(
         cls,
@@ -129,20 +138,29 @@ class FinancialEventFSM:
             action = None
             quota = None
 
-            # (a) 检查是否为“由 X 调整为 Y”
-            m_adj = cls.ADJUST_REGEX.search(cl)
-            if m_adj:
+            # (a) 检查是否未开通/暂不上线渠道
+            if cls.NOT_OFFERED_DIRECT_REGEX.search(cl):
+                action = 'NOT_OFFERED'
+                quota = 0
+                channel = 'DIRECT'
+            elif cls.NOT_OFFERED_AGENCY_REGEX.search(cl):
+                action = 'NOT_OFFERED'
+                quota = 0
+                channel = 'AGENCY'
+            # (b) 检查是否为“由 X 调整为 Y”
+            elif cls.ADJUST_REGEX.search(cl):
+                m_adj = cls.ADJUST_REGEX.search(cl)
                 action = 'ADJUST'
                 quota = int(float(m_adj.group(2).replace(',', '')))
-            # (b) 检查是否暂停申购
+            # (c) 检查是否暂停申购
             elif cls.SUSPEND_REGEX.search(cl) and '暂停大额' not in cl:
                 action = 'SUSPEND'
                 quota = 0
-            # (c) 检查是否恢复申购
+            # (d) 检查是否恢复申购
             elif cls.RESUME_REGEX.search(cl):
                 action = 'RESUME'
                 quota = None
-            # (d) 检查限额
+            # (e) 检查限额
             else:
                 m_res = cls.RESTRICT_REGEX.search(cl)
                 if m_res:
@@ -188,7 +206,11 @@ class FinancialEventFSM:
         agency_candidate = resolve_channel_candidate(('AGENCY', 'DIRECT_AND_AGENCY', 'ALL'))
 
         if direct_candidate:
-            if direct_candidate.action == 'SUSPEND':
+            if direct_candidate.action == 'NOT_OFFERED':
+                result.direct_daily_limit = 0
+                result.direct_limit_status = '未开通直销'
+                result.event_type = 'NOT_OFFERED'
+            elif direct_candidate.action == 'SUSPEND':
                 result.direct_daily_limit = 0
                 result.direct_limit_status = '暂停申购'
                 result.event_type = 'SUSPEND'
@@ -202,9 +224,13 @@ class FinancialEventFSM:
                 result.event_type = direct_candidate.action
 
         if agency_candidate:
-            if agency_candidate.action == 'SUSPEND':
+            if agency_candidate.action == 'NOT_OFFERED':
+                result.agency_daily_limit = 0
+                result.agency_limit_status = '未开通代销'
+            elif agency_candidate.action == 'SUSPEND':
                 result.agency_daily_limit = 0
                 result.agency_limit_status = '暂停申购'
+                result.event_type = 'SUSPEND'
             elif agency_candidate.action == 'RESUME':
                 result.agency_daily_limit = None
                 result.agency_limit_status = '开放申购'

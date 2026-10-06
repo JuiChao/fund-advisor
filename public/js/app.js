@@ -206,7 +206,7 @@ const App = (() => {
     function stars(n) { return (!n || n === 0) ? '-' : '★'.repeat(n); }
     function pill(s) {
         if (!s) return '<span class="pill pb">未知</span>';
-        if (s.includes('未开通')) return '<span class="pill" style="background:rgba(148,163,184,0.12);color:var(--txt3);border:1px solid rgba(148,163,184,0.3)">未开通</span>';
+        if (s.includes('未开通')) return '<span class="pill" style="background:rgba(148,163,184,0.12);color:var(--txt3);border:1px solid rgba(148,163,184,0.3)">' + s + '</span>';
         if (s.includes('暂停')) return '<span class="pill pr">' + s + '</span>';
         if (s.includes('限')) return '<span class="pill py">' + s + '</span>';
         return '<span class="pill pg">' + s + '</span>';
@@ -669,7 +669,7 @@ const App = (() => {
             const tbody = document.querySelector('#rank-table tbody');
             tbody.innerHTML = rankData.map((r, i) => {
                 const isPaused = ((r.limit_status || '').includes('暂停') || (r.limit_status || '').includes('未开通')) &&
-                                 ((r.direct_limit_status || '').includes('暂停') || !r.direct_limit_status);
+                                 ((r.direct_limit_status || '').includes('暂停') || (r.direct_limit_status || '').includes('未开通') || !r.direct_limit_status);
                 const cls = i < 3 ? ' class="hl"' : isPaused ? ' class="wr"' : '';
                 return '<tr' + cls + '>' + rankCols.map(c => '<td>' + (c.render ? c.render(r) : (r[c.key] ?? '-')) + '</td>').join('') + '</tr>';
             }).join('');

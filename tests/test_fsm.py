@@ -92,6 +92,19 @@ class TestFinancialEventFSM(unittest.TestCase):
         self.assertEqual(res.direct_limit_status, '开放申购')
         self.assertEqual(res.event_type, 'RESUME')
 
+    def test_tianhong_d_class_not_offered_direct(self):
+        """测试天弘D类基金直销渠道未上线/未开通判定"""
+        title = "天弘纳斯达克100指数型发起式证券投资基金(QDII)之D类基金份额开放日常申购、赎回及定期定额投资业务公告"
+        content = (
+            "6. 本基金 D 类基金份额的销售机构。"
+            "6.1 直销机构：本基金 D 类基金份额暂不上线直销机构。"
+            "6.2 其他销售机构：详见基金管理人网站公示。"
+        )
+        res = FinancialEventFSM.parse_announcement(content, title=title, fund_code='022525', share_class='D')
+        self.assertEqual(res.direct_daily_limit, 0)
+        self.assertEqual(res.direct_limit_status, '未开通直销')
+        self.assertEqual(res.event_type, 'NOT_OFFERED')
+
     def test_empty_content_safety(self):
         """测试空文本输入安全性"""
         res = FinancialEventFSM.parse_announcement("", title="", fund_code='000000')

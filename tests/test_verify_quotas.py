@@ -40,6 +40,30 @@ class TestVerifyQuotas(unittest.TestCase):
         issues = verify_fund_logic(suspended_fund)
         self.assertEqual(len(issues), 0)
 
+    def test_verify_tianhong_d_class_channel_logic(self):
+        """测试天弘D类份额渠道逻辑校验：直销必须为'未开通直销'，代销为'暂停申购'"""
+        valid_tianhong_d = {
+            'code': '022525',
+            'name': '天弘纳斯达克100指数发起(QDII)D',
+            'limit_status': '暂停申购',
+            'daily_limit': 0,
+            'direct_limit_status': '未开通直销',
+            'direct_daily_limit': 0,
+        }
+        self.assertEqual(len(verify_fund_logic(valid_tianhong_d)), 0)
+
+        # 错误情况：误标记为直销100元
+        bad_tianhong_d = {
+            'code': '022525',
+            'name': '天弘纳斯达克100指数发起(QDII)D',
+            'limit_status': '未开通代销',
+            'daily_limit': 0,
+            'direct_limit_status': '限100元/日',
+            'direct_daily_limit': 100,
+        }
+        issues = verify_fund_logic(bad_tianhong_d)
+        self.assertGreater(len(issues), 0)
+
     def test_verify_fund_logic_mismatch(self):
         bad_fund = {
             'code': '999999',

@@ -124,8 +124,8 @@ def verify_fund_logic(item):
             issues.append(f"代销状态文字({status})与数值({limit})不一致")
 
     # 直销状态一致性
-    if d_status == '暂停申购' and d_limit != 0:
-        issues.append(f"直销状态为暂停申购，但额度为 {d_limit} (应为 0)")
+    if d_status in ('暂停申购', '未开通直销', '未开通代销', '未开通') and d_limit != 0:
+        issues.append(f"直销状态为{d_status}，但额度为 {d_limit} (应为 0)")
     elif '限' in d_status and '元' in d_status:
         m = re.search(r'限(\d+)元', d_status)
         if m and int(m.group(1)) != d_limit:
@@ -136,10 +136,17 @@ def verify_fund_logic(item):
         if '暂停(限' in str(s) or '未定义' in str(s):
             issues.append(f"包含非法占位符字符串: {s}")
 
-    # 4. 渠道限额常理与守恒律检验 (QDII直销额度通常 >= 代销额度，除非直销专属暂停)
+    # 4. 渠道限额常理与守恒律检验 (QDII直销额度通常 >= 代销额度，除非直销专属暂停或未开通)
     if d_limit is not None and limit is not None and d_limit > 0 and limit > 0:
         if d_limit < limit:
             issues.append(f"直销限额({d_limit})低于代销限额({limit})，违背渠道常理，须核验是否存在文本串行污染")
+
+    # 5. 特定渠道份额规则：天弘D类份额(022525, 022523)暂不上线直销机构，且代销渠道(支付宝等)暂停申购
+    if code in ('022525', '022523'):
+        if d_status != '未开通直销' or d_limit != 0:
+            issues.append(f"天弘D类份额({code})依据设立法律文件暂不上线直销机构，直销状态应为'未开通直销'且限额为0，实为({d_status}, {d_limit})")
+        if status != '暂停申购' or limit != 0:
+            issues.append(f"天弘D类份额({code})代销渠道(支付宝等)实际为暂停申购，实为({status}, {limit})")
 
     return issues
 
