@@ -361,7 +361,7 @@ const App = (() => {
         const minFee = Math.min(...FUND_DATA.map(f => (f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0)));
 
         document.getElementById('home-stats').innerHTML = `
-            <div class="stat"><div class="lb">收录份额</div><div class="vl">${FUND_DATA.length}</div><div class="sub">纳指 ${nq.length} · 标普 ${sp.length} (涵盖A/C/D/E/I)</div></div>
+            <div class="stat"><div class="lb">收录份额</div><div class="vl">${FUND_DATA.length}</div><div class="sub">纳指 ${nq.length} · 标普 ${sp.length} (涵盖A/C/D/E/F/I)</div></div>
             <div class="stat"><div class="lb">可购份额</div><div class="vl">${availAgency.length}</div><div class="sub">代销可买 (直销可买${availDirect.length})</div></div>
             <div class="stat"><div class="lb">最低综合年费</div><div class="vl">${(minFee * 100).toFixed(2)}%</div><div class="sub">管理+托管+销售费</div></div>
             <div class="stat"><div class="lb">数据更新</div><div class="vl" style="font-size:1rem">${FUND_DATA[0]?.updated_at?.split('T')[0] || '-'}</div><div class="sub">每日自动抓取</div></div>
@@ -574,6 +574,7 @@ const App = (() => {
             'C': 'badge-c',
             'D': 'badge-d',
             'E': 'badge-e',
+            'F': 'badge-f',
             'I': 'badge-i'
         };
         const cls = map[c] || 'badge-a';
@@ -714,8 +715,7 @@ const App = (() => {
         setEl('count-class-all', allTypeFunds.length);
         setEl('count-class-a', allTypeFunds.filter(f => f.share_class === 'A').length);
         setEl('count-class-c', allTypeFunds.filter(f => f.share_class === 'C').length);
-        setEl('count-class-d', allTypeFunds.filter(f => f.share_class === 'D').length);
-        setEl('count-class-other', allTypeFunds.filter(f => f.share_class !== 'A' && f.share_class !== 'C' && f.share_class !== 'D').length);
+        setEl('count-class-other', allTypeFunds.filter(f => f.share_class !== 'A' && f.share_class !== 'C').length);
 
         // 更新渠道状态数量
         setEl('count-quota-all', allTypeFunds.length);
@@ -780,8 +780,7 @@ const App = (() => {
         const filtered = allTypeFunds.filter(f => {
             if (classFilter === 'A' && f.share_class !== 'A') return false;
             if (classFilter === 'C' && f.share_class !== 'C') return false;
-            if (classFilter === 'D' && f.share_class !== 'D') return false;
-            if (classFilter === 'OTHER' && (f.share_class === 'A' || f.share_class === 'C' || f.share_class === 'D')) return false;
+            if (classFilter === 'OTHER' && (f.share_class === 'A' || f.share_class === 'C')) return false;
 
             if (quotaFilter === 'BUYABLE') {
                 const ls = f.limit_status || '';
@@ -1705,7 +1704,7 @@ const App = (() => {
         if (_dynamicParamsFetched) return _dynamicParams;
         _dynamicParamsFetched = true;
         try {
-            const resp = await fetch('data/simulations.json');
+            const resp = await fetch('data/simulations.json?v=' + Date.now());
             const data = await resp.json();
             _simulationsData = data;
             _dynamicParams = data.params || null;
@@ -2167,9 +2166,10 @@ const App = (() => {
     async function init() {
         initTheme();
         try {
+            const t = Date.now();
             const [fundsResp, algoResp] = await Promise.all([
-                fetch('data/funds.json'),
-                fetch('data/algorithm.json')
+                fetch('data/funds.json?v=' + t),
+                fetch('data/algorithm.json?v=' + t)
             ]);
             FUND_DATA = await fundsResp.json();
             ALGO_CONFIG = await algoResp.json();
