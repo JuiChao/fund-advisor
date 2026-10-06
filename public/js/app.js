@@ -585,7 +585,7 @@ const App = (() => {
     let rankSortDir = {};
     const rankCols = [
         { key: 'rank', label: '#' },
-        { key: 'code', label: '代码', render: r => `<span style="font-family:monospace;font-weight:600">${r.code}</span><button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button>` },
+        { key: 'code', label: '代码', render: r => `<span style="font-family:monospace;font-weight:600">${r.code}</span><button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button><a href="fund/${r.code}.html" target="_blank" style="text-decoration:none;font-size:0.75rem;margin-left:3px;color:var(--txt3)" title="在新标签页打开独立专页">↗</a>` },
         { key: 'name', label: '名称', render: r => {
             const curType = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
             const idxBadge = curType === 'ALL'
@@ -2437,7 +2437,10 @@ const App = (() => {
                     </div>
                 </div>
                 ${f.benchmark ? `<div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border); font-size:0.8rem; color:var(--txt3);"><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
-                <div class="fund-detail-actions" style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;align-items:center;gap:12px;flex-wrap:wrap;">
+                <div class="fund-detail-actions" style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <a href="fund/${f.code}.html" target="_blank" class="btn-fund-page-action" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--txt);cursor:pointer;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;text-decoration:none;" title="在新标签页中打开这只基金的独立评测专页">
+                        📄 打开独立评测专页 ↗
+                    </a>
                     <button type="button" class="btn-copy-code-action" data-code="${f.code}" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--txt);cursor:pointer;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;">
                         📋 复制基金代码 (${f.code})
                     </button>
