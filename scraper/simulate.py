@@ -257,6 +257,7 @@ def allocate_ideal(items, budget):
             'score': f.get('score', 0),
             'daily_limit': f.get('daily_limit') or DEFAULTS['daily_limit_fallback'], 'limit_status': f.get('limit_status', ''),
             'direct_daily_limit': f.get('direct_daily_limit'), 'direct_limit_status': f.get('direct_limit_status', ''),
+            'quota_sharing': f.get('quota_sharing', 'SHARED'), 'quota_shared_desc': f.get('quota_shared_desc', ''),
             'exceeds_limit': False,
             'is_stacked': False,
         })
@@ -340,14 +341,22 @@ def allocate_practical(items, budget, all_funds=None):
         capped_allocs = [a for a in active_allocs if a['exceeds_limit']]
         uncapped_allocs = [a for a in active_allocs if not a['exceeds_limit']]
         candidates = []
+        # 1. 只有当份额与同门不共享额度 (quota_sharing != 'SHARED') 时，才允许提取同门份额叠加
+        # 若为 SHARED，同一基金的 A/C 共享同一额度池，在现实中打满时买另一份额会被直接拒单退款，无法实现叠加
         for a in capped_allocs + uncapped_allocs:
-            for sib_code in a['fund'].get('siblings', []):
-                if sib_code not in existing_codes:
-                    sib = next((x for x in all_funds if x['code'] == sib_code), None)
-                    if sib and is_buyable(sib):
-                        candidates.append(sib)
-                        existing_codes.add(sib_code)
-        other_buyable = [f for f in all_funds if is_buyable(f) and f['code'] not in existing_codes]
+            if a['fund'].get('quota_sharing') != 'SHARED':
+                for sib_code in a['fund'].get('siblings', []):
+                    if sib_code not in existing_codes:
+                        sib = next((x for x in all_funds if x['code'] == sib_code), None)
+                        if sib and is_buyable(sib):
+                            candidates.append(sib)
+                            existing_codes.add(sib_code)
+        # 2. 从其他可买基金（排除已达额度上限的同一基金家族）补充叠加候选标的
+        existing_capped_families = {a['fund'].get('family_id') for a in capped_allocs if a['fund'].get('quota_sharing') == 'SHARED'}
+        other_buyable = [
+            f for f in all_funds
+            if is_buyable(f) and f['code'] not in existing_codes and f.get('family_id') not in existing_capped_families
+        ]
         candidates.extend(rank_funds(other_buyable))
 
         for cf in candidates:
@@ -384,6 +393,7 @@ def allocate_practical(items, budget, all_funds=None):
             'score': f.get('score', 0),
             'daily_limit': a['limit'] if a['limit'] != float('inf') else None, 'limit_status': f.get('limit_status', ''),
             'direct_daily_limit': f.get('direct_daily_limit'), 'direct_limit_status': f.get('direct_limit_status', ''),
+            'quota_sharing': f.get('quota_sharing', 'SHARED'), 'quota_shared_desc': f.get('quota_shared_desc', ''),
             'exceeds_limit': a['exceeds_limit'],
             'is_stacked': a.get('is_stacked', False),
         })

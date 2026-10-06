@@ -39,7 +39,9 @@
     "limit_announcement_id": "AN202609281829947820",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0087,
-    "information_ratio": 0.4
+    "information_ratio": 0.4,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(019442) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "019442",
@@ -81,7 +83,9 @@
     "limit_announcement_id": "AN202609281829947820",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0064,
-    "information_ratio": 0.29
+    "information_ratio": 0.29,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(019441) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "015299",
@@ -123,7 +127,9 @@
     "limit_announcement_id": "AN202608071827734257",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0051,
-    "information_ratio": 0.21
+    "information_ratio": 0.21,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(015300) 合并计算（当前暂停申购）"
   },
   {
     "code": "015300",
@@ -165,7 +171,9 @@
     "limit_announcement_id": "AN202608071827734257",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0016,
-    "information_ratio": 0.07
+    "information_ratio": 0.07,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(015299) 合并计算（当前暂停申购）"
   },
   {
     "code": "014978",
@@ -207,7 +215,9 @@
     "limit_announcement_id": "AN202609231829773864",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0031,
-    "information_ratio": -0.31
+    "information_ratio": -0.31,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(040046) 共享代销限额 5 元/日，合并计算"
   },
   {
     "code": "040046",
@@ -249,7 +259,9 @@
     "limit_announcement_id": "AN202609231829773864",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0009,
-    "information_ratio": -0.09
+    "information_ratio": -0.09,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(014978) 共享代销限额 5 元/日，合并计算"
   },
   {
     "code": "019524",
@@ -291,7 +303,9 @@
     "limit_announcement_id": "AN202609221829732369",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0057,
-    "information_ratio": -0.36
+    "information_ratio": -0.36,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(019525)、I类(022664) 共享代销限额 5 元/日，合并计算"
   },
   {
     "code": "019525",
@@ -333,7 +347,9 @@
     "limit_announcement_id": "AN202609221829732369",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0085,
-    "information_ratio": -0.54
+    "information_ratio": -0.54,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(019524)、I类(022664) 共享代销限额 5 元/日，合并计算"
   },
   {
     "code": "022664",
@@ -375,7 +391,9 @@
     "limit_announcement_id": "AN202609221829732369",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0073,
-    "information_ratio": -0.46
+    "information_ratio": -0.46,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(019524)、C类(019525) 共享代销限额 5 元/日，合并计算"
   },
   {
     "code": "016452",
@@ -418,7 +436,9 @@
     "limit_announcement_id": "AN202607081826816306",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0,
-    "information_ratio": 0.0
+    "information_ratio": 0.0,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(016453)、I类(021000) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "016453",
@@ -461,7 +481,9 @@
     "limit_announcement_id": "AN202607081826816306",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0012,
-    "information_ratio": -0.08
+    "information_ratio": -0.08,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(016452)、I类(021000) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "021000",
@@ -502,7 +524,9 @@
     "limit_announcement_id": "AN202607201827139668",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0005,
-    "information_ratio": -0.03
+    "information_ratio": -0.03,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(016452)、C类(016453) 共享直销限额 200 元/日，合并计算"
   },
   {
     "code": "016055",
@@ -544,7 +568,9 @@
     "issue_date": "2022-07-18",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0138,
-    "information_ratio": 0.94
+    "information_ratio": 0.94,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(016057)、I类(024237) 合并计算（当前暂停申购）"
   },
   {
     "code": "016057",
@@ -586,7 +612,9 @@
     "issue_date": "2022-07-18",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0102,
-    "information_ratio": 0.69
+    "information_ratio": 0.69,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(016055)、I类(024237) 合并计算（当前暂停申购）"
   },
   {
     "code": "024237",
@@ -626,7 +654,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0117,
-    "information_ratio": 0.8
+    "information_ratio": 0.8,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(016055)、C类(016057) 合并计算申购限额"
   },
   {
     "code": "016532",
@@ -668,7 +698,9 @@
     "issue_date": "2022-09-05",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0039,
-    "information_ratio": 0.26
+    "information_ratio": 0.26,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(016533)、I类(021838) 合并计算（当前暂停申购）"
   },
   {
     "code": "016533",
@@ -710,7 +742,9 @@
     "issue_date": "2022-09-05",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.001,
-    "information_ratio": 0.07
+    "information_ratio": 0.07,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(016532)、I类(021838) 合并计算（当前暂停申购）"
   },
   {
     "code": "021838",
@@ -750,7 +784,9 @@
     "dividend_info": "每份累计0.00元（0次）",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0009,
-    "information_ratio": 0.06
+    "information_ratio": 0.06,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(016532)、C类(016533) 合并计算申购限额"
   },
   {
     "code": "160213",
@@ -791,7 +827,9 @@
     "limit_announcement_id": "AN202609221829740223",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0125,
-    "information_ratio": 1.13
+    "information_ratio": 1.13,
+    "quota_sharing": "NONE",
+    "quota_shared_desc": "单份额基金，无其他共享份额"
   },
   {
     "code": "000834",
@@ -833,7 +871,9 @@
     "limit_announcement_id": "AN202606031823188725",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0064,
-    "information_ratio": -0.62
+    "information_ratio": -0.62,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(008971) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "008971",
@@ -875,7 +915,9 @@
     "limit_announcement_id": "AN202606031823188725",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0098,
-    "information_ratio": -0.94
+    "information_ratio": -0.94,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(000834) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "018043",
@@ -918,7 +960,9 @@
     "limit_announcement_id": "AN202609181829590491",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0029,
-    "information_ratio": 0.19
+    "information_ratio": 0.19,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(018044)、D类(022525) 合并计算（当前暂停申购）"
   },
   {
     "code": "018044",
@@ -961,7 +1005,9 @@
     "limit_announcement_id": "AN202609181829590491",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0007,
-    "information_ratio": 0.05
+    "information_ratio": 0.05,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(018043)、D类(022525) 合并计算（当前暂停申购）"
   },
   {
     "code": "022525",
@@ -1002,7 +1048,9 @@
     "limit_announcement_id": "AN202609011828848127",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0006,
-    "information_ratio": 0.04
+    "information_ratio": 0.04,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(018043)、C类(018044) 合并计算（当前暂停申购）"
   },
   {
     "code": "019736",
@@ -1043,7 +1091,9 @@
     "limit_announcement_id": "AN202609241829831132",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0018,
-    "information_ratio": -0.11
+    "information_ratio": -0.11,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(019737) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "019737",
@@ -1084,7 +1134,9 @@
     "limit_announcement_id": "AN202609241829831132",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0046,
-    "information_ratio": -0.27
+    "information_ratio": -0.27,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(019736) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "006479",
@@ -1126,7 +1178,9 @@
     "limit_announcement_id": "AN202609301830015639",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0051,
-    "information_ratio": -0.5
+    "information_ratio": -0.5,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(270042) 合并计算（当前暂停申购）"
   },
   {
     "code": "270042",
@@ -1168,7 +1222,9 @@
     "limit_announcement_id": "AN202609301830015639",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.003,
-    "information_ratio": -0.29
+    "information_ratio": -0.29,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(006479) 合并计算（当前暂停申购）"
   },
   {
     "code": "012752",
@@ -1211,7 +1267,9 @@
     "limit_announcement_id": "AN202608191828132673",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0093,
-    "information_ratio": -0.41
+    "information_ratio": -0.41,
+    "quota_sharing": "INDEPENDENT",
+    "quota_shared_desc": "各份额独立计算限额（与 D类/A类 不合并）"
   },
   {
     "code": "023422",
@@ -1236,8 +1294,8 @@
     "return_1yr": 0.1456,
     "volatility": 0.1916,
     "morningstar": 0,
-    "limit_status": "限10元/日",
-    "daily_limit": 10,
+    "limit_status": "暂停申购",
+    "daily_limit": 0,
     "direct_limit_status": "限10元/日",
     "direct_daily_limit": 10,
     "inception_date": "2025-02-12",
@@ -1253,7 +1311,9 @@
     "limit_announcement_id": "AN202608191828132673",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0093,
-    "information_ratio": -0.41
+    "information_ratio": -0.41,
+    "quota_sharing": "INDEPENDENT",
+    "quota_shared_desc": "各份额独立计算限额（与 C类/A类 不合并）"
   },
   {
     "code": "539001",
@@ -1296,7 +1356,9 @@
     "limit_announcement_id": "AN202608191828132673",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0058,
-    "information_ratio": -0.26
+    "information_ratio": -0.26,
+    "quota_sharing": "INDEPENDENT",
+    "quota_shared_desc": "各份额独立计算限额（与 C类/D类 不合并）"
   },
   {
     "code": "019547",
@@ -1337,7 +1399,9 @@
     "limit_announcement_id": "AN202609011828847866",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0033,
-    "information_ratio": 0.19
+    "information_ratio": 0.19,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(019548) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "019548",
@@ -1378,7 +1442,9 @@
     "limit_announcement_id": "AN202609011828847866",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0013,
-    "information_ratio": -0.07
+    "information_ratio": -0.07,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(019547) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "019172",
@@ -1420,7 +1486,9 @@
     "limit_announcement_id": "AN202607241827315717",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.006,
-    "information_ratio": 0.26
+    "information_ratio": 0.26,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(019173) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "019173",
@@ -1462,7 +1530,9 @@
     "limit_announcement_id": "AN202607241827315717",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0026,
-    "information_ratio": 0.11
+    "information_ratio": 0.11,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(019172) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "012870",
@@ -1504,7 +1574,9 @@
     "limit_announcement_id": "AN202609011828884696",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0017,
-    "information_ratio": -0.12
+    "information_ratio": -0.12,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(161130) 合并计算（当前暂停申购）"
   },
   {
     "code": "161130",
@@ -1546,7 +1618,9 @@
     "limit_announcement_id": "AN202609011828884696",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.002,
-    "information_ratio": 0.14
+    "information_ratio": 0.14,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(012870) 合并计算（当前暂停申购）"
   },
   {
     "code": "017091",
@@ -1589,7 +1663,9 @@
     "limit_announcement_id": "AN202609221829754483",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.1292,
-    "information_ratio": 4.44
+    "information_ratio": 4.44,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(017093)、E类(019118) 合并计算（当前暂停申购）"
   },
   {
     "code": "017093",
@@ -1632,7 +1708,9 @@
     "limit_announcement_id": "AN202609221829754483",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.1241,
-    "information_ratio": 4.25
+    "information_ratio": 4.25,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(017091)、E类(019118) 合并计算（当前暂停申购）"
   },
   {
     "code": "019118",
@@ -1675,7 +1753,9 @@
     "limit_announcement_id": "AN202609221829754483",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.1266,
-    "information_ratio": 4.34
+    "information_ratio": 4.34,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(017091)、C类(017093) 合并计算（当前暂停申购）"
   },
   {
     "code": "018966",
@@ -1718,7 +1798,9 @@
     "limit_announcement_id": "AN202609241829835607",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0303,
-    "information_ratio": -1.7
+    "information_ratio": -1.7,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(018967)、E类(021773) 合并计算（当前暂停申购）"
   },
   {
     "code": "018967",
@@ -1761,7 +1843,9 @@
     "limit_announcement_id": "AN202609241829835607",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0348,
-    "information_ratio": -1.94
+    "information_ratio": -1.94,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(018966)、E类(021773) 合并计算（当前暂停申购）"
   },
   {
     "code": "021773",
@@ -1803,7 +1887,9 @@
     "limit_announcement_id": "AN202609241829835607",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0314,
-    "information_ratio": -1.76
+    "information_ratio": -1.76,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(018966)、C类(018967) 合并计算（当前暂停申购）"
   },
   {
     "code": "018064",
@@ -1845,7 +1931,9 @@
     "limit_announcement_id": "AN202608071827737353",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0008,
-    "information_ratio": 0.04
+    "information_ratio": 0.04,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(018065) 合并计算（当前暂停申购）"
   },
   {
     "code": "018065",
@@ -1887,7 +1975,9 @@
     "limit_announcement_id": "AN202608071827737353",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0024,
-    "information_ratio": -0.11
+    "information_ratio": -0.11,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(018064) 合并计算（当前暂停申购）"
   },
   {
     "code": "006075",
@@ -1930,7 +2020,9 @@
     "limit_announcement_id": "AN202605081822057674",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0025,
-    "information_ratio": 0.2
+    "information_ratio": 0.2,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 E类(018738)、A类(050025) 合并计算（当前暂停申购）"
   },
   {
     "code": "018738",
@@ -1972,7 +2064,9 @@
     "limit_announcement_id": "AN202608191828129205",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0063,
-    "information_ratio": 0.5
+    "information_ratio": 0.5,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(006075)、A类(050025) 合并计算申购限额"
   },
   {
     "code": "050025",
@@ -2015,7 +2109,9 @@
     "limit_announcement_id": "AN202605081822057674",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0064,
-    "information_ratio": 0.51
+    "information_ratio": 0.51,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(006075)、E类(018738) 合并计算（当前暂停申购）"
   },
   {
     "code": "017028",
@@ -2056,7 +2152,9 @@
     "issue_date": "2022-11-01",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0007,
-    "information_ratio": 0.05
+    "information_ratio": 0.05,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(017030) 合并计算（当前暂停申购）"
   },
   {
     "code": "017030",
@@ -2097,7 +2195,9 @@
     "issue_date": "2022-11-01",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0026,
-    "information_ratio": -0.17
+    "information_ratio": -0.17,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(017028) 合并计算（当前暂停申购）"
   },
   {
     "code": "008401",
@@ -2139,7 +2239,9 @@
     "limit_announcement_id": "AN202609081829112680",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0364,
-    "information_ratio": -2.55
+    "information_ratio": -2.55,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(096001) 共享代销限额 100 元/日，合并计算"
   },
   {
     "code": "096001",
@@ -2181,7 +2283,9 @@
     "limit_announcement_id": "AN202609081829112680",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0332,
-    "information_ratio": -2.32
+    "information_ratio": -2.32,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(008401) 共享代销限额 100 元/日，合并计算"
   },
   {
     "code": "007721",
@@ -2224,7 +2328,9 @@
     "limit_announcement_id": "AN202609181829580336",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0012,
-    "information_ratio": -0.08
+    "information_ratio": -0.08,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(007722)、D类(022523) 合并计算（当前暂停申购）"
   },
   {
     "code": "007722",
@@ -2267,7 +2373,9 @@
     "limit_announcement_id": "AN202609181829580336",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0039,
-    "information_ratio": -0.26
+    "information_ratio": -0.26,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(007721)、D类(022523) 合并计算（当前暂停申购）"
   },
   {
     "code": "022523",
@@ -2308,7 +2416,9 @@
     "limit_announcement_id": "AN202609011828844257",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.004,
-    "information_ratio": -0.27
+    "information_ratio": -0.27,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(007721)、C类(007722) 合并计算（当前暂停申购）"
   },
   {
     "code": "017641",
@@ -2350,7 +2460,9 @@
     "limit_announcement_id": "AN202607241827315718",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0092,
-    "information_ratio": 0.56
+    "information_ratio": 0.56,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(019305) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "019305",
@@ -2392,7 +2504,9 @@
     "limit_announcement_id": "AN202607241827315718",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0059,
-    "information_ratio": 0.36
+    "information_ratio": 0.36,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(017641) 共享代销限额 10 元/日，合并计算"
   },
   {
     "code": "012860",
@@ -2434,7 +2548,9 @@
     "limit_announcement_id": "AN202609011828884696",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": -0.0007,
-    "information_ratio": -0.06
+    "information_ratio": -0.06,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 A类(161125) 合并计算（当前暂停申购）"
   },
   {
     "code": "161125",
@@ -2476,6 +2592,8 @@
     "limit_announcement_id": "AN202609011828884696",
     "updated_at": "2026-10-06T07:51:17",
     "tracking_difference": 0.0032,
-    "information_ratio": 0.27
+    "information_ratio": 0.27,
+    "quota_sharing": "SHARED",
+    "quota_shared_desc": "与 C类(012860) 合并计算（当前暂停申购）"
   }
 ]

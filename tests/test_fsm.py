@@ -105,6 +105,20 @@ class TestFinancialEventFSM(unittest.TestCase):
         self.assertEqual(res.direct_limit_status, '未开通直销')
         self.assertEqual(res.event_type, 'NOT_OFFERED')
 
+    def test_quota_sharing_combined(self):
+        """测试多份额合并共享额度判定"""
+        content = "本基金 A 类、C 类基金份额合并计算，单日每个基金账户累计申购金额合计不得超过 10 元人民币。"
+        res = FinancialEventFSM.parse_announcement(content, title="", fund_code='019441', share_class='A')
+        self.assertEqual(res.quota_sharing, 'SHARED')
+        self.assertIn('合并计算', res.quota_shared_desc)
+
+    def test_quota_sharing_separate(self):
+        """测试多份额独立分别计算额度判定"""
+        content = "对建信纳斯达克 100 指数型证券投资基金（QDII）人民币份额（代码：539001、012752、023422）单日累计高于 10 元的业务进行限制（不同份额分别计算）。"
+        res = FinancialEventFSM.parse_announcement(content, title="", fund_code='023422', share_class='D')
+        self.assertEqual(res.quota_sharing, 'INDEPENDENT')
+        self.assertIn('独立计算', res.quota_shared_desc)
+
     def test_empty_content_safety(self):
         """测试空文本输入安全性"""
         res = FinancialEventFSM.parse_announcement("", title="", fund_code='000000')

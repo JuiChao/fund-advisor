@@ -148,6 +148,20 @@ def verify_fund_logic(item):
         if status != '暂停申购' or limit != 0:
             issues.append(f"天弘D类份额({code})代销渠道(支付宝等)实际为暂停申购，实为({status}, {limit})")
 
+    # 6. 建信D类份额(023422)：代销渠道(支付宝等)实际为暂停申购，直销渠道依公告限10元/日
+    if code == '023422':
+        if status != '暂停申购' or limit != 0:
+            issues.append(f"建信D类份额({code})代销渠道(支付宝等)实际为暂停申购，实为({status}, {limit})")
+        if d_status != '限10元/日' or d_limit != 10:
+            issues.append(f"建信D类份额({code})直销渠道应为'限10元/日'且限额为10，实为({d_status}, {d_limit})")
+
+    # 7. 份额额度共享属性校验
+    sharing = item.get('quota_sharing')
+    if sharing not in ('SHARED', 'INDEPENDENT', 'NONE'):
+        issues.append(f"份额共享属性 quota_sharing 无效: {sharing} (应为 SHARED, INDEPENDENT 或 NONE)")
+    if not item.get('quota_shared_desc'):
+        issues.append("缺少 quota_shared_desc 共享说明文本")
+
     return issues
 
 

@@ -579,6 +579,11 @@ const App = (() => {
             if (r.direct_limit_status) {
                 html += '<div style="font-size:0.7rem;color:var(--txt3);margin-top:2px">直销</div>' + pill(r.direct_limit_status);
             }
+            if (r.quota_sharing === 'SHARED') {
+                html += `<div style="margin-top:2px" title="${r.quota_shared_desc || '多类份额合并计算单日限额'}"><span class="badge-shared" style="font-size:0.65rem;padding:1px 4px;border-radius:4px;background:rgba(245,158,11,0.15);color:var(--warn);border:1px solid rgba(245,158,11,0.3);white-space:nowrap;cursor:help">🔗 共享额度</span></div>`;
+            } else if (r.quota_sharing === 'INDEPENDENT') {
+                html += `<div style="margin-top:2px" title="${r.quota_shared_desc || '各份额独立计算限额'}"><span class="badge-indep" style="font-size:0.65rem;padding:1px 4px;border-radius:4px;background:rgba(16,185,129,0.15);color:var(--ok);border:1px solid rgba(16,185,129,0.3);white-space:nowrap;cursor:help">独立额度</span></div>`;
+            }
             html += '</div>';
             return html;
         } },
@@ -1038,11 +1043,13 @@ const App = (() => {
     function renderVariantTable(variant, prefix) {
         if (!variant) return '';
         const allocs = variant.allocations || [];
+        const hasShared = allocs.some(a => a.quota_sharing === 'SHARED');
         const rows = allocs.map(a => `<tr class="${a.exceeds_limit ? 'wr' : ''}">
             <td style="color:var(--txt2)">${a.code}</td>
             <td style="text-align:left;font-weight:500">
                 ${shareBadge(a.share_class)}${a.name}
                 ${a.is_stacked ? '<span class="badge-stacked" title="额度用尽时自动补充的优质份额">额度叠加</span>' : ''}
+                ${a.quota_sharing === 'SHARED' ? `<span class="badge-shared" style="font-size:0.65rem;margin-left:4px;padding:1px 4px;border-radius:4px;background:rgba(245,158,11,0.15);color:var(--warn);border:1px solid rgba(245,158,11,0.3);white-space:nowrap;cursor:help" title="${a.quota_shared_desc || '多类份额共享限额'}">🔗 共享额度</span>` : ''}
             </td>
             <td style="${feeC(a.fee)}">${(a.fee*100).toFixed(2)}%</td>
             <td>${a.daily}元</td>
@@ -1050,7 +1057,14 @@ const App = (() => {
             <td>${(a.actual_weight*100).toFixed(0)}%</td>
             <td>${pill(a.limit_status)}${a.direct_limit_status ? '<div style="margin-top:2px">' + pill(a.direct_limit_status) + '</div>' : ''}</td>
         </tr>`).join('');
-        return `<div class="table-wrap"><table><thead><tr><th>代码</th><th>名称</th><th>综合费率</th><th>每日</th><th>月合计</th><th>占比</th><th>代销/直销</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        let html = `<div class="table-wrap"><table><thead><tr><th>代码</th><th>名称</th><th>综合费率</th><th>每日</th><th>月合计</th><th>占比</th><th>代销/直销</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        if (hasShared) {
+            html += `<div style="margin-top:0.6rem;padding:0.5rem 0.75rem;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.22);border-radius:6px;font-size:0.75rem;color:var(--txt2);line-height:1.5">
+                <span style="color:var(--warn);font-weight:600">💡 共享额度避坑提示：</span>
+                标有 <span style="color:var(--warn);font-weight:600">🔗 共享额度</span> 的基金，其 A 类与 C 类（及定制份额）由基金公司合并控制单日申购限额。若您已在其他渠道定投同门份额，切勿重复定投，以免超过合并上限导致银行扣款失败。
+            </div>`;
+        }
+        return html;
     }
 
     function renderVariantSim(variant, years) {
@@ -1679,6 +1693,7 @@ const App = (() => {
                     score: f.score || 0,
                     daily_limit: f.daily_limit || null, limit_status: f.limit_status || '',
                     direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
+                    quota_sharing: f.quota_sharing || 'SHARED', quota_shared_desc: f.quota_shared_desc || '',
                     exceeds_limit: false,
                     is_stacked: false,
                 };
@@ -1754,18 +1769,24 @@ const App = (() => {
                 const cappedAllocs = activeAllocs.filter(a => a.exceeds_limit);
                 const uncappedAllocs = activeAllocs.filter(a => !a.exceeds_limit);
                 for (const a of [...cappedAllocs, ...uncappedAllocs]) {
-                    const siblings = a.fund.siblings || [];
-                    for (const sibCode of siblings) {
-                        if (!existingCodes.has(sibCode)) {
-                            const sib = FUND_DATA.find(x => x.code === sibCode);
-                            if (sib && isBuyable(sib)) {
-                                candidates.push(sib);
-                                existingCodes.add(sibCode);
+                    // 若份额属于共享额度 (quota_sharing === 'SHARED')，同门份额共享同一额度池，打满时无法通过同门叠加，必须跳过
+                    if (a.fund.quota_sharing !== 'SHARED') {
+                        const siblings = a.fund.siblings || [];
+                        for (const sibCode of siblings) {
+                            if (!existingCodes.has(sibCode)) {
+                                const sib = FUND_DATA.find(x => x.code === sibCode);
+                                if (sib && isBuyable(sib)) {
+                                    candidates.push(sib);
+                                    existingCodes.add(sibCode);
+                                }
                             }
                         }
                     }
                 }
-                const otherBuyable = FUND_DATA.filter(f => isBuyable(f) && !existingCodes.has(f.code));
+                const existingCappedFamilies = new Set(
+                    cappedAllocs.filter(a => a.fund.quota_sharing === 'SHARED').map(a => a.fund.family_id)
+                );
+                const otherBuyable = FUND_DATA.filter(f => isBuyable(f) && !existingCodes.has(f.code) && !existingCappedFamilies.has(f.family_id));
                 const medianTENq = calcMedianTE(FUND_DATA.filter(f => f.index_type === '纳斯达克100'));
                 const medianTESp = calcMedianTE(FUND_DATA.filter(f => f.index_type === '标普500'));
                 const scoredOther = otherBuyable.map(f => ({
@@ -1802,6 +1823,7 @@ const App = (() => {
                     score: f.score || 0,
                     daily_limit: a.limit !== Infinity ? a.limit : null, limit_status: f.limit_status || '',
                     direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
+                    quota_sharing: f.quota_sharing || 'SHARED', quota_shared_desc: f.quota_shared_desc || '',
                     exceeds_limit: a.exceeds_limit,
                     is_stacked: a.is_stacked || false,
                 };
@@ -2128,9 +2150,12 @@ const App = (() => {
 
                     <!-- 限购状态 -->
                     <div>
-                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">🛑 限购状态</div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">🛑 限购与额度规则</div>
                         <div style="margin-bottom:0.25rem;display:flex;align-items:center;gap:6px"><strong style="color:var(--txt3)">代销限购：</strong>${pill(f.limit_status)}</div>
                         <div style="margin-bottom:0.25rem;display:flex;align-items:center;gap:6px"><strong style="color:var(--txt3)">直销限购：</strong>${f.direct_limit_status ? pill(f.direct_limit_status) : '<span style="color:var(--txt3)">—</span>'}</div>
+                        <div style="margin-top:0.4rem;font-size:0.75rem;padding:4px 6px;border-radius:4px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);color:var(--txt2)">
+                            <strong style="color:var(--warn)">额度共享：</strong>${f.quota_shared_desc || (f.quota_sharing === 'SHARED' ? '本基金多类份额合并共享单日限额' : '各份额独立限额')}
+                        </div>
                     </div>
 
                     <!-- 量化多因子评估 -->

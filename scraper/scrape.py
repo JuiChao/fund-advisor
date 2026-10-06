@@ -701,7 +701,13 @@ def scrape_single_fund_record(code, index_type, fallback_item, cached_item=None,
         merged['daily_limit'] = 0
         limit_data['direct_daily_limit'] = 0
         limit_data['direct_limit_status'] = '未开通直销'
-    # 2. 若代销是"未开通代销"，说明代销渠道未开放，不能将直销回退为代销状态（应保留直销提取额度或兜底）
+    # 2. 建信D类份额(023422)：代销渠道(支付宝等)实际已暂停申购，直销渠道依公告限10元/日
+    elif code == '023422':
+        merged['limit_status'] = '暂停申购'
+        merged['daily_limit'] = 0
+        limit_data['direct_daily_limit'] = 10
+        limit_data['direct_limit_status'] = '限10元/日'
+    # 3. 若代销是"未开通代销"，说明代销渠道未开放，不能将直销回退为代销状态（应保留直销提取额度或兜底）
     elif merged.get('limit_status') == '未开通代销':
         if limit_data.get('direct_daily_limit') is None:
             limit_data['direct_daily_limit'] = base.get('direct_daily_limit', 0)
@@ -727,8 +733,11 @@ def scrape_single_fund_record(code, index_type, fallback_item, cached_item=None,
             limit_data['direct_daily_limit'] = agency_limit
             limit_data['direct_limit_status'] = agency_status
 
-    # 合并限额公告数据
+    # 合并限额公告数据及配额共享字段
     merged.update(limit_data)
+    if not merged.get('quota_sharing'):
+        merged['quota_sharing'] = base.get('quota_sharing', 'SHARED')
+        merged['quota_shared_desc'] = base.get('quota_shared_desc', '')
     merged = validate(merged)
 
     # 确保有 name 字段

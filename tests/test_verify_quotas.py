@@ -24,6 +24,8 @@ class TestVerifyQuotas(unittest.TestCase):
             'daily_limit': 10,
             'direct_limit_status': '限10元/日',
             'direct_daily_limit': 10,
+            'quota_sharing': 'SHARED',
+            'quota_shared_desc': '与A类共享单日限额10元',
         }
         issues = verify_fund_logic(valid_fund)
         self.assertEqual(len(issues), 0)
@@ -36,6 +38,8 @@ class TestVerifyQuotas(unittest.TestCase):
             'daily_limit': 0,
             'direct_limit_status': '暂停申购',
             'direct_daily_limit': 0,
+            'quota_sharing': 'SHARED',
+            'quota_shared_desc': '与C类合并暂停申购',
         }
         issues = verify_fund_logic(suspended_fund)
         self.assertEqual(len(issues), 0)
@@ -49,6 +53,8 @@ class TestVerifyQuotas(unittest.TestCase):
             'daily_limit': 0,
             'direct_limit_status': '未开通直销',
             'direct_daily_limit': 0,
+            'quota_sharing': 'SHARED',
+            'quota_shared_desc': '与A/C类合并暂停申购',
         }
         self.assertEqual(len(verify_fund_logic(valid_tianhong_d)), 0)
 
@@ -60,8 +66,38 @@ class TestVerifyQuotas(unittest.TestCase):
             'daily_limit': 0,
             'direct_limit_status': '限100元/日',
             'direct_daily_limit': 100,
+            'quota_sharing': 'SHARED',
+            'quota_shared_desc': '与A/C类合并暂停申购',
         }
         issues = verify_fund_logic(bad_tianhong_d)
+        self.assertGreater(len(issues), 0)
+
+    def test_verify_ccb_d_class_channel_logic(self):
+        """测试建信D类份额(023422)渠道逻辑：代销为'暂停申购'，直销为'限10元/日'"""
+        valid_ccb_d = {
+            'code': '023422',
+            'name': '建信纳斯达克100指数(QDII)D类',
+            'limit_status': '暂停申购',
+            'daily_limit': 0,
+            'direct_limit_status': '限10元/日',
+            'direct_daily_limit': 10,
+            'quota_sharing': 'INDEPENDENT',
+            'quota_shared_desc': '各份额独立计算限额',
+        }
+        self.assertEqual(len(verify_fund_logic(valid_ccb_d)), 0)
+
+        # 错误情况：代销误标为10元
+        bad_ccb_d = {
+            'code': '023422',
+            'name': '建信纳斯达克100指数(QDII)D类',
+            'limit_status': '限10元/日',
+            'daily_limit': 10,
+            'direct_limit_status': '限10元/日',
+            'direct_daily_limit': 10,
+            'quota_sharing': 'INDEPENDENT',
+            'quota_shared_desc': '各份额独立计算限额',
+        }
+        issues = verify_fund_logic(bad_ccb_d)
         self.assertGreater(len(issues), 0)
 
     def test_verify_fund_logic_mismatch(self):
@@ -156,6 +192,8 @@ class TestVerifyQuotas(unittest.TestCase):
             'daily_limit': 100,
             'direct_limit_status': '限10元/日',
             'direct_daily_limit': 10,
+            'quota_sharing': 'SHARED',
+            'quota_shared_desc': '测试共享限额',
         }
         issues = verify_fund_logic(abnormal_fund)
         self.assertTrue(any('违背渠道常理' in iss for iss in issues))
@@ -168,6 +206,8 @@ class TestVerifyQuotas(unittest.TestCase):
             'daily_limit': 10,
             'direct_limit_status': '限100元/日',
             'direct_daily_limit': 100,
+            'quota_sharing': 'SHARED',
+            'quota_shared_desc': '测试共享限额',
         }
         self.assertEqual(len(verify_fund_logic(normal_fund)), 0)
 

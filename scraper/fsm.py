@@ -32,6 +32,8 @@ class FSMResult:
     agency_daily_limit: Optional[int] = None
     agency_limit_status: Optional[str] = None
     event_type: str = 'UNKNOWN'
+    quota_sharing: Optional[str] = None  # 'SHARED', 'INDEPENDENT', 'NONE'
+    quota_shared_desc: Optional[str] = None
     announcement_id: Optional[str] = None
     clauses: List[FSMClause] = field(default_factory=list)
 
@@ -69,6 +71,14 @@ class FinancialEventFSM:
     )
     NOT_OFFERED_AGENCY_REGEX = re.compile(
         r'(?:尚未开通|未开通|暂不开通|暂不上线)(?:\S{0,15}?)?代销|代销(?:机构|渠道)?(?:\S{0,15}?)?(?:暂不上线|暂不开通|未开通)'
+    )
+
+    # 额度合并与共享识别模式 (A/C等份额共享额度 vs 独立计算)
+    COMBINED_QUOTA_REGEX = re.compile(
+        r'合并计算|合计不超过|合并进行限制|各份额合并|份额合并|各类别基金份额合并|两类份额合并'
+    )
+    SEPARATE_QUOTA_REGEX = re.compile(
+        r'不同份额分别计算|各类份额单独计算|分别计算|各份额独立'
     )
 
     @classmethod
@@ -237,5 +247,13 @@ class FinancialEventFSM:
             elif agency_candidate.action in ('ADJUST', 'RESTRICT') and agency_candidate.quota:
                 result.agency_daily_limit = agency_candidate.quota
                 result.agency_limit_status = f'限{agency_candidate.quota}元/日'
+
+        # 判定份额间额度共享属性 (Shared Quota vs Independent Quota)
+        if cls.SEPARATE_QUOTA_REGEX.search(content):
+            result.quota_sharing = 'INDEPENDENT'
+            result.quota_shared_desc = '各份额独立计算单日限额（不合并）'
+        elif cls.COMBINED_QUOTA_REGEX.search(content):
+            result.quota_sharing = 'SHARED'
+            result.quota_shared_desc = '本基金多类份额共享单日限额，合并计算'
 
         return result

@@ -137,6 +137,7 @@ export async function onRequest(context) {
           score: f.score || 0,
           daily_limit: f.daily_limit || null, limit_status: f.limit_status || '',
           direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
+          quota_sharing: f.quota_sharing || 'SHARED', quota_shared_desc: f.quota_shared_desc || '',
           exceeds_limit: false,
           is_stacked: false,
         };
@@ -214,18 +215,24 @@ export async function onRequest(context) {
         const uncappedAllocs = activeAllocs.filter(a => !a.exceeds_limit);
         const candidates = [];
         for (const a of [...cappedAllocs, ...uncappedAllocs]) {
-          const siblings = a.fund.siblings || [];
-          for (const sibCode of siblings) {
-            if (!existingCodes.has(sibCode)) {
-              const sib = funds.find(x => x.code === sibCode);
-              if (sib && isBuyable(sib)) {
-                candidates.push(sib);
-                existingCodes.add(sibCode);
+          // 若份额属于共享额度 (quota_sharing === 'SHARED')，同门份额共享同一额度池，打满时无法通过同门叠加，必须跳过
+          if (a.fund.quota_sharing !== 'SHARED') {
+            const siblings = a.fund.siblings || [];
+            for (const sibCode of siblings) {
+              if (!existingCodes.has(sibCode)) {
+                const sib = funds.find(x => x.code === sibCode);
+                if (sib && isBuyable(sib)) {
+                  candidates.push(sib);
+                  existingCodes.add(sibCode);
+                }
               }
             }
           }
         }
-        const otherBuyable = funds.filter(f => isBuyable(f) && !existingCodes.has(f.code));
+        const existingCappedFamilies = new Set(
+          cappedAllocs.filter(a => a.fund.quota_sharing === 'SHARED').map(a => a.fund.family_id)
+        );
+        const otherBuyable = funds.filter(f => isBuyable(f) && !existingCodes.has(f.code) && !existingCappedFamilies.has(f.family_id));
         candidates.push(...rankFunds(otherBuyable));
 
         for (const cf of candidates) {
@@ -256,6 +263,7 @@ export async function onRequest(context) {
           score: f.score || 0,
           daily_limit: a.limit !== Infinity ? a.limit : null, limit_status: f.limit_status || '',
           direct_daily_limit: f.direct_daily_limit || null, direct_limit_status: f.direct_limit_status || '',
+          quota_sharing: f.quota_sharing || 'SHARED', quota_shared_desc: f.quota_shared_desc || '',
           exceeds_limit: a.exceeds_limit,
           is_stacked: a.is_stacked || false,
         };
