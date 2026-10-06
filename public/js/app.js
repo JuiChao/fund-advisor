@@ -869,10 +869,326 @@ const App = (() => {
                     thead.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
                     th.classList.add(rankSortDir[key] === 'desc' ? 'sort-desc' : 'sort-asc');
                     draw();
+                    renderRankCards(rankData);
                 });
             });
         }
         draw();
+        renderRankCards(rankData);
+    }
+
+    // ===== 移动端双视图控制与智能卡片流渲染 =====
+    let currentRankView = 'card';
+
+    function applyRankView(viewMode) {
+        currentRankView = viewMode;
+        const toggle = document.getElementById('rank-view-toggle');
+        const cardList = document.getElementById('rank-card-list');
+        const tableWrap = document.getElementById('rank-table-wrap') || document.querySelector('#page-ranking .table-wrap');
+        const swipeHint = document.getElementById('rank-swipe-hint') || document.querySelector('#page-ranking .mobile-swipe-hint');
+
+        if (toggle) {
+            toggle.querySelectorAll('.view-btn').forEach(btn => {
+                if (btn.dataset.view === viewMode) btn.classList.add('on');
+                else btn.classList.remove('on');
+            });
+        }
+
+        if (viewMode === 'card') {
+            if (cardList) cardList.style.display = '';
+            if (tableWrap) tableWrap.classList.add('mobile-hidden');
+            if (swipeHint) swipeHint.classList.add('mobile-hidden');
+        } else {
+            if (cardList) cardList.style.display = 'none';
+            if (tableWrap) tableWrap.classList.remove('mobile-hidden');
+            if (swipeHint) swipeHint.classList.remove('mobile-hidden');
+        }
+    }
+
+    function renderRankCards(data) {
+        const container = document.getElementById('rank-card-list');
+        if (!container) return;
+
+        if (!data || data.length === 0) {
+            container.innerHTML = `
+                <div class="rank-card-empty">
+                    <div style="font-size:2.2rem;margin-bottom:0.5rem">🔍</div>
+                    <div style="font-weight:700;color:var(--txt);margin-bottom:0.35rem">未找到符合条件的基金标的</div>
+                    <div style="font-size:0.8rem;color:var(--txt3);margin-bottom:1rem">请尝试调整份额类别、渠道状态或搜索关键词</div>
+                    <button type="button" class="btn-empty-reset-card" style="padding:0.45rem 1.1rem;font-size:0.8rem;border-radius:8px;background:var(--accent-g);color:#fff;border:none;cursor:pointer;font-weight:600">🔄 恢复默认筛选</button>
+                </div>
+            `;
+            const btn = container.querySelector('.btn-empty-reset-card');
+            if (btn) btn.onclick = resetRankFilters;
+            return;
+        }
+
+        container.innerHTML = data.map((r) => {
+            const mgmt = r.mgmt_fee || 0;
+            const cust = r.custody_fee || 0;
+            const sales = r.sales_fee || 0;
+            const totalFee = mgmt + cust + sales;
+            const isLowFee = totalFee <= 0.007;
+            const feePercent = (totalFee * 100).toFixed(2) + '%';
+            
+            // 限购状态判定
+            const isPaused = ((r.limit_status || '').includes('暂停') || (r.limit_status || '').includes('未开通')) &&
+                             ((r.direct_limit_status || '').includes('暂停') || (r.direct_limit_status || '').includes('未开通') || !r.direct_limit_status);
+
+            // 排名奖章
+            let rankBadgeHtml;
+            if (r.rank === 1) {
+                rankBadgeHtml = `<span class="fmc-rank rank-gold" title="综合评分冠军">🥇 1</span>`;
+            } else if (r.rank === 2) {
+                rankBadgeHtml = `<span class="fmc-rank rank-silver" title="综合评分亚军">🥈 2</span>`;
+            } else if (r.rank === 3) {
+                rankBadgeHtml = `<span class="fmc-rank rank-bronze" title="综合评分季军">🥉 3</span>`;
+            } else {
+                rankBadgeHtml = `<span class="fmc-rank">#${r.rank}</span>`;
+            }
+
+            // 指数类型微标签
+            const idxTag = r.index_type === '纳斯达克100'
+                ? `<span class="badge-idx badge-nq">纳指100</span>`
+                : `<span class="badge-idx badge-sp">标普500</span>`;
+
+            // 3年收益或成立以来收益
+            let retHtml = '-';
+            if (r.return_3yr != null) {
+                retHtml = `<span class="fmc-ret up">${fmt(r.return_3yr)}</span>`;
+            } else if (r.return_since != null) {
+                retHtml = `<span class="fmc-ret up">${fmt(r.return_since)} <span class="fmc-ret-note">成立来</span></span>`;
+            }
+
+            // TD / IR 指标
+            let tdIrHtml = '';
+            if (r.tracking_difference != null) {
+                const tdSign = r.tracking_difference >= 0 ? '+' : '';
+                const tdColor = r.tracking_difference >= 0 ? 'var(--up)' : 'var(--down)';
+                tdIrHtml += `<span style="color:${tdColor};font-weight:700">TD ${tdSign}${(r.tracking_difference*100).toFixed(1)}%</span>`;
+            }
+            if (r.information_ratio != null) {
+                tdIrHtml += `${tdIrHtml ? ' · ' : ''}<span style="color:var(--txt2)">IR <strong>${r.information_ratio.toFixed(2)}</strong></span>`;
+            }
+            if (!tdIrHtml) {
+                tdIrHtml = `<span style="color:var(--txt3)">TE ${(r.tracking_error ? (r.tracking_error*100).toFixed(2)+'%' : '-')}</span>`;
+            }
+
+            // 规模与晨星
+            const scaleStr = r.scale ? `${r.scale.toFixed(1)}亿` : '-';
+            const starStr = r.morningstar > 0 ? `<span class="fmc-stars" title="晨星${r.morningstar}星评级">${'★'.repeat(r.morningstar)}</span>` : '';
+
+            // 同门兄弟份额看板
+            let siblingListHtml = '';
+            if (r.siblings && r.siblings.length > 1) {
+                const sibFunds = r.siblings.map(sc => FUND_DATA.find(x => x.code === sc)).filter(Boolean);
+                if (sibFunds.length > 1) {
+                    siblingListHtml = `
+                        <div class="fmc-siblings-block">
+                            <div class="fmc-siblings-title">
+                                <span>🔄 同门同标的各份额比对 (${r.family_name || '同一指数家族'})</span>
+                                <span class="fmc-siblings-tip">点击切换</span>
+                            </div>
+                            <div class="fmc-siblings-grid">
+                                ${sibFunds.map(sf => {
+                                    const isSelf = sf.code === r.code;
+                                    const sfTotal = (sf.mgmt_fee || 0) + (sf.custody_fee || 0) + (sf.sales_fee || 0);
+                                    return `
+                                        <div class="fmc-sibling-card ${isSelf ? 'active' : ''}" data-code="${sf.code}">
+                                            <div class="sib-head">
+                                                <div style="display:flex;align-items:center;gap:3px">
+                                                    ${shareBadge(sf.share_class)}
+                                                    <strong>${sf.code}</strong>
+                                                </div>
+                                                <span class="sib-fee">${(sfTotal * 100).toFixed(2)}%</span>
+                                            </div>
+                                            <div class="sib-limits">
+                                                <span>代: ${pill(sf.limit_status)}</span>
+                                                <span>直: ${sf.direct_limit_status ? pill(sf.direct_limit_status) : '<span style="color:var(--txt3)">—</span>'}</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            return `
+                <div class="fund-mobile-card ${r.rank <= 3 ? 'top-card rank-' + r.rank : ''} ${isPaused ? 'paused-card' : ''}" data-code="${r.code}">
+                    <!-- 卡片头部：排名、代码、指数、份额、评分 -->
+                    <div class="fmc-header">
+                        <div class="fmc-header-left">
+                            ${rankBadgeHtml}
+                            <span class="fmc-code">${r.code}</span>
+                            <button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button>
+                            ${idxTag}
+                            ${shareBadge(r.share_class)}
+                        </div>
+                        <div class="fmc-score-wrap">
+                            <span class="fmc-score-label">量化评分</span>
+                            <span class="fmc-score-val">${r.score}</span>
+                        </div>
+                    </div>
+
+                    <!-- 基金主名称 -->
+                    <div class="fmc-name-row">
+                        <a href="fund/${r.code}.html" class="fmc-title" data-code="${r.code}">${r.name}</a>
+                        <a href="fund/${r.code}.html" target="_blank" class="fmc-page-link" title="在新标签打开独立专页">评测专页 ↗</a>
+                    </div>
+
+                    <!-- 核心 4 宫格量化指标 -->
+                    <div class="fmc-metrics-grid">
+                        <div class="fmc-metric-item">
+                            <div class="fmc-metric-lbl">综合年费</div>
+                            <div class="fmc-metric-val" style="${feeC(totalFee)}">
+                                ${feePercent}
+                                ${isLowFee ? '<span class="fmc-pill-low">低费率</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="fmc-metric-item">
+                            <div class="fmc-metric-lbl">近3年收益</div>
+                            <div class="fmc-metric-val">
+                                ${retHtml}
+                            </div>
+                        </div>
+                        <div class="fmc-metric-item">
+                            <div class="fmc-metric-lbl">跟踪偏离 / IR</div>
+                            <div class="fmc-metric-val fmc-metric-val-sm">
+                                ${tdIrHtml}
+                            </div>
+                        </div>
+                        <div class="fmc-metric-item">
+                            <div class="fmc-metric-lbl">规模 / 晨星</div>
+                            <div class="fmc-metric-val">
+                                <strong>${scaleStr}</strong>${starStr}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 渠道限购状态条 -->
+                    <div class="fmc-quota-row">
+                        <div class="fmc-quota-channels">
+                            <div class="fmc-quota-chip">
+                                <span class="fmc-channel-lbl">代销</span>
+                                ${pill(r.limit_status)}
+                            </div>
+                            <div class="fmc-quota-chip">
+                                <span class="fmc-channel-lbl">直销</span>
+                                ${r.direct_limit_status ? pill(r.direct_limit_status) : '<span style="color:var(--txt3)">—</span>'}
+                            </div>
+                        </div>
+                        ${r.quota_sharing === 'SHARED'
+                            ? `<span class="badge-shared" title="${r.quota_shared_desc || '多类份额共享限额'}">🔗 共享额度</span>`
+                            : (r.quota_sharing === 'INDEPENDENT'
+                                ? `<span class="badge-indep" title="独立限额">独立额度</span>`
+                                : '')}
+                    </div>
+
+                    <!-- 折叠抽屉：多因子明细与同门比对看板 -->
+                    <div class="fmc-drawer" id="drawer-${r.code}">
+                        <div class="fmc-drawer-content">
+                            <!-- 费率拆解 -->
+                            <div class="fmc-detail-section">
+                                <div class="fmc-sec-title">💰 费率拆解明细</div>
+                                <div class="fmc-detail-kv-grid">
+                                    <div><span>管理费：</span><strong>${r.mgmt_fee ? (r.mgmt_fee*100).toFixed(2)+'%/年' : '-'}</strong></div>
+                                    <div><span>托管费：</span><strong>${r.custody_fee ? (r.custody_fee*100).toFixed(2)+'%/年' : '-'}</strong></div>
+                                    <div><span>销售服务费：</span><strong>${(r.sales_fee || 0) > 0 ? (r.sales_fee*100).toFixed(2)+'%/年' : '免收 (0%)'}</strong></div>
+                                    <div><span>前端申购费：</span><strong>${r.purchase_fee != null ? (r.purchase_fee*100).toFixed(2)+'%' : '0.00%'}</strong></div>
+                                </div>
+                            </div>
+
+                            <!-- 管理团队与规模 -->
+                            <div class="fmc-detail-section">
+                                <div class="fmc-sec-title">🏢 机构与基本信息</div>
+                                <div class="fmc-detail-kv-grid">
+                                    <div><span>基金管理人：</span><strong>${r.manager_company || '-'}</strong></div>
+                                    <div><span>现任经理：</span><strong>${r.fund_manager || '-'}</strong></div>
+                                    <div><span>托管机构：</span><strong>${r.custodian || '-'}</strong></div>
+                                    <div><span>成立日期：</span><strong>${r.inception_date || '-'}</strong></div>
+                                </div>
+                            </div>
+
+                            ${siblingListHtml}
+
+                            <!-- 卡片快捷操作 -->
+                            <div class="fmc-actions">
+                                <a href="fund/${r.code}.html" target="_blank" class="fmc-btn-act fmc-btn-primary">
+                                    📄 打开独立深度评测专页 ↗
+                                </a>
+                                <button type="button" class="fmc-btn-act btn-sim-card-single" data-code="${r.code}">
+                                    🚀 带入蒙特卡洛模拟器推演 ➔
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 卡片底部展开/收起触控条 -->
+                    <div class="fmc-expand-bar" data-code="${r.code}">
+                        <span class="fmc-expand-text">展开深度指标与同门比对</span>
+                        <span class="fmc-expand-arrow">▾</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // 绑定卡片抽屉展开收起事件
+        container.querySelectorAll('.fmc-expand-bar').forEach(bar => {
+            bar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const card = bar.closest('.fund-mobile-card');
+                if (!card) return;
+                const isOpen = card.classList.toggle('expanded');
+                const text = bar.querySelector('.fmc-expand-text');
+                if (text) text.textContent = isOpen ? '收起详情指标' : '展开深度指标与同门比对';
+            });
+        });
+
+        // 卡片整体点击（除链接和按钮外）支持展开/折叠
+        container.querySelectorAll('.fund-mobile-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('a, button, .btn-copy-code, .fmc-sibling-card, .fmc-expand-bar')) {
+                    return;
+                }
+                const expandBar = card.querySelector('.fmc-expand-bar');
+                if (expandBar) expandBar.click();
+            });
+        });
+
+        // 绑定同门份额卡片点击切换或查看专页
+        container.querySelectorAll('.fmc-sibling-card').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const sibCode = item.dataset.code;
+                if (!sibCode) return;
+                const targetCard = container.querySelector(`.fund-mobile-card[data-code="${sibCode}"]`);
+                if (targetCard) {
+                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    targetCard.classList.add('highlight-pulse');
+                    if (!targetCard.classList.contains('expanded')) {
+                        const expandBar = targetCard.querySelector('.fmc-expand-bar');
+                        if (expandBar) expandBar.click();
+                    }
+                    setTimeout(() => targetCard.classList.remove('highlight-pulse'), 3000);
+                } else {
+                    window.open(`fund/${sibCode}.html`, '_blank');
+                }
+            });
+        });
+
+        // 绑定单基金带入模拟器推演
+        container.querySelectorAll('.btn-sim-card-single').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const c = btn.dataset.code;
+                const f = FUND_DATA.find(x => x.code === c);
+                if (f) {
+                    loadFundsIntoSimulator({ [f.code]: 1.0 }, true, `${f.name} (单基推演)`);
+                }
+            });
+        });
     }
 
     // ===== 模拟器 - 自定义多选 =====
@@ -2259,6 +2575,17 @@ const App = (() => {
                 renderRanking();
             });
         }
+
+        // 移动端专属双视图切换 (智能卡片 vs 全景表格)
+        const rankViewToggle = document.getElementById('rank-view-toggle');
+        if (rankViewToggle) {
+            rankViewToggle.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    applyRankView(btn.dataset.view);
+                });
+            });
+        }
+        applyRankView(currentRankView);
         document.getElementById('sim-m').addEventListener('input', e => {
             const val = fmtMoney(e.target.value);
             document.getElementById('sim-mv').textContent = val;

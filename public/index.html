@@ -161,7 +161,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261006_v5">
+<link rel="stylesheet" href="css/style.css?v=20261007_v1">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -465,7 +465,7 @@
         <div class="rank-control-top">
             <div class="seg-control rank-index-tabs" id="rank-filter">
                 <button type="button" class="seg-btn on" data-value="纳斯达克100">
-                    <span class="seg-icon">📈</span> <span class="tab-text-full">纳斯达克100</span><span class="tab-text-short">纳指100</span>
+                    <span class="seg-icon">📈</span> <span class="tab-text-full">纳斯达克100</span><span class="tab-text-short">纳斯达克</span>
                     <span class="tab-badge" id="badge-count-nq">--</span>
                 </button>
                 <button type="button" class="seg-btn" data-value="标普500">
@@ -473,7 +473,7 @@
                     <span class="tab-badge" id="badge-count-sp">--</span>
                 </button>
                 <button type="button" class="seg-btn" data-value="ALL">
-                    <span class="seg-icon">🌐</span> <span class="tab-text-full">全部美股QDII</span><span class="tab-text-short">全部</span>
+                    <span class="seg-icon">🌐</span> <span class="tab-text-full">全部美股QDII</span><span class="tab-text-short">全部美股</span>
                     <span class="tab-badge" id="badge-count-all">--</span>
                 </button>
             </div>
@@ -556,8 +556,24 @@
         </div>
     </div>
 
-    <div class="mobile-swipe-hint">👈 左右滑动表格查看年化收益、跟踪偏离度及直销/代销限购 👉</div>
-    <div class="table-wrap">
+    <!-- 移动端专属双视图切换开关 (桌面端自动隐藏) -->
+    <div class="rank-view-toggle" id="rank-view-toggle">
+        <button type="button" class="view-btn on" data-view="card">
+            <span class="view-icon">📱</span>
+            <span>智能卡片</span>
+            <span class="view-rec-tag">推荐</span>
+        </button>
+        <button type="button" class="view-btn" data-view="table">
+            <span class="view-icon">📊</span>
+            <span>全景表格</span>
+        </button>
+    </div>
+
+    <!-- 移动端专属智能金融资产卡片流 (桌面端自动隐藏) -->
+    <div id="rank-card-list" class="rank-card-list"></div>
+
+    <div class="mobile-swipe-hint" id="rank-swipe-hint">👈 左右滑动表格查看年化收益、跟踪偏离度及直销/代销限购 👉</div>
+    <div class="table-wrap" id="rank-table-wrap">
         <table id="rank-table">
             <thead>
                 <tr>
