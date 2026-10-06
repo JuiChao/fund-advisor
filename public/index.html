@@ -237,8 +237,13 @@
         </div>
     </div>
 
-    <!-- 实时平台核心数据指标 -->
-    <div class="stats" id="home-stats"></div>
+    <!-- 实时平台核心数据指标 (预渲染语义数据，兼顾SEO与爬虫) -->
+    <div class="stats" id="home-stats">
+        <div class="stat"><div class="lb">收录份额</div><div class="vl">59</div><div class="sub">纳指 30 只 · 标普 29 只 (含A/C/D/E/I)</div></div>
+        <div class="stat"><div class="lb">可买份额</div><div class="vl">48</div><div class="sub">代销可买 (直销52只可买)</div></div>
+        <div class="stat"><div class="lb">最低费率</div><div class="vl">0.60%</div><div class="sub">管理+托管+销售</div></div>
+        <div class="stat"><div class="lb">数据更新</div><div class="vl" style="font-size:1rem">每日自动同步</div><div class="sub">官方渠道实时监测</div></div>
+    </div>
 
     <!-- 策略方案全景展示卡 -->
     <div class="card">
@@ -246,7 +251,30 @@
             <h3 style="margin-bottom:0">📐 策略方案全景对比</h3>
             <a href="#portfolio" class="btn-jump-strat" style="font-size:0.8rem;padding:0.4rem 0.85rem">进入定投方案页配置 ➔</a>
         </div>
-        <div id="home-strategies" class="ld"></div>
+        <div id="home-strategies" class="ld">
+            <div class="home-strat-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1rem;">
+                <div class="card" style="margin-bottom:0;padding:1.1rem;background:var(--surface2)">
+                    <h4 style="margin:0 0 0.4rem;font-size:0.95rem;">⚖️ 传统平衡型 (50:50)</h4>
+                    <p style="font-size:0.78rem;color:var(--txt2);margin-bottom:0.6rem;line-height:1.5;">纳指与标普资金均分，兼顾进攻与防守的经典基准策略。</p>
+                    <div style="font-size:0.75rem;font-weight:700;color:var(--accent2);">配比: 50% 纳指 + 50% 标普</div>
+                </div>
+                <div class="card" style="margin-bottom:0;padding:1.1rem;background:var(--surface2)">
+                    <h4 style="margin:0 0 0.4rem;font-size:0.95rem;">🚀 科技进取型 (70:30)</h4>
+                    <p style="font-size:0.78rem;color:var(--txt2);margin-bottom:0.6rem;line-height:1.5;">侧重纳指100高研发龙头，博取长期更高超额复利。</p>
+                    <div style="font-size:0.75rem;font-weight:700;color:var(--accent2);">配比: 70% 纳指 + 30% 标普</div>
+                </div>
+                <div class="card" style="margin-bottom:0;padding:1.1rem;background:var(--surface2)">
+                    <h4 style="margin:0 0 0.4rem;font-size:0.95rem;">🛡️ 稳健底仓型 (30:70)</h4>
+                    <p style="font-size:0.78rem;color:var(--txt2);margin-bottom:0.6rem;line-height:1.5;">以标普500全美跨行业为压舱石，大幅降低最大回撤。</p>
+                    <div style="font-size:0.75rem;font-weight:700;color:var(--accent2);">配比: 30% 纳指 + 70% 标普</div>
+                </div>
+                <div class="card" style="margin-bottom:0;padding:1.1rem;background:var(--surface2);border-color:rgba(16,185,129,0.3)">
+                    <h4 style="margin:0 0 0.4rem;font-size:0.95rem;color:var(--ok);">💎 MPT 风险平价 (ERC)</h4>
+                    <p style="font-size:0.78rem;color:var(--txt2);margin-bottom:0.6rem;line-height:1.5;">边际风险贡献严格等权（各50%），消除单极波动风险。</p>
+                    <div style="font-size:0.75rem;font-weight:700;color:var(--ok);">配比: 38% 纳指 + 62% 标普</div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="g2">
         <div class="card"><h3>纳斯达克100 费率分布</h3><div class="cht"><canvas id="ch-nq"></canvas></div><div class="fund-list" id="ch-nq-list"></div></div>
@@ -533,7 +561,58 @@
         </div>
     </div>
 
-    <div class="table-wrap"><table id="rank-table"><thead></thead><tbody></tbody></table></div>
+    <div class="table-wrap">
+        <table id="rank-table">
+            <thead>
+                <tr>
+                    <th>排名</th>
+                    <th>代码</th>
+                    <th>基金名称</th>
+                    <th>跟踪标的</th>
+                    <th>份额</th>
+                    <th>综合费率</th>
+                    <th>代销限购</th>
+                    <th>直销限购</th>
+                    <th>近3年收益</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>#1</strong></td>
+                    <td><a href="/fund/000834.html">000834</a></td>
+                    <td>大成纳斯达克100ETF联接A</td>
+                    <td>纳斯达克100</td>
+                    <td>A类</td>
+                    <td>1.00%/年</td>
+                    <td>限10元/日</td>
+                    <td>限100元/日</td>
+                    <td style="color:var(--ok)">+79.24%</td>
+                </tr>
+                <tr>
+                    <td><strong>#2</strong></td>
+                    <td><a href="/fund/006075.html">006075</a></td>
+                    <td>华安纳斯达克100联接A</td>
+                    <td>纳斯达克100</td>
+                    <td>A类</td>
+                    <td>0.80%/年</td>
+                    <td>限1000元/日</td>
+                    <td>开放申购</td>
+                    <td style="color:var(--ok)">+78.10%</td>
+                </tr>
+                <tr>
+                    <td><strong>#3</strong></td>
+                    <td><a href="/fund/050025.html">050025</a></td>
+                    <td>博时标普500ETF联接A</td>
+                    <td>标普500</td>
+                    <td>A类</td>
+                    <td>0.80%/年</td>
+                    <td>限500元/日</td>
+                    <td>开放申购</td>
+                    <td style="color:var(--ok)">+56.40%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- ===== 模拟器 ===== -->

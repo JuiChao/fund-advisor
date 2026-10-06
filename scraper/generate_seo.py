@@ -19,21 +19,33 @@ os.makedirs(FUND_DIR)
 with open(DATA_FILE, 'r', encoding='utf-8') as f:
     funds = json.load(f)
 
-# HTML 模板：针对 AdSense 政策设置 noindex，防止被判为模板化门页 (Doorway pages)
+# HTML 模板：开启 index 允许 Google 抓取并展示高质量结构化基金数据
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="robots" content="noindex, follow">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <title>{fund_name} ({fund_code}) 费率_限购_历史收益 - Fund Advisor</title>
 <meta name="description" content="{fund_name}({fund_code})是跟踪{index_type}指数的优质QDII基金({share_class}类份额)。当前代销状态：{agency_status}，直销状态：{direct_status}。综合年费率{total_fee}%。近3年收益率{return_3yr}%。点击查看详细定投模拟与评分排名。">
 <meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, {share_class}类份额, 费率, 限购, 收益率, 定投, Fund Advisor">
+<link rel="canonical" href="https://858000.xyz/fund/{fund_code}.html">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="/css/style.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {json_ld}
+</script>
+<script type="application/ld+json">
+{{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {{ "@type": "ListItem", "position": 1, "name": "首页", "item": "https://858000.xyz/" }},
+    {{ "@type": "ListItem", "position": 2, "name": "基金排名", "item": "https://858000.xyz/#ranking" }},
+    {{ "@type": "ListItem", "position": 3, "name": "{fund_name}", "item": "https://858000.xyz/fund/{fund_code}.html" }}
+  ]
+}}
 </script>
 </head>
 <body>
@@ -193,7 +205,7 @@ for fund in funds:
     
     generated_count += 1
 
-print(f"Successfully generated {generated_count} fund pages (with noindex)")
+print(f"Successfully generated {generated_count} fund pages (with index, follow)")
 
 # === 重构生成高质量 Sitemap ===
 # 只索引真正高质量原创内容、工具首页、关于和法律合规页，彻底排除同质化门页
@@ -237,6 +249,17 @@ for url in article_urls:
         '  </url>'
     ])
 
+# 索引全部 59 只优质基金详情页
+for fund in funds:
+    code = fund['code']
+    sitemap_lines.extend([
+        '  <url>',
+        f'    <loc>https://858000.xyz/fund/{code}.html</loc>',
+        '    <changefreq>daily</changefreq>',
+        '    <priority>0.7</priority>',
+        '  </url>'
+    ])
+
 sitemap_lines.extend([
     '  <url>',
     '    <loc>https://858000.xyz/about.html</loc>',
@@ -260,4 +283,5 @@ sitemap_lines.extend([
 with open(SITEMAP_FILE, 'w', encoding='utf-8') as f:
     f.write('\n'.join(sitemap_lines))
 
-print(f"Successfully generated clean Sitemap: {SITEMAP_FILE} with {len(article_urls)} articles")
+total_urls = 2 + len(article_urls) + len(funds) + 3
+print(f"Successfully generated clean Sitemap: {SITEMAP_FILE} with {total_urls} URLs (articles: {len(article_urls)}, funds: {len(funds)})")
