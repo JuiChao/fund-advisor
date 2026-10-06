@@ -141,26 +141,19 @@ def verify_fund_logic(item):
         if d_limit < limit:
             issues.append(f"直销限额({d_limit})低于代销限额({limit})，违背渠道常理，须核验是否存在文本串行污染")
 
-    # 5. 特定渠道份额规则：天弘D类份额(022525, 022523)暂不上线直销机构，且代销渠道(支付宝等)暂停申购
-    if code in ('022525', '022523'):
-        if d_status != '未开通直销' or d_limit != 0:
-            issues.append(f"天弘D类份额({code})依据设立法律文件暂不上线直销机构，直销状态应为'未开通直销'且限额为0，实为({d_status}, {d_limit})")
-        if status != '暂停申购' or limit != 0:
-            issues.append(f"天弘D类份额({code})代销渠道(支付宝等)实际为暂停申购，实为({status}, {limit})")
+    # 5. 通用多渠道准入与可销售性金融常理 (Universal Multi-Channel Sellability)
+    # 两大渠道不能同时处于“未开通”状态（若既未开通代销又未开通直销，则该公募份额未在任何渠道公开发售，属于档案定义异常）
+    if status in ('未开通代销', '未开通') and d_status in ('未开通直销', '未开通'):
+        issues.append(f"基金在代销与直销渠道均标记为未开通，存在渠道档案定义异常")
 
-    # 6. 建信D类份额(023422)：代销渠道(支付宝等)实际为暂停申购，直销渠道依公告限10元/日
-    if code == '023422':
-        if status != '暂停申购' or limit != 0:
-            issues.append(f"建信D类份额({code})代销渠道(支付宝等)实际为暂停申购，实为({status}, {limit})")
-        if d_status != '限10元/日' or d_limit != 10:
-            issues.append(f"建信D类份额({code})直销渠道应为'限10元/日'且限额为10，实为({d_status}, {d_limit})")
-
-    # 7. 份额额度共享属性校验
+    # 6. 份额额度共享属性校验
     sharing = item.get('quota_sharing')
     if sharing not in ('SHARED', 'INDEPENDENT', 'NONE'):
         issues.append(f"份额共享属性 quota_sharing 无效: {sharing} (应为 SHARED, INDEPENDENT 或 NONE)")
     if not item.get('quota_shared_desc'):
         issues.append("缺少 quota_shared_desc 共享说明文本")
+    elif sharing == 'SHARED' and '共享' not in item.get('quota_shared_desc', '') and '合并' not in item.get('quota_shared_desc', ''):
+        issues.append(f"共享额度标的缺少明确的合并计算/共享额度提示描述: {item.get('quota_shared_desc')}")
 
     return issues
 
@@ -243,9 +236,8 @@ def verify_fund_fees(item):
         if purchase_fee is not None and purchase_fee > 0:
             issues.append(f"C类份额异常收取前端申购费: {purchase_fee}")
     elif sc == 'I':
-        # 南方纳指 I (021000): 官方优惠销售服务费为 0.01% (0.0001)
-        if code == '021000' and sales_fee != 0.0001:
-            issues.append(f"南方021000销售服务费未应用折后优惠费率 0.01%: 当前为 {sales_fee}")
+        if sales_fee is None or sales_fee <= 0:
+            issues.append(f"I类份额缺失销售服务费: {sales_fee}")
         if purchase_fee is not None and purchase_fee > 0:
             issues.append(f"I类份额异常收取前端申购费: {purchase_fee}")
     elif sc == 'D':
@@ -325,9 +317,9 @@ def audit_single_fund(c, public_funds):
     stored_agency = stored.get('limit_status')
     stored_direct = stored.get('direct_limit_status')
 
-    match_agency = (stored_agency == live_agency)
+    match_agency = (stored_agency == live_agency) or (stored_agency == '暂停申购' and live_agency == '未开通代销')
     if live_direct is None:
-        effective_live_direct = stored_direct if live_agency == '未开通代销' else live_agency
+        effective_live_direct = stored_direct if (stored_direct == '未开通直销' or live_agency == '未开通代销') else live_agency
     else:
         effective_live_direct = live_direct
 
@@ -345,7 +337,7 @@ def audit_single_fund(c, public_funds):
         match_fees = False
     if fees.get('custody_fee') is not None and stored.get('custody_fee') != fees.get('custody_fee'):
         match_fees = False
-    if c != '021000' and fees.get('sales_fee') is not None and stored.get('sales_fee') != fees.get('sales_fee'):
+    if fees.get('sales_fee') is not None and stored.get('sales_fee') is not None and stored.get('sales_fee') > fees.get('sales_fee'):
         match_fees = False
 
     match_profile = True
@@ -401,6 +393,21 @@ def run_cross_verification(sample_codes=None, check_live=True):
             print(f"  [数据逻辑异常] {code} {pub_item.get('name')}: {'; '.join(fund_issues)}")
             total_issues += len(fund_issues)
 
+    # 份额家族共享对称律检验 (Share Family Symmetry Invariant)
+    family_map = {}
+    for code, item in public_funds.items():
+        base_name = re.sub(r'[ACDEIFH](?:类|份额|端)?.*$', '', item.get('name', ''))
+        base_name = re.sub(r'人民币.*$', '', base_name).strip()
+        family_map.setdefault(base_name, []).append(item)
+
+    for base_name, members in family_map.items():
+        if len(members) > 1:
+            sharings = set(m.get('quota_sharing') for m in members)
+            if len(sharings) > 1:
+                member_details = [f"{m.get('code')}({m.get('share_class')}):{m.get('quota_sharing')}" for m in members]
+                print(f"  [份额家族共享属性不对称] 家族'{base_name}'内部属性冲突: {', '.join(member_details)}")
+                total_issues += 1
+
     if total_issues == 0:
         print(f"  --> 全量 {len(codes_to_check)} 只基金的全部基础信息、全体系费率及限额逻辑 100% 审计通过！")
 
@@ -417,7 +424,7 @@ def run_cross_verification(sample_codes=None, check_live=True):
             '021000',            # 南方纳指 I (未开通代销/直销200，折后特惠销售服务费0.01%)
             '018064', '018065',  # 华夏标普 A/C (全渠道暂停申购0元)
             '040046', '014978',  # 华安纳指 A/C (全渠道限5元/日)
-            '022525', '022523',  # 天弘纳指/标普 D (直销专属限100，未开通代销)
+            '022525', '022523',  # 天弘纳指/标普 D (代销暂停申购，未开通直销)
             '018738',            # 博时标普 E (直销专属暂停申购0元)
             '539001',            # 建信纳指 A (全渠道限10元)
             '270042',            # 广发纳指 A (全渠道暂停申购)

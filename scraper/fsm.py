@@ -20,7 +20,9 @@ class FSMClause:
     channel: str           # 'DIRECT', 'AGENCY', 'ALL'
     share_class: Optional[str] = None  # 'A', 'C', 'D', 'E', 'I', None
     fund_code: Optional[str] = None
-    action: Optional[str] = None       # 'SUSPEND', 'RESUME', 'ADJUST', 'RESTRICT'
+    fund_codes: List[str] = field(default_factory=list)
+    share_classes: List[str] = field(default_factory=list)
+    action: Optional[str] = None       # 'SUSPEND', 'RESUME', 'ADJUST', 'RESTRICT', 'NOT_OFFERED'
     quota: Optional[int] = None
     raw_quota_str: Optional[str] = None
 
@@ -35,15 +37,17 @@ class FSMResult:
     quota_sharing: Optional[str] = None  # 'SHARED', 'INDEPENDENT', 'NONE'
     quota_shared_desc: Optional[str] = None
     announcement_id: Optional[str] = None
+    is_direct_explicit: bool = False
+    is_agency_explicit: bool = False
     clauses: List[FSMClause] = field(default_factory=list)
 
 
 class FinancialEventFSM:
     """金融事件槽位填充有限状态机"""
 
-    # 标点符号与列表分句符
+    # 标点符号与列表分句符（保留行内标号，仅在换行或空白后的列表标号切分，避免中句破坏）
     CLAUSE_SPLIT_REGEX = re.compile(
-        r'[。\n；;\r]+|(?:[（(][0-9一二三四1234][)）])|(?:(?<=\s)[0-9一二三四1234][、\.])'
+        r'[。\n；;\r]+|(?:(?<=[\n\r\s])[（(][0-9一二三四1234][)）])'
     )
 
     # 调整模式：由 X 元调整为 Y 元 -> 捕获目标 Y
@@ -51,9 +55,11 @@ class FinancialEventFSM:
         r'由\D{0,15}?([0-9,]+(?:\.\d+)?)\s*元.*?(?:调整为|上调至|下调至|调整至)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*元'
     )
 
-    # 限额模式：不超过 / 上限 / 限额为 / 限制金额 X 元
+    # 限额模式：支持不超过/上限/限额为/高于X元限制/单笔X元以上暂停等全语系
     RESTRICT_REGEX = re.compile(
-        r'(?:不超过|不得超(?:过)?|限额(?:仍)?为?|上限为?|限制(?:金额)?(?:仍)?为?|限制金额|均应不超过)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)?'
+        r'(?:不超过|不得超(?:过)?|限额(?:仍)?为?|上限为?|限制(?:金额)?(?:仍)?为?|限制金额|均应不超过|限制为)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)?|'
+        r'(?:高于|超过|大于)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)?.*?(?:进行限制|有权拒绝|予以拒绝|有权不予确认|不予确认)|'
+        r'单笔(?:金额)?\s*([0-9,]+(?:\.\d+)?)\s*元以上.*?(?:暂停|限制)'
     )
 
     # 暂停申购（支持中间包含平台/机构描述，排除“暂停大额申购”）
@@ -66,8 +72,8 @@ class FinancialEventFSM:
 
     # 渠道未开通/暂不上线模式 (如: 暂不上线直销机构、未开通直销业务、不通过直销机构销售等)
     NOT_OFFERED_DIRECT_REGEX = re.compile(
-        r'(?:暂不上线|暂不通过|暂不开通|未开通|不通过|不开放|未上线)(?:\S{0,15}?)?(?:直销(?:机构|渠道|平台|系统|柜台)?|本公司直销)|'
-        r'直销(?:机构|渠道|平台|系统|柜台)?(?:\S{0,15}?)?(?:暂不上线|暂不开通|未开通|不销售|不开放|暂不办理)'
+        r'(?:暂不上线|暂不通过|暂不开通|未开通|不通过|不开放|未上线|不开展)(?:\S{0,15}?)?(?:直销(?:机构|渠道|平台|系统|柜台)?|本公司直销)|'
+        r'直销(?:机构|渠道|平台|系统|柜台)?(?:\S{0,15}?)?(?:暂不上线|暂不开通|未开通|不销售|不开放|暂不办理|未开放)'
     )
     NOT_OFFERED_AGENCY_REGEX = re.compile(
         r'(?:尚未开通|未开通|暂不开通|暂不上线)(?:\S{0,15}?)?代销|代销(?:机构|渠道)?(?:\S{0,15}?)?(?:暂不上线|暂不开通|未开通)'
@@ -112,7 +118,9 @@ class FinancialEventFSM:
         parsed_clauses: List[FSMClause] = []
 
         for raw_cl in clauses_raw:
-            cl = re.sub(r'\s+', '', raw_cl)
+            cl = re.sub(r'^[（(][0-9一二三四1234][)）]\s*', '', raw_cl)
+            cl = re.sub(r'^[0-9一二三四1234][、\.]\s*', '', cl)
+            cl = re.sub(r'\s+', '', cl)
             if not cl or len(cl) < 3:
                 continue
 
@@ -128,21 +136,16 @@ class FinancialEventFSM:
             else:
                 channel = 'ALL'
 
-            # 代码识别
-            cl_code = None
-            if fund_code and fund_code in cl:
-                cl_code = fund_code
-            else:
-                m_code = re.search(r'([0-9]{6})', cl)
-                if m_code:
-                    cl_code = m_code.group(1)
+            # 代码识别（支持多代码）
+            cl_codes = re.findall(r'([0-9]{6})', cl)
+            cl_code = fund_code if (fund_code and fund_code in cl_codes) else (cl_codes[0] if cl_codes else None)
 
-            # 份额识别
-            cl_class = None
-            for sc in ['A', 'C', 'D', 'E', 'I']:
+            # 份额识别（支持多份额）
+            cl_classes = []
+            for sc in ['A', 'C', 'D', 'E', 'I', 'F', 'H']:
                 if f'{sc}类' in cl or f'{sc}份额' in cl or f'{sc}端' in cl:
-                    cl_class = sc
-                    break
+                    cl_classes.append(sc)
+            cl_class = share_class if (share_class and share_class in cl_classes) else (cl_classes[0] if cl_classes else None)
 
             # 动作识别与槽位提取
             action = None
@@ -175,16 +178,50 @@ class FinancialEventFSM:
                 m_res = cls.RESTRICT_REGEX.search(cl)
                 if m_res:
                     action = 'RESTRICT'
-                    quota = int(float(m_res.group(1).replace(',', '')))
+                    val = m_res.group(1) or m_res.group(2) or m_res.group(3)
+                    quota = int(float(val.replace(',', '')))
 
             parsed_clauses.append(FSMClause(
                 text=cl,
                 channel=channel,
                 share_class=cl_class,
                 fund_code=cl_code,
+                fund_codes=cl_codes,
+                share_classes=cl_classes,
                 action=action,
                 quota=quota
             ))
+
+        # 结构化分级基金表格解析（如天弘代码与暂停/恢复业务映射表）
+        lines = [l.strip() for l in text_clean.splitlines() if l.strip()]
+        for i, line in enumerate(lines):
+            line_codes = re.findall(r'([0-9]{6})', line)
+            if len(line_codes) >= 2:
+                for j in range(i + 1, min(i + 6, len(lines))):
+                    flag_line = lines[j]
+                    flags = re.findall(r'([是否])', flag_line)
+                    if len(flags) == len(line_codes):
+                        is_susp = '暂停' in flag_line
+                        is_resume = '恢复' in flag_line or '开放' in flag_line
+                        for cd, flg in zip(line_codes, flags):
+                            act = None
+                            q = None
+                            if is_susp:
+                                act = 'SUSPEND' if flg == '是' else 'RESUME'
+                                q = 0 if flg == '是' else None
+                            elif is_resume:
+                                act = 'RESUME' if flg == '是' else 'SUSPEND'
+                                q = None if flg == '是' else 0
+                            if act:
+                                parsed_clauses.append(FSMClause(
+                                    text=f"表格项:{cd}_{act}",
+                                    channel='ALL',
+                                    fund_code=cd,
+                                    fund_codes=[cd],
+                                    action=act,
+                                    quota=q
+                                ))
+                        break
 
         result.clauses = parsed_clauses
 
@@ -200,20 +237,26 @@ class FinancialEventFSM:
 
             for c in parsed_clauses:
                 if c.channel in channels and c.action:
-                    if target_cd and c.fund_code == target_cd:
+                    if target_cd and (c.fund_code == target_cd or target_cd in c.fund_codes):
                         p1_code_match = c
                         break
-                    elif target_sc and c.share_class == target_sc:
+                    elif target_sc and (c.share_class == target_sc or target_sc in c.share_classes):
                         if not p2_class_match:
-                            p2_class_match = c
-                    elif not c.fund_code and not c.share_class:
+                            if not c.fund_codes or (target_cd and target_cd in c.fund_codes):
+                                p2_class_match = c
+                    elif not c.fund_codes and not c.share_classes:
                         if not p3_general:
                             p3_general = c
 
-            return p1_code_match or p2_class_match or p3_general
+            match_c = p1_code_match or p2_class_match or p3_general
+            is_explicit = (match_c is p1_code_match) or (match_c is p2_class_match)
+            return match_c, is_explicit
 
-        direct_candidate = resolve_channel_candidate(('DIRECT', 'DIRECT_AND_AGENCY', 'ALL'))
-        agency_candidate = resolve_channel_candidate(('AGENCY', 'DIRECT_AND_AGENCY', 'ALL'))
+        direct_candidate, is_direct_explicit = resolve_channel_candidate(('DIRECT', 'DIRECT_AND_AGENCY', 'ALL'))
+        agency_candidate, is_agency_explicit = resolve_channel_candidate(('AGENCY', 'DIRECT_AND_AGENCY', 'ALL'))
+
+        result.is_direct_explicit = is_direct_explicit
+        result.is_agency_explicit = is_agency_explicit
 
         if direct_candidate:
             if direct_candidate.action == 'NOT_OFFERED':
@@ -228,7 +271,7 @@ class FinancialEventFSM:
                 result.direct_daily_limit = None
                 result.direct_limit_status = '开放申购'
                 result.event_type = 'RESUME'
-            elif direct_candidate.action in ('ADJUST', 'RESTRICT') and direct_candidate.quota:
+            elif direct_candidate.action in ('ADJUST', 'RESTRICT') and direct_candidate.quota is not None:
                 result.direct_daily_limit = direct_candidate.quota
                 result.direct_limit_status = f'限{direct_candidate.quota}元/日'
                 result.event_type = direct_candidate.action
@@ -240,13 +283,18 @@ class FinancialEventFSM:
             elif agency_candidate.action == 'SUSPEND':
                 result.agency_daily_limit = 0
                 result.agency_limit_status = '暂停申购'
-                result.event_type = 'SUSPEND'
+                if result.event_type == 'UNKNOWN':
+                    result.event_type = 'SUSPEND'
             elif agency_candidate.action == 'RESUME':
                 result.agency_daily_limit = None
                 result.agency_limit_status = '开放申购'
-            elif agency_candidate.action in ('ADJUST', 'RESTRICT') and agency_candidate.quota:
+                if result.event_type == 'UNKNOWN':
+                    result.event_type = 'RESUME'
+            elif agency_candidate.action in ('ADJUST', 'RESTRICT') and agency_candidate.quota is not None:
                 result.agency_daily_limit = agency_candidate.quota
                 result.agency_limit_status = f'限{agency_candidate.quota}元/日'
+                if result.event_type == 'UNKNOWN':
+                    result.event_type = agency_candidate.action
 
         # 判定份额间额度共享属性 (Shared Quota vs Independent Quota)
         if cls.SEPARATE_QUOTA_REGEX.search(content):

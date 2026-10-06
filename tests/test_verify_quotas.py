@@ -45,7 +45,7 @@ class TestVerifyQuotas(unittest.TestCase):
         self.assertEqual(len(issues), 0)
 
     def test_verify_tianhong_d_class_channel_logic(self):
-        """测试天弘D类份额渠道逻辑校验：直销必须为'未开通直销'，代销为'暂停申购'"""
+        """测试D类定制份额与通用渠道逻辑：直销为'未开通直销'，代销为'暂停申购'符合守恒律"""
         valid_tianhong_d = {
             'code': '022525',
             'name': '天弘纳斯达克100指数发起(QDII)D',
@@ -58,22 +58,36 @@ class TestVerifyQuotas(unittest.TestCase):
         }
         self.assertEqual(len(verify_fund_logic(valid_tianhong_d)), 0)
 
-        # 错误情况：误标记为直销100元
-        bad_tianhong_d = {
+        # 违规情况1：两渠道均标记未开通（公募发售逻辑异常）
+        bad_both_unopened = {
             'code': '022525',
             'name': '天弘纳斯达克100指数发起(QDII)D',
             'limit_status': '未开通代销',
             'daily_limit': 0,
-            'direct_limit_status': '限100元/日',
-            'direct_daily_limit': 100,
+            'direct_limit_status': '未开通直销',
+            'direct_daily_limit': 0,
             'quota_sharing': 'SHARED',
-            'quota_shared_desc': '与A/C类合并暂停申购',
+            'quota_shared_desc': '与A/C类合并计算',
         }
-        issues = verify_fund_logic(bad_tianhong_d)
+        issues = verify_fund_logic(bad_both_unopened)
         self.assertGreater(len(issues), 0)
 
+        # 违规情况2：未开通直销但限额数值大于0
+        bad_unopened_limit = {
+            'code': '022525',
+            'name': '天弘纳斯达克100指数发起(QDII)D',
+            'limit_status': '暂停申购',
+            'daily_limit': 0,
+            'direct_limit_status': '未开通直销',
+            'direct_daily_limit': 100,
+            'quota_sharing': 'SHARED',
+            'quota_shared_desc': '与A/C类合并计算',
+        }
+        issues2 = verify_fund_logic(bad_unopened_limit)
+        self.assertGreater(len(issues2), 0)
+
     def test_verify_ccb_d_class_channel_logic(self):
-        """测试建信D类份额(023422)渠道逻辑：代销为'暂停申购'，直销为'限10元/日'"""
+        """测试建信D类份额(023422)等双轨限额渠道逻辑：代销为'暂停申购'，直销为'限10元/日'"""
         valid_ccb_d = {
             'code': '023422',
             'name': '建信纳斯达克100指数(QDII)D类',
@@ -86,11 +100,11 @@ class TestVerifyQuotas(unittest.TestCase):
         }
         self.assertEqual(len(verify_fund_logic(valid_ccb_d)), 0)
 
-        # 错误情况：代销误标为10元
+        # 错误情况：代销为暂停申购但额度不为0
         bad_ccb_d = {
             'code': '023422',
             'name': '建信纳斯达克100指数(QDII)D类',
-            'limit_status': '限10元/日',
+            'limit_status': '暂停申购',
             'daily_limit': 10,
             'direct_limit_status': '限10元/日',
             'direct_daily_limit': 10,

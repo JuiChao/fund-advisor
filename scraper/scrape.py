@@ -330,7 +330,6 @@ def scrape_limit_announcement(code):
             '恢复申购', '恢复大额', '恢复办理', '取消限额', '取消大额', '取消上限', '取消申购上限',
             '直销电子交易平台', '直销渠道',
             '规模上限', '总规模',
-            '费率优惠', '降低费率', '调整费率',
         ]
         target_ann_id = None
         # 根据当前基金份额类型，动态排除其他互斥份额的专属公告
@@ -403,12 +402,6 @@ def scrape_limit_announcement(code):
             'limit_announcement_id': target_ann_id
         }
 
-        # 优先排查基金设立或法律文件明确约定暂不上线直销机构的专属份额（如天弘D类）
-        if fallback_item.get('direct_limit_status') == '未开通直销' or (my_class == 'D' and '天弘' in fallback_item.get('manager_company', '')):
-            result['direct_daily_limit'] = 0
-            result['direct_limit_status'] = '未开通直销'
-            return result
-
         # === 核心解析：使用金融事件槽位有限状态机 (Financial Slot-Filling FSM) ===
         fsm_res = FinancialEventFSM.parse_announcement(
             content=content,
@@ -417,6 +410,13 @@ def scrape_limit_announcement(code):
             share_class=my_class,
             ann_id=target_ann_id
         )
+        result['is_direct_explicit'] = fsm_res.is_direct_explicit
+        result['agency_daily_limit'] = fsm_res.agency_daily_limit
+        result['agency_limit_status'] = fsm_res.agency_limit_status
+        result['is_agency_explicit'] = fsm_res.is_agency_explicit
+        result['quota_sharing'] = fsm_res.quota_sharing
+        result['quota_shared_desc'] = fsm_res.quota_shared_desc
+
         if fsm_res.direct_daily_limit is not None or fsm_res.direct_limit_status is not None:
             result['direct_daily_limit'] = fsm_res.direct_daily_limit
             result['direct_limit_status'] = fsm_res.direct_limit_status
@@ -680,7 +680,11 @@ def scrape_single_fund_record(code, index_type, fallback_item, cached_item=None,
         # 增量模式：复用已核验的静态信息与直销公告结论
         static_keys = ['full_name', 'fund_type', 'manager_company', 'custodian', 'manager_person', 'inception_date']
         fee_keys = ['mgmt_fee', 'custody_fee', 'sales_fee', 'purchase_fee']
-        ann_keys = ['direct_daily_limit', 'direct_limit_status', 'limit_announcement_id']
+        ann_keys = [
+            'direct_daily_limit', 'direct_limit_status', 'is_direct_explicit',
+            'agency_daily_limit', 'agency_limit_status', 'is_agency_explicit',
+            'quota_sharing', 'quota_shared_desc', 'limit_announcement_id'
+        ]
 
         f10_data = {k: cached_item[k] for k in static_keys if k in cached_item}
         fee_data = {k: cached_item[k] for k in fee_keys if k in cached_item}
@@ -691,53 +695,73 @@ def scrape_single_fund_record(code, index_type, fallback_item, cached_item=None,
             limit_data['daily_limit'] = page_data.get('daily_limit')
             limit_data['limit_status'] = page_data.get('limit_status')
 
-    # 先合并除限额公告外的所有数据（以获取最准确的代销状态，包含兜底逻辑）
+    # 先合并除限额公告外的所有数据
     merged = {**base, **page_data, **f10_data, **fee_data}
 
-    # 交叉验证与限额合并规则：
-    # 1. 天弘D类份额(022525, 022523)：设立法律文件明确约定暂不上线直销机构，且代销渠道(支付宝等)已暂停申购
-    if code in ('022525', '022523'):
-        merged['limit_status'] = '暂停申购'
-        merged['daily_limit'] = 0
+    # =========================================================================
+    # 通用渠道准入继承与法定公告第一信源权威裁决引擎 (彻底消除任何硬编码代码分支)
+    # =========================================================================
+
+    # 1. 直销渠道裁决 (Direct Sales Invariant):
+    direct_limit = limit_data.get('direct_daily_limit')
+    direct_status = limit_data.get('direct_limit_status')
+    is_direct_explicit = limit_data.get('is_direct_explicit', False)
+
+    # 准入保护律：若产品设立文件或基准档案载明“未开通直销”，在未发生显式针对本代码/份额的开通公告前，严格保持未开通
+    if base.get('direct_limit_status') == '未开通直销' and not is_direct_explicit:
         limit_data['direct_daily_limit'] = 0
         limit_data['direct_limit_status'] = '未开通直销'
-    # 2. 建信D类份额(023422)：代销渠道(支付宝等)实际已暂停申购，直销渠道依公告限10元/日
-    elif code == '023422':
-        merged['limit_status'] = '暂停申购'
-        merged['daily_limit'] = 0
-        limit_data['direct_daily_limit'] = 10
-        limit_data['direct_limit_status'] = '限10元/日'
-    # 3. 若代销是"未开通代销"，说明代销渠道未开放，不能将直销回退为代销状态（应保留直销提取额度或兜底）
-    elif merged.get('limit_status') == '未开通代销':
-        if limit_data.get('direct_daily_limit') is None:
-            limit_data['direct_daily_limit'] = base.get('direct_daily_limit', 0)
-            limit_data['direct_limit_status'] = base.get('direct_limit_status', '未开通直销' if base.get('direct_limit_status') == '未开通直销' else '暂停申购')
+    elif direct_status is not None:
+        # 权威采纳：最新法定公告显式解析出的直销限额与状态
+        limit_data['direct_daily_limit'] = direct_limit
+        limit_data['direct_limit_status'] = direct_status
     else:
-        # 代销已开通的情况：
-        agency_limit = merged.get('daily_limit')
+        # 未提取到直销专属公告时，直销渠道跟随代销或保持基准
         agency_status = merged.get('limit_status')
-        direct_limit = limit_data.get('direct_daily_limit')
-        direct_status = limit_data.get('direct_limit_status')
-
-        # 优先采纳从官方公告第一信源提取到的直销限额与政策（彻底废除历史硬编码白名单）
-        if direct_status is not None:
-            pass
-        # 仅当未提取到直销专属公告时，直销渠道默认跟随代销渠道政策：
-        elif agency_status == '暂停申购':
+        agency_limit = merged.get('daily_limit')
+        if agency_status == '暂停申购':
             limit_data['direct_daily_limit'] = 0
             limit_data['direct_limit_status'] = '暂停申购'
         elif agency_limit is not None and agency_limit > 0:
             limit_data['direct_daily_limit'] = agency_limit
-            limit_data['direct_limit_status'] = agency_status
+            limit_data['direct_limit_status'] = f'限{agency_limit}元/日'
         else:
-            limit_data['direct_daily_limit'] = agency_limit
-            limit_data['direct_limit_status'] = agency_status
+            limit_data['direct_daily_limit'] = base.get('direct_daily_limit')
+            limit_data['direct_limit_status'] = base.get('direct_limit_status')
 
-    # 合并限额公告数据及配额共享字段
-    merged.update(limit_data)
-    if not merged.get('quota_sharing'):
+    # 2. 代销渠道裁决 (Agency Sales Invariant):
+    agency_ann_status = limit_data.get('agency_limit_status')
+    agency_ann_limit = limit_data.get('agency_daily_limit')
+    is_agency_explicit = limit_data.get('is_agency_explicit', False)
+
+    # 准入保护律：若产品设立文件或基准档案载明“未开通代销”，在未发生显式针对本代码/份额的开通公告前，严格保持未开通
+    if base.get('limit_status') == '未开通代销' and not is_agency_explicit:
+        merged['limit_status'] = '未开通代销'
+        merged['daily_limit'] = 0
+    elif is_agency_explicit and agency_ann_status is not None:
+        # 公告显式指定了代销渠道政策，公告作为最高法定第一信源，裁决覆盖第三方网页
+        merged['limit_status'] = agency_ann_status
+        merged['daily_limit'] = agency_ann_limit
+    elif base.get('limit_status') == '暂停申购' and page_data.get('limit_status') == '未开通代销':
+        # 第三方单平台未上架（fundIsSale=false）不应冲掉已核验的代销“暂停申购”状态
+        merged['limit_status'] = '暂停申购'
+        merged['daily_limit'] = 0
+
+    # 3. 份额共享属性裁决 (Quota Sharing):
+    if limit_data.get('quota_sharing'):
+        merged['quota_sharing'] = limit_data['quota_sharing']
+        if limit_data.get('quota_shared_desc'):
+            merged['quota_shared_desc'] = limit_data['quota_shared_desc']
+    elif not merged.get('quota_sharing'):
         merged['quota_sharing'] = base.get('quota_sharing', 'SHARED')
         merged['quota_shared_desc'] = base.get('quota_shared_desc', '')
+
+    # 合并直销结果
+    merged['direct_daily_limit'] = limit_data.get('direct_daily_limit')
+    merged['direct_limit_status'] = limit_data.get('direct_limit_status')
+    if limit_data.get('limit_announcement_id'):
+        merged['limit_announcement_id'] = limit_data['limit_announcement_id']
+
     merged = validate(merged)
 
     # 确保有 name 字段
