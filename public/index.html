@@ -541,8 +541,11 @@
     <h1 class="page-title">蒙特卡洛模拟器</h1>
     <p class="page-sub">自定义参数，模拟定投收益分布</p>
     <div class="g2">
-        <div class="card">
-            <h3>参数设置</h3>
+        <div class="card sim-params-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border)">
+                <h3 style="margin:0"><span class="hub-icon">🎲</span> 模拟推演参数配置</h3>
+                <span style="font-size:0.75rem;color:var(--txt3)">5000次随机漫步</span>
+            </div>
             <div class="sim-quick-presets">
                 <span class="sim-preset-label">⚡ 快捷方案:</span>
                 <button type="button" class="btn-sim-preset" data-preset="risk_parity">⚖️ 风险平价 (38:62)</button>
@@ -552,13 +555,16 @@
                 <button type="button" class="btn-sim-preset" data-preset="low_fee">💎 极低费率</button>
             </div>
             <div class="ms-wrap">
-                <label>选择基金</label>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
+                    <label style="margin-bottom:0">选择标的基金</label>
+                    <span style="font-size:0.72rem;color:var(--txt3)">支持同时勾选多只并自定义配比</span>
+                </div>
                 <div class="ms-trigger" id="sim-sel-trigger">
                     <span class="ms-text" id="sim-sel-text">点击选择基金（可多选）</span>
                     <span class="ms-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
                 </div>
                 <div class="ms-dropdown" id="sim-sel-dropdown">
-                    <div class="ms-search"><input type="text" id="sim-sel-search" placeholder="搜索基金代码或名称..."></div>
+                    <div class="ms-search"><input type="text" id="sim-sel-search" placeholder="搜索基金代码、名称或管理人..."></div>
                     <div class="ms-list" id="sim-sel-list"></div>
                     <div class="ms-footer">
                         <button class="ms-sel-all" id="sim-sel-all">全选</button>
@@ -567,9 +573,12 @@
                 </div>
             </div>
             <div class="fg">
-                <label>每月预算</label>
-                <input type="range" id="sim-m" min="500" max="10000" step="100" value="2000">
-                <div class="rd"><span>¥500</span><strong id="sim-mv">¥2,000</strong><span>¥10,000</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+                    <label style="margin-bottom:0">每月定投预算</label>
+                    <span class="pf-current-val" id="sim-mv-badge">¥2,000 / 月</span>
+                </div>
+                <input type="range" id="sim-m" min="500" max="10000" step="100" value="2000" aria-label="每月预算">
+                <div class="rd"><span>¥500</span><strong id="sim-mv" style="display:none">¥2,000</strong><span>¥10,000</span></div>
                 <div class="preset-chips" data-for="sim-m">
                     <span class="preset-chip" data-val="1000">¥1,000</span>
                     <span class="preset-chip active" data-val="2000">¥2,000</span>
@@ -579,9 +588,12 @@
                 </div>
             </div>
             <div class="fg">
-                <label>投资年限</label>
-                <input type="range" id="sim-y" min="5" max="30" step="1" value="20">
-                <div class="rd"><span>5年</span><strong id="sim-yv">20年</strong><span>30年</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+                    <label style="margin-bottom:0">投资年限跨度</label>
+                    <span class="pf-current-val" id="sim-yv-badge">20 年</span>
+                </div>
+                <input type="range" id="sim-y" min="5" max="30" step="1" value="20" aria-label="投资年限">
+                <div class="rd"><span>5年</span><strong id="sim-yv" style="display:none">20年</strong><span>30年</span></div>
                 <div class="preset-chips" data-for="sim-y">
                     <span class="preset-chip" data-val="5">5年</span>
                     <span class="preset-chip" data-val="10">10年</span>
@@ -591,53 +603,121 @@
             </div>
             
             <!-- 定投权重分配 -->
-            <div id="sim-weights-container" style="display:none; margin: 1.25rem 0;">
-                <label style="display:block; margin-bottom: 0.5rem; font-weight:600; font-size:0.85rem; color:var(--txt);">资金定投分配比例</label>
+            <div id="sim-weights-container" style="display:none; margin: 1.25rem 0; padding: 0.9rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.65rem;">
+                    <label style="margin:0; font-weight:700; font-size:0.8125rem; color:var(--txt);">资金定投分配比例</label>
+                    <span style="font-size:0.72rem; color:var(--ok); font-weight:600;">总和 100% ✨</span>
+                </div>
                 <div id="sim-weights-list" style="display:flex; flex-direction:column; gap: 0.85rem;"></div>
             </div>
 
-            <button class="btn btn-p" id="btn-sim" style="width:100%;margin-top:.5rem">运行模拟</button>
+            <button class="btn btn-p" id="btn-sim" style="width:100%;margin-top:.75rem;padding:0.7rem;font-size:0.92rem;font-weight:750">🚀 运行蒙特卡洛模拟推演</button>
         </div>
-        <div class="card"><h3>模拟结果</h3><div id="sim-result"><p style="color:var(--txt3);text-align:center;padding:2rem">选择基金后点击运行</p></div></div>
+        <div class="card sim-result-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border)">
+                <h3 style="margin:0"><span class="hub-icon">📊</span> 财富概率分布全景看板</h3>
+                <span style="font-size:0.75rem;color:var(--txt3)">真实市场随机漫步推演</span>
+            </div>
+            <div id="sim-result">
+                <div style="text-align:center;padding:3rem 1rem;color:var(--txt3)">
+                    <div style="font-size:2.5rem;margin-bottom:0.6rem">🎲</div>
+                    <div style="font-size:0.95rem;font-weight:600;color:var(--txt2);margin-bottom:0.35rem">等待启动推演</div>
+                    <div style="font-size:0.8rem">请在左侧选择基金标的与定投预算，点击“运行模拟”查看财富概率分布</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card" style="margin-top:1.25rem"><h3>收益分布</h3><div style="max-width:650px;margin:0 auto"><canvas id="ch-sim"></canvas></div></div>
+    <div class="card" style="margin-top:1.25rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <h3 style="margin:0"><span class="hub-icon">📈</span> 终值收益概率阶梯图</h3>
+            <span style="font-size:0.75rem;color:var(--txt3)">单位：万元</span>
+        </div>
+        <div style="max-width:700px;margin:0 auto"><canvas id="ch-sim"></canvas></div>
+    </div>
 </div>
 
 <!-- ===== 定投方案 ===== -->
 <div id="page-portfolio" style="display:none" class="fade-in">
     <h1 class="page-title">多策略定投方案</h1>
     <p class="page-sub">经典策略与量化模型 · 蒙特卡洛模拟全周期通算</p>
-    <div class="g2" style="margin-bottom:1.25rem">
-        <div class="fg">
-            <label>每月预算</label>
-            <input type="range" id="pf-m" min="500" max="10000" step="100" value="2000">
-            <div class="rd"><span>¥500</span><strong id="pf-mv">¥2,000</strong><span>¥10,000</span></div>
-            <div class="preset-chips" data-for="pf-m">
-                <span class="preset-chip" data-val="1000">¥1,000</span>
-                <span class="preset-chip active" data-val="2000">¥2,000</span>
-                <span class="preset-chip" data-val="3000">¥3,000</span>
-                <span class="preset-chip" data-val="5000">¥5,000</span>
-                <span class="preset-chip" data-val="10000">¥10,000</span>
+
+    <!-- 定投方案控制中枢 -->
+    <div class="pf-control-hub">
+        <!-- 第一层：参数设置面板 -->
+        <div class="pf-params-card card">
+            <div class="pf-params-header">
+                <div class="pf-params-title">
+                    <span class="hub-icon">⚙️</span>
+                    <div>
+                        <h3 style="margin:0;font-size:1rem;color:var(--txt)">定投基础参数与预算配置</h3>
+                        <p style="margin:2px 0 0;font-size:0.75rem;color:var(--txt3)">设定每月闲钱与长期定投周期，系统将自动通算各大配置方案的资产配比与终值预期</p>
+                    </div>
+                </div>
+                <button class="btn btn-p btn-pf-calc" id="btn-pf">
+                    <span class="btn-calc-icon">⚡</span> 智能计算方案
+                </button>
+            </div>
+            
+            <div class="g2 pf-inputs-grid">
+                <div class="fg pf-fg">
+                    <div class="pf-label-row">
+                        <label for="pf-m">每月预算</label>
+                        <span class="pf-current-val" id="pf-mv-badge">¥2,000 / 月</span>
+                    </div>
+                    <input type="range" id="pf-m" min="500" max="10000" step="100" value="2000" aria-label="每月预算">
+                    <div class="rd"><span>¥500</span><strong id="pf-mv" style="display:none">¥2,000</strong><span>¥10,000</span></div>
+                    <div class="preset-chips" data-for="pf-m">
+                        <span class="preset-chip" data-val="1000">¥1,000</span>
+                        <span class="preset-chip active" data-val="2000">¥2,000</span>
+                        <span class="preset-chip" data-val="3000">¥3,000</span>
+                        <span class="preset-chip" data-val="5000">¥5,000</span>
+                        <span class="preset-chip" data-val="10000">¥10,000</span>
+                    </div>
+                </div>
+                <div class="fg pf-fg">
+                    <div class="pf-label-row">
+                        <label for="pf-y">投资年限</label>
+                        <span class="pf-current-val" id="pf-yv-badge">20 年</span>
+                    </div>
+                    <input type="range" id="pf-y" min="5" max="30" step="1" value="20" aria-label="投资年限">
+                    <div class="rd"><span>5年</span><strong id="pf-yv" style="display:none">20年</strong><span>30年</span></div>
+                    <div class="preset-chips" data-for="pf-y">
+                        <span class="preset-chip" data-val="5">5年</span>
+                        <span class="preset-chip" data-val="10">10年</span>
+                        <span class="preset-chip active" data-val="20">20年 (黄金复利期)</span>
+                        <span class="preset-chip" data-val="30">30年</span>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="fg">
-            <label>投资年限</label>
-            <input type="range" id="pf-y" min="5" max="30" step="1" value="20">
-            <div class="rd"><span>5年</span><strong id="pf-yv">20年</strong><span>30年</span></div>
-            <div class="preset-chips" data-for="pf-y">
-                <span class="preset-chip" data-val="5">5年</span>
-                <span class="preset-chip" data-val="10">10年</span>
-                <span class="preset-chip active" data-val="20">20年 (黄金复利期)</span>
-                <span class="preset-chip" data-val="30">30年</span>
+
+        <!-- 第二层：策略分类工具条 -->
+        <div class="pf-filter-toolbar">
+            <div class="pf-filter-group">
+                <div class="pf-filter-label">
+                    <span class="label-icon">🧭</span>
+                    <span>策略分类:</span>
+                </div>
+                <div class="seg-control pf-category-pills" id="pf-category-filter">
+                    <button type="button" class="filter-pill seg-btn on" data-category="ALL">
+                        <span class="pill-title">全部策略</span>
+                        <span class="pill-count" id="count-strat-all">5</span>
+                    </button>
+                    <button type="button" class="filter-pill seg-btn" data-category="traditional">
+                        <span class="pill-title">经典传统</span>
+                        <span class="pill-sub">平衡/进取/稳健</span>
+                        <span class="pill-count" id="count-strat-trad">3</span>
+                    </button>
+                    <button type="button" class="filter-pill seg-btn" data-category="quant">
+                        <span class="pill-title">💎 量化专区</span>
+                        <span class="pill-sub">风险平价/最大夏普</span>
+                        <span class="pill-count" id="count-strat-quant">2</span>
+                    </button>
+                </div>
             </div>
-        </div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
-        <button class="btn btn-p" id="btn-pf">重新计算</button>
-        <div class="seg-control" id="pf-category-filter" style="margin-bottom:0">
-            <button class="seg-btn on" data-category="ALL">全部策略 (5)</button>
-            <button class="seg-btn" data-category="traditional">经典传统 (3)</button>
-            <button class="seg-btn" data-category="quant">💎 量化专区 (2)</button>
+            <div class="pf-summary-text" id="pf-summary-text">
+                当前展示 <strong>5</strong> 组配置方案
+            </div>
         </div>
     </div>
 
@@ -690,6 +770,11 @@
 <div id="page-guide" style="display:none" class="fade-in article-container">
     <h1 class="page-title">投资指南与指数科普</h1>
     <p class="page-sub">构建科学的理财框架 · 深度解析定投策略与核心资产</p>
+    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin:0.75rem 0 1.5rem">
+        <span class="tag" style="background:rgba(99,102,241,0.1);color:var(--accent2);border:1px solid rgba(99,102,241,0.25)">📚 深度投研指南</span>
+        <span class="tag" style="background:rgba(16,185,129,0.1);color:var(--ok);border-color:rgba(16,185,129,0.25)">⏱️ 阅读用时约 8 分钟</span>
+        <span class="tag" style="background:var(--surface2);color:var(--txt2);border:1px solid var(--border)">🎯 QDII 选基 / 汇率管理 / 止盈体系</span>
+    </div>
 
     <article class="article-content">
         <h2>一、为什么选择指数基金定投？</h2>
@@ -876,6 +961,11 @@
 <div id="page-about" style="display:none" class="fade-in article-container">
     <h1 class="page-title">关于 Fund Advisor</h1>
     <p class="page-sub">平台介绍 · 免责声明 · 隐私政策</p>
+    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin:0.75rem 0 1.5rem">
+        <span class="tag" style="background:rgba(99,102,241,0.1);color:var(--accent2);border:1px solid rgba(99,102,241,0.25)">🛡️ 独立客观</span>
+        <span class="tag" style="background:rgba(16,185,129,0.1);color:var(--ok);border-color:rgba(16,185,129,0.25)">📊 数据每日自动更新</span>
+        <span class="tag" style="background:var(--surface2);color:var(--txt2);border:1px solid var(--border)">🔒 本地计算隐私安全</span>
+    </div>
 
     <article class="article-content">
         <h2>平台介绍</h2>

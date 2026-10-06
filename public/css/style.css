@@ -1446,31 +1446,344 @@ input[type=range]::-moz-range-thumb {
     border: 1px solid rgba(14, 165, 233, 0.25);
 }
 
-/* ===== Portfolio Tabs ===== */
-.pf-tabs {
+/* ===== 定投方案控制中枢 (Portfolio Control Hub) ===== */
+.pf-control-hub {
     display: flex;
-    gap: .25rem;
-    background: var(--surface2);
-    border-radius: var(--radius-sm);
-    padding: 4px;
-    margin-bottom: 1rem;
-    width: fit-content;
-    border: 1px solid var(--border);
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
+
+.pf-params-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 0;
+}
+
+.pf-params-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.pf-params-title {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.hub-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.btn-pf-calc {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.35rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.28);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-pf-calc:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.38);
+}
+
+.pf-inputs-grid {
+    margin-bottom: 0;
+}
+
+.pf-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
+.pf-label-row label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--txt);
+    margin-bottom: 0;
+}
+
+.pf-current-val {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent2);
+    background: rgba(99, 102, 241, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.pf-filter-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1.15rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.pf-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.pf-filter-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--txt2);
+    user-select: none;
+}
+
+.pf-category-pills {
+    display: inline-flex;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    flex-wrap: wrap;
+}
+
+.pf-summary-text {
+    font-size: 0.78rem;
+    color: var(--txt3);
+}
+
+/* 策略卡片升级 */
+.pf-card-header {
+    margin-bottom: 0.85rem;
+}
+
+.pf-card-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.pf-strat-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.pf-strat-name {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 750;
+    color: var(--txt);
+}
+
+.pf-strat-badges {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: 0.5rem;
+}
+
+.pf-weight-pill {
+    background: var(--surface2);
+    color: var(--txt2);
+    border: 1px solid var(--border);
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+/* ===== Portfolio Tabs 升级 ===== */
+.pf-tabs {
+    display: inline-flex;
+    gap: 6px;
+    background: var(--surface2);
+    border-radius: 9px;
+    padding: 4px;
+    margin-bottom: 1.1rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
 .pf-tab {
     background: transparent;
     color: var(--txt2);
     border: none;
-    padding: .5rem 1.2rem;
+    padding: 0.48rem 1.1rem;
     border-radius: 7px;
-    font-size: .8125rem;
+    font-size: 0.8125rem;
     font-weight: 700;
     cursor: pointer;
     transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: inherit;
+    line-height: 1.2;
 }
-.pf-tab:hover { color: var(--txt); background: rgba(79, 110, 247, 0.06); }
-.pf-tab.on { background: var(--accent-g); color: #fff; box-shadow: 0 2px 12px rgba(79, 110, 247, 0.3); }
+
+.pf-tab:hover {
+    color: var(--txt);
+    background: rgba(99, 102, 241, 0.06);
+}
+
+.pf-tab.on {
+    background: var(--accent-g);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(79, 70, 229, 0.28);
+}
+
+.pf-tab-sub {
+    font-size: 0.68rem;
+    font-weight: 400;
+    opacity: 0.75;
+    margin-left: 2px;
+}
+
+.pf-tab.on .pf-tab-sub {
+    opacity: 0.95;
+    color: #fff;
+}
+
 .pf-panel { animation: fadeIn .25s ease-out; }
+
+/* ===== 蒙特卡洛模拟推演看板 (Monte Carlo Spectrum Dashboard) ===== */
+.sim-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.sim-kpi-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.sim-kpi-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.sim-kpi-label {
+    font-size: 0.72rem;
+    color: var(--txt3);
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.sim-kpi-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--txt);
+    line-height: 1.2;
+}
+
+.sim-kpi-sub {
+    font-size: 0.68rem;
+    color: var(--txt3);
+    margin-top: 0.25rem;
+}
+
+.sim-percentile-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-top: 0.85rem;
+}
+
+.sim-percentile-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    transition: var(--transition);
+}
+
+.sim-percentile-item:hover {
+    border-color: var(--border2);
+    background: rgba(99, 102, 241, 0.04);
+}
+
+.sim-percentile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    margin-bottom: 0.4rem;
+}
+
+.sim-percentile-name {
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.sim-percentile-val {
+    font-weight: 800;
+    font-size: 0.875rem;
+}
+
+.sim-percentile-multiple {
+    font-size: 0.7rem;
+    color: var(--txt3);
+    margin-left: 0.35rem;
+    font-weight: 500;
+}
+
+.sim-bar-wrap {
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.sim-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 模拟器快捷方案药丸状态 */
+.btn-sim-preset.active {
+    background: var(--accent-g);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+}
 
 
 
@@ -1914,6 +2227,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .rank-filter-pills { width: 100%; }
     .filter-pill { padding: 0.32rem 0.65rem; font-size: 0.78rem; }
     .rank-filter-footer { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .pf-params-header { flex-direction: column; align-items: stretch; }
+    .btn-pf-calc { width: 100%; justify-content: center; }
+    .pf-filter-toolbar { flex-direction: column; align-items: stretch; }
+    .pf-category-pills { width: 100%; }
+    .pf-category-pills .filter-pill { flex: 1; justify-content: center; font-size: 0.78rem; }
+    .sim-kpi-grid { grid-template-columns: 1fr; }
+    .sim-quick-presets { gap: 0.35rem; }
+    .btn-sim-preset { font-size: 0.75rem; padding: 0.3rem 0.6rem; }
     .article-container { padding: 1.25rem; }
     .seo-faq { padding: 1.25rem; }
     .algo-grid { grid-template-columns: 1fr; }

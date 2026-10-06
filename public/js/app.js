@@ -156,6 +156,8 @@ const App = (() => {
     function initSimQuickPresets() {
         document.querySelectorAll('.btn-sim-preset').forEach(btn => {
             btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn-sim-preset').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 const preset = btn.dataset.preset;
                 const isBuyableFund = f => {
                     const s = f.limit_status || '';
@@ -217,6 +219,40 @@ const App = (() => {
         if (f <= 0.01) return '';
         return 'color:#f87171';
     }
+    const fmtMoney = v => '¥' + Number(v).toLocaleString('zh-CN');
+
+    function syncSliderBadges() {
+        const sm = document.getElementById('sim-m');
+        const sy = document.getElementById('sim-y');
+        const pm = document.getElementById('pf-m');
+        const py = document.getElementById('pf-y');
+        if (sm) {
+            const v = fmtMoney(sm.value);
+            const el = document.getElementById('sim-mv');
+            if (el) el.textContent = v;
+            const b = document.getElementById('sim-mv-badge');
+            if (b) b.textContent = v + ' / 月';
+        }
+        if (sy) {
+            const el = document.getElementById('sim-yv');
+            if (el) el.textContent = sy.value + '年';
+            const b = document.getElementById('sim-yv-badge');
+            if (b) b.textContent = sy.value + ' 年';
+        }
+        if (pm) {
+            const v = fmtMoney(pm.value);
+            const el = document.getElementById('pf-mv');
+            if (el) el.textContent = v;
+            const b = document.getElementById('pf-mv-badge');
+            if (b) b.textContent = v + ' / 月';
+        }
+        if (py) {
+            const el = document.getElementById('pf-yv');
+            if (el) el.textContent = py.value + '年';
+            const b = document.getElementById('pf-yv-badge');
+            if (b) b.textContent = py.value + ' 年';
+        }
+    }
 
     // ===== 页面切换与 TDK 动态更新 =====
     const PAGE_TDK = {
@@ -273,8 +309,14 @@ const App = (() => {
             }
             renderRanking();
         }
-        if (pName === 'simulator') populateSimSelect();
-        if (pName === 'portfolio') computePortfolio();
+        if (pName === 'simulator') {
+            populateSimSelect();
+            syncSliderBadges();
+        }
+        if (pName === 'portfolio') {
+            computePortfolio();
+            syncSliderBadges();
+        }
     }
 
     function initNav() {
@@ -1122,20 +1164,64 @@ const App = (() => {
                 allocNote += `</p>`;
             }
 
+            const invested = result.totalInvested || (monthly * years * 12);
+            const medianVal = result.medianFinal || 0;
+            const profit = medianVal - invested;
+            const profitMultiple = (invested > 0 ? (medianVal / invested).toFixed(1) : '1.0') + 'x';
+            const maxVal = Math.max(result.p95 || 1, 1);
+
+            const percentiles = [
+                { key: 'p5', name: '5% 极度悲观', desc: '长熊低迷与黑天鹅底线', val: result.p5, color: '#f87171' },
+                { key: 'p25', name: '25% 市场保守', desc: '周期性调整偏弱行情', val: result.p25, color: '#fbbf24' },
+                { key: 'p50', name: '50% 典型中位', desc: '最可能达成的基准预期', val: result.medianFinal, color: '#6366f1', isMedian: true },
+                { key: 'p75', name: '75% 良好发展', desc: '顺风市场与稳健牛市', val: result.p75, color: '#34d399' },
+                { key: 'p95', name: '95% 极度乐观', desc: '繁荣超级大牛市顶点', val: result.p95, color: '#22d3ee' }
+            ];
+
+            let pListHtml = percentiles.map(p => {
+                const pctOfMax = Math.min(100, Math.max(10, Math.round((p.val / maxVal) * 100)));
+                const mult = invested > 0 ? (p.val / invested).toFixed(1) + 'x 本金' : '';
+                return `
+                <div class="sim-percentile-item" style="${p.isMedian ? 'border-color:rgba(99,102,241,0.4);background:rgba(99,102,241,0.06)' : ''}">
+                    <div class="sim-percentile-header">
+                        <span class="sim-percentile-name" style="color:${p.color}">
+                            <span>●</span> ${p.name}
+                            <span style="font-size:0.7rem;color:var(--txt3);font-weight:normal;margin-left:4px">(${p.desc})</span>
+                        </span>
+                        <span class="sim-percentile-val" style="${p.isMedian ? 'color:var(--accent2)' : ''}">
+                            ${money(p.val)}
+                            <span class="sim-percentile-multiple">(${mult})</span>
+                        </span>
+                    </div>
+                    <div class="sim-bar-wrap">
+                        <div class="sim-bar" style="width:${pctOfMax}%;background:${p.color}"></div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
             document.getElementById('sim-result').innerHTML = `
                 ${allocNote}
-                <div class="stats">
-                    <div class="stat"><div class="lb">总投入</div><div class="vl" style="font-size:1.15rem">${money(result.totalInvested)}</div></div>
-                    <div class="stat"><div class="lb">预期终值</div><div class="vl" style="font-size:1.15rem;color:var(--ok)">${money(result.medianFinal)}</div></div>
-                    <div class="stat"><div class="lb">年化收益</div><div class="vl" style="font-size:1.15rem;color:var(--accent2)">${result.annualReturn}%</div></div>
+                <div class="sim-kpi-grid">
+                    <div class="sim-kpi-card">
+                        <div class="sim-kpi-label">累计本金投入</div>
+                        <div class="sim-kpi-value">${money(invested)}</div>
+                        <div class="sim-kpi-sub">¥${monthly}/月 × ${years}年</div>
+                    </div>
+                    <div class="sim-kpi-card" style="border-color:rgba(16,185,129,0.3);background:linear-gradient(180deg, var(--surface2) 0%, rgba(16,185,129,0.06) 100%)">
+                        <div class="sim-kpi-label">中位数终值预期</div>
+                        <div class="sim-kpi-value" style="color:var(--ok)">${money(medianVal)}</div>
+                        <div class="sim-kpi-sub" style="color:var(--ok);font-weight:600">收益 +${money(profit)} (${profitMultiple})</div>
+                    </div>
+                    <div class="sim-kpi-card" style="border-color:rgba(99,102,241,0.3);background:linear-gradient(180deg, var(--surface2) 0%, rgba(99,102,241,0.06) 100%)">
+                        <div class="sim-kpi-label">年化复合收益 (CAGR)</div>
+                        <div class="sim-kpi-value" style="color:var(--accent2)">${result.annualReturn}%</div>
+                        <div class="sim-kpi-sub">平滑复利中位数</div>
+                    </div>
                 </div>
-                <table style="margin-top:.75rem">
-                    <tr><td style="color:var(--err)">5% 悲观</td><td><strong>${money(result.p5)}</strong></td></tr>
-                    <tr><td>25%</td><td><strong>${money(result.p25)}</strong></td></tr>
-                    <tr><td style="color:var(--accent2)">50% 中位</td><td><strong>${money(result.medianFinal)}</strong></td></tr>
-                    <tr><td>75%</td><td><strong>${money(result.p75)}</strong></td></tr>
-                    <tr><td style="color:var(--ok)">95% 乐观</td><td><strong>${money(result.p95)}</strong></td></tr>
-                </table>`;
+                <div class="sim-percentile-list">
+                    ${pListHtml}
+                </div>`;
 
             if (chartPool.sim) chartPool.sim.destroy();
             chartPool.sim = new Chart(document.getElementById('ch-sim'), {
@@ -1274,13 +1360,20 @@ const App = (() => {
 
     function applyPortfolioCategoryFilter(targetCat) {
         const cat = targetCat || document.querySelector('#pf-category-filter .seg-btn.on')?.dataset?.category || 'ALL';
-        document.querySelectorAll('#pf-container .pf-card').forEach(card => {
+        let matchCount = 0;
+        const allCards = document.querySelectorAll('#pf-container .pf-card');
+        allCards.forEach(card => {
             if (cat === 'ALL' || card.dataset.category === cat) {
                 card.style.display = '';
+                matchCount++;
             } else {
                 card.style.display = 'none';
             }
         });
+        const summaryEl = document.getElementById('pf-summary-text');
+        if (summaryEl) {
+            summaryEl.innerHTML = `当前展示 <strong style="color:var(--accent2);font-weight:700">${matchCount}</strong> / ${allCards.length} 组配置方案`;
+        }
     }
 
     async function computePortfolio() {
@@ -1444,12 +1537,29 @@ const App = (() => {
                     : `<span class="tag" style="background:var(--surface2);color:var(--txt2);margin-left:6px">${s.tag || '经典风格'}</span>`;
 
                 html += `<div class="card pf-card" id="pf-card-${s.key}" data-category="${cat}">
-                    <h3>${s.icon || ''} ${s.name} <span class="tag">${Math.round((s.nq_pct||0)*100)}% 纳指 + ${Math.round((1-(s.nq_pct||0))*100)}% 标普</span>${catBadge}</h3>
-                    <p style="color:var(--txt2);font-size:.8125rem;margin-bottom:1rem">${s.description || ''}</p>
+                    <div class="pf-card-header">
+                        <div class="pf-card-title-group">
+                            <span class="pf-strat-icon">${s.icon || '📐'}</span>
+                            <div>
+                                <h3 class="pf-strat-name">${s.name}</h3>
+                                <div class="pf-strat-badges">
+                                    <span class="tag pf-weight-pill">📈 ${Math.round((s.nq_pct||0)*100)}% 纳指 + 📊 ${Math.round((1-(s.nq_pct||0))*100)}% 标普</span>
+                                    ${catBadge}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="color:var(--txt2);font-size:.8125rem;margin-bottom:1rem;line-height:1.5">${s.description || ''}</p>
 
                     <div class="pf-tabs" data-strategy="${s.key}">
-                        <button class="pf-tab on" data-variant="ideal">理论最优</button>
-                        <button class="pf-tab" data-variant="practical">实际可买</button>
+                        <button class="pf-tab on" data-variant="ideal">
+                            <span>🎯</span> 理论最优
+                            <span class="pf-tab-sub">无申购限制</span>
+                        </button>
+                        <button class="pf-tab" data-variant="practical">
+                            <span>🛒</span> 实际可买
+                            <span class="pf-tab-sub">穿透真实限额</span>
+                        </button>
                     </div>
 
                     <div class="pf-panel" id="pf-${s.key}-ideal">
@@ -2068,6 +2178,7 @@ const App = (() => {
             initNav();
             initPresetChips();
             initSimQuickPresets();
+            syncSliderBadges();
         } catch (e) {
             document.getElementById('home-stats').innerHTML = '<div class="card"><p style="color:var(--err)">数据加载失败: ' + e.message + '</p></div>';
         }
@@ -2099,7 +2210,6 @@ const App = (() => {
             }
         });
 
-        const fmtMoney = v => '¥' + Number(v).toLocaleString('zh-CN');
         // 算法说明折叠
         const algoToggle = document.getElementById('algo-toggle');
         if (algoToggle) {
@@ -2150,12 +2260,28 @@ const App = (() => {
             });
         }
         document.getElementById('sim-m').addEventListener('input', e => {
-            document.getElementById('sim-mv').textContent = fmtMoney(e.target.value);
+            const val = fmtMoney(e.target.value);
+            document.getElementById('sim-mv').textContent = val;
+            const b = document.getElementById('sim-mv-badge');
+            if (b) b.textContent = val + ' / 月';
             updateWeightDisplays();
         });
-        document.getElementById('sim-y').addEventListener('input', e => document.getElementById('sim-yv').textContent = e.target.value + '年');
-        document.getElementById('pf-m').addEventListener('input', e => document.getElementById('pf-mv').textContent = fmtMoney(e.target.value));
-        document.getElementById('pf-y').addEventListener('input', e => document.getElementById('pf-yv').textContent = e.target.value + '年');
+        document.getElementById('sim-y').addEventListener('input', e => {
+            document.getElementById('sim-yv').textContent = e.target.value + '年';
+            const b = document.getElementById('sim-yv-badge');
+            if (b) b.textContent = e.target.value + ' 年';
+        });
+        document.getElementById('pf-m').addEventListener('input', e => {
+            const val = fmtMoney(e.target.value);
+            document.getElementById('pf-mv').textContent = val;
+            const b = document.getElementById('pf-mv-badge');
+            if (b) b.textContent = val + ' / 月';
+        });
+        document.getElementById('pf-y').addEventListener('input', e => {
+            document.getElementById('pf-yv').textContent = e.target.value + '年';
+            const b = document.getElementById('pf-yv-badge');
+            if (b) b.textContent = e.target.value + ' 年';
+        });
         document.getElementById('btn-sim').addEventListener('click', runSimulation);
         document.getElementById('btn-pf').addEventListener('click', computePortfolio);
 
