@@ -57,9 +57,10 @@ class FinancialEventFSM:
 
     # 限额模式：支持不超过/上限/限额为/高于X元限制/单笔X元以上暂停等全语系
     RESTRICT_REGEX = re.compile(
-        r'(?:不超过|不得超(?:过)?|限额(?:仍)?为?|上限为?|限制(?:金额)?(?:仍)?为?|限制金额|均应不超过|限制为)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)?|'
-        r'(?:高于|超过|大于)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)\s*(?:元|元人民币)?.*?(?:进行限制|有权拒绝|予以拒绝|有权不予确认|不予确认)|'
-        r'单笔(?:金额)?\s*([0-9,]+(?:\.\d+)?)\s*元以上.*?(?:暂停|限制)'
+        r'(?:不超过|不得超(?:过)?|限额(?:仍)?为?|上限为?|限制(?:申购)?(?:金额)?(?:仍)?(?:调整)?为?|限制金额|均应不超过|限制为)'
+        r'(?:\s*[(（]单位[：:]\s*(?:人民币)?元[)）])?\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)(?![0-9,\.]*\s*[亿万])\s*(?:元|元人民币)?|'
+        r'(?:高于|超过|大于)\s*(?:人民币)?\s*([0-9,]+(?:\.\d+)?)(?![0-9,\.]*\s*[亿万])\s*(?:元|元人民币)?.*?(?:进行限制|有权(?:部分或全部)?拒绝|予以拒绝|有权不予确认|不予确认)|'
+        r'单笔(?:金额)?\s*([0-9,]+(?:\.\d+)?)(?![0-9,\.]*\s*[亿万])\s*元以上.*?(?:暂停|限制)'
     )
 
     # 暂停申购（支持中间包含平台/机构描述，排除“暂停大额申购”）
@@ -113,6 +114,8 @@ class FinancialEventFSM:
 
         # 2. 正文清理与分句切分
         text_clean = re.sub(r'<[^>]+>', ' ', content or '')
+        # 将行内软折行替换为空格，避免PDF/表格提取时中句断裂
+        text_clean = re.sub(r'(?<![。；;\n\r])\n(?![0-9一二三四1234][、\.（(])', ' ', text_clean)
         clauses_raw = cls.CLAUSE_SPLIT_REGEX.split(text_clean)
 
         parsed_clauses: List[FSMClause] = []
@@ -165,8 +168,8 @@ class FinancialEventFSM:
                 m_adj = cls.ADJUST_REGEX.search(cl)
                 action = 'ADJUST'
                 quota = int(float(m_adj.group(2).replace(',', '')))
-            # (c) 检查是否暂停申购
-            elif cls.SUSPEND_REGEX.search(cl) and '暂停大额' not in cl:
+            # (c) 检查是否暂停申购（严格排除大额申购限制，含“暂停大额”及“暂停（大额）”）
+            elif cls.SUSPEND_REGEX.search(cl) and '大额' not in cl:
                 action = 'SUSPEND'
                 quota = 0
             # (d) 检查是否恢复申购
@@ -201,8 +204,10 @@ class FinancialEventFSM:
                     flag_line = lines[j]
                     flags = re.findall(r'([是否])', flag_line)
                     if len(flags) == len(line_codes):
-                        is_susp = '暂停' in flag_line
-                        is_resume = '恢复' in flag_line or '开放' in flag_line
+                        if '大额' in flag_line or '大额' in title_clean:
+                            continue
+                        is_susp = '暂停' in flag_line and '暂停大额' not in flag_line
+                        is_resume = ('恢复' in flag_line or '开放' in flag_line) and '恢复大额' not in flag_line
                         for cd, flg in zip(line_codes, flags):
                             act = None
                             q = None
@@ -230,13 +235,13 @@ class FinancialEventFSM:
         target_sc = share_class.upper() if share_class else None
         target_cd = fund_code if fund_code else None
 
-        def resolve_channel_candidate(channels):
+        def _resolve(allowed_channels):
             p1_code_match = None
             p2_class_match = None
             p3_general = None
 
             for c in parsed_clauses:
-                if c.channel in channels and c.action:
+                if c.channel in allowed_channels and c.action:
                     if target_cd and (c.fund_code == target_cd or target_cd in c.fund_codes):
                         p1_code_match = c
                         break
@@ -251,6 +256,14 @@ class FinancialEventFSM:
             match_c = p1_code_match or p2_class_match or p3_general
             is_explicit = (match_c is p1_code_match) or (match_c is p2_class_match)
             return match_c, is_explicit
+
+        def resolve_channel_candidate(channels):
+            specific_channels = tuple(ch for ch in channels if ch != 'ALL')
+            if specific_channels:
+                cand, explicit = _resolve(specific_channels)
+                if cand:
+                    return cand, explicit
+            return _resolve(channels)
 
         direct_candidate, is_direct_explicit = resolve_channel_candidate(('DIRECT', 'DIRECT_AND_AGENCY', 'ALL'))
         agency_candidate, is_agency_explicit = resolve_channel_candidate(('AGENCY', 'DIRECT_AND_AGENCY', 'ALL'))

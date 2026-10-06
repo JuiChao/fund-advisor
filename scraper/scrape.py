@@ -356,6 +356,10 @@ def scrape_limit_announcement(code):
             # 排除纯美元份额公告（所有收录标的均为人民币份额）
             if any(k in title for k in ['美元份额', '美元现汇', '美元现钞']) and '人民币' not in title:
                 continue
+
+            # 排除纯总规模/资产规模上限变更公告（此类公告属于基金资产上限按比例确认，非单日单账户日常申购额度政策）
+            if any(k in title for k in ['取消总规模上限', '总规模上限']) and '大额' not in title and '限额' not in title:
+                continue
             
             if any(k in title for k in title_keywords):
                 target_ann_id = item.get('ID')
@@ -640,6 +644,8 @@ def detect_cdc_affected_funds(feed_items, universe_codes, fallback_data):
             continue
         if any(k in title for k in ['美元份额', '美元现汇', '美元现钞']) and '人民币' not in title:
             continue
+        if any(k in title for k in ['取消总规模上限', '总规模上限']) and '大额' not in title and '限额' not in title:
+            continue
 
         is_quota_event = any(kw in title for kw in LIMIT_KEYWORDS)
         if not is_quota_event:
@@ -742,8 +748,8 @@ def scrape_single_fund_record(code, index_type, fallback_item, cached_item=None,
         # 公告显式指定了代销渠道政策，公告作为最高法定第一信源，裁决覆盖第三方网页
         merged['limit_status'] = agency_ann_status
         merged['daily_limit'] = agency_ann_limit
-    elif base.get('limit_status') == '暂停申购' and page_data.get('limit_status') == '未开通代销':
-        # 第三方单平台未上架（fundIsSale=false）不应冲掉已核验的代销“暂停申购”状态
+    elif base.get('limit_status') == '暂停申购' and not is_agency_explicit:
+        # 当基准档案中代销渠道为已核验的“暂停申购”（如多代销渠道受限），在无显式官方代销开通/恢复公告前，严格保持暂停申购
         merged['limit_status'] = '暂停申购'
         merged['daily_limit'] = 0
 
@@ -813,7 +819,7 @@ def main():
         if affected_codes:
             print(f"[CDC 增量流] 发现 {len(affected_codes)} 只基金有最新限额/费率公告，将对这部分标的执行深度重解析: {sorted(list(affected_codes))}")
         else:
-            print("[CDC 增量流] 全市场 Feed 未检测到标的池限购公告变更，全量 59 只标的将通过并发增量流刷新行情，并复用已审计档案")
+            print(f"[CDC 增量流] 全市场 Feed 未检测到标的池限购公告变更，全量 {len(FUND_LIST)} 只标的将通过并发增量流刷新行情，并复用已审计档案")
 
     # 并发执行抓取任务
     results_map = {}
