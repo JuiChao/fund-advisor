@@ -431,30 +431,105 @@
         </div>
     </div>
 
-    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
-        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center">
-            <div class="seg-control" id="rank-filter" style="margin-bottom:0">
-                <button class="seg-btn on" data-value="纳斯达克100">
+    <!-- 排名控制中枢：双层结构化筛选 -->
+    <div class="rank-control-hub">
+        <!-- 第一层：指数大类与全局搜索 -->
+        <div class="rank-control-top">
+            <div class="seg-control rank-index-tabs" id="rank-filter">
+                <button type="button" class="seg-btn on" data-value="纳斯达克100">
                     <span class="seg-icon">📈</span> 纳斯达克100
+                    <span class="tab-badge" id="badge-count-nq">--</span>
                 </button>
-                <button class="seg-btn" data-value="标普500">
+                <button type="button" class="seg-btn" data-value="标普500">
                     <span class="seg-icon">📊</span> 标普500
+                    <span class="tab-badge" id="badge-count-sp">--</span>
+                </button>
+                <button type="button" class="seg-btn" data-value="ALL">
+                    <span class="seg-icon">🌐</span> 全部美股QDII
+                    <span class="tab-badge" id="badge-count-all">--</span>
                 </button>
             </div>
-            <div class="seg-control" id="class-filter" style="margin-bottom:0">
-                <button class="seg-btn on" data-value="ALL">全部份额</button>
-                <button class="seg-btn" data-value="A">A类 (免销售费)</button>
-                <button class="seg-btn" data-value="C">C类 (免申购费)</button>
-                <button class="seg-btn" data-value="OTHER">其他 (D/E/I)</button>
-            </div>
-            <div class="seg-control" id="quota-filter" style="margin-bottom:0">
-                <button class="seg-btn on" data-value="ALL">全部状态</button>
-                <button class="seg-btn" data-value="BUYABLE">代销可买</button>
-                <button class="seg-btn" data-value="DIRECT">直销有额度</button>
+            <div class="rank-search-box">
+                <span class="rank-search-icon">🔍</span>
+                <input type="text" id="rank-search" placeholder="搜索代码、名称、管理人..." aria-label="搜索基金">
+                <button type="button" id="rank-search-clear" class="rank-search-clear" title="清空搜索" aria-label="清空搜索" style="display:none">✕</button>
             </div>
         </div>
-        <div style="position:relative;min-width:200px;flex:1;max-width:320px">
-            <input type="text" id="rank-search" placeholder="🔍 搜索代码、名称、管理人..." style="width:100%;padding:0.55rem 0.85rem;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);font-size:0.85rem;color:var(--txt);outline:none;transition:var(--transition)">
+
+        <!-- 第二层：精细化维度筛选工具条 -->
+        <div class="rank-filter-panel">
+            <!-- 份额类别维度 -->
+            <div class="rank-filter-row">
+                <div class="rank-filter-label">
+                    <span class="label-icon">🏷️</span>
+                    <span>份额类别</span>
+                </div>
+                <div class="rank-filter-pills" id="class-filter">
+                    <button type="button" class="filter-pill seg-btn on" data-value="ALL">
+                        <span class="pill-title">全部份额</span>
+                        <span class="pill-count" id="count-class-all">--</span>
+                    </button>
+                    <button type="button" class="filter-pill seg-btn" data-value="A">
+                        <span class="pill-title">A类</span>
+                        <span class="pill-sub">免销售服务费</span>
+                        <span class="pill-count" id="count-class-a">--</span>
+                    </button>
+                    <button type="button" class="filter-pill seg-btn" data-value="C">
+                        <span class="pill-title">C类</span>
+                        <span class="pill-sub">0申购费</span>
+                        <span class="pill-count" id="count-class-c">--</span>
+                    </button>
+                    <button type="button" class="filter-pill seg-btn" data-value="D">
+                        <span class="pill-title">D类</span>
+                        <span class="pill-sub">定制免申购费</span>
+                        <span class="pill-count" id="count-class-d">--</span>
+                    </button>
+                    <button type="button" class="filter-pill seg-btn" data-value="OTHER">
+                        <span class="pill-title">I/E类</span>
+                        <span class="pill-sub">特惠/机构</span>
+                        <span class="pill-count" id="count-class-other">--</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 渠道状态维度 -->
+            <div class="rank-filter-row">
+                <div class="rank-filter-label">
+                    <span class="label-icon">🛒</span>
+                    <span>渠道状态</span>
+                </div>
+                <div class="rank-filter-pills" id="quota-filter">
+                    <button type="button" class="filter-pill seg-btn on" data-value="ALL">
+                        <span class="pill-title">全部状态</span>
+                        <span class="pill-count" id="count-quota-all">--</span>
+                    </button>
+                    <button type="button" class="filter-pill seg-btn" data-value="BUYABLE">
+                        <span class="status-dot dot-buyable"></span>
+                        <span class="pill-title">代销可买</span>
+                        <span class="pill-count" id="count-quota-buyable">--</span>
+                    </button>
+                    <button type="button" class="filter-pill seg-btn" data-value="DIRECT">
+                        <span class="status-dot dot-direct"></span>
+                        <span class="pill-title">直销有额度</span>
+                        <span class="pill-count" id="count-quota-direct">--</span>
+                    </button>
+                    <button type="button" class="filter-pill seg-btn" data-value="PAUSED">
+                        <span class="status-dot dot-paused"></span>
+                        <span class="pill-title">暂停申购</span>
+                        <span class="pill-count" id="count-quota-paused">--</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 面板底部状态摘要与一键重置 -->
+            <div class="rank-filter-footer">
+                <div class="rank-filter-summary" id="rank-filter-summary">
+                    正在加载基金标的...
+                </div>
+                <button type="button" id="rank-filter-reset" class="rank-filter-reset" style="display:none">
+                    🔄 恢复默认筛选
+                </button>
+            </div>
         </div>
     </div>
 

@@ -243,23 +243,38 @@ const App = (() => {
     }
 
     function switchPage(page) {
+        let pName = page;
+        let queryParams = {};
+        if (page.includes('?')) {
+            const parts = page.split('?');
+            pName = parts[0];
+            const sp = new URLSearchParams(parts[1]);
+            sp.forEach((v, k) => queryParams[k] = v);
+        }
+
         document.querySelectorAll('#nav-links a').forEach(x => {
-            if (x.dataset.page === page) x.classList.add('on');
+            if (x.dataset.page === pName) x.classList.add('on');
             else x.classList.remove('on');
         });
         document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display = 'none');
-        const target = document.getElementById('page-' + page);
+        const target = document.getElementById('page-' + pName);
         if (!target) return;
         target.style.display = '';
         target.classList.remove('fade-in');
         void target.offsetWidth;
         target.classList.add('fade-in');
         
-        updateTDK(page);
+        updateTDK(pName);
         
-        if (page === 'ranking') renderRanking();
-        if (page === 'simulator') populateSimSelect();
-        if (page === 'portfolio') computePortfolio();
+        if (pName === 'ranking') {
+            if (queryParams.q) {
+                const s = document.getElementById('rank-search');
+                if (s) s.value = decodeURIComponent(queryParams.q);
+            }
+            renderRanking();
+        }
+        if (pName === 'simulator') populateSimSelect();
+        if (pName === 'portfolio') computePortfolio();
     }
 
     function initNav() {
@@ -529,7 +544,13 @@ const App = (() => {
     const rankCols = [
         { key: 'rank', label: '#' },
         { key: 'code', label: '代码', render: r => `<span style="font-family:monospace;font-weight:600">${r.code}</span><button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button>` },
-        { key: 'name', label: '名称', render: r => shareBadge(r.share_class) + `<a href="fund/${r.code}.html" style="color:var(--accent2);cursor:pointer;text-decoration:none;font-weight:600" class="fund-name-link" data-code="${r.code}" title="点击查看详情">` + r.name + ' <span style="font-size:0.7em;opacity:0.5">▸</span></a>' },
+        { key: 'name', label: '名称', render: r => {
+            const curType = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
+            const idxBadge = curType === 'ALL'
+                ? `<span class="badge-idx ${r.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${r.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`
+                : '';
+            return idxBadge + shareBadge(r.share_class) + `<a href="fund/${r.code}.html" style="color:var(--accent2);cursor:pointer;text-decoration:none;font-weight:600" class="fund-name-link" data-code="${r.code}" title="点击查看详情">` + r.name + ' <span style="font-size:0.7em;opacity:0.5">▸</span></a>';
+        } },
         { key: 'fee', label: '综合费率', render: r => {
             const mgmt = r.mgmt_fee || 0;
             const cust = r.custody_fee || 0;
@@ -630,19 +651,95 @@ const App = (() => {
         return tes.length % 2 ? tes[mid] : (tes[mid - 1] + tes[mid]) / 2;
     }
 
+    function updateRankControlHub(allTypeFunds, filteredCount, totalPoolCount, type, classFilter, quotaFilter, kw) {
+        // 更新第一层指数徽章
+        const nqCount = FUND_DATA.filter(f => f.index_type === '纳斯达克100').length;
+        const spCount = FUND_DATA.filter(f => f.index_type === '标普500').length;
+        const allCount = FUND_DATA.length;
+        const bNq = document.getElementById('badge-count-nq');
+        const bSp = document.getElementById('badge-count-sp');
+        const bAll = document.getElementById('badge-count-all');
+        if (bNq) bNq.textContent = nqCount;
+        if (bSp) bSp.textContent = spCount;
+        if (bAll) bAll.textContent = allCount;
+
+        // 更新第二层份额类别数量 (基于当前所选指数池 allTypeFunds)
+        const setEl = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        };
+
+        setEl('count-class-all', allTypeFunds.length);
+        setEl('count-class-a', allTypeFunds.filter(f => f.share_class === 'A').length);
+        setEl('count-class-c', allTypeFunds.filter(f => f.share_class === 'C').length);
+        setEl('count-class-d', allTypeFunds.filter(f => f.share_class === 'D').length);
+        setEl('count-class-other', allTypeFunds.filter(f => f.share_class !== 'A' && f.share_class !== 'C' && f.share_class !== 'D').length);
+
+        // 更新渠道状态数量
+        setEl('count-quota-all', allTypeFunds.length);
+        setEl('count-quota-buyable', allTypeFunds.filter(f => !(f.limit_status || '').includes('暂停') && !(f.limit_status || '').includes('未开通')).length);
+        setEl('count-quota-direct', allTypeFunds.filter(f => {
+            const d = f.direct_limit_status || f.limit_status || '';
+            return !d.includes('暂停') && !d.includes('未开通');
+        }).length);
+        setEl('count-quota-paused', allTypeFunds.filter(f => (f.limit_status || '').includes('暂停') || (f.limit_status || '').includes('未开通')).length);
+
+        // 更新底部状态摘要
+        const summaryEl = document.getElementById('rank-filter-summary');
+        if (summaryEl) {
+            let summaryText = `当前展示 <strong style="color:var(--accent2);font-weight:700">${filteredCount}</strong> / ${allTypeFunds.length} 只标的`;
+            if (kw) {
+                summaryText += ` <span style="font-size:0.75rem;color:var(--txt3)">(包含 "${kw}")</span>`;
+            }
+            summaryEl.innerHTML = summaryText;
+        }
+
+        // 恢复默认按钮显隐
+        const resetBtn = document.getElementById('rank-filter-reset');
+        if (resetBtn) {
+            const isNonDefault = classFilter !== 'ALL' || quotaFilter !== 'ALL' || kw !== '';
+            resetBtn.style.display = isNonDefault ? 'inline-flex' : 'none';
+        }
+
+        // 清空搜索按钮显隐
+        const clearBtn = document.getElementById('rank-search-clear');
+        if (clearBtn) {
+            clearBtn.style.display = kw !== '' ? 'flex' : 'none';
+        }
+    }
+
+    function resetRankFilters() {
+        document.querySelectorAll('#class-filter .seg-btn, #class-filter .filter-pill').forEach(btn => {
+            if (btn.dataset.value === 'ALL') btn.classList.add('on');
+            else btn.classList.remove('on');
+        });
+        document.querySelectorAll('#quota-filter .seg-btn, #quota-filter .filter-pill').forEach(btn => {
+            if (btn.dataset.value === 'ALL') btn.classList.add('on');
+            else btn.classList.remove('on');
+        });
+        const searchInput = document.getElementById('rank-search');
+        if (searchInput) searchInput.value = '';
+        renderRanking();
+    }
+
     function renderRanking() {
         const type = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
-        const classFilter = document.querySelector('#class-filter .seg-btn.on')?.dataset.value || 'ALL';
-        const quotaFilter = document.querySelector('#quota-filter .seg-btn.on')?.dataset.value || 'ALL';
+        const classFilter = document.querySelector('#class-filter .seg-btn.on, #class-filter .filter-pill.on')?.dataset.value || 'ALL';
+        const quotaFilter = document.querySelector('#quota-filter .seg-btn.on, #quota-filter .filter-pill.on')?.dataset.value || 'ALL';
         const kw = (document.getElementById('rank-search')?.value || '').trim().toLowerCase();
 
-        const allTypeFunds = FUND_DATA.filter(f => f.index_type === type);
-        const medianTE = calcMedianTE(allTypeFunds);
+        const nqFunds = FUND_DATA.filter(f => f.index_type === '纳斯达克100');
+        const spFunds = FUND_DATA.filter(f => f.index_type === '标普500');
+        const medianTE_nq = calcMedianTE(nqFunds);
+        const medianTE_sp = calcMedianTE(spFunds);
+
+        const allTypeFunds = type === 'ALL' ? FUND_DATA : FUND_DATA.filter(f => f.index_type === type);
 
         const filtered = allTypeFunds.filter(f => {
             if (classFilter === 'A' && f.share_class !== 'A') return false;
             if (classFilter === 'C' && f.share_class !== 'C') return false;
-            if (classFilter === 'OTHER' && (f.share_class === 'A' || f.share_class === 'C')) return false;
+            if (classFilter === 'D' && f.share_class !== 'D') return false;
+            if (classFilter === 'OTHER' && (f.share_class === 'A' || f.share_class === 'C' || f.share_class === 'D')) return false;
 
             if (quotaFilter === 'BUYABLE') {
                 const ls = f.limit_status || '';
@@ -651,6 +748,10 @@ const App = (() => {
             if (quotaFilter === 'DIRECT') {
                 const dls = f.direct_limit_status || f.limit_status || '';
                 if (dls.includes('暂停') || dls.includes('未开通')) return false;
+            }
+            if (quotaFilter === 'PAUSED') {
+                const ls = f.limit_status || '';
+                if (!ls.includes('暂停') && !ls.includes('未开通')) return false;
             }
 
             if (kw) {
@@ -663,15 +764,40 @@ const App = (() => {
             return true;
         });
 
-        rankData = filtered.map(f => ({ ...f, score: scoreFund(f, medianTE) }))
-                           .sort((a, b) => b.score - a.score)
-                           .map((f, i) => ({ ...f, rank: i + 1 }));
+        rankData = filtered.map(f => {
+            const medTE = f.index_type === '标普500' ? medianTE_sp : medianTE_nq;
+            return { ...f, score: scoreFund(f, medTE) };
+        })
+        .sort((a, b) => b.score - a.score)
+        .map((f, i) => ({ ...f, rank: i + 1 }));
+
+        updateRankControlHub(allTypeFunds, rankData.length, FUND_DATA.length, type, classFilter, quotaFilter, kw);
 
         const thead = document.querySelector('#rank-table thead');
-        thead.innerHTML = '<tr>' + rankCols.map(c => `<th data-key="${c.key}">${c.label} <span class="arr">⇅</span></th>`).join('') + '</tr>';
+        if (thead) {
+            thead.innerHTML = '<tr>' + rankCols.map(c => `<th data-key="${c.key}">${c.label} <span class="arr">⇅</span></th>`).join('') + '</tr>';
+        }
 
         function draw() {
             const tbody = document.querySelector('#rank-table tbody');
+            if (!tbody) return;
+
+            if (rankData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="${rankCols.length}" style="text-align:center;padding:3rem 1rem;color:var(--txt3)">
+                            <div style="font-size:2rem;margin-bottom:0.5rem">🔍</div>
+                            <div style="font-size:0.95rem;font-weight:600;color:var(--txt2);margin-bottom:0.35rem">未找到符合条件的基金标的</div>
+                            <div style="font-size:0.8rem;color:var(--txt3);margin-bottom:1rem">请尝试调整份额类别、渠道状态或搜索关键词</div>
+                            <button type="button" class="btn-empty-reset" style="padding:0.4rem 1rem;font-size:0.8rem;border-radius:6px;background:var(--accent-g);color:#fff;border:none;cursor:pointer;font-weight:600">🔄 恢复默认筛选</button>
+                        </td>
+                    </tr>
+                `;
+                const emptyReset = tbody.querySelector('.btn-empty-reset');
+                if (emptyReset) emptyReset.onclick = resetRankFilters;
+                return;
+            }
+
             tbody.innerHTML = rankData.map((r, i) => {
                 const isPaused = ((r.limit_status || '').includes('暂停') || (r.limit_status || '').includes('未开通')) &&
                                  ((r.direct_limit_status || '').includes('暂停') || (r.direct_limit_status || '').includes('未开通') || !r.direct_limit_status);
@@ -680,29 +806,31 @@ const App = (() => {
             }).join('');
         }
 
-        thead.querySelectorAll('th').forEach(th => {
-            th.addEventListener('click', () => {
-                const key = th.dataset.key;
-                const isFee = key === 'fee';
-                rankSortDir[key] = rankSortDir[key] === 'asc' ? 'desc' : 'asc';
-                const dir = rankSortDir[key] === 'desc' ? -1 : 1;
-                rankData.sort((a, b) => {
-                    let va, vb;
-                    if (isFee) {
-                        va = (a.mgmt_fee || 0) + (a.custody_fee || 0) + (a.sales_fee || 0);
-                        vb = (b.mgmt_fee || 0) + (b.custody_fee || 0) + (b.sales_fee || 0);
-                    } else {
-                        va = a[key];
-                        vb = b[key];
-                    }
-                    if (va == null) va = Infinity; if (vb == null) vb = Infinity;
-                    return dir * (typeof va === 'string' ? va.localeCompare(vb) : va - vb);
+        if (thead) {
+            thead.querySelectorAll('th').forEach(th => {
+                th.addEventListener('click', () => {
+                    const key = th.dataset.key;
+                    const isFee = key === 'fee';
+                    rankSortDir[key] = rankSortDir[key] === 'asc' ? 'desc' : 'asc';
+                    const dir = rankSortDir[key] === 'desc' ? -1 : 1;
+                    rankData.sort((a, b) => {
+                        let va, vb;
+                        if (isFee) {
+                            va = (a.mgmt_fee || 0) + (a.custody_fee || 0) + (a.sales_fee || 0);
+                            vb = (b.mgmt_fee || 0) + (b.custody_fee || 0) + (b.sales_fee || 0);
+                        } else {
+                            va = a[key];
+                            vb = b[key];
+                        }
+                        if (va == null) va = Infinity; if (vb == null) vb = Infinity;
+                        return dir * (typeof va === 'string' ? va.localeCompare(vb) : va - vb);
+                    });
+                    thead.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                    th.classList.add(rankSortDir[key] === 'desc' ? 'sort-desc' : 'sort-asc');
+                    draw();
                 });
-                thead.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
-                th.classList.add(rankSortDir[key] === 'desc' ? 'sort-desc' : 'sort-asc');
-                draw();
             });
-        });
+        }
         draw();
     }
 
@@ -1986,16 +2114,16 @@ const App = (() => {
                 renderRanking();
             });
         });
-        document.querySelectorAll('#class-filter .seg-btn').forEach(btn => {
+        document.querySelectorAll('#class-filter .seg-btn, #class-filter .filter-pill').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('#class-filter .seg-btn').forEach(b => b.classList.remove('on'));
+                document.querySelectorAll('#class-filter .seg-btn, #class-filter .filter-pill').forEach(b => b.classList.remove('on'));
                 btn.classList.add('on');
                 renderRanking();
             });
         });
-        document.querySelectorAll('#quota-filter .seg-btn').forEach(btn => {
+        document.querySelectorAll('#quota-filter .seg-btn, #quota-filter .filter-pill').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('#quota-filter .seg-btn').forEach(b => b.classList.remove('on'));
+                document.querySelectorAll('#quota-filter .seg-btn, #quota-filter .filter-pill').forEach(b => b.classList.remove('on'));
                 btn.classList.add('on');
                 renderRanking();
             });
@@ -2003,6 +2131,21 @@ const App = (() => {
         const rankSearch = document.getElementById('rank-search');
         if (rankSearch) {
             rankSearch.addEventListener('input', () => {
+                renderRanking();
+            });
+        }
+        const rankResetBtn = document.getElementById('rank-filter-reset');
+        if (rankResetBtn) {
+            rankResetBtn.addEventListener('click', resetRankFilters);
+        }
+        const rankClearBtn = document.getElementById('rank-search-clear');
+        if (rankClearBtn) {
+            rankClearBtn.addEventListener('click', () => {
+                const s = document.getElementById('rank-search');
+                if (s) {
+                    s.value = '';
+                    s.focus();
+                }
                 renderRanking();
             });
         }
