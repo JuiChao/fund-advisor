@@ -2377,9 +2377,9 @@ const App = (() => {
                 }
             }
 
-            detailTr.innerHTML = `<td colspan="${colSpan}" style="padding:1.5rem; background:var(--surface2); border-left:4px solid var(--accent2); box-shadow:inset 0 2px 4px rgba(0,0,0,0.02)">
+            detailTr.innerHTML = `<td colspan="${colSpan}" class="fund-detail-td">
                 ${siblingHtml}
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; font-size:0.85rem; color:var(--txt2); line-height:1.6;">
+                <div class="fund-detail-grid">
                     
                     <!-- 基础信息 -->
                     <div>
@@ -2437,14 +2437,14 @@ const App = (() => {
                     </div>
                 </div>
                 ${f.benchmark ? `<div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border); font-size:0.8rem; color:var(--txt3);"><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
-                <div class="fund-detail-actions" style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;">
-                    <a href="fund/${f.code}.html" target="_blank" class="btn-fund-page-action" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--txt);cursor:pointer;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;text-decoration:none;" title="在新标签页中打开这只基金的独立评测专页">
+                <div class="fund-detail-actions">
+                    <a href="fund/${f.code}.html" target="_blank" class="btn-fund-page-action" title="在新标签页中打开这只基金的独立评测专页">
                         📄 打开独立评测专页 ↗
                     </a>
-                    <button type="button" class="btn-copy-code-action" data-code="${f.code}" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--txt);cursor:pointer;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;">
+                    <button type="button" class="btn-copy-code-action" data-code="${f.code}">
                         📋 复制基金代码 (${f.code})
                     </button>
-                    <button type="button" class="btn-simulate-action btn-sim-single" data-code="${f.code}" style="padding:6px 16px;border-radius:6px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;cursor:pointer;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;">
+                    <button type="button" class="btn-simulate-action btn-sim-single" data-code="${f.code}">
                         🚀 将此基金带入模拟器测试 ➔
                     </button>
                 </div>
