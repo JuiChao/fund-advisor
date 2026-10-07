@@ -962,7 +962,8 @@ const App = (() => {
             if (hasToday) {
                 msgEl.innerHTML = `今日监测到 <strong>${todayChanges.length}</strong> 只标的申购额度变动，建议关注渠道差异与平替！`;
             } else {
-                msgEl.textContent = `全市场额度今日运行平稳 · 近7天累计发生 ${data.recent_7d_count || data.history.length} 次额度调整`;
+                const latestDate = (data.history[0] && data.history[0].date) ? data.history[0].date : '';
+                msgEl.innerHTML = `全市场额度今日平稳运行 · 最新收录 <strong>${latestDate}</strong> 官方限额公告，可展开看板查看渠道比对与平替`;
             }
         }
 
@@ -979,8 +980,9 @@ const App = (() => {
                     badgeClass = 'chip-div';
                     icon = '🔵';
                 }
-                const shortName = (item.name || '').replace(/指数.*/, '').slice(0, 7);
-                return `<span class="ticker-chip ${badgeClass}" title="${item.summary || ''}">${icon} ${item.code} ${shortName} · ${item.change_type_label || ''}</span>`;
+                const shortName = (item.name || '').replace(/指数.*/, '').slice(0, 6);
+                const dateShort = item.date ? item.date.slice(5) : '';
+                return `<span class="ticker-chip ${badgeClass}" title="${item.summary || ''}">${icon} ${dateShort} ${item.code} ${shortName} · ${item.change_type_label || ''}</span>`;
             }).join('');
         }
 
@@ -1050,7 +1052,7 @@ const App = (() => {
                 const summaryCell = `
                     <div class="q-summary-cell">
                         <div class="q-summary-text">${item.summary}</div>
-                        ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看官方公告发布列表">📋 官方公告 ↗</a>` : ''}
+                        ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">📄 官方公告 ↗</a>` : ''}
                     </div>
                 `;
 
@@ -1068,7 +1070,7 @@ const App = (() => {
 
                 return `
                     <tr class="q-row-${(item.change_type || '').toLowerCase()}">
-                        <td><span class="q-date-pill">${item.date}</span></td>
+                        <td><span class="q-date-pill" title="公告生效起始日期">📅 ${item.date}</span></td>
                         <td>${fundCell}</td>
                         <td>${typeBadge}</td>
                         <td>${agencyDiff}</td>
@@ -1101,10 +1103,10 @@ const App = (() => {
                         <div class="qmc-subs-chips">
                             ${item.substitutes.map(s => `
                                 <button type="button" class="btn-quota-sub" data-code="${s.code}" title="${s.name}">
-                                    <span class="q-sub-code">${s.code}</span>
-                                    <span class="q-sub-name">${s.name.replace(/指数.*/, '').slice(0, 6)}</span>
-                                    <span class="q-sub-limit">${s.limit_status}</span>
-                                </button>
+                                <span class="q-sub-code">${s.code}</span>
+                                <span class="q-sub-name">${s.name.replace(/指数.*/, '').slice(0, 6)}</span>
+                                <span class="q-sub-limit">${s.limit_status}</span>
+                            </button>
                             `).join('')}
                         </div>
                     </div>
@@ -1113,7 +1115,7 @@ const App = (() => {
                 return `
                     <div class="quota-mobile-card q-card-${(item.change_type || '').toLowerCase()}">
                         <div class="qmc-header">
-                            <span class="q-date-pill">${item.date}</span>
+                            <span class="q-date-pill" title="公告生效起始日期">📅 起始日: ${item.date}</span>
                             ${typeBadge}
                         </div>
                         <div class="qmc-title-row">
@@ -1140,8 +1142,8 @@ const App = (() => {
                             </div>
                         </div>
                         <div class="qmc-summary-row">
-                            <span>${item.summary}</span>
-                            ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link">📋 公告 ↗</a>` : ''}
+                            <span class="qmc-summary-text">${item.summary}</span>
+                            ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="查看官方公告原件详情">📄 官方公告 ↗</a>` : ''}
                         </div>
                         ${subsHtml}
                     </div>

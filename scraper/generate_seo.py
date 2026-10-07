@@ -42,7 +42,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, {share_class}类份额, 费率, 限购, 收益率, 定投, Fund Advisor">
 <link rel="canonical" href="https://858000.xyz/fund/{fund_code}.html">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="/css/style.css?v=20261007_v4">
+<link rel="stylesheet" href="/css/style.css?v=20261007_v5">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {json_ld}
@@ -177,8 +177,9 @@ for fund in funds:
     if fund_history:
         history_items = []
         for h in fund_history[:4]:
+            ann_link = f" <a href='{h.get('announcement_url')}' target='_blank' style='color:var(--accent2);text-decoration:none;font-size:0.82rem;font-weight:600;margin-left:6px;'>[查看官方公告 ↗]</a>" if h.get('announcement_url') else ""
             history_items.append(
-                f"<li style='margin-bottom:0.45rem;'><strong>{h.get('date')}</strong> · <span style='color:var(--accent2);font-weight:600;'>{h.get('change_type_label', '')}</span>: {h.get('summary', '')}</li>"
+                f"<li style='margin-bottom:0.5rem;'><strong>{h.get('date')}</strong> · <span style='color:var(--accent2);font-weight:600;'>{h.get('change_type_label', '')}</span>: {h.get('summary', '')}{ann_link}</li>"
             )
         quota_history_html = f"""
             <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.15rem;margin-top:1.5rem;">

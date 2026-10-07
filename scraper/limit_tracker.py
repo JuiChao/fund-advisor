@@ -202,10 +202,11 @@ def diff_fund_limits(old_funds_map, new_funds_list, today_str=None):
         subs = find_substitutes(new_f, new_funds_list, max_count=3)
 
         ann_id = new_f.get('limit_announcement_id') or old_f.get('limit_announcement_id')
-        ann_url = f"https://fundf10.eastmoney.com/jjgg_{code}.html"
+        ann_url = new_f.get('announcement_url') or (f"https://data.eastmoney.com/notices/detail/{code}/{ann_id}.html" if ann_id else f"https://fundf10.eastmoney.com/jjgg_{code}.html")
+        record_date = new_f.get('effective_date') or new_f.get('announcement_pub_date') or today_str
 
         changes.append({
-            'date': today_str,
+            'date': record_date,
             'timestamp': datetime.now(BEIJING_TZ).strftime('%Y-%m-%dT%H:%M:%S'),
             'code': code,
             'name': new_f.get('name'),

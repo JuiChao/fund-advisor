@@ -329,9 +329,9 @@ def scrape_limit_announcement(code):
             '申购业务上限', '金额限制', '限额申购',
             '恢复申购', '恢复大额', '恢复办理', '取消限额', '取消大额', '取消上限', '取消申购上限',
             '直销电子交易平台', '直销渠道',
-            '规模上限', '总规模',
         ]
         target_ann_id = None
+        target_pub_date = None
         # 根据当前基金份额类型，动态排除其他互斥份额的专属公告
         fallback_item = _FB_DATA.get(code, {})
         my_class = fallback_item.get('share_class', '')
@@ -358,12 +358,13 @@ def scrape_limit_announcement(code):
                 continue
 
             # 排除纯总规模/资产规模上限变更公告（此类公告属于基金资产上限按比例确认，非单日单账户日常申购额度政策）
-            if any(k in title for k in ['取消总规模上限', '总规模上限']) and '大额' not in title and '限额' not in title:
+            if any(k in title for k in ['取消总规模上限', '总规模上限', '规模上限', '总规模']) and '大额' not in title and '限额' not in title:
                 continue
             
             if any(k in title for k in title_keywords):
                 target_ann_id = item.get('ID')
                 target_title = title
+                target_pub_date = item.get('PUBLISHDATEDesc') or (item.get('PUBLISHDATE')[:10] if item.get('PUBLISHDATE') else None)
                 break
 
         if not target_ann_id:
@@ -392,8 +393,33 @@ def scrape_limit_announcement(code):
             except Exception:
                 pass
 
+        # 提取公告正文中的生效起始日
+        effective_date = None
+        if content:
+            m_eff = re.search(r'(?:暂停|恢复|调整|限制|开展)?(?:相关)?(?:业务)?(?:的)?(?:起始日|生效日|开始日)[：:\s]*(\d{4})[年\-\/](\d{1,2})[月\-\/](\d{1,2})[日]?', content)
+            if m_eff:
+                effective_date = f'{m_eff.group(1)}-{int(m_eff.group(2)):02d}-{int(m_eff.group(3)):02d}'
+            else:
+                m_eff2 = re.search(r'(?:自|从|将于)\s*(\d{4})[年\-\/](\d{1,2})[月\-\/](\d{1,2})[日]?\s*起', content)
+                if m_eff2:
+                    effective_date = f'{m_eff2.group(1)}-{int(m_eff2.group(2)):02d}-{int(m_eff2.group(3)):02d}'
+                else:
+                    m_eff3 = re.search(r'公告(?:送出)?日期[：:\s]*(\d{4})[年\-\/](\d{1,2})[月\-\/](\d{1,2})[日]?', content)
+                    if m_eff3:
+                        effective_date = f'{m_eff3.group(1)}-{int(m_eff3.group(2)):02d}-{int(m_eff3.group(3)):02d}'
+        if not effective_date:
+            effective_date = target_pub_date
+
+        ann_detail_url = f"https://data.eastmoney.com/notices/detail/{code}/{target_ann_id}.html" if target_ann_id else f"https://fundf10.eastmoney.com/jjgg_{code}.html"
+
         if not content:
-            return {'limit_announcement_id': target_ann_id}
+            return {
+                'limit_announcement_id': target_ann_id,
+                'effective_date': effective_date,
+                'announcement_pub_date': target_pub_date,
+                'announcement_url': ann_detail_url,
+                'announcement_title': target_title
+            }
 
         # 清理 HTML 标签，保留空格用于正则匹配
         text_norm = re.sub(r'<[^>]+>', ' ', content)
@@ -403,7 +429,11 @@ def scrape_limit_announcement(code):
         result = {
             'direct_daily_limit': None,
             'direct_limit_status': None,
-            'limit_announcement_id': target_ann_id
+            'limit_announcement_id': target_ann_id,
+            'effective_date': effective_date,
+            'announcement_pub_date': target_pub_date,
+            'announcement_url': ann_detail_url,
+            'announcement_title': target_title
         }
 
         # === 核心解析：使用金融事件槽位有限状态机 (Financial Slot-Filling FSM) ===
