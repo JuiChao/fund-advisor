@@ -161,7 +161,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261007_v1">
+<link rel="stylesheet" href="css/style.css?v=20261007_v2">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -556,17 +556,25 @@
         </div>
     </div>
 
-    <!-- 移动端专属双视图切换开关 (桌面端自动隐藏) -->
-    <div class="rank-view-toggle" id="rank-view-toggle">
-        <button type="button" class="view-btn on" data-view="card">
-            <span class="view-icon">📱</span>
-            <span>智能卡片</span>
-            <span class="view-rec-tag">推荐</span>
-        </button>
-        <button type="button" class="view-btn" data-view="table">
-            <span class="view-icon">📊</span>
-            <span>全景表格</span>
-        </button>
+    <!-- 桌面与移动自适应视图控制工具条 -->
+    <div class="rank-view-toolbar" id="rank-view-toolbar">
+        <div class="rank-view-stat">
+            <span class="rank-stat-indicator">●</span>
+            <span id="rank-view-status-msg">支持点击表头多维排序，点击标的名称可展开深度抽屉看板</span>
+        </div>
+        <div class="rank-view-toggle" id="rank-view-toggle">
+            <button type="button" class="view-btn on" data-view="table" id="view-btn-table" title="全景对比表格：适合多指标横向排序与密集对比">
+                <span class="view-icon">📊</span>
+                <span class="view-text-desktop">全景对比表格</span>
+                <span class="view-text-mobile">全景表格</span>
+            </button>
+            <button type="button" class="view-btn" data-view="card" id="view-btn-card" title="智能卡片：专属金融资产卡片，信息模块化聚焦">
+                <span class="view-icon">🗂️</span>
+                <span class="view-text-desktop">投研卡片网格</span>
+                <span class="view-text-mobile">智能卡片</span>
+                <span class="view-rec-tag">推荐</span>
+            </button>
+        </div>
     </div>
 
     <!-- 移动端专属智能金融资产卡片流 (桌面端自动隐藏) -->

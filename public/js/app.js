@@ -585,14 +585,19 @@ const App = (() => {
     let rankData = [];
     let rankSortDir = {};
     const rankCols = [
-        { key: 'rank', label: '#' },
-        { key: 'code', label: '代码', render: r => `<span style="font-family:monospace;font-weight:600">${r.code}</span><button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button><a href="fund/${r.code}.html" target="_blank" style="text-decoration:none;font-size:0.75rem;margin-left:3px;color:var(--txt3)" title="在新标签页打开独立专页">↗</a>` },
+        { key: 'rank', label: '#', render: r => {
+            if (r.rank === 1) return '<span class="tbl-rank-badge rank-gold" title="综合排名第1">🥇 1</span>';
+            if (r.rank === 2) return '<span class="tbl-rank-badge rank-silver" title="综合排名第2">🥈 2</span>';
+            if (r.rank === 3) return '<span class="tbl-rank-badge rank-bronze" title="综合排名第3">🥉 3</span>';
+            return `<span class="tbl-rank-badge">#${r.rank}</span>`;
+        } },
+        { key: 'code', label: '代码', render: r => `<div class="tbl-code-cell"><span class="code-mono">${r.code}</span><button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button><a href="fund/${r.code}.html" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div>` },
         { key: 'name', label: '名称', render: r => {
             const curType = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
             const idxBadge = curType === 'ALL'
                 ? `<span class="badge-idx ${r.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${r.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`
                 : '';
-            return idxBadge + shareBadge(r.share_class) + `<a href="fund/${r.code}.html" style="color:var(--accent2);cursor:pointer;text-decoration:none;font-weight:600" class="fund-name-link" data-code="${r.code}" title="点击查看详情">` + r.name + ' <span style="font-size:0.7em;opacity:0.5">▸</span></a>';
+            return `<div class="tbl-name-cell">${idxBadge}${shareBadge(r.share_class)}<a href="fund/${r.code}.html" class="fund-name-link" data-code="${r.code}" title="点击展开多因子详情看板">${r.name}</a><span class="tbl-row-expand-arrow" title="点击展开/收起详情">▾</span></div>`;
         } },
         { key: 'fee', label: '综合费率', render: r => {
             const mgmt = r.mgmt_fee || 0;
@@ -600,7 +605,8 @@ const App = (() => {
             const sales = r.sales_fee || 0;
             const total = mgmt + cust + sales;
             const tip = `管理费${(mgmt*100).toFixed(2)}% + 托管费${(cust*100).toFixed(2)}%` + (sales > 0 ? ` + 销售服务费${(sales*100).toFixed(2)}%` : '');
-            return `<span class="fee-tooltip-trigger" title="${tip}" style="${feeC(total)}">${fmt(total)}</span>`;
+            const isLow = total <= 0.007;
+            return `<div class="tbl-fee-cell"><span class="fee-tooltip-trigger" title="${tip}" style="${feeC(total)}">${fmt(total)}</span>${isLow ? '<span class="badge-low-fee" title="处于市场极低费率梯队">极低</span>' : ''}</div>`;
         } },
         { key: 'purchase_fee', label: '申购费', render: r => {
             const pf = r.purchase_fee || 0;
@@ -613,13 +619,13 @@ const App = (() => {
             let sub = '';
             if (ir != null) {
                 const irColor = ir >= 1.0 ? 'var(--ok)' : (ir < 0 ? 'var(--down)' : 'var(--txt3)');
-                sub += `<span title="信息比率 (IR): 承担单位跟踪风险下的超额收益" style="color:${irColor};margin-right:4px">IR: <strong>${ir.toFixed(2)}</strong></span>`;
+                sub += `<span title="信息比率 (IR): 承担单位跟踪风险下的超额收益" style="color:${irColor};margin-right:6px">IR <strong>${ir.toFixed(2)}</strong></span>`;
             }
             if (td != null) {
                 const tdColor = td >= 0 ? 'var(--up)' : 'var(--down)';
-                sub += `<span title="跟踪偏离度 (TD/1年): 相对基准的超额或偏离" style="color:${tdColor}">TD: ${(td>=0?'+':'')+(td*100).toFixed(1)}%</span>`;
+                sub += `<span title="跟踪偏离度 (TD/1年): 相对基准的超额或偏离" style="color:${tdColor};font-weight:600">TD ${(td>=0?'+':'')+(td*100).toFixed(1)}%</span>`;
             }
-            return `<div style="text-align:center">${teStr}${sub ? '<div style="font-size:0.68rem;margin-top:2px;white-space:nowrap">' + sub + '</div>' : ''}</div>`;
+            return `<div class="tbl-te-cell"><span class="tbl-te-val">${teStr}</span>${sub ? '<div class="tbl-te-sub">' + sub + '</div>' : ''}</div>`;
         } },
         { key: 'scale', label: '规模', render: r => r.scale ? r.scale.toFixed(1) + '亿' : '-' },
         { key: 'return_3yr', label: '近3年', render: r => { 
@@ -651,7 +657,7 @@ const App = (() => {
             html += '</div>';
             return html;
         } },
-        { key: 'score', label: '评分', render: r => '<strong style="color:var(--accent2)">' + r.score + '</strong>' },
+        { key: 'score', label: '评分', render: r => `<div class="tbl-score-cell"><strong class="tbl-score-val">${r.score}</strong></div>` },
     ];
 
     function scoreFund(f, medianTE) {
@@ -842,8 +848,14 @@ const App = (() => {
             tbody.innerHTML = rankData.map((r, i) => {
                 const isPaused = ((r.limit_status || '').includes('暂停') || (r.limit_status || '').includes('未开通')) &&
                                  ((r.direct_limit_status || '').includes('暂停') || (r.direct_limit_status || '').includes('未开通') || !r.direct_limit_status);
-                const cls = i < 3 ? ' class="hl"' : isPaused ? ' class="wr"' : '';
-                return '<tr' + cls + '>' + rankCols.map(c => '<td>' + (c.render ? c.render(r) : (r[c.key] ?? '-')) + '</td>').join('') + '</tr>';
+                let rowClasses = [];
+                if (r.rank === 1) rowClasses.push('rank-row-gold');
+                else if (r.rank === 2) rowClasses.push('rank-row-silver');
+                else if (r.rank === 3) rowClasses.push('rank-row-bronze');
+                else if (i < 3) rowClasses.push('hl');
+                if (isPaused) rowClasses.push('wr');
+                const clsAttr = rowClasses.length ? ' class="' + rowClasses.join(' ') + '"' : '';
+                return '<tr' + clsAttr + ' data-code="' + r.code + '">' + rankCols.map(c => '<td>' + (c.render ? c.render(r) : (r[c.key] ?? '-')) + '</td>').join('') + '</tr>';
             }).join('');
         }
 
@@ -877,15 +889,21 @@ const App = (() => {
         renderRankCards(rankData);
     }
 
-    // ===== 移动端双视图控制与智能卡片流渲染 =====
-    let currentRankView = 'card';
+    // ===== 双视图控制与智能卡片流渲染 (桌面与移动端自适应) =====
+    let isMobileDevice = window.innerWidth <= 768;
+    let savedRankView = null;
+    try { savedRankView = localStorage.getItem('fa_rank_view'); } catch (e) {}
+    let currentRankView = savedRankView || (isMobileDevice ? 'card' : 'table');
 
     function applyRankView(viewMode) {
         currentRankView = viewMode;
+        try { localStorage.setItem('fa_rank_view', viewMode); } catch (e) {}
+
         const toggle = document.getElementById('rank-view-toggle');
         const cardList = document.getElementById('rank-card-list');
         const tableWrap = document.getElementById('rank-table-wrap') || document.querySelector('#page-ranking .table-wrap');
         const swipeHint = document.getElementById('rank-swipe-hint') || document.querySelector('#page-ranking .mobile-swipe-hint');
+        const statusMsg = document.getElementById('rank-view-status-msg');
 
         if (toggle) {
             toggle.querySelectorAll('.view-btn').forEach(btn => {
@@ -896,12 +914,14 @@ const App = (() => {
 
         if (viewMode === 'card') {
             if (cardList) cardList.style.display = '';
-            if (tableWrap) tableWrap.classList.add('mobile-hidden');
-            if (swipeHint) swipeHint.classList.add('mobile-hidden');
+            if (tableWrap) tableWrap.style.display = 'none';
+            if (swipeHint) swipeHint.style.display = 'none';
+            if (statusMsg) statusMsg.textContent = '当前为投研卡片网格 · 模块化呈现核心指标，点击任意卡片可展开深度看板';
         } else {
             if (cardList) cardList.style.display = 'none';
-            if (tableWrap) tableWrap.classList.remove('mobile-hidden');
-            if (swipeHint) swipeHint.classList.remove('mobile-hidden');
+            if (tableWrap) tableWrap.style.display = '';
+            if (swipeHint) swipeHint.style.display = isMobileDevice ? 'block' : 'none';
+            if (statusMsg) statusMsg.textContent = '当前为全景对比表格 · 支持点击表头多维排序，点击标的名称可展开抽屉看板';
         }
     }
 

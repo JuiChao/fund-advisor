@@ -31,7 +31,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, {share_class}类份额, 费率, 限购, 收益率, 定投, Fund Advisor">
 <link rel="canonical" href="https://858000.xyz/fund/{fund_code}.html">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="/css/style.css?v=20261007_v1">
+<link rel="stylesheet" href="/css/style.css?v=20261007_v2">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {json_ld}
