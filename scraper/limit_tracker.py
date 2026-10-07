@@ -290,8 +290,10 @@ def update_limit_changes_file(new_funds, old_funds_path=FUNDS_FILE, changes_path
     # 追加今日新变动到最顶部 (时间倒序)
     updated_history = new_changes + updated_history
 
-    # 保留最近 90 天记录，防止文件无限膨胀
-    updated_history = updated_history[:100]
+    # 按照用户要求：严格只保留近一周（7天）内的申购及额度变动记录，超过7天的自动清理
+    cutoff_7d = (datetime.now(BEIJING_TZ) - timedelta(days=7)).strftime('%Y-%m-%d')
+    updated_history = [item for item in updated_history if (item.get('date') or '') >= cutoff_7d]
+    updated_history.sort(key=lambda x: x.get('date', ''), reverse=True)
 
     # 计算统计指标
     today_count = sum(1 for item in updated_history if item.get('date') == today_str)
