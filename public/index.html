@@ -161,7 +161,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261007_v3">
+<link rel="stylesheet" href="css/style.css?v=20261007_v4">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -455,6 +455,89 @@
             </div>
             <div class="algo-note">
                 <strong>为什么费率权重最高？</strong> 假设两只基金都跟踪纳斯达克100，年化收益14%，费率差0.3%。每月定投2000元，20年后低费率基金多赚约 <span style="color:var(--ok);font-weight:700">8-12万元</span>。费率是确定性成本，而业绩是不确定性收益。
+            </div>
+        </div>
+    </div>
+
+    <!-- 📢 每日限购动态监控与风控公告看板 (Quota Intelligence Alert & Bulletin) -->
+    <div class="quota-bulletin-container" id="quota-bulletin-container">
+        <!-- 顶部速报条 (Alert Ticker Bar) -->
+        <div class="quota-alert-bar" id="quota-alert-bar">
+            <div class="quota-alert-left">
+                <span class="quota-pulse-dot" id="quota-pulse-dot"></span>
+                <span class="quota-alert-badge">📢 每日限购风向标</span>
+                <span class="quota-alert-date" id="quota-alert-date">--</span>
+                <span class="quota-alert-msg" id="quota-alert-msg">正在同步全市场限购数据...</span>
+            </div>
+            <div class="quota-alert-right">
+                <div class="quota-alert-tickers" id="quota-alert-tickers">
+                    <!-- 动态渲染快速变动胶囊 -->
+                </div>
+                <button type="button" class="btn-quota-toggle" id="btn-quota-toggle" aria-expanded="false">
+                    <span id="quota-toggle-text">查看限购变动与平替全景</span>
+                    <span class="quota-toggle-arrow">▾</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 展开全景看板 (Quota Intelligence Dashboard) -->
+        <div class="quota-board-drawer" id="quota-board-drawer" style="display:none">
+            <div class="quota-board-inner">
+                <div class="quota-board-header">
+                    <div class="quota-board-title-group">
+                        <h3 class="quota-board-title">📋 美股QDII限购变动与风控公告看板</h3>
+                        <p class="quota-board-sub">每日自动巡检全市场60只QDII直销与代销额度 · 智能定位收紧/放宽标的并匹配最优平替</p>
+                    </div>
+                    <div class="quota-stats-ribbon" id="quota-stats-ribbon">
+                        <div class="quota-stat-pill stat-recent">
+                            <span class="stat-lbl">近7天变动</span>
+                            <strong class="stat-val" id="qstat-recent">0</strong>
+                        </div>
+                        <div class="quota-stat-pill stat-relaxed">
+                            <span class="stat-lbl">🟢 放宽/恢复</span>
+                            <strong class="stat-val" id="qstat-relaxed">0</strong>
+                        </div>
+                        <div class="quota-stat-pill stat-tightened">
+                            <span class="stat-lbl">🔴 收紧/暂停</span>
+                            <strong class="stat-val" id="qstat-tightened">0</strong>
+                        </div>
+                        <div class="quota-stat-pill stat-stable">
+                            <span class="stat-lbl">🛡️ 稳定运行</span>
+                            <strong class="stat-val" id="qstat-stable">60</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 桌面端变动对比表格 -->
+                <div class="quota-table-wrap" id="quota-table-wrap">
+                    <table class="quota-table" id="quota-table">
+                        <thead>
+                            <tr>
+                                <th>变动日期</th>
+                                <th>基金标的</th>
+                                <th>变动性质</th>
+                                <th>代销渠道变化</th>
+                                <th>直销渠道变化</th>
+                                <th>变动简报 & 公告</th>
+                                <th>智能平替推荐</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quota-table-tbody">
+                            <!-- 动态渲染 -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 移动端专属响应式卡片列表 -->
+                <div class="quota-card-list" id="quota-card-list">
+                    <!-- 动态渲染 -->
+                </div>
+
+                <div class="quota-board-footer">
+                    <div class="quota-footer-tip">
+                        💡 <strong>投研提示</strong>：当某只基金第三方代销额度下调时，其直销渠道（基金公司APP/官网）往往仍有更高额度；若双渠道均收紧，可直接点击右侧推荐的同指数低费率平替基金继续定投。
+                    </div>
+                </div>
             </div>
         </div>
     </div>

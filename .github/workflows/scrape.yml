@@ -58,7 +58,7 @@ jobs:
         run: |
           git config user.name "fund-bot"
           git config user.email "bot@fund-advisor.local"
-          git add public/data/funds.json public/data/simulations.json public/data/algorithm.json public/sitemap.xml public/fund/*.html
+          git add public/data/funds.json public/data/simulations.json public/data/algorithm.json public/data/limit_changes.json public/sitemap.xml public/fund/*.html
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else

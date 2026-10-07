@@ -891,6 +891,19 @@ def main():
     except Exception as ex:
         print(f'  [WARN] 增润量化多因子指标异常: {ex}')
 
+    # 追踪与记录申购限购变更 (Quota Intelligence Tracker)
+    try:
+        from limit_tracker import update_limit_changes_file
+        changes_res, new_ch = update_limit_changes_file(final_results, old_funds_path=OUTPUT)
+        if new_ch:
+            print(f'  [限购监控] 检测到 {len(new_ch)} 只基金限购/额度状态发生变更并已记录')
+            for ch in new_ch:
+                print(f'    - [{ch["code"]}] {ch["name"]}: {ch["change_type_label"]} ({ch["summary"]})')
+        else:
+            print(f'  [限购监控] 今日限购巡检完毕，无新增额度调整 (共监控 {len(final_results)} 只标的)')
+    except Exception as ex:
+        print(f'  [WARN] 追踪限购变动异常: {ex}')
+
     # 写入 JSON
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
     with open(OUTPUT, 'w', encoding='utf-8') as f:

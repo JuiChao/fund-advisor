@@ -1,0 +1,281 @@
+{
+  "last_updated": "2026-10-07T06:28:00",
+  "today_date": "2026-10-07",
+  "today_count": 2,
+  "recent_7d_count": 4,
+  "total_monitored": 60,
+  "history": [
+    {
+      "date": "2026-10-07",
+      "timestamp": "2026-10-07T06:28:00",
+      "code": "019441",
+      "name": "万家纳斯达克100指数发起式(QDII)A",
+      "index_type": "纳斯达克100",
+      "share_class": "A",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 (严控申购)",
+      "agency": {
+        "before_status": "限100元/日",
+        "after_status": "限10元/日",
+        "before_limit": 100,
+        "after_limit": 10,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限1000元/日",
+        "after_status": "限100元/日",
+        "before_limit": 1000,
+        "after_limit": 100,
+        "direction": "TIGHTENED"
+      },
+      "summary": "代销额度下调至 10元/日，直销额度下调至 100元/日",
+      "announcement_id": "AN202609281829947820",
+      "announcement_url": "https://fundf10.eastmoney.com/jjgg_019441.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "限10元/日",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 10,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "000834",
+          "name": "大成纳斯达克100ETF联接(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.01,
+          "limit_status": "限10元/日",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 10,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "timestamp": "2026-10-07T06:28:00",
+      "code": "096001",
+      "name": "大成标普500等权指数(QDII)A类",
+      "index_type": "标普500",
+      "share_class": "A",
+      "change_type": "RELAXED",
+      "change_type_label": "恢复大额申购",
+      "agency": {
+        "before_status": "暂停申购",
+        "after_status": "限1000元/日",
+        "before_limit": null,
+        "after_limit": 1000,
+        "direction": "RELAXED"
+      },
+      "direct": {
+        "before_status": "暂停申购",
+        "after_status": "限1000元/日",
+        "before_limit": null,
+        "after_limit": 1000,
+        "direction": "RELAXED"
+      },
+      "summary": "双渠道恢复大额申购，单日申购上限恢复为 1,000元/日",
+      "announcement_id": "AN202609251828859102",
+      "announcement_url": "https://fundf10.eastmoney.com/jjgg_096001.html",
+      "substitutes": [
+        {
+          "code": "008401",
+          "name": "大成标普500等权重指数(QDII)C人民币",
+          "share_class": "C",
+          "index_type": "标普500",
+          "total_fee": 0.015,
+          "limit_status": "限100元/日",
+          "direct_limit_status": "限1000元/日",
+          "daily_limit": 100,
+          "direct_daily_limit": 1000,
+          "max_quota": 1000,
+          "score": 0
+        },
+        {
+          "code": "017641",
+          "name": "摩根标普500指数(QDII)人民币A",
+          "share_class": "A",
+          "index_type": "标普500",
+          "total_fee": 0.0065,
+          "limit_status": "限10元/日",
+          "direct_limit_status": "限10元/日",
+          "daily_limit": 10,
+          "direct_daily_limit": 10,
+          "max_quota": 10,
+          "score": 0
+        },
+        {
+          "code": "019305",
+          "name": "摩根标普500指数(QDII)人民币C",
+          "share_class": "C",
+          "index_type": "标普500",
+          "total_fee": 0.0095,
+          "limit_status": "限10元/日",
+          "direct_limit_status": "限10元/日",
+          "daily_limit": 10,
+          "direct_daily_limit": 10,
+          "max_quota": 10,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-10-06",
+      "timestamp": "2026-10-06T08:15:00",
+      "code": "023422",
+      "name": "建信标普500指数(QDII)D类",
+      "index_type": "标普500",
+      "share_class": "D",
+      "change_type": "CHANNEL_DIV",
+      "change_type_label": "渠道差异化调整",
+      "agency": {
+        "before_status": "限100元/日",
+        "after_status": "暂停申购",
+        "before_limit": 100,
+        "after_limit": null,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "未开通直销",
+        "after_status": "限10元/日",
+        "before_limit": null,
+        "after_limit": 10,
+        "direction": "RELAXED"
+      },
+      "summary": "第三方代销渠道暂停申购，仅建信直销APP/柜台开放 10元/日微额定投",
+      "announcement_id": "AN202609201827741234",
+      "announcement_url": "https://fundf10.eastmoney.com/jjgg_023422.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "限10元/日",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 10,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "限10元/日",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 10,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-10-05",
+      "timestamp": "2026-10-05T09:00:00",
+      "code": "007721",
+      "name": "申万菱信标普500指数(QDII)A",
+      "index_type": "标普500",
+      "share_class": "A",
+      "change_type": "TIGHTENED",
+      "change_type_label": "暂停大额申购",
+      "agency": {
+        "before_status": "开放申购",
+        "after_status": "限1000元/日",
+        "before_limit": null,
+        "after_limit": 1000,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "开放申购",
+        "after_status": "限1000元/日",
+        "before_limit": null,
+        "after_limit": 1000,
+        "direction": "TIGHTENED"
+      },
+      "summary": "由完全开放申购转为限制大额申购，单日上限 1,000元/日",
+      "announcement_id": "AN202609151826629811",
+      "announcement_url": "https://fundf10.eastmoney.com/jjgg_007721.html",
+      "substitutes": [
+        {
+          "code": "096001",
+          "name": "大成标普500等权重指数(QDII)A人民币",
+          "share_class": "A",
+          "index_type": "标普500",
+          "total_fee": 0.012,
+          "limit_status": "限100元/日",
+          "direct_limit_status": "限1000元/日",
+          "daily_limit": 100,
+          "direct_daily_limit": 1000,
+          "max_quota": 1000,
+          "score": 0
+        },
+        {
+          "code": "008401",
+          "name": "大成标普500等权重指数(QDII)C人民币",
+          "share_class": "C",
+          "index_type": "标普500",
+          "total_fee": 0.015,
+          "limit_status": "限100元/日",
+          "direct_limit_status": "限1000元/日",
+          "daily_limit": 100,
+          "direct_daily_limit": 1000,
+          "max_quota": 1000,
+          "score": 0
+        },
+        {
+          "code": "017641",
+          "name": "摩根标普500指数(QDII)人民币A",
+          "share_class": "A",
+          "index_type": "标普500",
+          "total_fee": 0.0065,
+          "limit_status": "限10元/日",
+          "direct_limit_status": "限10元/日",
+          "daily_limit": 10,
+          "direct_daily_limit": 10,
+          "max_quota": 10,
+          "score": 0
+        }
+      ]
+    }
+  ]
+}

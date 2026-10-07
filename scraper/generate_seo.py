@@ -19,6 +19,17 @@ os.makedirs(FUND_DIR)
 with open(DATA_FILE, 'r', encoding='utf-8') as f:
     funds = json.load(f)
 
+LIMIT_CHANGES_FILE = os.path.join(ROOT_DIR, 'public', 'data', 'limit_changes.json')
+limit_changes_history = []
+if os.path.exists(LIMIT_CHANGES_FILE):
+    try:
+        with open(LIMIT_CHANGES_FILE, 'r', encoding='utf-8') as f:
+            l_data = json.load(f)
+            if isinstance(l_data, dict):
+                limit_changes_history = l_data.get('history', [])
+    except Exception:
+        pass
+
 # HTML 模板：开启 index 允许 Google 抓取并展示高质量结构化基金数据
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
@@ -31,7 +42,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, {share_class}类份额, 费率, 限购, 收益率, 定投, Fund Advisor">
 <link rel="canonical" href="https://858000.xyz/fund/{fund_code}.html">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="/css/style.css?v=20261007_v3">
+<link rel="stylesheet" href="/css/style.css?v=20261007_v4">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {json_ld}
@@ -160,6 +171,24 @@ for fund in funds:
         
     review_return_desc = f"近三年历史收益率为 {r3_str}%。" if r3 is not None else "暂无近三年完整历史收益数据。"
     
+    # 提取并格式化该标的的限购变动历史
+    fund_history = [h for h in limit_changes_history if h.get('code') == code]
+    quota_history_html = ""
+    if fund_history:
+        history_items = []
+        for h in fund_history[:4]:
+            history_items.append(
+                f"<li style='margin-bottom:0.45rem;'><strong>{h.get('date')}</strong> · <span style='color:var(--accent2);font-weight:600;'>{h.get('change_type_label', '')}</span>: {h.get('summary', '')}</li>"
+            )
+        quota_history_html = f"""
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.15rem;margin-top:1.5rem;">
+                <h3 style="font-size:1.05rem;color:var(--txt);margin-top:0;margin-bottom:0.6rem;font-weight:700;">📢 申购限购调整历史与渠道动态</h3>
+                <ul style="padding-left:1.2rem;margin-bottom:0;color:var(--txt2);font-size:0.88rem;line-height:1.5;">
+                    {''.join(history_items)}
+                </ul>
+            </div>
+        """
+
     review_html = f"""
         <div class="fund-seo-review" style="margin-top:2rem;line-height:1.7;color:var(--txt2);font-size:1.05rem;">
             <h2 style="font-size:1.25rem;color:var(--txt);margin-bottom:1rem;font-weight:600;">{fund.get('name', '')} 深度评测</h2>
@@ -175,6 +204,7 @@ for fund in funds:
             <p>
                 业绩方面，该基金{review_return_desc} 值得注意的是，指数基金的过往业绩主要取决于底层指数（{fund.get('index_type', '')}）的Beta收益，而不代表对未来表现的保证。如果您计划投资该基金，我们强烈建议您使用 Fund Advisor 的蒙特卡洛模拟器，测算在不同的定投预算和年限下，该基金可能呈现的风险收益分布。
             </p>
+            {quota_history_html}
         </div>
     """
 

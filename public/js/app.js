@@ -4,6 +4,7 @@
 const App = (() => {
     let FUND_DATA = [];
     let ALGO_CONFIG = null;
+    let LIMIT_CHANGES_DATA = null;
     let chartPool = {};
     let pfCharts = {};
     const API_BASE = '';
@@ -308,6 +309,7 @@ const App = (() => {
                 if (s) s.value = decodeURIComponent(queryParams.q);
             }
             renderRanking();
+            renderQuotaBulletin();
         }
         if (pName === 'simulator') {
             populateSimSelect();
@@ -922,6 +924,266 @@ const App = (() => {
             if (tableWrap) tableWrap.style.display = '';
             if (swipeHint) swipeHint.style.display = isMobileDevice ? 'block' : 'none';
             if (statusMsg) statusMsg.textContent = '当前为全景对比表格 · 支持点击表头多维排序，点击标的名称可展开抽屉看板';
+        }
+    }
+
+    // ===== 每日限购动态监控与风控公告看板渲染 (Quota Intelligence Bulletin) =====
+    function renderQuotaBulletin() {
+        const container = document.getElementById('quota-bulletin-container');
+        if (!container) return;
+
+        const data = LIMIT_CHANGES_DATA;
+        const dateEl = document.getElementById('quota-alert-date');
+        const msgEl = document.getElementById('quota-alert-msg');
+        const dotEl = document.getElementById('quota-pulse-dot');
+        const tickersEl = document.getElementById('quota-alert-tickers');
+        const drawerEl = document.getElementById('quota-board-drawer');
+        const toggleBtn = document.getElementById('btn-quota-toggle');
+        const toggleTxt = document.getElementById('quota-toggle-text');
+
+        if (!data || !data.history || !data.history.length) {
+            if (dateEl) dateEl.textContent = new Date().toISOString().slice(0, 10);
+            if (msgEl) msgEl.textContent = '全市场 60 只美股QDII额度今日平稳运行，无新增限购/收紧变动';
+            if (dotEl) dotEl.className = 'quota-pulse-dot pulse-ok';
+            return;
+        }
+
+        const todayStr = data.today_date || new Date().toISOString().slice(0, 10);
+        if (dateEl) dateEl.textContent = todayStr;
+
+        const todayChanges = data.history.filter(h => h.date === todayStr);
+        const hasToday = todayChanges.length > 0;
+
+        if (dotEl) {
+            dotEl.className = 'quota-pulse-dot ' + (hasToday ? 'pulse-alert' : 'pulse-info');
+        }
+
+        if (msgEl) {
+            if (hasToday) {
+                msgEl.innerHTML = `今日监测到 <strong>${todayChanges.length}</strong> 只标的申购额度变动，建议关注渠道差异与平替！`;
+            } else {
+                msgEl.textContent = `全市场额度今日运行平稳 · 近7天累计发生 ${data.recent_7d_count || data.history.length} 次额度调整`;
+            }
+        }
+
+        // 渲染顶部快速变动胶囊 (最多3条)
+        if (tickersEl) {
+            const previewItems = (hasToday ? todayChanges : data.history).slice(0, 3);
+            tickersEl.innerHTML = previewItems.map(item => {
+                let badgeClass = 'chip-tightened';
+                let icon = '🔴';
+                if (item.change_type === 'RELAXED') {
+                    badgeClass = 'chip-relaxed';
+                    icon = '🟢';
+                } else if (item.change_type === 'CHANNEL_DIV') {
+                    badgeClass = 'chip-div';
+                    icon = '🔵';
+                }
+                const shortName = (item.name || '').replace(/指数.*/, '').slice(0, 7);
+                return `<span class="ticker-chip ${badgeClass}" title="${item.summary || ''}">${icon} ${item.code} ${shortName} · ${item.change_type_label || ''}</span>`;
+            }).join('');
+        }
+
+        // 绑定折叠开关
+        if (toggleBtn && !toggleBtn._bound) {
+            toggleBtn._bound = true;
+            toggleBtn.addEventListener('click', () => {
+                const isHidden = drawerEl.style.display === 'none';
+                drawerEl.style.display = isHidden ? 'block' : 'none';
+                toggleBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+                if (toggleTxt) toggleTxt.textContent = isHidden ? '收起限购变动看板' : '查看限购变动与平替全景';
+                const arrow = toggleBtn.querySelector('.quota-toggle-arrow');
+                if (arrow) arrow.textContent = isHidden ? '▴' : '▾';
+                if (isHidden) {
+                    drawerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        }
+
+        // 统计指标
+        const qRecent = document.getElementById('qstat-recent');
+        const qRelaxed = document.getElementById('qstat-relaxed');
+        const qTightened = document.getElementById('qstat-tightened');
+        const qStable = document.getElementById('qstat-stable');
+        if (qRecent) qRecent.textContent = data.recent_7d_count || data.history.length;
+        if (qRelaxed) qRelaxed.textContent = data.history.filter(h => h.change_type === 'RELAXED').length;
+        if (qTightened) qTightened.textContent = data.history.filter(h => h.change_type === 'TIGHTENED').length;
+        if (qStable) qStable.textContent = (data.total_monitored || 60) - (todayChanges.length);
+
+        // 渲染全景表格 (#quota-table-tbody)
+        const tbody = document.getElementById('quota-table-tbody');
+        if (tbody) {
+            tbody.innerHTML = data.history.map(item => {
+                let typeBadge = '';
+                if (item.change_type === 'RELAXED') {
+                    typeBadge = `<span class="badge-qtype badge-relaxed">🟢 ${item.change_type_label}</span>`;
+                } else if (item.change_type === 'TIGHTENED') {
+                    typeBadge = `<span class="badge-qtype badge-tightened">🔴 ${item.change_type_label}</span>`;
+                } else {
+                    typeBadge = `<span class="badge-qtype badge-div">🔵 ${item.change_type_label}</span>`;
+                }
+
+                const idxBadge = `<span class="badge-idx ${item.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${item.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`;
+                const fundCell = `
+                    <div class="q-fund-cell">
+                        <div>${idxBadge}${shareBadge(item.share_class)}<a href="fund/${item.code}.html" class="q-fund-name" target="_blank">${item.name}</a></div>
+                        <div class="q-fund-code"><span class="code-mono">${item.code}</span><button type="button" class="btn-copy-code" data-code="${item.code}" title="复制基金代码">📋</button></div>
+                    </div>
+                `;
+
+                const agencyDiff = `
+                    <div class="quota-diff-box">
+                        <span class="q-diff-before">${item.agency.before_status}</span>
+                        <span class="q-diff-arrow">➔</span>
+                        <span class="q-diff-after ${item.agency.direction || ''}">${item.agency.after_status}</span>
+                    </div>
+                `;
+
+                const directDiff = `
+                    <div class="quota-diff-box">
+                        <span class="q-diff-before">${item.direct.before_status}</span>
+                        <span class="q-diff-arrow">➔</span>
+                        <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
+                    </div>
+                `;
+
+                const summaryCell = `
+                    <div class="q-summary-cell">
+                        <div class="q-summary-text">${item.summary}</div>
+                        ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看官方公告发布列表">📋 官方公告 ↗</a>` : ''}
+                    </div>
+                `;
+
+                const subsCell = item.substitutes && item.substitutes.length ? `
+                    <div class="q-subs-wrap">
+                        ${item.substitutes.map(s => `
+                            <button type="button" class="btn-quota-sub" data-code="${s.code}" title="${s.name} | 综合费率 ${(s.total_fee*100).toFixed(2)}% | 代销${s.limit_status}">
+                                <span class="q-sub-code">${s.code}</span>
+                                <span class="q-sub-name">${s.name.replace(/指数.*/, '').slice(0, 6)}</span>
+                                <span class="q-sub-limit">${s.limit_status}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                ` : `<span style="color:var(--txt3);font-size:0.75rem">—</span>`;
+
+                return `
+                    <tr class="q-row-${(item.change_type || '').toLowerCase()}">
+                        <td><span class="q-date-pill">${item.date}</span></td>
+                        <td>${fundCell}</td>
+                        <td>${typeBadge}</td>
+                        <td>${agencyDiff}</td>
+                        <td>${directDiff}</td>
+                        <td>${summaryCell}</td>
+                        <td>${subsCell}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 渲染移动端卡片列表 (#quota-card-list)
+        const cardContainer = document.getElementById('quota-card-list');
+        if (cardContainer) {
+            cardContainer.innerHTML = data.history.map(item => {
+                let typeBadge = '';
+                if (item.change_type === 'RELAXED') {
+                    typeBadge = `<span class="badge-qtype badge-relaxed">🟢 ${item.change_type_label}</span>`;
+                } else if (item.change_type === 'TIGHTENED') {
+                    typeBadge = `<span class="badge-qtype badge-tightened">🔴 ${item.change_type_label}</span>`;
+                } else {
+                    typeBadge = `<span class="badge-qtype badge-div">🔵 ${item.change_type_label}</span>`;
+                }
+
+                const idxBadge = `<span class="badge-idx ${item.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${item.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`;
+
+                const subsHtml = item.substitutes && item.substitutes.length ? `
+                    <div class="qmc-subs">
+                        <span class="qmc-subs-lbl">💡 智能平替标的：</span>
+                        <div class="qmc-subs-chips">
+                            ${item.substitutes.map(s => `
+                                <button type="button" class="btn-quota-sub" data-code="${s.code}" title="${s.name}">
+                                    <span class="q-sub-code">${s.code}</span>
+                                    <span class="q-sub-name">${s.name.replace(/指数.*/, '').slice(0, 6)}</span>
+                                    <span class="q-sub-limit">${s.limit_status}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="quota-mobile-card q-card-${(item.change_type || '').toLowerCase()}">
+                        <div class="qmc-header">
+                            <span class="q-date-pill">${item.date}</span>
+                            ${typeBadge}
+                        </div>
+                        <div class="qmc-title-row">
+                            ${idxBadge}${shareBadge(item.share_class)}
+                            <a href="fund/${item.code}.html" target="_blank" class="qmc-fund-name">${item.name}</a>
+                            <span class="code-mono">${item.code}</span>
+                        </div>
+                        <div class="qmc-diff-grid">
+                            <div class="qmc-diff-item">
+                                <span class="qmc-diff-lbl">代销渠道</span>
+                                <div class="quota-diff-box">
+                                    <span class="q-diff-before">${item.agency.before_status}</span>
+                                    <span class="q-diff-arrow">➔</span>
+                                    <span class="q-diff-after ${item.agency.direction || ''}">${item.agency.after_status}</span>
+                                </div>
+                            </div>
+                            <div class="qmc-diff-item">
+                                <span class="qmc-diff-lbl">直销渠道</span>
+                                <div class="quota-diff-box">
+                                    <span class="q-diff-before">${item.direct.before_status}</span>
+                                    <span class="q-diff-arrow">➔</span>
+                                    <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="qmc-summary-row">
+                            <span>${item.summary}</span>
+                            ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link">📋 公告 ↗</a>` : ''}
+                        </div>
+                        ${subsHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 监听平替基金点击定位事件
+        if (!container._subBound) {
+            container._subBound = true;
+            container.addEventListener('click', e => {
+                const subBtn = e.target.closest('.btn-quota-sub');
+                if (subBtn) {
+                    e.preventDefault();
+                    const code = subBtn.dataset.code;
+                    if (!code) return;
+
+                    // 切换到全部份额让标的在排名表中可见
+                    const classFilter = document.getElementById('class-filter');
+                    if (classFilter) {
+                        const allBtn = classFilter.querySelector('[data-value="ALL"]');
+                        if (allBtn && !allBtn.classList.contains('on')) {
+                            allBtn.click();
+                        }
+                    }
+
+                    // 尝试在表格或卡片中高亮该基金
+                    setTimeout(() => {
+                        const targetRow = document.querySelector(`#rank-table tr[data-code="${code}"]`);
+                        const targetCard = document.querySelector(`.fund-mobile-card[data-code="${code}"]`);
+                        const targetEl = targetRow || targetCard;
+                        if (targetEl) {
+                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            targetEl.classList.add('hl-target-pulse');
+                            setTimeout(() => targetEl.classList.remove('hl-target-pulse'), 3000);
+                            showToast(`已为您在基金排名中定位平替标的: ${code}`, 'success');
+                        } else {
+                            window.open(`fund/${code}.html`, '_blank');
+                        }
+                    }, 150);
+                }
+            });
         }
     }
 
@@ -2503,18 +2765,25 @@ const App = (() => {
         initTheme();
         try {
             const t = Date.now();
-            const [fundsResp, algoResp] = await Promise.all([
+            const [fundsResp, algoResp, limitResp] = await Promise.all([
                 fetch('data/funds.json?v=' + t),
-                fetch('data/algorithm.json?v=' + t)
+                fetch('data/algorithm.json?v=' + t),
+                fetch('data/limit_changes.json?v=' + t).catch(() => null)
             ]);
             FUND_DATA = await fundsResp.json();
             ALGO_CONFIG = await algoResp.json();
+            if (limitResp && limitResp.ok) {
+                try {
+                    LIMIT_CHANGES_DATA = await limitResp.json();
+                } catch (e) {}
+            }
 
             renderHome();
             initNav();
             initPresetChips();
             initSimQuickPresets();
             syncSliderBadges();
+            renderQuotaBulletin();
         } catch (e) {
             document.getElementById('home-stats').innerHTML = '<div class="card"><p style="color:var(--err)">数据加载失败: ' + e.message + '</p></div>';
         }

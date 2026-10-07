@@ -1413,6 +1413,441 @@ input[type=range]::-moz-range-thumb {
     line-height: 1;
 }
 
+/* ===== 每日限购动态监控与风控公告看板 (Quota Intelligence Alert & Bulletin) ===== */
+.quota-bulletin-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.quota-alert-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.8rem 1.25rem;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.05) 0%, var(--surface) 100%);
+    border-bottom: 1px solid transparent;
+}
+
+.quota-alert-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.quota-pulse-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+.quota-pulse-dot.pulse-alert {
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+    animation: qPulseDot 1.8s infinite ease-in-out;
+}
+.quota-pulse-dot.pulse-info {
+    background: #3b82f6;
+    box-shadow: 0 0 8px #3b82f6;
+    animation: qPulseDot 2.2s infinite ease-in-out;
+}
+.quota-pulse-dot.pulse-ok {
+    background: var(--ok);
+    box-shadow: 0 0 6px var(--ok);
+}
+
+@keyframes qPulseDot {
+    0%, 100% { opacity: 0.45; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+.quota-alert-badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent2);
+    background: rgba(99, 102, 241, 0.1);
+    padding: 2px 7px;
+    border-radius: 6px;
+    letter-spacing: 0.2px;
+}
+
+.quota-alert-date {
+    font-size: 0.75rem;
+    color: var(--txt3);
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-weight: 600;
+}
+
+.quota-alert-msg {
+    font-size: 0.8125rem;
+    color: var(--txt2);
+    font-weight: 500;
+}
+
+.quota-alert-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.quota-alert-tickers {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.ticker-chip {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    line-height: 1.25;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+.ticker-chip.chip-tightened {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--err);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.ticker-chip.chip-relaxed {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--ok);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.ticker-chip.chip-div {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.btn-quota-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.42rem 0.9rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--txt);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-quota-toggle:hover {
+    background: var(--surface);
+    border-color: var(--accent2);
+    color: var(--accent2);
+    box-shadow: var(--shadow-sm);
+}
+.quota-toggle-arrow {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+/* 抽屉看板内构 */
+.quota-board-drawer {
+    background: var(--surface);
+    padding: 1.25rem 1.25rem 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+    animation: drawerFadeIn 0.25s ease-out;
+}
+
+@keyframes drawerFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.quota-board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.15rem;
+}
+
+.quota-board-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--txt);
+    margin: 0 0 0.25rem 0;
+}
+
+.quota-board-sub {
+    font-size: 0.78rem;
+    color: var(--txt3);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.quota-stats-ribbon {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.quota-stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+}
+.quota-stat-pill .stat-lbl {
+    color: var(--txt3);
+    font-weight: 500;
+}
+.quota-stat-pill .stat-val {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--txt);
+}
+.quota-stat-pill.stat-recent .stat-val { color: var(--accent2); }
+.quota-stat-pill.stat-relaxed .stat-val { color: var(--ok); }
+.quota-stat-pill.stat-tightened .stat-val { color: var(--err); }
+.quota-stat-pill.stat-stable .stat-val { color: var(--txt2); }
+
+/* 全景表格 */
+.quota-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 0.85rem;
+    background: var(--surface);
+}
+
+.quota-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.quota-table th {
+    background: var(--surface2);
+    padding: 0.7rem 0.9rem;
+    font-weight: 700;
+    color: var(--txt2);
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.quota-table td {
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--txt);
+    vertical-align: middle;
+}
+.quota-table tr:last-child td {
+    border-bottom: none;
+}
+.quota-table tr:hover td {
+    background: rgba(99, 102, 241, 0.035);
+}
+
+.q-date-pill {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--txt3);
+    white-space: nowrap;
+}
+
+.q-fund-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 180px;
+}
+.q-fund-name {
+    font-weight: 700;
+    color: var(--txt);
+    text-decoration: none;
+    font-size: 0.85rem;
+    line-height: 1.35;
+    transition: color 0.15s;
+}
+.q-fund-name:hover {
+    color: var(--accent2);
+}
+.q-fund-code {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-qtype {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.badge-qtype.badge-tightened {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--err);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.badge-qtype.badge-relaxed {
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--ok);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.badge-qtype.badge-div {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.quota-diff-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+.q-diff-before {
+    color: var(--txt3);
+    text-decoration: line-through;
+    opacity: 0.75;
+    font-size: 0.72rem;
+}
+.q-diff-arrow {
+    color: var(--txt3);
+    font-size: 0.72rem;
+}
+.q-diff-after {
+    font-weight: 700;
+    color: var(--txt);
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--surface2);
+}
+.q-diff-after.TIGHTENED {
+    color: var(--err);
+    background: rgba(239, 68, 68, 0.1);
+}
+.q-diff-after.RELAXED {
+    color: var(--ok);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.q-summary-cell {
+    max-width: 280px;
+}
+.q-summary-text {
+    font-size: 0.78rem;
+    color: var(--txt2);
+    line-height: 1.4;
+}
+.q-ann-link {
+    display: inline-block;
+    margin-top: 3px;
+    font-size: 0.72rem;
+    color: var(--accent2);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.15s;
+}
+.q-ann-link:hover {
+    text-decoration: underline;
+}
+
+.q-subs-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-width: 320px;
+}
+.btn-quota-sub {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--txt);
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.btn-quota-sub:hover {
+    border-color: var(--accent2);
+    background: rgba(99, 102, 241, 0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+.q-sub-code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-weight: 700;
+    color: var(--accent2);
+}
+.q-sub-name {
+    font-weight: 600;
+    color: var(--txt2);
+}
+.q-sub-limit {
+    font-size: 0.65rem;
+    color: var(--ok);
+    font-weight: 700;
+    background: rgba(16, 185, 129, 0.12);
+    padding: 0 4px;
+    border-radius: 3px;
+}
+
+.quota-board-footer {
+    margin-top: 0.65rem;
+}
+.quota-footer-tip {
+    font-size: 0.75rem;
+    color: var(--txt3);
+    line-height: 1.45;
+    background: var(--surface2);
+    padding: 0.65rem 0.95rem;
+    border-radius: 8px;
+    border: 1px dashed var(--border);
+}
+
+.quota-card-list {
+    display: none;
+}
+
+/* 目标基金定位高光脉冲动效 */
+@keyframes targetRowPulse {
+    0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); background-color: rgba(99, 102, 241, 0.2); }
+    50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); background-color: rgba(99, 102, 241, 0.1); }
+    100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+.hl-target-pulse {
+    animation: targetRowPulse 1.2s ease-in-out 3;
+    border-color: var(--accent2) !important;
+}
+
 /* ===== 基金排名控制中枢 (Two-Tier Control Hub) ===== */
 .rank-control-hub {
     display: flex;
@@ -3131,6 +3566,131 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
     .rank-filter-footer { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
     
+    /* 限购公告与风控看板移动端适配 */
+    .quota-bulletin-container {
+        margin-bottom: 1.15rem;
+    }
+    .quota-alert-bar {
+        padding: 0.75rem 0.85rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    .quota-alert-left {
+        justify-content: flex-start;
+    }
+    .quota-alert-right {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    .quota-alert-tickers {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .btn-quota-toggle {
+        width: 100%;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+    .quota-board-drawer {
+        padding: 1rem 0.85rem;
+    }
+    .quota-stats-ribbon {
+        width: 100%;
+        gap: 6px;
+    }
+    .quota-stat-pill {
+        flex: 1 1 calc(50% - 6px);
+        justify-content: space-between;
+    }
+    .quota-table-wrap {
+        display: none !important;
+    }
+    .quota-card-list {
+        display: flex !important;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    .quota-mobile-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .quota-mobile-card.q-card-tightened {
+        border-color: rgba(239, 68, 68, 0.35);
+        background: linear-gradient(180deg, var(--surface2) 0%, rgba(239, 68, 68, 0.02) 100%);
+    }
+    .quota-mobile-card.q-card-relaxed {
+        border-color: rgba(16, 185, 129, 0.35);
+        background: linear-gradient(180deg, var(--surface2) 0%, rgba(16, 185, 129, 0.02) 100%);
+    }
+    .qmc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .qmc-title-row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+    .qmc-fund-name {
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: var(--txt);
+        text-decoration: none;
+    }
+    .qmc-diff-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        background: var(--surface);
+        padding: 0.55rem 0.7rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    .qmc-diff-item {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    .qmc-diff-lbl {
+        font-size: 0.68rem;
+        color: var(--txt3);
+    }
+    .qmc-summary-row {
+        font-size: 0.75rem;
+        color: var(--txt2);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 6px;
+    }
+    .qmc-subs {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding-top: 0.35rem;
+        border-top: 1px dashed var(--border);
+    }
+    .qmc-subs-lbl {
+        font-size: 0.72rem;
+        color: var(--txt3);
+        font-weight: 600;
+    }
+    .qmc-subs-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
     /* 移动端视图控制工具条与双视图切换 */
     .rank-view-toolbar {
         flex-direction: column;
