@@ -1527,6 +1527,432 @@ input[type=range]::-moz-range-thumb {
     margin-bottom: 2rem;
 }
 
+/* ===== 投研资产卡片核心设计系统 (跨桌面端与移动端通用) ===== */
+.fund-mobile-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.05rem 0.65rem 1.05rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 桌面端悬停微动效 (轻盈浮起与微光投影) */
+@media (hover: hover) {
+    .fund-mobile-card:hover {
+        border-color: rgba(99, 102, 241, 0.45);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        transform: translateY(-3px);
+    }
+}
+
+/* 前三名专属贵金属徽章质感 */
+.fund-mobile-card.top-card.rank-1 {
+    border-color: rgba(245, 158, 11, 0.45);
+    background: linear-gradient(180deg, var(--surface) 0%, rgba(245, 158, 11, 0.035) 100%);
+    box-shadow: 0 3px 12px rgba(245, 158, 11, 0.08);
+}
+@media (hover: hover) {
+    .fund-mobile-card.top-card.rank-1:hover {
+        border-color: rgba(245, 158, 11, 0.8);
+        box-shadow: 0 10px 26px rgba(245, 158, 11, 0.18);
+    }
+}
+
+.fund-mobile-card.top-card.rank-2 {
+    border-color: rgba(148, 163, 184, 0.45);
+    background: linear-gradient(180deg, var(--surface) 0%, rgba(148, 163, 184, 0.035) 100%);
+    box-shadow: 0 3px 12px rgba(148, 163, 184, 0.08);
+}
+@media (hover: hover) {
+    .fund-mobile-card.top-card.rank-2:hover {
+        border-color: rgba(148, 163, 184, 0.8);
+        box-shadow: 0 10px 26px rgba(148, 163, 184, 0.18);
+    }
+}
+
+.fund-mobile-card.top-card.rank-3 {
+    border-color: rgba(217, 119, 6, 0.35);
+    background: linear-gradient(180deg, var(--surface) 0%, rgba(217, 119, 6, 0.03) 100%);
+    box-shadow: 0 3px 12px rgba(217, 119, 6, 0.07);
+}
+@media (hover: hover) {
+    .fund-mobile-card.top-card.rank-3:hover {
+        border-color: rgba(217, 119, 6, 0.7);
+        box-shadow: 0 10px 26px rgba(217, 119, 6, 0.16);
+    }
+}
+
+.fund-mobile-card.paused-card {
+    opacity: 0.82;
+    border-style: dashed;
+}
+
+/* 卡片头部 */
+.fmc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    gap: 6px;
+}
+.fmc-header-left {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+.fmc-rank {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--surface2);
+    color: var(--txt3);
+    border: 1px solid var(--border);
+}
+.fmc-rank.rank-gold {
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    color: #fff;
+    border: none;
+    box-shadow: 0 1px 4px rgba(245, 158, 11, 0.3);
+}
+.fmc-rank.rank-silver {
+    background: linear-gradient(135deg, #64748b, #94a3b8);
+    color: #fff;
+    border: none;
+}
+.fmc-rank.rank-bronze {
+    background: linear-gradient(135deg, #b45309, #d97706);
+    color: #fff;
+    border: none;
+}
+.fmc-code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--txt);
+    letter-spacing: 0.5px;
+}
+.fmc-score-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.15;
+}
+.fmc-score-label {
+    font-size: 0.62rem;
+    color: var(--txt3);
+    font-weight: 500;
+}
+.fmc-score-val {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--accent2);
+}
+
+/* 基金名称行 */
+.fmc-name-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 0.65rem;
+}
+.fmc-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--txt);
+    line-height: 1.35;
+    text-decoration: none;
+    flex: 1;
+    transition: color 0.15s ease;
+}
+.fmc-title:hover {
+    color: var(--accent2);
+}
+.fmc-page-link {
+    font-size: 0.72rem;
+    color: var(--accent2);
+    text-decoration: none;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+    font-weight: 600;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+.fmc-page-link:hover {
+    background: var(--border2);
+}
+
+/* 4 宫格量化指标 */
+.fmc-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem 0.6rem;
+    background: var(--surface2);
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.6rem;
+    border: 1px solid var(--border);
+}
+.fmc-metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.fmc-metric-lbl {
+    font-size: 0.68rem;
+    color: var(--txt3);
+    font-weight: 500;
+}
+.fmc-metric-val {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--txt);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+.fmc-metric-val.up {
+    color: var(--ok);
+}
+.fmc-metric-val.fmc-metric-val-sm {
+    font-size: 0.78rem;
+}
+.fmc-pill-low {
+    font-size: 0.6rem;
+    padding: 1px 4px;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--ok);
+    font-weight: 700;
+    line-height: 1.2;
+}
+.fmc-stars {
+    color: var(--warn);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+.fmc-ret-note {
+    font-size: 0.65rem;
+    color: var(--txt3);
+    font-weight: normal;
+}
+
+/* 渠道限购状态条 */
+.fmc-quota-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px dashed var(--border);
+    flex-wrap: wrap;
+}
+.fmc-quota-channels {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.fmc-quota-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.72rem;
+}
+.fmc-channel-lbl {
+    color: var(--txt3);
+    font-size: 0.68rem;
+    font-weight: 500;
+}
+
+/* 展开折叠抽屉 */
+.fmc-drawer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fund-mobile-card.expanded .fmc-drawer {
+    max-height: 1200px;
+}
+.fmc-drawer-content {
+    padding-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.fmc-detail-section {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border);
+}
+.fmc-sec-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--txt);
+    margin-bottom: 0.45rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.25rem;
+}
+.fmc-detail-kv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem 0.5rem;
+    font-size: 0.72rem;
+    color: var(--txt2);
+}
+.fmc-detail-kv-grid span {
+    color: var(--txt3);
+}
+.fmc-detail-kv-grid strong {
+    color: var(--txt);
+}
+
+/* 同门比对板块 */
+.fmc-siblings-block {
+    background: rgba(99, 102, 241, 0.04);
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    border-radius: 8px;
+    padding: 0.65rem 0.75rem;
+}
+.fmc-siblings-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 0.5rem;
+}
+.fmc-siblings-tip {
+    font-size: 0.65rem;
+    font-weight: normal;
+    color: var(--txt3);
+}
+.fmc-siblings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.45rem;
+}
+.fmc-sibling-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.45rem 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.fmc-sibling-card.active {
+    border-color: var(--accent2);
+    background: rgba(99, 102, 241, 0.06);
+}
+.fmc-sibling-card:hover {
+    border-color: var(--accent2);
+}
+.fmc-sibling-card .sib-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+}
+.fmc-sibling-card .sib-fee {
+    color: var(--ok);
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+.fmc-sibling-card .sib-limits {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    color: var(--txt3);
+}
+
+/* 抽屉操作按钮组 */
+.fmc-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 0.25rem;
+}
+.fmc-btn-act {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--txt);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+.fmc-btn-act:hover {
+    background: var(--surface);
+    border-color: var(--accent2);
+}
+.fmc-btn-primary {
+    background: var(--accent-g);
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.25);
+}
+.fmc-btn-primary:hover {
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+/* 卡片底部展开/收起触控条 */
+.fmc-expand-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0.5rem 0 0.15rem 0;
+    margin-top: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent2);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+}
+.fmc-expand-bar:hover {
+    color: var(--accent);
+}
+.fmc-expand-arrow {
+    font-size: 0.8rem;
+    transition: transform 0.25s ease;
+}
+.fund-mobile-card.expanded .fmc-expand-arrow {
+    transform: rotate(180deg);
+}
+
+/* 空状态 */
+.rank-card-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+}
+
 .rank-index-tabs {
     display: inline-flex;
     background: var(--surface);
@@ -2771,401 +3197,34 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         font-size: 0.85rem;
     }
 
-    /* 移动端专属智能金融资产卡片流 */
+    /* 移动端专属响应式卡片流适配 */
     .rank-card-list {
         display: flex !important;
         flex-direction: column;
         gap: 0.85rem;
         margin-bottom: 1.5rem;
     }
+    .fund-mobile-card {
+        padding: 0.9rem 0.95rem 0.6rem 0.95rem;
+    }
+    .fund-mobile-card:hover {
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+    .fund-mobile-card:active {
+        transform: scale(0.995);
+    }
+    .fmc-actions {
+        flex-direction: column;
+    }
+    .fmc-siblings-grid {
+        grid-template-columns: 1fr;
+    }
     .table-wrap.mobile-hidden {
         display: none !important;
     }
     .mobile-swipe-hint.mobile-hidden {
         display: none !important;
-    }
-
-    .fund-mobile-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 0.9rem 0.95rem 0 0.95rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    .fund-mobile-card:active {
-        transform: scale(0.995);
-    }
-
-    /* 前三名专属金属徽章质感 */
-    .fund-mobile-card.top-card.rank-1 {
-        border-color: rgba(245, 158, 11, 0.45);
-        background: linear-gradient(180deg, var(--surface) 0%, rgba(245, 158, 11, 0.025) 100%);
-        box-shadow: 0 3px 12px rgba(245, 158, 11, 0.08);
-    }
-    .fund-mobile-card.top-card.rank-2 {
-        border-color: rgba(148, 163, 184, 0.45);
-        background: linear-gradient(180deg, var(--surface) 0%, rgba(148, 163, 184, 0.025) 100%);
-    }
-    .fund-mobile-card.top-card.rank-3 {
-        border-color: rgba(217, 119, 6, 0.35);
-        background: linear-gradient(180deg, var(--surface) 0%, rgba(217, 119, 6, 0.02) 100%);
-    }
-    .fund-mobile-card.paused-card {
-        opacity: 0.78;
-        border-style: dashed;
-    }
-
-    /* 卡片头部 */
-    .fmc-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-        gap: 6px;
-    }
-    .fmc-header-left {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-    .fmc-rank {
-        font-size: 0.72rem;
-        font-weight: 700;
-        padding: 2px 6px;
-        border-radius: 6px;
-        background: var(--surface2);
-        color: var(--txt3);
-        border: 1px solid var(--border);
-    }
-    .fmc-rank.rank-gold {
-        background: linear-gradient(135deg, #f59e0b, #fbbf24);
-        color: #fff;
-        border: none;
-        box-shadow: 0 1px 4px rgba(245, 158, 11, 0.3);
-    }
-    .fmc-rank.rank-silver {
-        background: linear-gradient(135deg, #64748b, #94a3b8);
-        color: #fff;
-        border: none;
-    }
-    .fmc-rank.rank-bronze {
-        background: linear-gradient(135deg, #b45309, #d97706);
-        color: #fff;
-        border: none;
-    }
-    .fmc-code {
-        font-family: monospace;
-        font-weight: 700;
-        font-size: 0.85rem;
-        color: var(--txt);
-        letter-spacing: 0.5px;
-    }
-    .fmc-score-wrap {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        line-height: 1.15;
-    }
-    .fmc-score-label {
-        font-size: 0.62rem;
-        color: var(--txt3);
-        font-weight: 500;
-    }
-    .fmc-score-val {
-        font-size: 1.05rem;
-        font-weight: 800;
-        color: var(--accent2);
-    }
-
-    /* 基金名称行 */
-    .fmc-name-row {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 8px;
-        margin-bottom: 0.65rem;
-    }
-    .fmc-title {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: var(--txt);
-        line-height: 1.35;
-        text-decoration: none;
-        flex: 1;
-    }
-    .fmc-title:hover {
-        color: var(--accent2);
-    }
-    .fmc-page-link {
-        font-size: 0.72rem;
-        color: var(--accent2);
-        text-decoration: none;
-        padding: 2px 6px;
-        border-radius: 4px;
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        white-space: nowrap;
-        font-weight: 600;
-        flex-shrink: 0;
-    }
-
-    /* 4 宫格量化指标 */
-    .fmc-metrics-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.45rem 0.6rem;
-        background: var(--surface2);
-        padding: 0.65rem 0.75rem;
-        border-radius: 8px;
-        margin-bottom: 0.6rem;
-        border: 1px solid var(--border);
-    }
-    .fmc-metric-item {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-    .fmc-metric-lbl {
-        font-size: 0.68rem;
-        color: var(--txt3);
-        font-weight: 500;
-    }
-    .fmc-metric-val {
-        font-size: 0.92rem;
-        font-weight: 700;
-        color: var(--txt);
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        flex-wrap: wrap;
-    }
-    .fmc-metric-val.up {
-        color: var(--ok);
-    }
-    .fmc-metric-val.fmc-metric-val-sm {
-        font-size: 0.78rem;
-    }
-    .fmc-pill-low {
-        font-size: 0.6rem;
-        padding: 1px 4px;
-        border-radius: 4px;
-        background: rgba(16, 185, 129, 0.15);
-        color: var(--ok);
-        font-weight: 700;
-        line-height: 1.2;
-    }
-    .fmc-stars {
-        color: var(--warn);
-        font-size: 0.75rem;
-        letter-spacing: 1px;
-    }
-    .fmc-ret-note {
-        font-size: 0.65rem;
-        color: var(--txt3);
-        font-weight: normal;
-    }
-
-    /* 渠道限购状态条 */
-    .fmc-quota-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 6px;
-        padding-bottom: 0.55rem;
-        border-bottom: 1px dashed var(--border);
-        flex-wrap: wrap;
-    }
-    .fmc-quota-channels {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .fmc-quota-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        font-size: 0.72rem;
-    }
-    .fmc-channel-lbl {
-        color: var(--txt3);
-        font-size: 0.68rem;
-        font-weight: 500;
-    }
-
-    /* 展开折叠抽屉 */
-    .fmc-drawer {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .fund-mobile-card.expanded .fmc-drawer {
-        max-height: 900px;
-    }
-    .fmc-drawer-content {
-        padding-top: 0.75rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    .fmc-detail-section {
-        background: var(--surface2);
-        border-radius: 8px;
-        padding: 0.6rem 0.75rem;
-        border: 1px solid var(--border);
-    }
-    .fmc-sec-title {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--txt);
-        margin-bottom: 0.45rem;
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 0.25rem;
-    }
-    .fmc-detail-kv-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.3rem 0.5rem;
-        font-size: 0.72rem;
-        color: var(--txt2);
-    }
-    .fmc-detail-kv-grid span {
-        color: var(--txt3);
-    }
-    .fmc-detail-kv-grid strong {
-        color: var(--txt);
-    }
-
-    /* 同门比对板块 */
-    .fmc-siblings-block {
-        background: rgba(99, 102, 241, 0.04);
-        border: 1px solid rgba(99, 102, 241, 0.18);
-        border-radius: 8px;
-        padding: 0.6rem 0.75rem;
-    }
-    .fmc-siblings-title {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.74rem;
-        font-weight: 700;
-        color: var(--accent2);
-        margin-bottom: 0.5rem;
-    }
-    .fmc-siblings-tip {
-        font-size: 0.65rem;
-        font-weight: normal;
-        color: var(--txt3);
-    }
-    .fmc-siblings-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0.4rem;
-    }
-    .fmc-sibling-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        padding: 0.45rem 0.6rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    .fmc-sibling-card.active {
-        border-color: var(--accent2);
-        background: rgba(99, 102, 241, 0.06);
-    }
-    .fmc-sibling-card .sib-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: 0.75rem;
-        margin-bottom: 2px;
-    }
-    .fmc-sibling-card .sib-fee {
-        color: var(--ok);
-        font-weight: 700;
-        font-size: 0.75rem;
-    }
-    .fmc-sibling-card .sib-limits {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.68rem;
-        color: var(--txt3);
-    }
-
-    /* 抽屉操作按钮组 */
-    .fmc-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-top: 0.25rem;
-    }
-    .fmc-btn-act {
-        width: 100%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 0.55rem 0.85rem;
-        font-size: 0.8rem;
-        font-weight: 600;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        background: var(--surface2);
-        color: var(--txt);
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        box-sizing: border-box;
-    }
-    .fmc-btn-act:hover {
-        background: var(--surface);
-        border-color: var(--accent2);
-    }
-    .fmc-btn-primary {
-        background: var(--accent-g);
-        color: #fff;
-        border: none;
-        box-shadow: 0 2px 6px rgba(99, 102, 241, 0.25);
-    }
-    .fmc-btn-primary:hover {
-        color: #fff;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
-    }
-
-    /* 卡片底部展开/收起触控条 */
-    .fmc-expand-bar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        padding: 0.5rem 0;
-        margin-top: 0.4rem;
-        font-size: 0.72rem;
-        font-weight: 600;
-        color: var(--accent2);
-        cursor: pointer;
-        user-select: none;
-        transition: color 0.2s;
-    }
-    .fmc-expand-arrow {
-        font-size: 0.8rem;
-        transition: transform 0.25s ease;
-    }
-    .fund-mobile-card.expanded .fmc-expand-arrow {
-        transform: rotate(180deg);
-    }
-
-    /* 空状态 */
-    .rank-card-empty {
-        text-align: center;
-        padding: 2.5rem 1rem;
-        background: var(--surface);
-        border: 1px dashed var(--border);
-        border-radius: 12px;
     }
 
     /* 移动端横向滑动提示 */
