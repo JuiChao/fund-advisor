@@ -705,46 +705,139 @@ tr.wr td {
     border: none;
 }
 
-/* 表格综合排名与代码合并单元格 */
+/* 桌面端全景表格首列（# · 代码）紧凑列宽与内边距 */
+#rank-table th:first-child,
+#rank-table tbody tr:not(.fund-detail-row) td:first-child {
+    width: 88px;
+    min-width: 82px;
+    max-width: 96px;
+    padding: 0.55rem 0.3rem;
+    text-align: center;
+}
+
+/* 表格综合排名与代码合并单元格（全端统一3行轴对称居中布局） */
 .tbl-rank-code-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
+    gap: 3px;
+    padding: 0.1rem 0;
+    box-sizing: border-box;
+}
+.trc-badge-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    cursor: pointer;
+}
+.tbl-rank-code-cell .tbl-rank-badge {
+    font-size: 0.72rem;
+    padding: 1.5px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    white-space: nowrap;
-}
-.trc-badge-wrap {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-    cursor: pointer;
 }
 .trc-code-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+}
+.tbl-rank-code-cell .code-mono {
+    font-size: 0.78rem;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.2;
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0 auto;
+    transition: all 0.15s;
 }
-.trc-copy-btn {
+.tbl-rank-code-cell .code-mono:hover {
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.08);
+}
+.tbl-rank-code-cell .code-mono:active {
+    background: rgba(99, 102, 241, 0.2);
+}
+/* 第 3 行：双微型操作方块工具组（复制 + 独立专页） */
+.trc-actions-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+}
+.tbl-rank-code-cell .trc-copy-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 20px;
-    height: 19px;
+    height: 18px;
     padding: 0;
-    border-radius: 4px;
+    margin: 0;
+    font-size: 0.65rem;
+    border-radius: 3px;
     border: 1px solid var(--border);
     background: var(--surface2);
     color: var(--txt3);
-    cursor: pointer;
-    font-size: 0.68rem;
     line-height: 1;
+    cursor: pointer;
     transition: all 0.2s;
 }
-.trc-copy-btn:hover {
+.tbl-rank-code-cell .trc-copy-btn:hover {
     color: var(--accent);
     border-color: var(--accent);
     background: rgba(99, 102, 241, 0.08);
 }
-.trc-copy-btn:active {
+.tbl-rank-code-cell .trc-copy-btn:active {
+    transform: scale(0.92);
+}
+.tbl-rank-code-cell .code-ext-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 18px;
+    padding: 0;
+    margin: 0;
+    font-size: 0.68rem;
+    font-weight: 600;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--txt3);
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.tbl-rank-code-cell .code-ext-link:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.08);
+}
+.tbl-rank-code-cell .code-ext-link:active {
     transform: scale(0.92);
 }
 
@@ -4043,6 +4136,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .tbl-rank-code-cell .trc-copy-btn:active {
         background: rgba(99, 102, 241, 0.2);
         transform: scale(0.92);
+    }
+    .tbl-rank-code-cell .trc-actions-wrap {
+        width: 100%;
+        margin: 0 auto;
+        justify-content: center;
     }
     .tbl-rank-code-cell .code-ext-link {
         display: none;
