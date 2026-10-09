@@ -310,6 +310,7 @@ const App = (() => {
             }
             renderRanking();
             renderQuotaBulletin();
+            applyRankView(currentRankView);
         }
         if (pName === 'simulator') {
             populateSimSelect();
@@ -892,10 +893,12 @@ const App = (() => {
     }
 
     // ===== 双视图控制与智能卡片流渲染 (桌面与移动端自适应) =====
-    let isMobileDevice = window.innerWidth <= 768;
+    function checkIsMobile() {
+        return window.innerWidth <= 768;
+    }
     let savedRankView = null;
     try { savedRankView = localStorage.getItem('fa_rank_view'); } catch (e) {}
-    let currentRankView = savedRankView || (isMobileDevice ? 'card' : 'table');
+    let currentRankView = savedRankView || (checkIsMobile() ? 'card' : 'table');
 
     function applyRankView(viewMode) {
         currentRankView = viewMode;
@@ -906,6 +909,7 @@ const App = (() => {
         const tableWrap = document.getElementById('rank-table-wrap') || document.querySelector('#page-ranking .table-wrap');
         const swipeHint = document.getElementById('rank-swipe-hint') || document.querySelector('#page-ranking .mobile-swipe-hint');
         const statusMsg = document.getElementById('rank-view-status-msg');
+        const isMobile = checkIsMobile();
 
         if (toggle) {
             toggle.querySelectorAll('.view-btn').forEach(btn => {
@@ -915,15 +919,46 @@ const App = (() => {
         }
 
         if (viewMode === 'card') {
-            if (cardList) cardList.style.display = '';
-            if (tableWrap) tableWrap.style.display = 'none';
-            if (swipeHint) swipeHint.style.display = 'none';
-            if (statusMsg) statusMsg.textContent = '当前为投研卡片网格 · 模块化呈现核心指标，点击任意卡片可展开深度看板';
+            if (cardList) {
+                cardList.classList.remove('view-hidden', 'mobile-hidden');
+                cardList.style.display = '';
+            }
+            if (tableWrap) {
+                tableWrap.classList.add('view-hidden', 'mobile-hidden');
+                tableWrap.style.display = 'none';
+            }
+            if (swipeHint) {
+                swipeHint.classList.add('view-hidden', 'mobile-hidden');
+                swipeHint.style.display = 'none';
+            }
+            if (statusMsg) {
+                statusMsg.textContent = isMobile
+                    ? '当前为智能卡片模式 · 模块化聚焦核心指标，点击卡片展开详情'
+                    : '当前为投研卡片网格 · 模块化呈现核心指标，点击任意卡片可展开深度看板';
+            }
         } else {
-            if (cardList) cardList.style.display = 'none';
-            if (tableWrap) tableWrap.style.display = '';
-            if (swipeHint) swipeHint.style.display = isMobileDevice ? 'block' : 'none';
-            if (statusMsg) statusMsg.textContent = '当前为全景对比表格 · 支持点击表头多维排序，点击标的名称可展开抽屉看板';
+            if (cardList) {
+                cardList.classList.add('view-hidden', 'mobile-hidden');
+                cardList.style.display = 'none';
+            }
+            if (tableWrap) {
+                tableWrap.classList.remove('view-hidden', 'mobile-hidden');
+                tableWrap.style.display = '';
+            }
+            if (swipeHint) {
+                if (isMobile) {
+                    swipeHint.classList.remove('view-hidden', 'mobile-hidden');
+                    swipeHint.style.display = 'block';
+                } else {
+                    swipeHint.classList.add('view-hidden', 'mobile-hidden');
+                    swipeHint.style.display = 'none';
+                }
+            }
+            if (statusMsg) {
+                statusMsg.textContent = isMobile
+                    ? '当前为全景表格模式 · 左右滑动查看全量指标，支持表头点击排序'
+                    : '当前为全景对比表格 · 支持点击表头多维排序，点击标的名称可展开抽屉看板';
+            }
         }
     }
 
@@ -2877,6 +2912,9 @@ const App = (() => {
             });
         }
         applyRankView(currentRankView);
+        window.addEventListener('resize', () => {
+            applyRankView(currentRankView);
+        });
         document.getElementById('sim-m').addEventListener('input', e => {
             const val = fmtMoney(e.target.value);
             document.getElementById('sim-mv').textContent = val;

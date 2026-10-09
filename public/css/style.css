@@ -1980,6 +1980,13 @@ input[type=range]::-moz-range-thumb {
     margin-bottom: 2rem;
 }
 
+/* 视图切换显隐辅助类 (跨端通用，强隔离) */
+.rank-card-list.view-hidden,
+.table-wrap.view-hidden,
+.mobile-swipe-hint.view-hidden {
+    display: none !important;
+}
+
 /* ===== 投研资产卡片核心设计系统 (跨桌面端与移动端通用) ===== */
 .fund-mobile-card {
     background: var(--surface);
@@ -3841,7 +3848,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
     /* 移动端专属响应式卡片流适配 */
     .rank-card-list {
-        display: flex !important;
+        display: flex;
         flex-direction: column;
         gap: 0.85rem;
         margin-bottom: 1.5rem;
@@ -3862,10 +3869,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .fmc-siblings-grid {
         grid-template-columns: 1fr;
     }
-    .table-wrap.mobile-hidden {
-        display: none !important;
-    }
-    .mobile-swipe-hint.mobile-hidden {
+    .table-wrap.mobile-hidden,
+    .table-wrap.view-hidden,
+    .mobile-swipe-hint.mobile-hidden,
+    .mobile-swipe-hint.view-hidden,
+    .rank-card-list.mobile-hidden,
+    .rank-card-list.view-hidden {
         display: none !important;
     }
 
