@@ -717,11 +717,37 @@ tr.wr td {
     display: inline-flex;
     align-items: center;
     flex-shrink: 0;
+    cursor: pointer;
 }
 .trc-code-wrap {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+}
+.trc-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.7rem;
+    padding: 1px 5px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--txt2);
+    cursor: pointer;
+    line-height: 1.2;
+    transition: all 0.2s;
+}
+.trc-copy-btn:hover {
+    color: var(--accent2);
+    border-color: var(--accent2);
+    background: rgba(99, 102, 241, 0.08);
+}
+.trc-copy-btn .copy-icon {
+    font-size: 0.65rem;
+}
+.trc-copy-btn .copy-txt {
+    font-size: 0.68rem;
+    font-weight: 500;
 }
 
 /* 表格基金代码与复制单元格 */
@@ -3938,20 +3964,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         box-shadow: none !important;
     }
 
-    /* 移动端合并排名与代码单元格：上下紧凑排列，高密度展示 */
+    /* 移动端合并排名与代码单元格：上下三行独立微距排版，彻底解决水平拥挤 */
     .tbl-rank-code-cell {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 2px;
-        padding: 0;
-        cursor: pointer;
+        gap: 3px;
+        padding: 0.15rem 0;
     }
     .trc-badge-wrap {
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
     }
     .tbl-rank-code-cell .tbl-rank-badge {
         font-size: 0.65rem;
@@ -3964,20 +3990,48 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 2px;
+        width: 100%;
     }
     .tbl-rank-code-cell .code-mono {
-        font-size: 0.72rem;
-        padding: 1px 3px;
+        font-size: 0.74rem;
+        padding: 1px 4px;
         border-radius: 3px;
         font-weight: 700;
         letter-spacing: -0.2px;
         line-height: 1.15;
+        cursor: pointer;
+        display: inline-block;
+        transition: background-color 0.15s;
     }
-    .tbl-rank-code-cell .btn-copy-code {
+    .tbl-rank-code-cell .code-mono:active {
+        background: rgba(99, 102, 241, 0.2);
+    }
+    /* 移动端第三行独立微型复制药丸 */
+    .tbl-rank-code-cell .trc-copy-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
         font-size: 0.62rem;
-        padding: 1px 2px;
-        line-height: 1;
+        padding: 1px 5px;
+        border-radius: 3px;
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        background: rgba(99, 102, 241, 0.06);
+        color: var(--accent2);
+        line-height: 1.15;
+        cursor: pointer;
+        margin-top: 1px;
+    }
+    .tbl-rank-code-cell .trc-copy-btn:active {
+        background: rgba(99, 102, 241, 0.2);
+        transform: scale(0.95);
+    }
+    .tbl-rank-code-cell .trc-copy-btn .copy-icon {
+        font-size: 0.58rem;
+    }
+    .tbl-rank-code-cell .trc-copy-btn .copy-txt {
+        font-size: 0.62rem;
+        font-weight: 600;
     }
     .tbl-rank-code-cell .code-ext-link {
         display: none;

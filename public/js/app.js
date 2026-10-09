@@ -595,7 +595,7 @@ const App = (() => {
             else if (r.rank === 3) rankBadge = '<span class="tbl-rank-badge rank-bronze" title="综合排名第3">🥉 3</span>';
             else rankBadge = `<span class="tbl-rank-badge">#${r.rank}</span>`;
 
-            return `<div class="tbl-rank-code-cell" title="点击展开详情看板，点击📋可复制"><div class="trc-badge-wrap">${rankBadge}</div><div class="trc-code-wrap"><span class="code-mono">${r.code}</span><button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button><a href="fund/${r.code}.html" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div></div>`;
+            return `<div class="tbl-rank-code-cell"><div class="trc-badge-wrap" title="点击展开详情看板">${rankBadge}</div><div class="trc-code-wrap"><span class="code-mono btn-copy-code" data-code="${r.code}" title="点击复制基金代码">${r.code}</span></div><button type="button" class="trc-copy-btn btn-copy-code" data-code="${r.code}" title="复制基金代码"><span class="copy-icon">📋</span><span class="copy-txt">复制</span></button><a href="fund/${r.code}.html" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div>`;
         } },
         { key: 'name', label: '名称', render: r => {
             const curType = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
