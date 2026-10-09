@@ -588,13 +588,15 @@ const App = (() => {
     let rankData = [];
     let rankSortDir = {};
     const rankCols = [
-        { key: 'rank', label: '#', render: r => {
-            if (r.rank === 1) return '<span class="tbl-rank-badge rank-gold" title="综合排名第1">🥇 1</span>';
-            if (r.rank === 2) return '<span class="tbl-rank-badge rank-silver" title="综合排名第2">🥈 2</span>';
-            if (r.rank === 3) return '<span class="tbl-rank-badge rank-bronze" title="综合排名第3">🥉 3</span>';
-            return `<span class="tbl-rank-badge">#${r.rank}</span>`;
+        { key: 'rank', label: '# · 代码', render: r => {
+            let rankBadge;
+            if (r.rank === 1) rankBadge = '<span class="tbl-rank-badge rank-gold" title="综合排名第1">🥇 1</span>';
+            else if (r.rank === 2) rankBadge = '<span class="tbl-rank-badge rank-silver" title="综合排名第2">🥈 2</span>';
+            else if (r.rank === 3) rankBadge = '<span class="tbl-rank-badge rank-bronze" title="综合排名第3">🥉 3</span>';
+            else rankBadge = `<span class="tbl-rank-badge">#${r.rank}</span>`;
+
+            return `<div class="tbl-rank-code-cell" title="点击展开详情看板，点击📋可复制"><div class="trc-badge-wrap">${rankBadge}</div><div class="trc-code-wrap"><span class="code-mono">${r.code}</span><button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button><a href="fund/${r.code}.html" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div></div>`;
         } },
-        { key: 'code', label: '代码', render: r => `<div class="tbl-code-cell"><span class="code-mono">${r.code}</span><button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button><a href="fund/${r.code}.html" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div>` },
         { key: 'name', label: '名称', render: r => {
             const curType = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
             const idxBadge = curType === 'ALL'
@@ -2967,11 +2969,13 @@ const App = (() => {
 
         // 基金详情展开（事件委托，只绑定一次）
         document.querySelector('#rank-table').addEventListener('click', e => {
-            const link = e.target.closest('.fund-name-link');
-            if (!link) return;
+            const trigger = e.target.closest('.fund-name-link, .tbl-rank-code-cell');
+            if (!trigger) return;
+            if (e.target.closest('.btn-copy-code, .code-ext-link')) return;
             e.preventDefault();
-            const code = link.dataset.code;
-            const tr = link.closest('tr');
+            const tr = trigger.closest('tr');
+            if (!tr || tr.classList.contains('fund-detail-row')) return;
+            const code = tr.dataset.code;
             const existing = tr.nextElementSibling;
             if (existing && existing.classList.contains('fund-detail-row')) {
                 existing.remove();

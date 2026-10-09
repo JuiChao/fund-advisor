@@ -705,6 +705,25 @@ tr.wr td {
     border: none;
 }
 
+/* 表格综合排名与代码合并单元格 */
+.tbl-rank-code-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+.trc-badge-wrap {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+.trc-code-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
 /* 表格基金代码与复制单元格 */
 .tbl-code-cell {
     display: inline-flex;
@@ -3881,7 +3900,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     /* 移动端横向滑动提示 */
     .mobile-swipe-hint { display: block; margin: 0 0 0.5rem 0; }
 
-    /* 移动端表格固定前两列(序号与代码)，保证滑动时标的清晰 */
+    /* 移动端表格固定首列(序号与代码合并列)，保证滑动时标的清晰且大幅缩减固定占用宽度 */
     #rank-table { border-collapse: separate; border-spacing: 0; }
     #rank-table th:nth-child(1),
     #rank-table tbody tr:not(.fund-detail-row) td:nth-child(1) {
@@ -3889,27 +3908,79 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         left: 0;
         z-index: 5;
         background: var(--surface);
-        width: 32px;
-        min-width: 32px;
+        width: 62px;
+        min-width: 60px;
+        max-width: 66px;
         text-align: center;
+        padding: 0.45rem 0.2rem;
+        box-shadow: 2px 0 6px rgba(0, 0, 0, 0.08);
+    }
+    #rank-table thead th:nth-child(1) {
+        z-index: 15;
+        background: var(--surface2);
+        font-size: 0.7rem;
+        padding: 0.55rem 0.2rem;
+        white-space: nowrap;
+    }
+    #rank-table thead th:nth-child(1) .arr {
+        margin-left: 1px;
+        font-size: 0.6rem;
     }
     #rank-table th:nth-child(2),
     #rank-table tbody tr:not(.fund-detail-row) td:nth-child(2) {
-        position: sticky;
-        left: 32px;
-        z-index: 5;
-        background: var(--surface);
-        min-width: 78px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.06);
-    }
-    #rank-table thead th:nth-child(1),
-    #rank-table thead th:nth-child(2) {
-        z-index: 15;
-        background: var(--surface2);
+        position: static;
+        box-shadow: none;
+        min-width: 130px;
+        text-align: left;
     }
     #rank-table tr.fund-detail-row td {
         position: static !important;
         box-shadow: none !important;
+    }
+
+    /* 移动端合并排名与代码单元格：上下紧凑排列，高密度展示 */
+    .tbl-rank-code-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        padding: 0;
+        cursor: pointer;
+    }
+    .trc-badge-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .tbl-rank-code-cell .tbl-rank-badge {
+        font-size: 0.65rem;
+        padding: 1px 4px;
+        border-radius: 4px;
+        font-weight: 700;
+        line-height: 1.15;
+    }
+    .trc-code-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+    }
+    .tbl-rank-code-cell .code-mono {
+        font-size: 0.72rem;
+        padding: 1px 3px;
+        border-radius: 3px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        line-height: 1.15;
+    }
+    .tbl-rank-code-cell .btn-copy-code {
+        font-size: 0.62rem;
+        padding: 1px 2px;
+        line-height: 1;
+    }
+    .tbl-rank-code-cell .code-ext-link {
+        display: none;
     }
 
     /* 基金详情抽屉移动端展开自适应 */
