@@ -653,6 +653,7 @@ def fetch_market_announcement_feed(max_pages=3, page_size=100, timeout=10):
 def detect_cdc_affected_funds(feed_items, universe_codes, fallback_data):
     """
     【CDC增量流】从全市场公告中精确定位属于标的池且与申购/限额/费率相关的标的代码
+    支持母子基金兄弟代码联动（A/C/D/E/F/I份额拓扑关联）与产品系列主干名称匹配
     """
     LIMIT_KEYWORDS = [
         '大额申购', '暂停大额', '暂停申购', '限制大额', '调整大额', '限制申购',
@@ -665,6 +666,26 @@ def detect_cdc_affected_funds(feed_items, universe_codes, fallback_data):
 
     affected_codes = set()
     universe_set = set(universe_codes)
+
+    # 建立基金家族（同一基金公司+同一指数+相似简称）与兄弟代码联动拓扑
+    family_map = {}
+    for c1 in universe_codes:
+        item1 = fallback_data.get(c1, {})
+        bros = {c1}
+        name1 = item1.get('name', '')
+        base_name1 = re.sub(r'[\(（]?\s*(?:人民币)?[ACDEFIacdefi]\s*(?:类|份额)?\s*[\)）]?$', '', name1).strip()
+        base_name1 = re.sub(r'[\(（]QDII[\)）]', '', base_name1).replace('联接', '').strip()
+        for c2 in universe_codes:
+            if c1 == c2:
+                continue
+            item2 = fallback_data.get(c2, {})
+            name2 = item2.get('name', '')
+            base_name2 = re.sub(r'[\(（]?\s*(?:人民币)?[ACDEFIacdefi]\s*(?:类|份额)?\s*[\)）]?$', '', name2).strip()
+            base_name2 = re.sub(r'[\(（]QDII[\)）]', '', base_name2).replace('联接', '').strip()
+            if item1.get('index_type') == item2.get('index_type') and item1.get('manager_company') == item2.get('manager_company'):
+                if base_name1 in base_name2 or base_name2 in base_name1 or ('纳斯达克100' in name1 and '纳指100' in name2) or ('标普500' in name1 and '标普500' in name2):
+                    bros.add(c2)
+        family_map[c1] = bros
 
     for item in feed_items:
         fc = item.get('FUNDCODE')
@@ -681,17 +702,29 @@ def detect_cdc_affected_funds(feed_items, universe_codes, fallback_data):
         if not is_quota_event:
             continue
 
-        # 检查是否直接命中代码
-        if fc in universe_set:
-            affected_codes.add(fc)
-            print(f'  [CDC事件命中] 标的代码 {fc} 发布限购相关公告: {title} ({item.get("PUBLISHDATEDesc")})')
+        # 检查是否直接命中代码（及其兄弟关联代码）
+        if fc in universe_set or fc in family_map:
+            bros = family_map.get(fc, {fc})
+            affected_codes.update(bros)
+            print(f'  [CDC事件命中] 标的代码 {fc} (及同家族关联份额 {bros}) 发布限购相关公告: {title} ({item.get("PUBLISHDATEDesc")})')
             continue
 
         # 检查标题中是否包含代码
         for code in universe_set:
             if code in title:
-                affected_codes.add(code)
-                print(f'  [CDC事件命中] 公告标题提及标的代码 {code}: {title}')
+                bros = family_map.get(code, {code})
+                affected_codes.update(bros)
+                print(f'  [CDC事件命中] 公告标题提及标的代码 {code} (及同家族关联份额 {bros}): {title}')
+
+        # 检查标题中是否包含基金系列核心简称
+        for code, bros in family_map.items():
+            f_name = fallback_data.get(code, {}).get('name', '')
+            core_name = re.sub(r'[\(（]?\s*(?:人民币)?[ACDEFIacdefi]\s*(?:类|份额)?\s*[\)）]?$', '', f_name).strip()
+            core_name = re.sub(r'[\(（]QDII[\)）]', '', core_name).strip()
+            if len(core_name) >= 5 and core_name in title:
+                if not bros.issubset(affected_codes):
+                    affected_codes.update(bros)
+                    print(f'  [CDC事件命中] 公告标题提及基金系列 {core_name} (关联份额 {bros}): {title}')
 
     return affected_codes
 
@@ -792,11 +825,19 @@ def scrape_single_fund_record(code, index_type, fallback_item, cached_item=None,
         merged['quota_sharing'] = base.get('quota_sharing', 'SHARED')
         merged['quota_shared_desc'] = base.get('quota_shared_desc', '')
 
-    # 合并直销结果
+    # 合并直销结果与公告元数据
     merged['direct_daily_limit'] = limit_data.get('direct_daily_limit')
     merged['direct_limit_status'] = limit_data.get('direct_limit_status')
     if limit_data.get('limit_announcement_id'):
         merged['limit_announcement_id'] = limit_data['limit_announcement_id']
+    if limit_data.get('effective_date'):
+        merged['effective_date'] = limit_data['effective_date']
+    if limit_data.get('announcement_pub_date'):
+        merged['announcement_pub_date'] = limit_data['announcement_pub_date']
+    if limit_data.get('announcement_url'):
+        merged['announcement_url'] = limit_data['announcement_url']
+    if limit_data.get('announcement_title'):
+        merged['announcement_title'] = limit_data['announcement_title']
 
     merged = validate(merged)
 
@@ -843,9 +884,39 @@ def main():
     affected_codes = set()
     if is_cdc:
         print("[CDC 增量流] 正在拉取全市场最新公告 Feed 流...")
-        feed_items = fetch_market_announcement_feed(max_pages=3, page_size=100)
+        feed_items = fetch_market_announcement_feed(max_pages=5, page_size=100)
         universe_codes = [c for c, _ in FUND_LIST]
         affected_codes = detect_cdc_affected_funds(feed_items, universe_codes, fallback)
+
+        # 标的池母代码主动巡检兜底（杜绝全市场 Feed 翻页漏网）
+        print("[CDC 增量流] 执行标的池核心公告巡检校验...")
+        unique_check_codes = list({fallback.get(c, {}).get('main_code') or c for c in universe_codes})
+        ann_headers = {**HEADERS, 'Referer': 'https://fundf10.eastmoney.com/'}
+        for u_code in unique_check_codes:
+            if u_code in affected_codes:
+                continue
+            try:
+                u_url = f'http://api.fund.eastmoney.com/f10/JJGG?callback=jQuery&fundcode={u_code}&pageIndex=1&pageSize=3&type=0'
+                u_res = requests.get(u_url, headers=ann_headers, timeout=5)
+                m_u = re.search(r'jQuery\((.*)\)', u_res.text, re.DOTALL)
+                if m_u:
+                    u_data = json.loads(m_u.group(1))
+                    for itm in u_data.get('Data', []):
+                        t = itm.get('TITLE', '')
+                        aid = itm.get('ID')
+                        cached_aid = cached.get(u_code, {}).get('limit_announcement_id')
+                        if any(kw in t for kw in ['大额', '限额', '暂停', '恢复', '调整', '上限', '额度']):
+                            if aid and aid != cached_aid:
+                                print(f'  [标的池主动巡检发现新公告] 标的代码 {u_code}: {t} (ID: {aid})')
+                                affected_codes.add(u_code)
+                                # 联动兄弟份额
+                                for bro_code in universe_codes:
+                                    if fallback.get(bro_code, {}).get('main_code') == u_code or bro_code == u_code:
+                                        affected_codes.add(bro_code)
+                                break
+            except Exception:
+                pass
+
         if affected_codes:
             print(f"[CDC 增量流] 发现 {len(affected_codes)} 只基金有最新限额/费率公告，将对这部分标的执行深度重解析: {sorted(list(affected_codes))}")
         else:
