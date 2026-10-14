@@ -40,7 +40,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <title>{fund_name} ({fund_code}) 费率_限购_历史收益 - Fund Advisor</title>
 <meta name="description" content="{fund_name}({fund_code})是跟踪{index_type}指数的优质QDII基金({share_class}类份额)。当前代销状态：{agency_status}，直销状态：{direct_status}。综合年费率{total_fee}%。近3年收益率{return_3yr}%。点击查看详细定投模拟与评分排名。">
 <meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, {share_class}类份额, 费率, 限购, 收益率, 定投, Fund Advisor">
-<link rel="canonical" href="https://858000.xyz/fund/{fund_code}.html">
+<link rel="canonical" href="https://858000.xyz/fund/{fund_code}">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="/css/style.css?v=20261009_v6">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
@@ -54,7 +54,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   "itemListElement": [
     {{ "@type": "ListItem", "position": 1, "name": "首页", "item": "https://858000.xyz/" }},
     {{ "@type": "ListItem", "position": 2, "name": "基金排名", "item": "https://858000.xyz/#ranking" }},
-    {{ "@type": "ListItem", "position": 3, "name": "{fund_name}", "item": "https://858000.xyz/fund/{fund_code}.html" }}
+    {{ "@type": "ListItem", "position": 3, "name": "{fund_name}", "item": "https://858000.xyz/fund/{fund_code}" }}
   ]
 }}
 </script>
@@ -74,7 +74,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <a href="/#simulator">模拟器</a>
         <a href="/#portfolio">定投方案</a>
         <a href="/articles/">投资百科</a>
-        <a href="/about.html">关于我们</a>
+        <a href="/about">关于我们</a>
     </div>
 </nav>
 </header>
@@ -114,10 +114,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div style="margin-top:2rem;padding:1.25rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border)">
             <h3 style="font-size:1.05rem;color:var(--txt);margin-top:0;margin-bottom:0.75rem;font-weight:700">📚 推荐投研指南与实操精读</h3>
             <ul style="padding-left:1.2rem;margin-bottom:0;color:var(--txt2);font-size:0.9rem;line-height:1.7">
-                <li><a href="/articles/{related_guide_slug}.html" style="color:var(--accent2);text-decoration:none;font-weight:600">{related_guide_title} ➔</a></li>
-                <li><a href="/articles/how-to-choose-qdii-funds.html" style="color:var(--accent2);text-decoration:none;font-weight:600">如何挑选最优QDII指数基金：费率、规模与跟踪误差三角法则 ➔</a></li>
-                <li><a href="/articles/share-class-a-vs-c-break-even-analysis.html" style="color:var(--accent2);text-decoration:none;font-weight:600">A类与C类份额终极抉择：持有几年才是费率平衡临界点？（附量化数学推导） ➔</a></li>
-                <li><a href="/articles/penetrating-qdii-purchase-quota-restrictions.html" style="color:var(--accent2);text-decoration:none;font-weight:600">穿透公募基金限购内幕：为什么QDII单日限额会从1000元骤降至10元？ ➔</a></li>
+                <li><a href="/articles/{related_guide_slug}" style="color:var(--accent2);text-decoration:none;font-weight:600">{related_guide_title} ➔</a></li>
+                <li><a href="/articles/how-to-choose-qdii-funds" style="color:var(--accent2);text-decoration:none;font-weight:600">如何挑选最优QDII指数基金：费率、规模与跟踪误差三角法则 ➔</a></li>
+                <li><a href="/articles/share-class-a-vs-c-break-even-analysis" style="color:var(--accent2);text-decoration:none;font-weight:600">A类与C类份额终极抉择：持有几年才是费率平衡临界点？（附量化数学推导） ➔</a></li>
+                <li><a href="/articles/penetrating-qdii-purchase-quota-restrictions" style="color:var(--accent2);text-decoration:none;font-weight:600">穿透公募基金限购内幕：为什么QDII单日限额会从1000元骤降至10元？ ➔</a></li>
             </ul>
         </div>
 
@@ -139,9 +139,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <a href="/#portfolio" style="color:var(--txt3);text-decoration:none">定投方案</a> |
         <a href="/#simulator" style="color:var(--txt3);text-decoration:none">蒙特卡洛模拟器</a> |
         <a href="/articles/" style="color:var(--txt3);text-decoration:none">投资百科</a> |
-        <a href="/about.html" style="color:var(--txt3);text-decoration:none">关于我们</a> |
-        <a href="/privacy-policy.html" style="color:var(--txt3);text-decoration:none">隐私政策</a> |
-        <a href="/terms-of-service.html" style="color:var(--txt3);text-decoration:none">服务条款</a> |
+        <a href="/about" style="color:var(--txt3);text-decoration:none">关于我们</a> |
+        <a href="/privacy-policy" style="color:var(--txt3);text-decoration:none">隐私政策</a> |
+        <a href="/terms-of-service" style="color:var(--txt3);text-decoration:none">服务条款</a> |
         <a href="mailto:contact@858000.xyz" style="color:var(--txt3);text-decoration:none">联系我们</a>
     </div>
     <p>© 2026 Fund Advisor. All rights reserved. 专注纳斯达克100与标普500指数基金量化投研。</p>
@@ -318,7 +318,8 @@ for af in article_files:
     filename = os.path.basename(af)
     if filename == 'index.html':
         continue
-    url = f"https://858000.xyz/articles/{filename}"
+    slug = filename.replace('.html', '')
+    url = f"https://858000.xyz/articles/{slug}"
     mtime = datetime.date.fromtimestamp(os.path.getmtime(af)).isoformat()
     sitemap_lines.extend([
         '  <url>',
@@ -332,12 +333,12 @@ for af in article_files:
         '  </url>'
     ])
 
-# 索引全部优质基金详情页
+# 索引全部优质基金详情页 (采用无扩展名规范 URL，避免 Cloudflare 308 重定向)
 for fund in funds:
     code = fund['code']
     sitemap_lines.extend([
         '  <url>',
-        f'    <loc>https://858000.xyz/fund/{code}.html</loc>',
+        f'    <loc>https://858000.xyz/fund/{code}</loc>',
         f'    <lastmod>{today_str}</lastmod>',
         '    <changefreq>daily</changefreq>',
         '    <priority>0.7</priority>',
@@ -346,19 +347,19 @@ for fund in funds:
 
 sitemap_lines.extend([
     '  <url>',
-    '    <loc>https://858000.xyz/about.html</loc>',
+    '    <loc>https://858000.xyz/about</loc>',
     f'    <lastmod>{today_str}</lastmod>',
     '    <changefreq>monthly</changefreq>',
     '    <priority>0.6</priority>',
     '  </url>',
     '  <url>',
-    '    <loc>https://858000.xyz/privacy-policy.html</loc>',
+    '    <loc>https://858000.xyz/privacy-policy</loc>',
     f'    <lastmod>{today_str}</lastmod>',
     '    <changefreq>yearly</changefreq>',
     '    <priority>0.5</priority>',
     '  </url>',
     '  <url>',
-    '    <loc>https://858000.xyz/terms-of-service.html</loc>',
+    '    <loc>https://858000.xyz/terms-of-service</loc>',
     f'    <lastmod>{today_str}</lastmod>',
     '    <changefreq>yearly</changefreq>',
     '    <priority>0.5</priority>',
