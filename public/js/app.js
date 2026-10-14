@@ -1023,7 +1023,17 @@ const App = (() => {
         const todayStr = data.today_date || new Date().toISOString().slice(0, 10);
         if (dateEl) dateEl.textContent = todayStr;
 
-        const todayChanges = data.history.filter(h => h.date === todayStr);
+        // 按照用户需求：同一只基金一周内若出现多次变更，仅保留最新一条变更记录（按基金代码去重）
+        const seenCodes = new Set();
+        const displayHistory = [];
+        for (const h of (data.history || [])) {
+            if (h.code && !seenCodes.has(h.code)) {
+                seenCodes.add(h.code);
+                displayHistory.push(h);
+            }
+        }
+
+        const todayChanges = displayHistory.filter(h => h.date === todayStr);
         const hasToday = todayChanges.length > 0;
 
         if (dotEl) {
@@ -1034,14 +1044,14 @@ const App = (() => {
             if (hasToday) {
                 msgEl.innerHTML = `今日监测到 <strong>${todayChanges.length}</strong> 只标的申购额度变动，建议关注渠道差异与平替！`;
             } else {
-                const latestDate = (data.history[0] && data.history[0].date) ? data.history[0].date : '';
+                const latestDate = (displayHistory[0] && displayHistory[0].date) ? displayHistory[0].date : '';
                 msgEl.innerHTML = `全市场额度今日平稳运行 · 最新收录 <strong>${latestDate}</strong> 官方限额公告，可展开看板查看渠道比对与平替`;
             }
         }
 
         // 渲染顶部快速变动胶囊 (最多3条)
         if (tickersEl) {
-            const previewItems = (hasToday ? todayChanges : data.history).slice(0, 3);
+            const previewItems = (hasToday ? todayChanges : displayHistory).slice(0, 3);
             tickersEl.innerHTML = previewItems.map(item => {
                 let badgeClass = 'chip-tightened';
                 let icon = '🔴';
@@ -1079,15 +1089,15 @@ const App = (() => {
         const qRelaxed = document.getElementById('qstat-relaxed');
         const qTightened = document.getElementById('qstat-tightened');
         const qStable = document.getElementById('qstat-stable');
-        if (qRecent) qRecent.textContent = data.recent_7d_count || data.history.length;
-        if (qRelaxed) qRelaxed.textContent = data.history.filter(h => h.change_type === 'RELAXED').length;
-        if (qTightened) qTightened.textContent = data.history.filter(h => h.change_type === 'TIGHTENED').length;
+        if (qRecent) qRecent.textContent = data.recent_7d_count || displayHistory.length;
+        if (qRelaxed) qRelaxed.textContent = displayHistory.filter(h => h.change_type === 'RELAXED').length;
+        if (qTightened) qTightened.textContent = displayHistory.filter(h => h.change_type === 'TIGHTENED').length;
         if (qStable) qStable.textContent = (data.total_monitored || 60) - (todayChanges.length);
 
         // 渲染全景表格 (#quota-table-tbody)
         const tbody = document.getElementById('quota-table-tbody');
         if (tbody) {
-            tbody.innerHTML = data.history.map(item => {
+            tbody.innerHTML = displayHistory.map(item => {
                 let typeBadge = '';
                 if (item.change_type === 'RELAXED') {
                     typeBadge = `<span class="badge-qtype badge-relaxed">🟢 ${item.change_type_label}</span>`;
@@ -1157,7 +1167,7 @@ const App = (() => {
         // 渲染移动端卡片列表 (#quota-card-list)
         const cardContainer = document.getElementById('quota-card-list');
         if (cardContainer) {
-            cardContainer.innerHTML = data.history.map(item => {
+            cardContainer.innerHTML = displayHistory.map(item => {
                 let typeBadge = '';
                 if (item.change_type === 'RELAXED') {
                     typeBadge = `<span class="badge-qtype badge-relaxed">🟢 ${item.change_type_label}</span>`;

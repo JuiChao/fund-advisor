@@ -290,10 +290,22 @@ def update_limit_changes_file(new_funds, old_funds_path=FUNDS_FILE, changes_path
     # 追加今日新变动到最顶部 (时间倒序)
     updated_history = new_changes + updated_history
 
-    # 按照用户要求：严格只保留近一周（7天）内的申购及额度变动记录，超过7天的自动清理
+    # 按照用户要求：
+    # 1. 严格只保留近一周（7天）内的申购及额度变动记录，超过7天的自动清理
     cutoff_7d = (datetime.now(BEIJING_TZ) - timedelta(days=7)).strftime('%Y-%m-%d')
     updated_history = [item for item in updated_history if (item.get('date') or '') >= cutoff_7d]
-    updated_history.sort(key=lambda x: x.get('date', ''), reverse=True)
+    # 按生效日期与时间戳倒序排列（最新发布的排在最前面）
+    updated_history.sort(key=lambda x: (x.get('date', ''), x.get('timestamp', '')), reverse=True)
+
+    # 2. 同一只基金一周内若出现多次变更，只保留最新的一笔变更内容（按基金代码去重）
+    deduped_history = []
+    seen_codes = set()
+    for item in updated_history:
+        code = item.get('code')
+        if code and code not in seen_codes:
+            seen_codes.add(code)
+            deduped_history.append(item)
+    updated_history = deduped_history
 
     # 计算统计指标
     today_count = sum(1 for item in updated_history if item.get('date') == today_str)

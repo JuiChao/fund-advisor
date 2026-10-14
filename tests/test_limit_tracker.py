@@ -156,6 +156,81 @@ class TestLimitTracker(unittest.TestCase):
             # 今天仍是1条，不重复叠加
             self.assertEqual(result2['today_count'], 1)
 
+    def test_deduplicate_multiple_changes_same_fund_within_week(self):
+        """同一基金一周内发生多次变动时，只保留最新的一笔记录"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ch_f_path = os.path.join(tmpdir, 'limit_changes.json')
+            old_f_path = os.path.join(tmpdir, 'funds_old.json')
+
+            # 初始历史数据：广发纳指 10-13 变动
+            initial_history = {
+                'last_updated': '2026-10-13T18:00:00',
+                'today_date': '2026-10-13',
+                'today_count': 1,
+                'recent_7d_count': 1,
+                'total_monitored': 60,
+                'history': [
+                    {
+                        'code': '006479',
+                        'name': '广发纳斯达克100ETF联接(QDII)A',
+                        'date': '2026-10-13',
+                        'timestamp': '2026-10-13T09:00:00',
+                        'change_type': 'RELAXED',
+                        'summary': '代销额度放宽至100元'
+                    }
+                ]
+            }
+            with open(ch_f_path, 'w', encoding='utf-8') as f:
+                json.dump(initial_history, f)
+
+            # 旧基金状态（代销100元）
+            old_data = [
+                {
+                    'code': '006479',
+                    'name': '广发纳斯达克100ETF联接(QDII)A',
+                    'index_type': '纳斯达克100',
+                    'share_class': 'A',
+                    'limit_status': '限100元/日',
+                    'daily_limit': 100,
+                    'direct_limit_status': '限1000元/日',
+                    'direct_daily_limit': 1000
+                }
+            ]
+            with open(old_f_path, 'w', encoding='utf-8') as f:
+                json.dump(old_data, f)
+
+            # 新基金状态（10-14 暂停申购）
+            new_funds = [
+                {
+                    'code': '006479',
+                    'name': '广发纳斯达克100ETF联接(QDII)A',
+                    'index_type': '纳斯达克100',
+                    'share_class': 'A',
+                    'limit_status': '暂停申购',
+                    'daily_limit': None,
+                    'direct_limit_status': '限1000元/日',
+                    'direct_daily_limit': 1000,
+                    'mgmt_fee': 0.005,
+                    'custody_fee': 0.0015,
+                    'sales_fee': 0.0,
+                    'score': 85.0
+                }
+            ]
+
+            result, changes = update_limit_changes_file(
+                new_funds,
+                old_funds_path=old_f_path,
+                changes_path=ch_f_path
+            )
+
+            # 验证只保留了 1 条记录，且为最新 10-14 的变动，旧的 10-13 变动被剔除
+            codes = [h['code'] for h in result['history']]
+            self.assertEqual(codes, ['006479'])
+            self.assertEqual(len(result['history']), 1)
+            self.assertEqual(result['history'][0]['change_type'], 'TIGHTENED')
+            self.assertIn('暂停申购', result['history'][0]['summary'])
+
 
 if __name__ == '__main__':
     unittest.main()
+
