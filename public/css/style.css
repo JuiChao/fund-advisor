@@ -1794,11 +1794,11 @@ input[type=range]::-moz-range-thumb {
     text-align: left;
     white-space: nowrap;
 }
-.quota-table th:nth-child(1) { width: 120px; min-width: 120px; } /* 变动日期 */
-.quota-table th:nth-child(2) { min-width: 195px; } /* 基金标的 */
-.quota-table th:nth-child(3) { width: 130px; min-width: 130px; } /* 变动性质 */
-.quota-table th:nth-child(4) { width: 140px; min-width: 140px; } /* 代销渠道 */
-.quota-table th:nth-child(5) { width: 140px; min-width: 140px; } /* 直销渠道 */
+.quota-table th:nth-child(1) { width: 120px; min-width: 120px; text-align: center; } /* 变动日期 */
+.quota-table th:nth-child(2) { min-width: 195px; text-align: center; } /* 基金标的 */
+.quota-table th:nth-child(3) { width: 130px; min-width: 130px; text-align: center; } /* 变动性质 */
+.quota-table th:nth-child(4) { width: 140px; min-width: 140px; text-align: center; } /* 代销渠道 */
+.quota-table th:nth-child(5) { width: 140px; min-width: 140px; text-align: center; } /* 直销渠道 */
 .quota-table th:nth-child(6) { min-width: 235px; } /* 变动简报与官方公告 */
 .quota-table th:nth-child(7) { min-width: 250px; } /* 智能平替推荐 */
 
@@ -1830,8 +1830,21 @@ input[type=range]::-moz-range-thumb {
 .q-fund-cell {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 4px;
     min-width: 180px;
+    width: 100%;
+}
+.q-fund-title-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    text-align: center;
+    width: 100%;
 }
 .q-fund-name {
     font-weight: 700;
@@ -1847,7 +1860,12 @@ input[type=range]::-moz-range-thumb {
 .q-fund-code {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
+    margin: 0 auto;
+}
+.q-fund-code .btn-copy-code {
+    margin-left: 0;
 }
 
 .badge-qtype {
