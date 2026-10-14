@@ -335,12 +335,16 @@ export async function onRequest(context) {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=3600',
         'Access-Control-Allow-Origin': '*',
+        'X-Robots-Tag': 'noindex',
       },
     });
   } catch (e) {
     return new Response(JSON.stringify({ error: e.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Robots-Tag': 'noindex',
+      },
     });
   }
 }
