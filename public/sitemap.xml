@@ -3,6 +3,7 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://858000.xyz/</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -12,11 +13,13 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://858000.xyz/articles/beginner-dca-step-by-step-guide.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -25,6 +28,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/dca-strategy-guide.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -33,6 +37,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/dca-timing-and-profit-taking.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -41,6 +46,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/fund-fee-impact-analysis.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -49,6 +55,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/how-to-choose-qdii-funds.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -57,6 +64,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/investor-psychological-biases-and-dca-discipline.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -65,6 +73,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/monte-carlo-simulation-financial-engineering.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -73,6 +82,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/mpt-modern-portfolio-theory-in-dca.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -81,6 +91,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/nasdaq-100-investment-guide.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -89,6 +100,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/nasdaq-100-vs-sp500-long-term-allocation.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -97,6 +109,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/penetrating-qdii-purchase-quota-restrictions.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -105,6 +118,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/qdii-currency-hedging-analysis.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -113,6 +127,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/qdii-fund-investment-guide.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -121,6 +136,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/share-class-a-vs-c-break-even-analysis.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -129,6 +145,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/sp500-equal-weight-vs-cap-weight.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -137,6 +154,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/sp500-investment-guide.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -145,6 +163,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/tracking-error-and-fund-scale.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -153,6 +172,7 @@
   </url>
   <url>
     <loc>https://858000.xyz/articles/why-investors-fail-at-market-timing.html</loc>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -161,316 +181,379 @@
   </url>
   <url>
     <loc>https://858000.xyz/fund/019441.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019442.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/015299.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/015300.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/014978.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/040046.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019524.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019525.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/022664.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/016452.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/016453.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/021000.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/016055.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/016057.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/024237.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/016532.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/016533.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/021838.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/160213.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/000834.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/008971.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/018043.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/018044.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/022525.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019736.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019737.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/006479.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/021778.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/270042.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/012752.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/023422.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/539001.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019547.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019548.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019172.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019173.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/012870.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/161130.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/017091.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/017093.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019118.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/018966.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/018967.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/021773.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/018064.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/018065.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/006075.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/018738.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/050025.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/017028.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/017030.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/008401.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/096001.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/007721.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/007722.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/022523.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/017641.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/019305.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/012860.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/fund/161125.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://858000.xyz/about.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://858000.xyz/privacy-policy.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://858000.xyz/terms-of-service.html</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>

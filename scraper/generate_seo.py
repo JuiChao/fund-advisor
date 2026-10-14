@@ -288,12 +288,17 @@ for af in article_files:
         continue
     article_urls.append(f"https://858000.xyz/articles/{filename}")
 
+import datetime
+
+today_str = datetime.date.today().isoformat()
+
 sitemap_lines = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
     '        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
     '  <url>',
     '    <loc>https://858000.xyz/</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
     '    <changefreq>daily</changefreq>',
     '    <priority>1.0</priority>',
     '    <image:image>',
@@ -303,15 +308,22 @@ sitemap_lines = [
     '  </url>',
     '  <url>',
     '    <loc>https://858000.xyz/articles/</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
     '    <changefreq>weekly</changefreq>',
     '    <priority>0.9</priority>',
     '  </url>'
 ]
 
-for url in article_urls:
+for af in article_files:
+    filename = os.path.basename(af)
+    if filename == 'index.html':
+        continue
+    url = f"https://858000.xyz/articles/{filename}"
+    mtime = datetime.date.fromtimestamp(os.path.getmtime(af)).isoformat()
     sitemap_lines.extend([
         '  <url>',
         f'    <loc>{url}</loc>',
+        f'    <lastmod>{mtime}</lastmod>',
         '    <changefreq>monthly</changefreq>',
         '    <priority>0.8</priority>',
         '    <image:image>',
@@ -320,12 +332,13 @@ for url in article_urls:
         '  </url>'
     ])
 
-# 索引全部 59 只优质基金详情页
+# 索引全部优质基金详情页
 for fund in funds:
     code = fund['code']
     sitemap_lines.extend([
         '  <url>',
         f'    <loc>https://858000.xyz/fund/{code}.html</loc>',
+        f'    <lastmod>{today_str}</lastmod>',
         '    <changefreq>daily</changefreq>',
         '    <priority>0.7</priority>',
         '  </url>'
@@ -334,16 +347,19 @@ for fund in funds:
 sitemap_lines.extend([
     '  <url>',
     '    <loc>https://858000.xyz/about.html</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
     '    <changefreq>monthly</changefreq>',
     '    <priority>0.6</priority>',
     '  </url>',
     '  <url>',
     '    <loc>https://858000.xyz/privacy-policy.html</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
     '    <changefreq>yearly</changefreq>',
     '    <priority>0.5</priority>',
     '  </url>',
     '  <url>',
     '    <loc>https://858000.xyz/terms-of-service.html</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
     '    <changefreq>yearly</changefreq>',
     '    <priority>0.5</priority>',
     '  </url>',
