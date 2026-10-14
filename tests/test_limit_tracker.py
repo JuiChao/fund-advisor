@@ -172,7 +172,7 @@ class TestLimitTracker(unittest.TestCase):
                 'history': [
                     {
                         'code': '006479',
-                        'name': '广发纳斯达克100ETF联接(QDII)A',
+                        'name': '广发纳指100ETF联接(QDII)人民币A',
                         'date': '2026-10-13',
                         'timestamp': '2026-10-13T09:00:00',
                         'change_type': 'RELAXED',
@@ -187,7 +187,7 @@ class TestLimitTracker(unittest.TestCase):
             old_data = [
                 {
                     'code': '006479',
-                    'name': '广发纳斯达克100ETF联接(QDII)A',
+                    'name': '广发纳指100ETF联接(QDII)人民币A',
                     'index_type': '纳斯达克100',
                     'share_class': 'A',
                     'limit_status': '限100元/日',
@@ -203,7 +203,7 @@ class TestLimitTracker(unittest.TestCase):
             new_funds = [
                 {
                     'code': '006479',
-                    'name': '广发纳斯达克100ETF联接(QDII)A',
+                    'name': '广发纳指100ETF联接(QDII)人民币A',
                     'index_type': '纳斯达克100',
                     'share_class': 'A',
                     'limit_status': '暂停申购',
