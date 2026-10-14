@@ -257,6 +257,16 @@ const App = (() => {
         return `${company}${idx}${cls}`;
     }
 
+    function formatSummaryHtml(summary) {
+        if (!summary) return '<span style="color:var(--txt3)">—</span>';
+        const parts = summary.split(/[；;\n]+/).map(s => s.trim()).filter(Boolean);
+        if (parts.length === 0) return '<span style="color:var(--txt3)">—</span>';
+        return parts.map(part => {
+            const formatted = part.replace(/^(代销|直销)[:：]/, '<strong class="q-sum-channel">$1:</strong>');
+            return `<div class="q-summary-line">${formatted}</div>`;
+        }).join('');
+    }
+
     function syncSliderBadges() {
         const sm = document.getElementById('sim-m');
         const sy = document.getElementById('sim-y');
@@ -1133,7 +1143,7 @@ const App = (() => {
 
                 const summaryCell = `
                     <div class="q-summary-cell">
-                        <div class="q-summary-text">${item.summary}</div>
+                        <div class="q-summary-text">${formatSummaryHtml(item.summary)}</div>
                         ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">📄 官方公告 ↗</a>` : ''}
                     </div>
                 `;
@@ -1224,7 +1234,7 @@ const App = (() => {
                             </div>
                         </div>
                         <div class="qmc-summary-row">
-                            <span class="qmc-summary-text">${item.summary}</span>
+                            <div class="qmc-summary-text">${formatSummaryHtml(item.summary)}</div>
                             ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="查看官方公告原件详情">📄 官方公告 ↗</a>` : ''}
                         </div>
                         ${subsHtml}

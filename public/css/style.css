@@ -1909,12 +1909,25 @@ input[type=range]::-moz-range-thumb {
 }
 
 .q-summary-cell {
-    max-width: 280px;
+    max-width: 320px;
 }
 .q-summary-text {
     font-size: 0.78rem;
     color: var(--txt2);
+    line-height: 1.45;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.q-summary-line {
+    display: block;
     line-height: 1.4;
+    white-space: nowrap;
+}
+.q-sum-channel {
+    color: var(--txt);
+    font-weight: 600;
+    margin-right: 2px;
 }
 .q-ann-link {
     display: inline-flex;
@@ -3893,8 +3906,22 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .qmc-summary-text {
         font-size: 0.76rem;
         color: var(--txt2);
-        line-height: 1.4;
+        line-height: 1.45;
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .qmc-summary-text .q-summary-line {
+        display: block;
+        line-height: 1.4;
+        white-space: normal;
+        word-break: break-all;
+    }
+    .qmc-summary-text .q-sum-channel {
+        color: var(--txt);
+        font-weight: 600;
+        margin-right: 2px;
     }
     .qmc-summary-row .q-ann-link {
         flex-shrink: 0;
