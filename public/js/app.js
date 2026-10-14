@@ -222,6 +222,41 @@ const App = (() => {
     }
     const fmtMoney = v => '¥' + Number(v).toLocaleString('zh-CN');
 
+    function getStandardFundShortName(item) {
+        if (!item) return '';
+        const name = item.name || '';
+        let company = '';
+        const companies = ['华泰柏瑞', '景顺长城', '汇添富', '易方达', '广发', '华夏', '博时', '南方', '大成', '嘉实', '国泰', '天弘', '建信', '摩根', '招商', '万家', '华安', '宝盈'];
+        for (const c of companies) {
+            if (name.startsWith(c)) {
+                company = (c === '景顺长城') ? '景顺' : ((c === '华泰柏瑞') ? '华泰' : c);
+                break;
+            }
+        }
+        if (!company) {
+            company = name.slice(0, 2);
+        }
+
+        let idx = '纳指';
+        if (name.includes('纳斯达克科技') || name.includes('纳科')) {
+            idx = '纳科';
+        } else if (name.includes('等权重') || name.includes('等权')) {
+            idx = '标普等权';
+        } else if (name.includes('标普') || item.index_type === '标普500') {
+            idx = '标普';
+        } else if (name.includes('纳斯达克') || name.includes('纳指') || item.index_type === '纳斯达克100') {
+            idx = '纳指';
+        }
+
+        let cls = item.share_class || '';
+        if (!cls) {
+            const m = name.match(/([A-Za-z])(?:类|份额)?\s*$/) || name.match(/([A-Za-z])/);
+            if (m) cls = m[1].toUpperCase();
+        }
+
+        return `${company}${idx}${cls}`;
+    }
+
     function syncSliderBadges() {
         const sm = document.getElementById('sim-m');
         const sy = document.getElementById('sim-y');
@@ -1017,9 +1052,9 @@ const App = (() => {
                     badgeClass = 'chip-div';
                     icon = '🔵';
                 }
-                const shortName = (item.name || '').replace(/指数.*/, '').slice(0, 6);
+                const shortName = getStandardFundShortName(item);
                 const dateShort = item.date ? item.date.slice(5) : '';
-                return `<span class="ticker-chip ${badgeClass}" title="${item.summary || ''}">${icon} ${dateShort} ${item.code} ${shortName} · ${item.change_type_label || ''}</span>`;
+                return `<span class="ticker-chip ${badgeClass}" title="${item.name} | ${item.summary || ''}">${icon} ${dateShort} ${item.code} ${shortName} · ${item.change_type_label || ''}</span>`;
             }).join('');
         }
 
@@ -1098,7 +1133,7 @@ const App = (() => {
                         ${item.substitutes.map(s => `
                             <button type="button" class="btn-quota-sub" data-code="${s.code}" title="${s.name} | 综合费率 ${(s.total_fee*100).toFixed(2)}% | 代销${s.limit_status}">
                                 <span class="q-sub-code">${s.code}</span>
-                                <span class="q-sub-name">${s.name.replace(/指数.*/, '').slice(0, 6)}</span>
+                                <span class="q-sub-name">${getStandardFundShortName(s)}</span>
                                 <span class="q-sub-limit">${s.limit_status}</span>
                             </button>
                         `).join('')}
@@ -1141,7 +1176,7 @@ const App = (() => {
                             ${item.substitutes.map(s => `
                                 <button type="button" class="btn-quota-sub" data-code="${s.code}" title="${s.name}">
                                 <span class="q-sub-code">${s.code}</span>
-                                <span class="q-sub-name">${s.name.replace(/指数.*/, '').slice(0, 6)}</span>
+                                <span class="q-sub-name">${getStandardFundShortName(s)}</span>
                                 <span class="q-sub-limit">${s.limit_status}</span>
                             </button>
                             `).join('')}

@@ -310,8 +310,41 @@ def scrape_fee_page(code):
         return {}
 
 
+def is_quota_announcement_title(title):
+    """
+    智能判定公告标题是否涉及大额申购/限额/暂停/恢复等额度变更业务
+    支持连续关键词以及基金公司常用的倒装句式（如“关于暂停[基金名称]申购业务的公告”）
+    """
+    if not title:
+        return False
+    # 1. 连续关键词
+    keywords = [
+        '大额申购', '暂停大额', '暂停申购', '限制大额', '调整大额', '限制申购',
+        '申购业务上限', '金额限制', '限额申购',
+        '恢复申购', '恢复大额', '恢复办理', '取消限额', '取消大额', '取消上限', '取消申购上限',
+        '直销电子交易平台', '直销渠道', '直销柜台',
+    ]
+    if any(k in title for k in keywords):
+        return True
+    # 2. 跨字倒装句式正则匹配（如“关于暂停...申购...业务”、“关于调整...限额”等）
+    patterns = [
+        r'暂停\S{0,50}?申购',
+        r'恢复\S{0,50}?申购',
+        r'调整\S{0,50}?申购',
+        r'限制\S{0,50}?申购',
+        r'调整\S{0,50}?限额',
+        r'暂停\S{0,50}?大额',
+        r'恢复\S{0,50}?大额',
+        r'取消\S{0,50}?限额',
+        r'取消\S{0,50}?上限',
+        r'恢复\S{0,50}?定期定额',
+        r'暂停\S{0,50}?定期定额',
+    ]
+    return any(re.search(p, title) for p in patterns)
+
+
 def scrape_limit_announcement(code):
-    """从基金公告中提取直销渠道限购信息"""
+    """从基金公告中提取直销与代销渠道限购信息"""
     try:
         # 获取公告列表（需要特殊 Referer）
         ann_headers = {**HEADERS, 'Referer': 'https://fundf10.eastmoney.com/'}
@@ -323,13 +356,7 @@ def scrape_limit_announcement(code):
             return {}
         data = json.loads(m.group(1))
 
-        # 查找最新的限购相关公告（标题关键词匹配）
-        title_keywords = [
-            '大额申购', '暂停大额', '暂停申购', '限制大额', '调整大额', '限制申购',
-            '申购业务上限', '金额限制', '限额申购',
-            '恢复申购', '恢复大额', '恢复办理', '取消限额', '取消大额', '取消上限', '取消申购上限',
-            '直销电子交易平台', '直销渠道',
-        ]
+        # 查找最新的限购相关公告（标题关键词与正则跨句匹配）
         target_ann_id = None
         target_pub_date = None
         # 根据当前基金份额类型，动态排除其他互斥份额的专属公告
@@ -361,7 +388,7 @@ def scrape_limit_announcement(code):
             if any(k in title for k in ['取消总规模上限', '总规模上限', '规模上限', '总规模']) and '大额' not in title and '限额' not in title:
                 continue
             
-            if any(k in title for k in title_keywords):
+            if is_quota_announcement_title(title):
                 target_ann_id = item.get('ID')
                 target_title = title
                 target_pub_date = item.get('PUBLISHDATEDesc') or (item.get('PUBLISHDATE')[:10] if item.get('PUBLISHDATE') else None)
@@ -698,7 +725,7 @@ def detect_cdc_affected_funds(feed_items, universe_codes, fallback_data):
         if any(k in title for k in ['取消总规模上限', '总规模上限']) and '大额' not in title and '限额' not in title:
             continue
 
-        is_quota_event = any(kw in title for kw in LIMIT_KEYWORDS)
+        is_quota_event = is_quota_announcement_title(title)
         if not is_quota_event:
             continue
 
@@ -905,7 +932,7 @@ def main():
                         t = itm.get('TITLE', '')
                         aid = itm.get('ID')
                         cached_aid = cached.get(u_code, {}).get('limit_announcement_id')
-                        if any(kw in t for kw in ['大额', '限额', '暂停', '恢复', '调整', '上限', '额度']):
+                        if is_quota_announcement_title(t):
                             if aid and aid != cached_aid:
                                 print(f'  [标的池主动巡检发现新公告] 标的代码 {u_code}: {t} (ID: {aid})')
                                 affected_codes.add(u_code)
@@ -1009,6 +1036,14 @@ def main():
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
     with open(OUTPUT, 'w', encoding='utf-8') as f:
         json.dump(final_results, f, ensure_ascii=False, indent=2)
+
+    # 自动同步写入 fallback 基准兜底文件，确保 CI 与测试环境双表自洽一致
+    try:
+        os.makedirs(os.path.dirname(FALLBACK), exist_ok=True)
+        with open(FALLBACK, 'w', encoding='utf-8') as f:
+            json.dump(final_results, f, ensure_ascii=False, indent=2)
+    except Exception as ex:
+        print(f'  [WARN] 同步 fallback 失败: {ex}')
 
     print(f'\n{"=" * 60}')
     print(f'抓取完成: {updated}/{len(target_list)} 只基金更新 (总计 {len(final_results)} 只标的)')
