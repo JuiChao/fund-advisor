@@ -1795,7 +1795,7 @@ input[type=range]::-moz-range-thumb {
     white-space: nowrap;
 }
 .quota-table th:nth-child(1) { width: 110px; min-width: 110px; text-align: center; } /* 变动日期 */
-.quota-table th:nth-child(2) { min-width: 195px; text-align: center; } /* 基金标的 */
+.quota-table th:nth-child(2) { min-width: 220px; text-align: center; } /* 基金标的 */
 .quota-table th:nth-child(3) { width: 130px; min-width: 130px; text-align: center; } /* 变动性质 */
 .quota-table th:nth-child(4) { min-width: 250px; text-align: left; } /* 额度变动 & 公告 */
 .quota-table th:nth-child(5) { min-width: 260px; text-align: left; } /* 智能平替推荐 */
@@ -1836,21 +1836,25 @@ input[type=range]::-moz-range-thumb {
     width: 100%;
 }
 .q-fund-title-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 4px;
+    display: block;
     text-align: center;
+    line-height: 1.45;
     width: 100%;
 }
+.q-fund-title-wrap .badge-idx,
+.q-fund-title-wrap .badge-share {
+    margin-right: 3px;
+    vertical-align: 1px;
+}
 .q-fund-name {
+    display: inline;
     font-weight: 700;
     color: var(--txt);
     text-decoration: none;
     font-size: 0.85rem;
-    line-height: 1.35;
+    line-height: 1.45;
     transition: color 0.15s;
+    vertical-align: middle;
 }
 .q-fund-name:hover {
     color: var(--accent2);
