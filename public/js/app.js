@@ -1125,25 +1125,26 @@ const App = (() => {
                     </div>
                 `;
 
-                const agencyDiff = `
-                    <div class="quota-diff-box">
-                        <span class="q-diff-before">${item.agency.before_status}</span>
-                        <span class="q-diff-arrow">➔</span>
-                        <span class="q-diff-after ${item.agency.direction || ''}">${item.agency.after_status}</span>
-                    </div>
-                `;
-
-                const directDiff = `
-                    <div class="quota-diff-box">
-                        <span class="q-diff-before">${item.direct.before_status}</span>
-                        <span class="q-diff-arrow">➔</span>
-                        <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
-                    </div>
-                `;
-
-                const summaryCell = `
-                    <div class="q-summary-cell">
-                        <div class="q-summary-text">${formatSummaryHtml(item.summary)}</div>
+                const changeAndAnnCell = `
+                    <div class="q-change-ann-cell">
+                        <div class="q-channel-list">
+                            <div class="q-channel-row">
+                                <span class="q-channel-tag tag-agency">代销</span>
+                                <div class="quota-diff-box">
+                                    <span class="q-diff-before">${item.agency.before_status}</span>
+                                    <span class="q-diff-arrow">➔</span>
+                                    <span class="q-diff-after ${item.agency.direction || ''}">${item.agency.after_status}</span>
+                                </div>
+                            </div>
+                            <div class="q-channel-row">
+                                <span class="q-channel-tag tag-direct">直销</span>
+                                <div class="quota-diff-box">
+                                    <span class="q-diff-before">${item.direct.before_status}</span>
+                                    <span class="q-diff-arrow">➔</span>
+                                    <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
+                                </div>
+                            </div>
+                        </div>
                         ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">📄 官方公告 ↗</a>` : ''}
                     </div>
                 `;
@@ -1165,9 +1166,7 @@ const App = (() => {
                         <td><span class="q-date-pill" title="公告生效起始日期">📅 ${item.date}</span></td>
                         <td>${fundCell}</td>
                         <td>${typeBadge}</td>
-                        <td>${agencyDiff}</td>
-                        <td>${directDiff}</td>
-                        <td>${summaryCell}</td>
+                        <td>${changeAndAnnCell}</td>
                         <td>${subsCell}</td>
                     </tr>
                 `;
@@ -1233,10 +1232,10 @@ const App = (() => {
                                 </div>
                             </div>
                         </div>
-                        <div class="qmc-summary-row">
-                            <div class="qmc-summary-text">${formatSummaryHtml(item.summary)}</div>
-                            ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="查看官方公告原件详情">📄 官方公告 ↗</a>` : ''}
-                        </div>
+                        ${item.announcement_url ? `
+                        <div class="qmc-ann-row">
+                            <a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">📄 查看官方公告原件 ↗</a>
+                        </div>` : ''}
                         ${subsHtml}
                     </div>
                 `;
