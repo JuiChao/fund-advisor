@@ -1127,23 +1127,16 @@ const App = (() => {
 
                 const changeAndAnnCell = `
                     <div class="q-change-ann-cell">
-                        <div class="q-channel-list">
-                            <div class="q-channel-row">
-                                <span class="q-channel-tag tag-agency">代销</span>
-                                <div class="quota-diff-box">
-                                    <span class="q-diff-before">${item.agency.before_status}</span>
-                                    <span class="q-diff-arrow">➔</span>
-                                    <span class="q-diff-after ${item.agency.direction || ''}">${item.agency.after_status}</span>
-                                </div>
-                            </div>
-                            <div class="q-channel-row">
-                                <span class="q-channel-tag tag-direct">直销</span>
-                                <div class="quota-diff-box">
-                                    <span class="q-diff-before">${item.direct.before_status}</span>
-                                    <span class="q-diff-arrow">➔</span>
-                                    <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
-                                </div>
-                            </div>
+                        <div class="q-channel-grid">
+                            <span class="q-channel-tag tag-agency">代销</span>
+                            <span class="q-diff-before">${item.agency.before_status}</span>
+                            <span class="q-diff-arrow">➔</span>
+                            <span class="q-diff-after ${item.agency.direction || ''}">${item.agency.after_status}</span>
+
+                            <span class="q-channel-tag tag-direct">直销</span>
+                            <span class="q-diff-before">${item.direct.before_status}</span>
+                            <span class="q-diff-arrow">➔</span>
+                            <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
                         </div>
                         ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">📄 官方公告 ↗</a>` : ''}
                     </div>
@@ -1215,22 +1208,15 @@ const App = (() => {
                             <span class="code-mono">${item.code}</span>
                         </div>
                         <div class="qmc-diff-grid">
-                            <div class="qmc-diff-item">
-                                <span class="qmc-diff-lbl"><span class="q-channel-tag tag-agency">代销渠道</span></span>
-                                <div class="quota-diff-box">
-                                    <span class="q-diff-before">${item.agency.before_status}</span>
-                                    <span class="q-diff-arrow">➔</span>
-                                    <span class="q-diff-after ${item.agency.direction || ''}">${item.agency.after_status}</span>
-                                </div>
-                            </div>
-                            <div class="qmc-diff-item">
-                                <span class="qmc-diff-lbl"><span class="q-channel-tag tag-direct">直销渠道</span></span>
-                                <div class="quota-diff-box">
-                                    <span class="q-diff-before">${item.direct.before_status}</span>
-                                    <span class="q-diff-arrow">➔</span>
-                                    <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
-                                </div>
-                            </div>
+                            <span class="qmc-diff-lbl"><span class="q-channel-tag tag-agency">代销渠道</span></span>
+                            <span class="q-diff-before">${item.agency.before_status}</span>
+                            <span class="q-diff-arrow">➔</span>
+                            <span class="q-diff-after ${item.agency.direction || ''}">${item.agency.after_status}</span>
+
+                            <span class="qmc-diff-lbl"><span class="q-channel-tag tag-direct">直销渠道</span></span>
+                            <span class="q-diff-before">${item.direct.before_status}</span>
+                            <span class="q-diff-arrow">➔</span>
+                            <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
                         </div>
                         ${item.announcement_url ? `
                         <div class="qmc-ann-row">

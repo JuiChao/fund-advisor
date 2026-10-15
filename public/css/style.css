@@ -1930,6 +1930,46 @@ input[type=range]::-moz-range-thumb {
     gap: 6px;
     align-items: flex-start;
 }
+.q-channel-grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    align-items: center;
+    row-gap: 4px;
+    column-gap: 6px;
+    width: fit-content;
+}
+.q-channel-grid .q-channel-tag {
+    justify-self: start;
+}
+.q-channel-grid .q-diff-before {
+    justify-self: end;
+    text-align: right;
+    color: var(--txt3);
+    text-decoration: line-through;
+    opacity: 0.75;
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+.q-channel-grid .q-diff-arrow {
+    justify-self: center;
+    text-align: center;
+    color: var(--txt3);
+    font-size: 0.72rem;
+    padding: 0 1px;
+    white-space: nowrap;
+}
+.q-channel-grid .q-diff-after {
+    justify-self: start;
+    text-align: left;
+    font-weight: 700;
+    color: var(--txt);
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--surface2);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
 .q-channel-list {
     display: flex;
     flex-direction: column;
@@ -3926,33 +3966,49 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         line-height: 1.35;
     }
     .qmc-diff-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 0.55rem;
+        display: grid;
+        grid-template-columns: auto auto auto auto;
+        justify-content: center;
+        align-items: center;
+        row-gap: 0.5rem;
+        column-gap: 8px;
         background: var(--surface);
-        padding: 0.65rem 0.8rem;
+        padding: 0.7rem 0.85rem;
         border-radius: 8px;
         border: 1px solid var(--border);
     }
-    .qmc-diff-item {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    .qmc-diff-lbl {
-        font-size: 0.72rem;
-        font-weight: 700;
+    .qmc-diff-grid .qmc-diff-lbl {
+        justify-self: start;
         display: inline-flex;
         align-items: center;
-        flex-shrink: 0;
+        margin-right: 2px;
     }
-    .qmc-diff-item .quota-diff-box {
-        margin-left: auto;
+    .qmc-diff-grid .q-diff-before {
+        justify-self: end;
+        text-align: right;
+        font-size: 0.74rem;
+        color: var(--txt3);
+        text-decoration: line-through;
+        opacity: 0.8;
+        white-space: nowrap;
+    }
+    .qmc-diff-grid .q-diff-arrow {
+        justify-self: center;
+        text-align: center;
+        color: var(--txt3);
+        font-size: 0.72rem;
+        padding: 0 1px;
+        white-space: nowrap;
+    }
+    .qmc-diff-grid .q-diff-after {
+        justify-self: start;
+        text-align: left;
         font-size: 0.75rem;
-        flex-shrink: 0;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 4px;
+        background: var(--surface2);
+        white-space: nowrap;
     }
     .qmc-summary-row {
         font-size: 0.76rem;
