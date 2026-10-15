@@ -3926,23 +3926,33 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         line-height: 1.35;
     }
     .qmc-diff-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
         background: var(--surface);
-        padding: 0.6rem 0.75rem;
+        padding: 0.65rem 0.8rem;
         border-radius: 8px;
         border: 1px solid var(--border);
     }
     .qmc-diff-item {
         display: flex;
-        flex-direction: column;
-        gap: 3px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
     }
     .qmc-diff-lbl {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: var(--txt3);
+        font-size: 0.72rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    .qmc-diff-item .quota-diff-box {
+        margin-left: auto;
+        font-size: 0.75rem;
+        flex-shrink: 0;
     }
     .qmc-summary-row {
         font-size: 0.76rem;

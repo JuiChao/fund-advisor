@@ -1216,7 +1216,7 @@ const App = (() => {
                         </div>
                         <div class="qmc-diff-grid">
                             <div class="qmc-diff-item">
-                                <span class="qmc-diff-lbl">代销渠道</span>
+                                <span class="qmc-diff-lbl"><span class="q-channel-tag tag-agency">代销渠道</span></span>
                                 <div class="quota-diff-box">
                                     <span class="q-diff-before">${item.agency.before_status}</span>
                                     <span class="q-diff-arrow">➔</span>
@@ -1224,7 +1224,7 @@ const App = (() => {
                                 </div>
                             </div>
                             <div class="qmc-diff-item">
-                                <span class="qmc-diff-lbl">直销渠道</span>
+                                <span class="qmc-diff-lbl"><span class="q-channel-tag tag-direct">直销渠道</span></span>
                                 <div class="quota-diff-box">
                                     <span class="q-diff-before">${item.direct.before_status}</span>
                                     <span class="q-diff-arrow">➔</span>
