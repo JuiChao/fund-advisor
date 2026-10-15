@@ -1794,11 +1794,11 @@ input[type=range]::-moz-range-thumb {
     text-align: left;
     white-space: nowrap;
 }
-.quota-table th:nth-child(1) { width: 110px; min-width: 110px; text-align: center; } /* 变动日期 */
-.quota-table th:nth-child(2) { min-width: 220px; text-align: center; } /* 基金标的 */
-.quota-table th:nth-child(3) { width: 130px; min-width: 130px; text-align: center; } /* 变动性质 */
-.quota-table th:nth-child(4) { min-width: 250px; text-align: left; } /* 额度变动 & 公告 */
-.quota-table th:nth-child(5) { min-width: 260px; text-align: left; } /* 智能平替推荐 */
+.quota-table th:nth-child(1) { width: 105px; min-width: 105px; text-align: center; } /* 变动日期 */
+.quota-table th:nth-child(2) { min-width: 320px; text-align: center; } /* 基金标的 */
+.quota-table th:nth-child(3) { width: 125px; min-width: 125px; text-align: center; } /* 变动性质 */
+.quota-table th:nth-child(4) { width: 215px; min-width: 205px; text-align: left; } /* 额度变动 & 公告 */
+.quota-table th:nth-child(5) { width: 190px; min-width: 170px; text-align: left; } /* 智能平替推荐 */
 
 .quota-table td {
     padding: 0.75rem 0.9rem;
@@ -1832,7 +1832,7 @@ input[type=range]::-moz-range-thumb {
     justify-content: center;
     text-align: center;
     gap: 4px;
-    min-width: 180px;
+    min-width: 280px;
     width: 100%;
 }
 .q-fund-title-wrap {
@@ -1840,6 +1840,7 @@ input[type=range]::-moz-range-thumb {
     text-align: center;
     line-height: 1.45;
     width: 100%;
+    white-space: nowrap;
 }
 .q-fund-title-wrap .badge-idx,
 .q-fund-title-wrap .badge-share {
@@ -1855,6 +1856,7 @@ input[type=range]::-moz-range-thumb {
     line-height: 1.45;
     transition: color 0.15s;
     vertical-align: middle;
+    white-space: nowrap;
 }
 .q-fund-name:hover {
     color: var(--accent2);
@@ -2054,7 +2056,7 @@ input[type=range]::-moz-range-thumb {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    max-width: 320px;
+    max-width: 210px;
 }
 .btn-quota-sub {
     display: inline-flex;
