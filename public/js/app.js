@@ -1096,16 +1096,11 @@ const App = (() => {
             });
         }
 
-        // 绑定抖音海报导出按钮
+        // 绑定公告看板截图导出按钮
         const exportBtn = document.getElementById('btn-quota-export-douyin');
         if (exportBtn && !exportBtn._bound) {
             exportBtn._bound = true;
             exportBtn.addEventListener('click', () => exportQuotaBulletinPoster(exportBtn));
-        }
-        const quickExportBtn = document.getElementById('btn-quota-export-quick');
-        if (quickExportBtn && !quickExportBtn._bound) {
-            quickExportBtn._bound = true;
-            quickExportBtn.addEventListener('click', () => exportQuotaBulletinPoster(quickExportBtn));
         }
 
         // 统计指标
@@ -1304,7 +1299,64 @@ const App = (() => {
         });
     }
 
-    // ===== 导出适合发抖音的 3:4 额度变动海报 (剥离平替推荐与网页交互控件) =====
+    // ===== 通用截图海报预览与导出弹窗 =====
+    function openPosterModal({ canvas, downloadFilename, titleText, tagText, successToast }) {
+        const dataUrl = canvas.toDataURL('image/png');
+        const modal = document.getElementById('poster-modal-backdrop');
+        const previewImg = document.getElementById('poster-preview-img');
+        const downloadBtn = document.getElementById('btn-poster-download');
+        const copyBtn = document.getElementById('btn-poster-copy');
+        const closeBtn = document.getElementById('poster-modal-close');
+        const titleEl = document.getElementById('poster-modal-title-text');
+        const tagEl = document.getElementById('poster-modal-tag');
+
+        if (titleEl) titleEl.textContent = titleText || '导出截图预览';
+        if (tagEl) tagEl.textContent = tagText || '高清排版';
+        if (previewImg) previewImg.src = dataUrl;
+        if (downloadBtn) {
+            downloadBtn.href = dataUrl;
+            downloadBtn.download = downloadFilename || 'QDII截图.png';
+        }
+
+        if (copyBtn) {
+            copyBtn.onclick = () => {
+                canvas.toBlob(async blob => {
+                    if (navigator.clipboard && window.ClipboardItem && blob) {
+                        try {
+                            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                            showToast('✅ 截图已复制到剪贴板！可直接粘贴发布', 'success');
+                        } catch (e) {
+                            showToast('浏览器限制直接复制，请点击“保存图片”', 'info');
+                        }
+                    } else {
+                        showToast('当前浏览器不支持直接写入图片，请点击“保存图片”', 'info');
+                    }
+                }, 'image/png');
+            };
+        }
+
+        const closeModal = () => {
+            if (modal) modal.style.display = 'none';
+            document.removeEventListener('keydown', escHandler);
+        };
+
+        const escHandler = e => {
+            if (e.key === 'Escape') closeModal();
+        };
+
+        if (closeBtn) closeBtn.onclick = closeModal;
+        if (modal) {
+            modal.onclick = e => {
+                if (e.target === modal) closeModal();
+            };
+            modal.style.display = 'flex';
+            document.addEventListener('keydown', escHandler);
+        }
+
+        showToast(successToast || '🎉 截图已生成，可直接保存或复制！', 'success');
+    }
+
+    // ===== 导出适合社交发布的 3:4 公告看板截图 (剥离平替推荐与网页交互控件) =====
     async function exportQuotaBulletinPoster(triggerBtn) {
         const data = LIMIT_CHANGES_DATA;
         if (!data) {
@@ -1336,7 +1388,7 @@ const App = (() => {
         try {
             await loadHtml2Canvas();
 
-            // 构建专为抖音 3:4 打造的离屏海报 DOM（无平替列，无网页交互元素）
+            // 构建专为竖版打造的离屏海报 DOM（无平替列，无网页交互元素）
             const posterWrap = document.createElement('div');
             posterWrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:750px;z-index:-9999;pointer-events:none;';
 
@@ -1465,61 +1517,224 @@ const App = (() => {
 
             document.body.removeChild(posterWrap);
 
-            const dataUrl = canvas.toDataURL('image/png');
-
-            // 弹出预览弹窗
-            const modal = document.getElementById('poster-modal-backdrop');
-            const previewImg = document.getElementById('poster-preview-img');
-            const downloadBtn = document.getElementById('btn-poster-download');
-            const copyBtn = document.getElementById('btn-poster-copy');
-            const closeBtn = document.getElementById('poster-modal-close');
-
-            if (previewImg) previewImg.src = dataUrl;
-            if (downloadBtn) {
-                downloadBtn.href = dataUrl;
-                downloadBtn.download = `QDII限购变动速递_${todayStr}.png`;
-            }
-
-            if (copyBtn) {
-                copyBtn.onclick = () => {
-                    canvas.toBlob(async blob => {
-                        if (navigator.clipboard && window.ClipboardItem && blob) {
-                            try {
-                                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                                showToast('✅ 海报已复制到剪贴板！可直接粘贴发布', 'success');
-                            } catch (e) {
-                                showToast('浏览器限制直接复制，请点击“保存图片”', 'info');
-                            }
-                        } else {
-                            showToast('当前浏览器不支持直接写入图片，请点击“保存图片”', 'info');
-                        }
-                    }, 'image/png');
-                };
-            }
-
-            const closeModal = () => {
-                if (modal) modal.style.display = 'none';
-                document.removeEventListener('keydown', escHandler);
-            };
-
-            const escHandler = e => {
-                if (e.key === 'Escape') closeModal();
-            };
-
-            if (closeBtn) closeBtn.onclick = closeModal;
-            if (modal) {
-                modal.onclick = e => {
-                    if (e.target === modal) closeModal();
-                };
-                modal.style.display = 'flex';
-                document.addEventListener('keydown', escHandler);
-            }
-
-            showToast('🎉 抖音海报已生成，可直接保存或复制！', 'success');
+            openPosterModal({
+                canvas,
+                downloadFilename: `QDII限购变动速递_${todayStr}.png`,
+                titleText: '公告看板截图预览',
+                tagText: '3:4 竖版 (无平替)',
+                successToast: '🎉 公告看板截图已生成，可直接保存或复制！'
+            });
 
         } catch (err) {
-            console.error('海报生成失败:', err);
-            showToast('生成海报失败: ' + (err.message || '未知错误'), 'error');
+            console.error('看板截图生成失败:', err);
+            showToast('生成截图失败: ' + (err.message || '未知错误'), 'error');
+        } finally {
+            if (triggerBtn) {
+                triggerBtn.disabled = false;
+                triggerBtn.innerHTML = originalText;
+            }
+        }
+    }
+
+    // ===== 导出全景对比表格高清长图截图 (剔除网页交互控件) =====
+    async function exportRankTablePoster(triggerBtn) {
+        if (!rankData || rankData.length === 0) {
+            showToast('当前表格无展示标的，无法导出', 'info');
+            return;
+        }
+
+        const todayStr = (LIMIT_CHANGES_DATA && LIMIT_CHANGES_DATA.today_date) || new Date().toISOString().slice(0, 10);
+        const type = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
+        const classFilter = document.querySelector('#class-filter .seg-btn.on, #class-filter .filter-pill.on')?.dataset.value || 'ALL';
+        const quotaFilter = document.querySelector('#quota-filter .seg-btn.on, #quota-filter .filter-pill.on')?.dataset.value || 'ALL';
+        const kw = (document.getElementById('rank-search')?.value || '').trim();
+
+        const typeLabel = type === 'ALL' ? '全市场美股QDII' : type;
+        const classLabel = classFilter === 'ALL' ? '全部份额' : (classFilter + '类份额');
+        let quotaLabel = '全部渠道';
+        if (quotaFilter === 'BUYABLE') quotaLabel = '代销可买';
+        else if (quotaFilter === 'DIRECT') quotaLabel = '直销可买';
+        else if (quotaFilter === 'PAUSED') quotaLabel = '暂停申购';
+
+        let filterDesc = `${typeLabel} · ${classLabel} · ${quotaLabel}`;
+        if (kw) filterDesc += ` · 包含"${kw}"`;
+
+        const titleText = `${typeLabel} 基金量化投研评分榜`;
+
+        // 设置按钮加载态
+        const originalText = triggerBtn ? triggerBtn.innerHTML : '';
+        if (triggerBtn) {
+            triggerBtn.disabled = true;
+            triggerBtn.innerHTML = '<span>⏳ 正在生成...</span>';
+        }
+
+        try {
+            await loadHtml2Canvas();
+
+            // 构建离屏表格海报 DOM（980px 宽度，高分屏 scale: 2 渲染为 1960px 宽度超清图）
+            const posterWrap = document.createElement('div');
+            posterWrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:980px;z-index:-9999;pointer-events:none;';
+
+            const rowsHtml = rankData.map(r => {
+                let rankBadge;
+                let rowCls = '';
+                if (r.rank === 1) { rankBadge = '<span class="rkp-rank-badge rank-gold">🥇 1</span>'; rowCls = 'row-gold'; }
+                else if (r.rank === 2) { rankBadge = '<span class="rkp-rank-badge rank-silver">🥈 2</span>'; rowCls = 'row-silver'; }
+                else if (r.rank === 3) { rankBadge = '<span class="rkp-rank-badge rank-bronze">🥉 3</span>'; rowCls = 'row-bronze'; }
+                else { rankBadge = `<span class="rkp-rank-badge">#${r.rank}</span>`; }
+
+                const idxBadge = `<span class="badge-idx ${r.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${r.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`;
+                const sBadge = shareBadge(r.share_class);
+
+                const mgmt = r.mgmt_fee || 0;
+                const cust = r.custody_fee || 0;
+                const sales = r.sales_fee || 0;
+                const totalFee = mgmt + cust + sales;
+                const isLowFee = totalFee <= 0.007;
+
+                const teStr = fmt(r.tracking_error);
+                const ir = r.information_ratio;
+                const td = r.tracking_difference;
+                let subTe = '';
+                if (ir != null) {
+                    const irColor = ir >= 1.0 ? '#34d399' : (ir < 0 ? '#f87171' : '#94a3b8');
+                    subTe += `<span style="color:${irColor};margin-right:6px">IR <strong>${ir.toFixed(2)}</strong></span>`;
+                }
+                if (td != null) {
+                    const tdColor = td >= 0 ? '#f87171' : '#34d399';
+                    subTe += `<span style="color:${tdColor};font-weight:600">TD ${(td >= 0 ? '+' : '') + (td * 100).toFixed(1)}%</span>`;
+                }
+
+                let ret3yrHtml = '-';
+                if (r.return_3yr != null) {
+                    ret3yrHtml = '<span style="color:#34d399;font-weight:600">' + fmt(r.return_3yr) + '</span>';
+                } else if (r.return_since != null) {
+                    ret3yrHtml = '<span style="color:#34d399;font-weight:600">' + fmt(r.return_since) + '</span>';
+                }
+
+                const starsHtml = (r.morningstar && r.morningstar > 0)
+                    ? `<span class="rkp-stars">${'★'.repeat(r.morningstar)}</span>`
+                    : '<span style="color:#64748b">—</span>';
+
+                const agencyPill = pill(r.limit_status);
+                const directPill = r.direct_limit_status ? pill(r.direct_limit_status) : '<span class="tbl-limit-na">—</span>';
+                let shareHtml = '';
+                if (r.quota_sharing === 'SHARED') {
+                    shareHtml = '<span class="badge-shared">🔗 共享额度</span>';
+                } else if (r.quota_sharing === 'INDEPENDENT') {
+                    shareHtml = '<span class="badge-indep">独立额度</span>';
+                } else {
+                    shareHtml = '<span class="tbl-limit-na">—</span>';
+                }
+
+                return `
+                    <tr class="${rowCls}">
+                        <td>${rankBadge}</td>
+                        <td><span class="rkp-code">${r.code}</span></td>
+                        <td>
+                            <div class="rkp-name-cell">
+                                ${idxBadge}${sBadge}
+                                <span class="rkp-fund-name">${r.name}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="tbl-fee-cell">
+                                <span class="rkp-fee ${isLowFee ? 'low' : ''}">${fmt(totalFee)}</span>
+                                ${isLowFee ? '<span class="rkp-badge-low">低</span>' : ''}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rkp-te-cell">
+                                <span class="rkp-te-val">${teStr}</span>
+                                ${subTe ? '<div class="rkp-te-sub">' + subTe + '</div>' : ''}
+                            </div>
+                        </td>
+                        <td>${r.scale ? r.scale.toFixed(1) + '亿' : '-'}</td>
+                        <td>${ret3yrHtml}</td>
+                        <td>${starsHtml}</td>
+                        <td>
+                            <div class="tbl-limit-cell">
+                                <div class="tbl-limit-row"><span class="tbl-limit-lbl">代销</span>${agencyPill}</div>
+                                <div class="tbl-limit-row"><span class="tbl-limit-lbl">直销</span>${directPill}</div>
+                                <div class="tbl-limit-row tbl-limit-share">${shareHtml}</div>
+                            </div>
+                        </td>
+                        <td><span class="rkp-score-badge">${r.score}</span></td>
+                    </tr>
+                `;
+            }).join('');
+
+            posterWrap.innerHTML = `
+                <div class="rank-poster-export" id="rkp-render-target">
+                    <div class="rkp-header">
+                        <div class="rkp-top-tag">
+                            <span>🏆</span>
+                            <span>美股 QDII 基金量化投研评分榜</span>
+                            <span class="rkp-tag-date">📅 ${todayStr}</span>
+                        </div>
+                        <h1 class="rkp-title">${titleText}</h1>
+                        <p class="rkp-sub">多因子量化评分：费率 (35%) · 跟踪误差 (20%) · 规模 (15%) · 3年收益 (15%) · 晨星评级 (10%) · 申购费 (5%)</p>
+                        <p class="rkp-meta">筛选范围：${filterDesc} · 共入选 ${rankData.length} 只标的</p>
+                    </div>
+
+                    <div class="rkp-table-wrap">
+                        <table class="rkp-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:50px;">#</th>
+                                    <th style="width:74px;">代码</th>
+                                    <th class="col-name">基金标的</th>
+                                    <th style="width:84px;">综合费率</th>
+                                    <th style="width:115px;">跟踪误差 / IR</th>
+                                    <th style="width:68px;">规模</th>
+                                    <th style="width:80px;">近3年</th>
+                                    <th style="width:65px;">晨星</th>
+                                    <th style="width:150px;">限购(代/直)</th>
+                                    <th style="width:76px;">综合评分</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rowsHtml}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="rkp-footer">
+                        <div class="rkp-footer-brand">
+                            <span class="rkp-brand-name">📊 Fund Advisor</span>
+                            <span class="rkp-brand-tag">美股指数基金智能投资分析器 · 量化评分体系</span>
+                        </div>
+                        <div class="rkp-footer-meta">
+                            <p>数据每日自动巡检更新 · 评分模型仅作客观量化参考</p>
+                            <p>本文不构成任何投资建议与销售要约 · 基金有风险，投资需谨慎</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(posterWrap);
+            const renderTarget = document.getElementById('rkp-render-target');
+
+            const canvas = await window.html2canvas(renderTarget, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#0b0f19'
+            });
+
+            document.body.removeChild(posterWrap);
+
+            openPosterModal({
+                canvas,
+                downloadFilename: `QDII量化评分榜_${type}_${todayStr}.png`,
+                titleText: '全景对比表格截图预览',
+                tagText: `${rankData.length}只标的 · 高清长图`,
+                successToast: '🎉 全景对比表格截图已生成，可直接保存或复制！'
+            });
+
+        } catch (err) {
+            console.error('全景表格截图生成失败:', err);
+            showToast('生成截图失败: ' + (err.message || '未知错误'), 'error');
         } finally {
             if (triggerBtn) {
                 triggerBtn.disabled = false;
@@ -3215,6 +3430,16 @@ const App = (() => {
                 });
             });
         }
+
+        // 绑定全景对比表格导出截图按钮
+        const rankExportBtn = document.getElementById('btn-rank-export');
+        if (rankExportBtn && !rankExportBtn._bound) {
+            rankExportBtn._bound = true;
+            rankExportBtn.addEventListener('click', () => {
+                exportRankTablePoster(rankExportBtn);
+            });
+        }
+
         applyRankView(currentRankView);
         window.addEventListener('resize', () => {
             applyRankView(currentRankView);
