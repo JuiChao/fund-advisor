@@ -694,18 +694,17 @@ const App = (() => {
         } },
         { key: 'morningstar', label: '晨星', render: r => { const n = r.morningstar; return n > 0 ? '<span style="color:var(--warn)">' + '★'.repeat(n) + '</span>' : '-'; } },
         { key: 'limit_status', label: '限购(代/直)', render: r => {
-            let html = '<div style="display:flex;flex-direction:column;gap:2px;align-items:center">';
-            html += '<div style="font-size:0.7rem;color:var(--txt3)">代销</div>' + pill(r.limit_status);
-            if (r.direct_limit_status) {
-                html += '<div style="font-size:0.7rem;color:var(--txt3);margin-top:2px">直销</div>' + pill(r.direct_limit_status);
-            }
+            const agencyPill = pill(r.limit_status);
+            const directPill = r.direct_limit_status ? pill(r.direct_limit_status) : '<span class="tbl-limit-na">—</span>';
+            let shareHtml = '';
             if (r.quota_sharing === 'SHARED') {
-                html += `<div style="margin-top:2px" title="${r.quota_shared_desc || '多类份额合并计算单日限额'}"><span class="badge-shared" style="font-size:0.65rem;padding:1px 4px;border-radius:4px;background:rgba(245,158,11,0.15);color:var(--warn);border:1px solid rgba(245,158,11,0.3);white-space:nowrap;cursor:help">🔗 共享额度</span></div>`;
+                shareHtml = `<span class="badge-shared" title="${r.quota_shared_desc || '多类份额合并计算单日限额'}">🔗 共享额度</span>`;
             } else if (r.quota_sharing === 'INDEPENDENT') {
-                html += `<div style="margin-top:2px" title="${r.quota_shared_desc || '各份额独立计算限额'}"><span class="badge-indep" style="font-size:0.65rem;padding:1px 4px;border-radius:4px;background:rgba(16,185,129,0.15);color:var(--ok);border:1px solid rgba(16,185,129,0.3);white-space:nowrap;cursor:help">独立额度</span></div>`;
+                shareHtml = `<span class="badge-indep" title="${r.quota_shared_desc || '各份额独立计算限额'}">独立额度</span>`;
+            } else {
+                shareHtml = '<span class="tbl-limit-na">—</span>';
             }
-            html += '</div>';
-            return html;
+            return `<div class="tbl-limit-cell"><div class="tbl-limit-row"><span class="tbl-limit-lbl">代销</span>${agencyPill}</div><div class="tbl-limit-row"><span class="tbl-limit-lbl">直销</span>${directPill}</div><div class="tbl-limit-row tbl-limit-share">${shareHtml}</div></div>`;
         } },
         { key: 'score', label: '评分', render: r => `<div class="tbl-score-cell"><strong class="tbl-score-val">${r.score}</strong></div>` },
     ];
