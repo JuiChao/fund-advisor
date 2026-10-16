@@ -1563,9 +1563,7 @@ input[type=range]::-moz-range-thumb {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    margin: 0 auto 1.5rem auto;
-    max-width: 1080px;
-    width: 100%;
+    margin-bottom: 1.5rem;
     overflow: hidden;
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
@@ -1777,7 +1775,8 @@ input[type=range]::-moz-range-thumb {
     -webkit-overflow-scrolling: touch;
     border-radius: 10px;
     border: 1px solid var(--border);
-    margin-bottom: 0.85rem;
+    margin: 0 auto 0.85rem auto;
+    max-width: 1040px;
     background: var(--surface);
 }
 
@@ -2138,6 +2137,8 @@ input[type=range]::-moz-range-thumb {
     padding: 0.65rem 0.95rem;
     border-radius: 8px;
     border: 1px dashed var(--border);
+    max-width: 1040px;
+    margin: 0 auto;
 }
 
 .quota-card-list {
@@ -3885,7 +3886,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     
     /* 限购公告与风控看板移动端专属深度适配 */
     .quota-bulletin-container {
-        margin: 0 auto 1.15rem auto;
+        margin-bottom: 1.15rem;
         border-radius: 12px;
     }
     .quota-alert-bar {
