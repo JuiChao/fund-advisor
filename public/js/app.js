@@ -1096,11 +1096,11 @@ const App = (() => {
             });
         }
 
-        // 绑定公告看板截图导出按钮
+        // 绑定公告看板图片导出按钮 (先打开勾选选择弹窗)
         const exportBtn = document.getElementById('btn-quota-export-douyin');
         if (exportBtn && !exportBtn._bound) {
             exportBtn._bound = true;
-            exportBtn.addEventListener('click', () => exportQuotaBulletinPoster(exportBtn));
+            exportBtn.addEventListener('click', () => openQuotaExportSelectModal(exportBtn));
         }
 
         // 统计指标
@@ -1356,8 +1356,245 @@ const App = (() => {
         showToast(successToast || '🎉 图片已生成，可直接保存或复制！', 'success');
     }
 
-    // ===== 导出适合社交发布的 3:4 公告看板图片 (剥离平替推荐与网页交互控件) =====
-    async function exportQuotaBulletinPoster(triggerBtn) {
+    // ===== 公告看板导出前：变动标的勾选弹窗控制器 =====
+    function openQuotaExportSelectModal(triggerBtn) {
+        const data = LIMIT_CHANGES_DATA;
+        if (!data || !data.history || data.history.length === 0) {
+            showToast('未检测到限购公告变动数据，无需导出', 'info');
+            return;
+        }
+
+        const seenCodes = new Set();
+        const displayHistory = [];
+        for (const h of (data.history || [])) {
+            if (h.code && !seenCodes.has(h.code)) {
+                seenCodes.add(h.code);
+                displayHistory.push(h);
+            }
+        }
+
+        if (displayHistory.length === 0) {
+            showToast('暂无历史限购变动数据', 'info');
+            return;
+        }
+
+        const modal = document.getElementById('quota-select-modal');
+        if (!modal) {
+            exportQuotaBulletinPoster(displayHistory, triggerBtn);
+            return;
+        }
+
+        const totalNumEl = document.getElementById('qks-total-num');
+        const selectedNumEl = document.getElementById('qks-selected-num');
+        const confirmCountEl = document.getElementById('btn-qks-confirm-count');
+        const listEl = document.getElementById('qks-fund-list');
+        const searchInput = document.getElementById('qks-search-input');
+        const btnAll = document.getElementById('btn-qks-select-all');
+        const btnNone = document.getElementById('btn-qks-select-none');
+        const btnInvert = document.getElementById('btn-qks-invert');
+        const filterBtns = modal.querySelectorAll('.btn-qks-filter');
+        const btnConfirm = document.getElementById('btn-qks-confirm');
+        const btnCancel = document.getElementById('btn-qks-cancel');
+        const btnClose = document.getElementById('btn-qks-close');
+
+        if (searchInput) searchInput.value = '';
+        if (totalNumEl) totalNumEl.textContent = displayHistory.length;
+
+        // 默认全选当前 displayHistory
+        const selectedCodes = new Set(displayHistory.map(h => h.code));
+
+        const updateCountUI = () => {
+            const count = selectedCodes.size;
+            if (selectedNumEl) selectedNumEl.textContent = count;
+            if (confirmCountEl) confirmCountEl.textContent = `(${count}只)`;
+            if (btnConfirm) {
+                btnConfirm.disabled = (count === 0);
+            }
+        };
+
+        const renderList = () => {
+            if (!listEl) return;
+            listEl.innerHTML = displayHistory.map(item => {
+                const isChecked = selectedCodes.has(item.code);
+                const idxClass = item.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp';
+                const idxName = item.index_type === '纳斯达克100' ? '纳指' : '标普';
+                const shareClass = (item.share_class || 'A').toLowerCase();
+                const changeType = (item.change_type || 'TIGHTENED').toUpperCase();
+
+                let changeLabel = '🔴 限购收紧';
+                let pillClass = 'pill-tightened';
+                if (changeType === 'RELAXED') {
+                    changeLabel = '🟢 放宽恢复';
+                    pillClass = 'pill-relaxed';
+                } else if (changeType === 'CHANNEL_DIV') {
+                    changeLabel = '🔵 渠道分化';
+                    pillClass = 'pill-div';
+                }
+
+                const agencyTxt = `代销: ${item.agency?.after_status || '未知'}`;
+                const directTxt = `直销: ${item.direct?.after_status || '未知'}`;
+
+                return `
+                    <label class="rks-item ${isChecked ? 'checked' : ''}" data-code="${item.code}" data-type="${changeType}">
+                        <input type="checkbox" class="rks-checkbox" value="${item.code}" ${isChecked ? 'checked' : ''} />
+                        <span class="dbp-change-pill ${pillClass}" style="font-size:11px;padding:1px 6px;">${changeLabel}</span>
+                        <span class="dbp-idx-badge ${idxClass}" style="font-size:11px;padding:1px 4px;">${idxName}</span>
+                        <span class="dbp-share-badge badge-${shareClass}">${item.share_class || 'A'}类</span>
+                        <span class="rks-code">${item.code}</span>
+                        <span class="rks-name" title="${item.name}">${item.name}</span>
+                        <div class="rks-meta">
+                            <span style="font-size:11px;color:var(--txt3)">${agencyTxt} · ${directTxt}</span>
+                        </div>
+                    </label>
+                `;
+            }).join('');
+
+            // 绑定每项勾选点击
+            listEl.querySelectorAll('.rks-item').forEach(item => {
+                const code = item.dataset.code;
+                const checkbox = item.querySelector('.rks-checkbox');
+
+                item.addEventListener('click', e => {
+                    if (e.target !== checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    if (checkbox.checked) {
+                        selectedCodes.add(code);
+                        item.classList.add('checked');
+                    } else {
+                        selectedCodes.delete(code);
+                        item.classList.remove('checked');
+                    }
+                    updateCountUI();
+                });
+            });
+        };
+
+        renderList();
+        updateCountUI();
+
+        // 快捷操作：全选
+        if (btnAll) {
+            btnAll.onclick = () => {
+                displayHistory.forEach(h => selectedCodes.add(h.code));
+                if (listEl) {
+                    listEl.querySelectorAll('.rks-item').forEach(item => {
+                        const cb = item.querySelector('.rks-checkbox');
+                        if (cb) cb.checked = true;
+                        item.classList.add('checked');
+                    });
+                }
+                updateCountUI();
+            };
+        }
+
+        // 快捷操作：全不选
+        if (btnNone) {
+            btnNone.onclick = () => {
+                selectedCodes.clear();
+                if (listEl) {
+                    listEl.querySelectorAll('.rks-item').forEach(item => {
+                        const cb = item.querySelector('.rks-checkbox');
+                        if (cb) cb.checked = false;
+                        item.classList.remove('checked');
+                    });
+                }
+                updateCountUI();
+            };
+        }
+
+        // 快捷操作：反选
+        if (btnInvert) {
+            btnInvert.onclick = () => {
+                displayHistory.forEach(h => {
+                    if (selectedCodes.has(h.code)) selectedCodes.delete(h.code);
+                    else selectedCodes.add(h.code);
+                });
+                if (listEl) {
+                    listEl.querySelectorAll('.rks-item').forEach(item => {
+                        const code = item.dataset.code;
+                        const cb = item.querySelector('.rks-checkbox');
+                        const isChecked = selectedCodes.has(code);
+                        if (cb) cb.checked = isChecked;
+                        if (isChecked) item.classList.add('checked');
+                        else item.classList.remove('checked');
+                    });
+                }
+                updateCountUI();
+            };
+        }
+
+        // 快捷操作：仅收紧 / 仅放宽
+        filterBtns.forEach(btn => {
+            btn.onclick = () => {
+                const targetType = btn.dataset.type;
+                selectedCodes.clear();
+                displayHistory.forEach(h => {
+                    if ((h.change_type || '').toUpperCase() === targetType) {
+                        selectedCodes.add(h.code);
+                    }
+                });
+                if (listEl) {
+                    listEl.querySelectorAll('.rks-item').forEach(item => {
+                        const code = item.dataset.code;
+                        const cb = item.querySelector('.rks-checkbox');
+                        const isChecked = selectedCodes.has(code);
+                        if (cb) cb.checked = isChecked;
+                        if (isChecked) item.classList.add('checked');
+                        else item.classList.remove('checked');
+                    });
+                }
+                updateCountUI();
+            };
+        });
+
+        // 弹窗内搜索检索
+        if (searchInput) {
+            searchInput.oninput = e => {
+                const kw = e.target.value.trim().toLowerCase();
+                if (!listEl) return;
+                listEl.querySelectorAll('.rks-item').forEach(item => {
+                    const code = item.dataset.code.toLowerCase();
+                    const name = (item.querySelector('.rks-name')?.textContent || '').toLowerCase();
+                    const match = !kw || code.includes(kw) || name.includes(kw);
+                    item.style.display = match ? 'flex' : 'none';
+                });
+            };
+        }
+
+        const closeSelectModal = () => {
+            modal.style.display = 'none';
+            document.removeEventListener('keydown', escHandler);
+        };
+
+        const escHandler = e => {
+            if (e.key === 'Escape') closeSelectModal();
+        };
+
+        if (btnClose) btnClose.onclick = closeSelectModal;
+        if (btnCancel) btnCancel.onclick = closeSelectModal;
+        modal.onclick = e => {
+            if (e.target === modal) closeSelectModal();
+        };
+
+        if (btnConfirm) {
+            btnConfirm.onclick = () => {
+                if (selectedCodes.size === 0) {
+                    showToast('请至少勾选一只变动基金进行导出', 'info');
+                    return;
+                }
+                const selectedItems = displayHistory.filter(h => selectedCodes.has(h.code));
+                closeSelectModal();
+                exportQuotaBulletinPoster(selectedItems, triggerBtn);
+            };
+        }
+
+        modal.style.display = 'flex';
+        document.addEventListener('keydown', escHandler);
+    }
+
+    // ===== 导出适合社交发布的 3:4 公告看板图片 (按勾选标的渲染，剥离平替推荐与网页交互控件) =====
+    async function exportQuotaBulletinPoster(selectedItems, triggerBtn) {
         const data = LIMIT_CHANGES_DATA;
         if (!data) {
             showToast('未检测到限购公告数据', 'info');
@@ -1374,9 +1611,10 @@ const App = (() => {
             }
         }
 
-        const relaxedCount = displayHistory.filter(h => h.change_type === 'RELAXED').length;
-        const tightenedCount = displayHistory.filter(h => h.change_type === 'TIGHTENED').length;
-        const totalMonitored = data.total_monitored || 60;
+        const itemsToExport = (selectedItems && selectedItems.length) ? selectedItems : displayHistory;
+
+        const relaxedCount = itemsToExport.filter(h => h.change_type === 'RELAXED').length;
+        const tightenedCount = itemsToExport.filter(h => h.change_type === 'TIGHTENED').length;
 
         // 设置按钮加载态
         const originalText = triggerBtn ? triggerBtn.innerHTML : '';
@@ -1393,7 +1631,7 @@ const App = (() => {
             posterWrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:750px;z-index:-9999;pointer-events:none;';
 
             let cardsHtml = '';
-            if (displayHistory.length === 0) {
+            if (itemsToExport.length === 0) {
                 cardsHtml = `
                     <div class="dbp-card" style="text-align:center;padding:36px 20px;border-left:none;">
                         <div style="font-size:36px;margin-bottom:12px">🛡️</div>
@@ -1402,7 +1640,7 @@ const App = (() => {
                     </div>
                 `;
             } else {
-                cardsHtml = displayHistory.map(item => {
+                cardsHtml = itemsToExport.map(item => {
                     const idxClass = item.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp';
                     const idxName = item.index_type === '纳斯达克100' ? '纳指' : '标普';
                     const shareClass = (item.share_class || 'A').toLowerCase();
@@ -1482,8 +1720,8 @@ const App = (() => {
                             </div>
                             <div class="dbp-stat-chip chip-monitored">
                                 <span>🛡️</span>
-                                <span>全市场监控</span>
-                                <strong>${totalMonitored} 只</strong>
+                                <span>选入展示</span>
+                                <strong>${itemsToExport.length} / ${displayHistory.length} 只</strong>
                             </div>
                         </div>
                     </div>
@@ -1521,7 +1759,7 @@ const App = (() => {
                 canvas,
                 downloadFilename: `QDII限购变动速递_${todayStr}.png`,
                 titleText: '公告看板图片预览',
-                tagText: '3:4 竖版 (无平替)',
+                tagText: `${itemsToExport.length}只变动 · 3:4 竖版 (无平替)`,
                 successToast: '🎉 公告看板图片已生成，可直接保存或复制！'
             });
 

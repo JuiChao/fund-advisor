@@ -2544,6 +2544,20 @@ input[type=range]::-moz-range-thumb {
     background: rgba(99, 102, 241, 0.08);
 }
 
+.btn-qks-filter[data-type="TIGHTENED"] {
+    font-weight: 700;
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btn-qks-filter[data-type="RELAXED"] {
+    font-weight: 700;
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
 .rks-tool-divider {
     display: inline-block;
     width: 1px;

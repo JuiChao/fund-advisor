@@ -1410,6 +1410,57 @@
         </div>
     </div>
 
+    <!-- 📋 公告看板导出前基金勾选弹窗 -->
+    <div class="fund-select-modal-backdrop" id="quota-select-modal" style="display:none">
+        <div class="fund-select-dialog">
+            <div class="fund-select-header">
+                <div class="fund-select-title-group">
+                    <div class="fund-select-title">
+                        <span class="modal-icon">📋</span>
+                        <strong>选择导出公告标的</strong>
+                    </div>
+                    <div class="fund-select-sub">
+                        近期变动共 <span id="qks-total-num">0</span> 只，已勾选 <strong id="qks-selected-num" class="text-accent">0</strong> 只（默认全选）
+                    </div>
+                </div>
+                <button type="button" class="fund-select-close" id="btn-qks-close" title="关闭弹窗">✕</button>
+            </div>
+
+            <div class="fund-select-toolbar">
+                <div class="fund-select-quick-actions">
+                    <button type="button" class="btn-rks-tool" id="btn-qks-select-all">☑️ 全选</button>
+                    <button type="button" class="btn-rks-tool" id="btn-qks-select-none">◻️ 全不选</button>
+                    <button type="button" class="btn-rks-tool" id="btn-qks-invert">🔄 反选</button>
+                    <span class="rks-tool-divider"></span>
+                    <button type="button" class="btn-rks-tool btn-qks-filter" data-type="TIGHTENED">🔴 仅收紧</button>
+                    <button type="button" class="btn-rks-tool btn-qks-filter" data-type="RELAXED">🟢 仅放宽</button>
+                </div>
+                <div class="fund-select-search-wrap">
+                    <input type="text" id="qks-search-input" placeholder="在列表中快速检索代码/名称..." autocomplete="off" />
+                </div>
+            </div>
+
+            <div class="fund-select-body">
+                <div class="fund-select-list" id="qks-fund-list">
+                    <!-- 动态渲染公告变动项目 -->
+                </div>
+            </div>
+
+            <div class="fund-select-footer">
+                <div class="fund-select-tip">
+                    💡 提示：仅勾选的变动标的会呈现在导出的公告速报图片中。
+                </div>
+                <div class="fund-select-actions">
+                    <button type="button" class="btn-rks-cancel" id="btn-qks-cancel">取消</button>
+                    <button type="button" class="btn-rks-confirm" id="btn-qks-confirm">
+                        <span>📷 生成导出图片</span>
+                        <span id="btn-qks-confirm-count">(0只)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 📷 图片导出预览弹窗 -->
     <div class="poster-modal-backdrop" id="poster-modal-backdrop" style="display:none">
         <div class="poster-modal-dialog">
