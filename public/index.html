@@ -587,6 +587,9 @@
                 <div class="quota-alert-tickers" id="quota-alert-tickers">
                     <!-- 动态渲染快速变动胶囊 -->
                 </div>
+                <button type="button" class="btn-quota-export-douyin" id="btn-quota-export-quick" title="一键导出适合发抖音的高清 3:4 变动速递海报（无平替列）">
+                    <span class="btn-export-icon">📱</span> 导出抖音图
+                </button>
                 <button type="button" class="btn-quota-toggle" id="btn-quota-toggle" aria-expanded="false">
                     <span id="quota-toggle-text">查看限购变动与平替全景</span>
                     <span class="quota-toggle-arrow">▾</span>
@@ -599,7 +602,12 @@
             <div class="quota-board-inner">
                 <div class="quota-board-header">
                     <div class="quota-board-title-group">
-                        <h3 class="quota-board-title">📋 美股QDII限购变动与风控公告看板</h3>
+                        <div class="quota-board-title-row">
+                            <h3 class="quota-board-title">📋 美股QDII限购变动与风控公告看板</h3>
+                            <button type="button" class="btn-quota-export-douyin" id="btn-quota-export-douyin" title="一键导出适合发抖音的高清 3:4 变动速递海报（无平替列）">
+                                <span class="btn-export-icon">📱</span> 导出抖音图
+                            </button>
+                        </div>
                         <p class="quota-board-sub">每日自动巡检全市场60只QDII直销与代销额度 · 智能定位收紧/放宽标的并匹配最优平替</p>
                     </div>
                     <div class="quota-stats-ribbon" id="quota-stats-ribbon">
@@ -1347,6 +1355,35 @@
             <strong>⚠️ 风险提示与免责合规声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均采集自基金管理人法定公开信息披露及天天基金网公开接口。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
         </div>
 </footer>
+
+    <!-- 📱 抖音/社交媒体海报导出预览弹窗 -->
+    <div class="poster-modal-backdrop" id="poster-modal-backdrop" style="display:none">
+        <div class="poster-modal-dialog">
+            <div class="poster-modal-header">
+                <div class="poster-modal-title">
+                    <span class="poster-modal-icon">📱</span>
+                    <strong>抖音图文海报预览</strong>
+                    <span class="poster-modal-tag">3:4 高清 (无平替)</span>
+                </div>
+                <button type="button" class="poster-modal-close" id="poster-modal-close" title="关闭弹窗">✕</button>
+            </div>
+            <div class="poster-modal-body">
+                <div class="poster-preview-wrap">
+                    <img id="poster-preview-img" alt="海报预览" />
+                </div>
+            </div>
+            <div class="poster-modal-footer">
+                <div class="poster-modal-tip">
+                    💡 提示：海报已自动格式化为适合发抖音的 3:4 比例，移动端可长按图片直接保存至手机相册。
+                </div>
+                <div class="poster-modal-actions">
+                    <button type="button" class="btn-poster-copy" id="btn-poster-copy">📋 复制图片</button>
+                    <a class="btn-poster-download" id="btn-poster-download" download="QDII限购变动速递.png">⬇️ 保存图片</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/app.js?v=20261009_v6"></script>
 <noscript>
 <style>

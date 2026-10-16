@@ -1096,6 +1096,18 @@ const App = (() => {
             });
         }
 
+        // 绑定抖音海报导出按钮
+        const exportBtn = document.getElementById('btn-quota-export-douyin');
+        if (exportBtn && !exportBtn._bound) {
+            exportBtn._bound = true;
+            exportBtn.addEventListener('click', () => exportQuotaBulletinPoster(exportBtn));
+        }
+        const quickExportBtn = document.getElementById('btn-quota-export-quick');
+        if (quickExportBtn && !quickExportBtn._bound) {
+            quickExportBtn._bound = true;
+            quickExportBtn.addEventListener('click', () => exportQuotaBulletinPoster(quickExportBtn));
+        }
+
         // 统计指标
         const qRecent = document.getElementById('qstat-recent');
         const qRelaxed = document.getElementById('qstat-relaxed');
@@ -1270,6 +1282,249 @@ const App = (() => {
                     }, 150);
                 }
             });
+        }
+    }
+
+    // ===== 动态按需加载 html2canvas 截图引擎 =====
+    function loadHtml2Canvas() {
+        if (window.html2canvas) return Promise.resolve(window.html2canvas);
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'js/html2canvas.min.js';
+            script.onload = () => resolve(window.html2canvas);
+            script.onerror = () => {
+                // CDN 备用兜底
+                const cdn = document.createElement('script');
+                cdn.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+                cdn.onload = () => resolve(window.html2canvas);
+                cdn.onerror = () => reject(new Error('无法加载截图引擎，请检查网络连接'));
+                document.head.appendChild(cdn);
+            };
+            document.head.appendChild(script);
+        });
+    }
+
+    // ===== 导出适合发抖音的 3:4 额度变动海报 (剥离平替推荐与网页交互控件) =====
+    async function exportQuotaBulletinPoster(triggerBtn) {
+        const data = LIMIT_CHANGES_DATA;
+        if (!data) {
+            showToast('未检测到限购公告数据', 'info');
+            return;
+        }
+
+        const todayStr = data.today_date || new Date().toISOString().slice(0, 10);
+        const seenCodes = new Set();
+        const displayHistory = [];
+        for (const h of (data.history || [])) {
+            if (h.code && !seenCodes.has(h.code)) {
+                seenCodes.add(h.code);
+                displayHistory.push(h);
+            }
+        }
+
+        const relaxedCount = displayHistory.filter(h => h.change_type === 'RELAXED').length;
+        const tightenedCount = displayHistory.filter(h => h.change_type === 'TIGHTENED').length;
+        const totalMonitored = data.total_monitored || 60;
+
+        // 设置按钮加载态
+        const originalText = triggerBtn ? triggerBtn.innerHTML : '';
+        if (triggerBtn) {
+            triggerBtn.disabled = true;
+            triggerBtn.innerHTML = '<span>⏳ 正在生成...</span>';
+        }
+
+        try {
+            await loadHtml2Canvas();
+
+            // 构建专为抖音 3:4 打造的离屏海报 DOM（无平替列，无网页交互元素）
+            const posterWrap = document.createElement('div');
+            posterWrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:750px;z-index:-9999;pointer-events:none;';
+
+            let cardsHtml = '';
+            if (displayHistory.length === 0) {
+                cardsHtml = `
+                    <div class="dbp-card" style="text-align:center;padding:36px 20px;border-left:none;">
+                        <div style="font-size:36px;margin-bottom:12px">🛡️</div>
+                        <div style="font-size:18px;font-weight:700;color:#f8fafc;margin-bottom:6px">全市场额度平稳运行</div>
+                        <div style="font-size:14px;color:#94a3b8">今日无新增限购收紧或暂停申购变动</div>
+                    </div>
+                `;
+            } else {
+                cardsHtml = displayHistory.map(item => {
+                    const idxClass = item.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp';
+                    const idxName = item.index_type === '纳斯达克100' ? '纳指' : '标普';
+                    const shareClass = (item.share_class || 'A').toLowerCase();
+                    const changeType = (item.change_type || 'TIGHTENED').toUpperCase();
+
+                    let changeLabel = '🔴 限购收紧';
+                    let pillClass = 'pill-tightened';
+                    if (changeType === 'RELAXED') {
+                        changeLabel = '🟢 放宽恢复';
+                        pillClass = 'pill-relaxed';
+                    } else if (changeType === 'CHANNEL_DIV') {
+                        changeLabel = '🔵 渠道分化';
+                        pillClass = 'pill-div';
+                    }
+
+                    const agencyDir = (item.agency && item.agency.direction) ? item.agency.direction.toLowerCase() : '';
+                    const directDir = (item.direct && item.direct.direction) ? item.direct.direction.toLowerCase() : '';
+
+                    return `
+                        <div class="dbp-card dbp-card-${changeType.toLowerCase()}">
+                            <div class="dbp-card-top">
+                                <div class="dbp-fund-ident">
+                                    <span class="dbp-idx-badge ${idxClass}">${idxName}</span>
+                                    <span class="dbp-share-badge badge-${shareClass}">${item.share_class || 'A'}类</span>
+                                    <span class="dbp-fund-code">${item.code}</span>
+                                    <span class="dbp-fund-name">${item.name}</span>
+                                </div>
+                                <div class="dbp-change-pill ${pillClass}">
+                                    ${changeLabel}
+                                </div>
+                            </div>
+                            
+                            <div class="dbp-channels-row">
+                                <div class="dbp-channel-box">
+                                    <span class="dbp-ch-lbl">代销渠道</span>
+                                    <div class="dbp-flow">
+                                        <span class="dbp-val-before">${item.agency?.before_status || '未知'}</span>
+                                        <span class="dbp-flow-arr">➔</span>
+                                        <span class="dbp-val-after ${agencyDir}">${item.agency?.after_status || '未知'}</span>
+                                    </div>
+                                </div>
+                                <div class="dbp-channel-box">
+                                    <span class="dbp-ch-lbl">直销渠道</span>
+                                    <div class="dbp-flow">
+                                        <span class="dbp-val-before">${item.direct?.before_status || '未知'}</span>
+                                        <span class="dbp-flow-arr">➔</span>
+                                        <span class="dbp-val-after ${directDir}">${item.direct?.after_status || '未知'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            posterWrap.innerHTML = `
+                <div class="douyin-poster-export" id="dbp-render-target">
+                    <div class="dbp-header">
+                        <div class="dbp-top-tag">
+                            <span>📢</span>
+                            <span>美股 QDII 额度动态监控速报</span>
+                            <span class="dbp-tag-date">📅 ${todayStr}</span>
+                        </div>
+                        <h1 class="dbp-title">QDII 基金限购变动看板</h1>
+                        <p class="dbp-sub">每日自动巡检全市场60只QDII基金 · 代销与直销申购额度异动追踪</p>
+                        
+                        <div class="dbp-stats-bar">
+                            <div class="dbp-stat-chip chip-tightened">
+                                <span>🔴</span>
+                                <span>限购收紧/暂停</span>
+                                <strong>${tightenedCount}</strong>
+                            </div>
+                            <div class="dbp-stat-chip chip-relaxed">
+                                <span>🟢</span>
+                                <span>放宽/恢复申购</span>
+                                <strong>${relaxedCount}</strong>
+                            </div>
+                            <div class="dbp-stat-chip chip-monitored">
+                                <span>🛡️</span>
+                                <span>全市场监控</span>
+                                <strong>${totalMonitored} 只</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dbp-body">
+                        ${cardsHtml}
+                    </div>
+
+                    <div class="dbp-footer">
+                        <div class="dbp-footer-brand">
+                            <span class="dbp-brand-name">📊 Fund Advisor</span>
+                            <span class="dbp-brand-tag">美股指数基金智能投资分析器</span>
+                        </div>
+                        <div class="dbp-footer-meta">
+                            <p>数据源自基金管理人公开公告 · 每日自动更新</p>
+                            <p>本文不构成任何投资建议与销售要约 · 投资需谨慎</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(posterWrap);
+            const renderTarget = document.getElementById('dbp-render-target');
+
+            const canvas = await window.html2canvas(renderTarget, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#0d1322'
+            });
+
+            document.body.removeChild(posterWrap);
+
+            const dataUrl = canvas.toDataURL('image/png');
+
+            // 弹出预览弹窗
+            const modal = document.getElementById('poster-modal-backdrop');
+            const previewImg = document.getElementById('poster-preview-img');
+            const downloadBtn = document.getElementById('btn-poster-download');
+            const copyBtn = document.getElementById('btn-poster-copy');
+            const closeBtn = document.getElementById('poster-modal-close');
+
+            if (previewImg) previewImg.src = dataUrl;
+            if (downloadBtn) {
+                downloadBtn.href = dataUrl;
+                downloadBtn.download = `QDII限购变动速递_${todayStr}.png`;
+            }
+
+            if (copyBtn) {
+                copyBtn.onclick = () => {
+                    canvas.toBlob(async blob => {
+                        if (navigator.clipboard && window.ClipboardItem && blob) {
+                            try {
+                                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                                showToast('✅ 海报已复制到剪贴板！可直接粘贴发布', 'success');
+                            } catch (e) {
+                                showToast('浏览器限制直接复制，请点击“保存图片”', 'info');
+                            }
+                        } else {
+                            showToast('当前浏览器不支持直接写入图片，请点击“保存图片”', 'info');
+                        }
+                    }, 'image/png');
+                };
+            }
+
+            const closeModal = () => {
+                if (modal) modal.style.display = 'none';
+                document.removeEventListener('keydown', escHandler);
+            };
+
+            const escHandler = e => {
+                if (e.key === 'Escape') closeModal();
+            };
+
+            if (closeBtn) closeBtn.onclick = closeModal;
+            if (modal) {
+                modal.onclick = e => {
+                    if (e.target === modal) closeModal();
+                };
+                modal.style.display = 'flex';
+                document.addEventListener('keydown', escHandler);
+            }
+
+            showToast('🎉 抖音海报已生成，可直接保存或复制！', 'success');
+
+        } catch (err) {
+            console.error('海报生成失败:', err);
+            showToast('生成海报失败: ' + (err.message || '未知错误'), 'error');
+        } finally {
+            if (triggerBtn) {
+                triggerBtn.disabled = false;
+                triggerBtn.innerHTML = originalText;
+            }
         }
     }
 
