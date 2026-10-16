@@ -601,8 +601,8 @@
                     <div class="quota-board-title-group">
                         <div class="quota-board-title-row">
                             <h3 class="quota-board-title">📋 美股QDII限购变动与风控公告看板</h3>
-                            <button type="button" class="btn-quota-export-douyin" id="btn-quota-export-douyin" title="一键导出公告看板高清截图（无平替列）">
-                                <span class="btn-export-icon">📷</span> 导出截图
+                            <button type="button" class="btn-quota-export-douyin" id="btn-quota-export-douyin" title="一键导出公告看板高清图片（无平替列）">
+                                <span class="btn-export-icon">📷</span> 导出图片
                             </button>
                         </div>
                         <p class="quota-board-sub">每日自动巡检全市场60只QDII直销与代销额度 · 智能定位收紧/放宽标的并匹配最优平替</p>
@@ -763,9 +763,9 @@
             <span id="rank-view-status-msg">支持点击表头多维排序，点击标的名称可展开深度抽屉看板</span>
         </div>
         <div class="rank-view-actions">
-            <button type="button" class="btn-rank-export" id="btn-rank-export" title="一键导出当前对比表格高清截图（适合发抖音/小红书）">
+            <button type="button" class="btn-rank-export" id="btn-rank-export" title="一键导出当前对比表格高清图片（可勾选标的）">
                 <span class="btn-export-icon">📷</span>
-                <span>导出截图</span>
+                <span>导出图片</span>
             </button>
             <div class="rank-view-toggle" id="rank-view-toggle">
                 <button type="button" class="view-btn on" data-view="table" id="view-btn-table" title="全景对比表格：适合多指标横向排序与密集对比">
@@ -1359,29 +1359,80 @@
         </div>
 </footer>
 
-    <!-- 📷 截图导出预览弹窗 -->
+    <!-- 📋 全景表格导出前基金勾选弹窗 -->
+    <div class="fund-select-modal-backdrop" id="rank-select-modal" style="display:none">
+        <div class="fund-select-dialog">
+            <div class="fund-select-header">
+                <div class="fund-select-title-group">
+                    <div class="fund-select-title">
+                        <span class="modal-icon">📋</span>
+                        <strong>选择导出基金标的</strong>
+                    </div>
+                    <div class="fund-select-sub">
+                        当前筛选共 <span id="rks-total-num">0</span> 只，已勾选 <strong id="rks-selected-num" class="text-accent">0</strong> 只（默认全选）
+                    </div>
+                </div>
+                <button type="button" class="fund-select-close" id="btn-rks-close" title="关闭弹窗">✕</button>
+            </div>
+
+            <div class="fund-select-toolbar">
+                <div class="fund-select-quick-actions">
+                    <button type="button" class="btn-rks-tool" id="btn-rks-select-all">☑️ 全选</button>
+                    <button type="button" class="btn-rks-tool" id="btn-rks-select-none">◻️ 全不选</button>
+                    <button type="button" class="btn-rks-tool" id="btn-rks-invert">🔄 反选</button>
+                    <span class="rks-tool-divider"></span>
+                    <button type="button" class="btn-rks-tool btn-rks-top" data-top="10">Top 10</button>
+                    <button type="button" class="btn-rks-tool btn-rks-top" data-top="20">Top 20</button>
+                </div>
+                <div class="fund-select-search-wrap">
+                    <input type="text" id="rks-search-input" placeholder="在列表中快速检索代码/名称..." autocomplete="off" />
+                </div>
+            </div>
+
+            <div class="fund-select-body">
+                <div class="fund-select-list" id="rks-fund-list">
+                    <!-- 动态渲染基金勾选项目 -->
+                </div>
+            </div>
+
+            <div class="fund-select-footer">
+                <div class="fund-select-tip">
+                    💡 提示：仅勾选的标的将按当前排序规则渲染进导出的高清图片中。
+                </div>
+                <div class="fund-select-actions">
+                    <button type="button" class="btn-rks-cancel" id="btn-rks-cancel">取消</button>
+                    <button type="button" class="btn-rks-confirm" id="btn-rks-confirm">
+                        <span>📷 生成导出图片</span>
+                        <span id="btn-rks-confirm-count">(0只)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📷 图片导出预览弹窗 -->
     <div class="poster-modal-backdrop" id="poster-modal-backdrop" style="display:none">
         <div class="poster-modal-dialog">
             <div class="poster-modal-header">
                 <div class="poster-modal-title">
                     <span class="poster-modal-icon">📷</span>
-                    <strong id="poster-modal-title-text">导出截图预览</strong>
+                    <strong id="poster-modal-title-text">导出图片预览</strong>
                     <span class="poster-modal-tag" id="poster-modal-tag">高清排版</span>
                 </div>
                 <button type="button" class="poster-modal-close" id="poster-modal-close" title="关闭弹窗">✕</button>
             </div>
             <div class="poster-modal-body">
                 <div class="poster-preview-wrap">
-                    <img id="poster-preview-img" alt="截图预览" />
+                    <img id="poster-preview-img" alt="图片预览" />
                 </div>
             </div>
             <div class="poster-modal-footer">
                 <div class="poster-modal-tip">
-                    💡 提示：截图已自动优化为高清竖版排版，电脑端可直接点击复制或保存，移动端可长按图片保存至手机相册。
+                    💡 提示：图片已自动优化为高清竖版排版，电脑端可直接点击复制或保存，移动端可长按图片保存至手机相册。
                 </div>
                 <div class="poster-modal-actions">
                     <button type="button" class="btn-poster-copy" id="btn-poster-copy">📋 复制图片</button>
-                    <a class="btn-poster-download" id="btn-poster-download" download="QDII截图.png">⬇️ 保存图片</a>
+                    <a class="btn-poster-download" id="btn-poster-download" download="QDII图片.png">⬇️ 保存图片</a>
                 </div>
             </div>
         </div>

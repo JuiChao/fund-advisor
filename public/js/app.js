@@ -1299,7 +1299,7 @@ const App = (() => {
         });
     }
 
-    // ===== 通用截图海报预览与导出弹窗 =====
+    // ===== 通用图片海报预览与导出弹窗 =====
     function openPosterModal({ canvas, downloadFilename, titleText, tagText, successToast }) {
         const dataUrl = canvas.toDataURL('image/png');
         const modal = document.getElementById('poster-modal-backdrop');
@@ -1310,12 +1310,12 @@ const App = (() => {
         const titleEl = document.getElementById('poster-modal-title-text');
         const tagEl = document.getElementById('poster-modal-tag');
 
-        if (titleEl) titleEl.textContent = titleText || '导出截图预览';
+        if (titleEl) titleEl.textContent = titleText || '导出图片预览';
         if (tagEl) tagEl.textContent = tagText || '高清排版';
         if (previewImg) previewImg.src = dataUrl;
         if (downloadBtn) {
             downloadBtn.href = dataUrl;
-            downloadBtn.download = downloadFilename || 'QDII截图.png';
+            downloadBtn.download = downloadFilename || 'QDII图片.png';
         }
 
         if (copyBtn) {
@@ -1324,7 +1324,7 @@ const App = (() => {
                     if (navigator.clipboard && window.ClipboardItem && blob) {
                         try {
                             await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                            showToast('✅ 截图已复制到剪贴板！可直接粘贴发布', 'success');
+                            showToast('✅ 图片已复制到剪贴板！可直接粘贴发布', 'success');
                         } catch (e) {
                             showToast('浏览器限制直接复制，请点击“保存图片”', 'info');
                         }
@@ -1353,10 +1353,10 @@ const App = (() => {
             document.addEventListener('keydown', escHandler);
         }
 
-        showToast(successToast || '🎉 截图已生成，可直接保存或复制！', 'success');
+        showToast(successToast || '🎉 图片已生成，可直接保存或复制！', 'success');
     }
 
-    // ===== 导出适合社交发布的 3:4 公告看板截图 (剥离平替推荐与网页交互控件) =====
+    // ===== 导出适合社交发布的 3:4 公告看板图片 (剥离平替推荐与网页交互控件) =====
     async function exportQuotaBulletinPoster(triggerBtn) {
         const data = LIMIT_CHANGES_DATA;
         if (!data) {
@@ -1520,14 +1520,14 @@ const App = (() => {
             openPosterModal({
                 canvas,
                 downloadFilename: `QDII限购变动速递_${todayStr}.png`,
-                titleText: '公告看板截图预览',
+                titleText: '公告看板图片预览',
                 tagText: '3:4 竖版 (无平替)',
-                successToast: '🎉 公告看板截图已生成，可直接保存或复制！'
+                successToast: '🎉 公告看板图片已生成，可直接保存或复制！'
             });
 
         } catch (err) {
-            console.error('看板截图生成失败:', err);
-            showToast('生成截图失败: ' + (err.message || '未知错误'), 'error');
+            console.error('看板图片生成失败:', err);
+            showToast('生成图片失败: ' + (err.message || '未知错误'), 'error');
         } finally {
             if (triggerBtn) {
                 triggerBtn.disabled = false;
@@ -1536,10 +1536,213 @@ const App = (() => {
         }
     }
 
-    // ===== 导出全景对比表格高清长图截图 (剔除网页交互控件) =====
-    async function exportRankTablePoster(triggerBtn) {
+    // ===== 全景对比表格导出前：基金勾选选择弹窗控制器 =====
+    function openRankExportSelectModal(triggerBtn) {
         if (!rankData || rankData.length === 0) {
             showToast('当前表格无展示标的，无法导出', 'info');
+            return;
+        }
+
+        const modal = document.getElementById('rank-select-modal');
+        if (!modal) {
+            exportRankTablePoster(rankData, triggerBtn);
+            return;
+        }
+
+        const totalNumEl = document.getElementById('rks-total-num');
+        const selectedNumEl = document.getElementById('rks-selected-num');
+        const confirmCountEl = document.getElementById('btn-rks-confirm-count');
+        const listEl = document.getElementById('rks-fund-list');
+        const searchInput = document.getElementById('rks-search-input');
+        const btnAll = document.getElementById('btn-rks-select-all');
+        const btnNone = document.getElementById('btn-rks-select-none');
+        const btnInvert = document.getElementById('btn-rks-invert');
+        const btnConfirm = document.getElementById('btn-rks-confirm');
+        const btnCancel = document.getElementById('btn-rks-cancel');
+        const btnClose = document.getElementById('btn-rks-close');
+        const topBtns = modal.querySelectorAll('.btn-rks-top');
+
+        if (searchInput) searchInput.value = '';
+        if (totalNumEl) totalNumEl.textContent = rankData.length;
+
+        // 默认全选当前展示的 rankData 集合
+        const selectedCodes = new Set(rankData.map(r => r.code));
+
+        const updateCountUI = () => {
+            const count = selectedCodes.size;
+            if (selectedNumEl) selectedNumEl.textContent = count;
+            if (confirmCountEl) confirmCountEl.textContent = `(${count}只)`;
+            if (btnConfirm) {
+                btnConfirm.disabled = (count === 0);
+            }
+        };
+
+        const renderList = () => {
+            if (!listEl) return;
+            listEl.innerHTML = rankData.map(r => {
+                const isChecked = selectedCodes.has(r.code);
+                const totalFee = (r.mgmt_fee || 0) + (r.custody_fee || 0) + (r.sales_fee || 0);
+                let rankBadge = r.rank === 1 ? '🥇' : (r.rank === 2 ? '🥈' : (r.rank === 3 ? '🥉' : `#${r.rank}`));
+                return `
+                    <label class="rks-item ${isChecked ? 'checked' : ''}" data-code="${r.code}">
+                        <input type="checkbox" class="rks-checkbox" value="${r.code}" ${isChecked ? 'checked' : ''} />
+                        <span class="rks-rank">${rankBadge}</span>
+                        <span class="rks-code">${r.code}</span>
+                        ${shareBadge(r.share_class)}
+                        <span class="rks-name" title="${r.name}">${r.name}</span>
+                        <div class="rks-meta">
+                            <span class="rks-fee" title="综合费率">${fmt(totalFee)}</span>
+                            <span class="rks-score" title="综合评分">${r.score}分</span>
+                        </div>
+                    </label>
+                `;
+            }).join('');
+
+            // 绑定每项勾选点击
+            listEl.querySelectorAll('.rks-item').forEach(item => {
+                const code = item.dataset.code;
+                const checkbox = item.querySelector('.rks-checkbox');
+
+                item.addEventListener('click', e => {
+                    if (e.target !== checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    if (checkbox.checked) {
+                        selectedCodes.add(code);
+                        item.classList.add('checked');
+                    } else {
+                        selectedCodes.delete(code);
+                        item.classList.remove('checked');
+                    }
+                    updateCountUI();
+                });
+            });
+        };
+
+        renderList();
+        updateCountUI();
+
+        // 快捷操作：全选
+        if (btnAll) {
+            btnAll.onclick = () => {
+                rankData.forEach(r => selectedCodes.add(r.code));
+                if (listEl) {
+                    listEl.querySelectorAll('.rks-item').forEach(item => {
+                        const cb = item.querySelector('.rks-checkbox');
+                        if (cb) cb.checked = true;
+                        item.classList.add('checked');
+                    });
+                }
+                updateCountUI();
+            };
+        }
+
+        // 快捷操作：全不选
+        if (btnNone) {
+            btnNone.onclick = () => {
+                selectedCodes.clear();
+                if (listEl) {
+                    listEl.querySelectorAll('.rks-item').forEach(item => {
+                        const cb = item.querySelector('.rks-checkbox');
+                        if (cb) cb.checked = false;
+                        item.classList.remove('checked');
+                    });
+                }
+                updateCountUI();
+            };
+        }
+
+        // 快捷操作：反选
+        if (btnInvert) {
+            btnInvert.onclick = () => {
+                rankData.forEach(r => {
+                    if (selectedCodes.has(r.code)) selectedCodes.delete(r.code);
+                    else selectedCodes.add(r.code);
+                });
+                if (listEl) {
+                    listEl.querySelectorAll('.rks-item').forEach(item => {
+                        const code = item.dataset.code;
+                        const cb = item.querySelector('.rks-checkbox');
+                        const isChecked = selectedCodes.has(code);
+                        if (cb) cb.checked = isChecked;
+                        if (isChecked) item.classList.add('checked');
+                        else item.classList.remove('checked');
+                    });
+                }
+                updateCountUI();
+            };
+        }
+
+        // 快捷操作：Top N
+        topBtns.forEach(btn => {
+            btn.onclick = () => {
+                const topN = parseInt(btn.dataset.top, 10) || 10;
+                selectedCodes.clear();
+                rankData.slice(0, topN).forEach(r => selectedCodes.add(r.code));
+                if (listEl) {
+                    listEl.querySelectorAll('.rks-item').forEach(item => {
+                        const code = item.dataset.code;
+                        const cb = item.querySelector('.rks-checkbox');
+                        const isChecked = selectedCodes.has(code);
+                        if (cb) cb.checked = isChecked;
+                        if (isChecked) item.classList.add('checked');
+                        else item.classList.remove('checked');
+                    });
+                }
+                updateCountUI();
+            };
+        });
+
+        // 弹窗内搜索检索
+        if (searchInput) {
+            searchInput.oninput = e => {
+                const kw = e.target.value.trim().toLowerCase();
+                if (!listEl) return;
+                listEl.querySelectorAll('.rks-item').forEach(item => {
+                    const code = item.dataset.code.toLowerCase();
+                    const name = (item.querySelector('.rks-name')?.textContent || '').toLowerCase();
+                    const match = !kw || code.includes(kw) || name.includes(kw);
+                    item.style.display = match ? 'flex' : 'none';
+                });
+            };
+        }
+
+        const closeSelectModal = () => {
+            modal.style.display = 'none';
+            document.removeEventListener('keydown', escHandler);
+        };
+
+        const escHandler = e => {
+            if (e.key === 'Escape') closeSelectModal();
+        };
+
+        if (btnClose) btnClose.onclick = closeSelectModal;
+        if (btnCancel) btnCancel.onclick = closeSelectModal;
+        modal.onclick = e => {
+            if (e.target === modal) closeSelectModal();
+        };
+
+        if (btnConfirm) {
+            btnConfirm.onclick = () => {
+                if (selectedCodes.size === 0) {
+                    showToast('请至少勾选一只基金进行导出', 'info');
+                    return;
+                }
+                const selectedFunds = rankData.filter(r => selectedCodes.has(r.code));
+                closeSelectModal();
+                exportRankTablePoster(selectedFunds, triggerBtn);
+            };
+        }
+
+        modal.style.display = 'flex';
+        document.addEventListener('keydown', escHandler);
+    }
+
+    // ===== 导出全景对比表格高清长图图片 (按勾选标的渲染，剔除网页交互控件与重复类别徽标) =====
+    async function exportRankTablePoster(selectedFunds, triggerBtn) {
+        const fundsToExport = (selectedFunds && selectedFunds.length) ? selectedFunds : rankData;
+        if (!fundsToExport || fundsToExport.length === 0) {
+            showToast('未选择任何标的，无法导出', 'info');
             return;
         }
 
@@ -1555,9 +1758,6 @@ const App = (() => {
         if (quotaFilter === 'BUYABLE') quotaLabel = '代销可买';
         else if (quotaFilter === 'DIRECT') quotaLabel = '直销可买';
         else if (quotaFilter === 'PAUSED') quotaLabel = '暂停申购';
-
-        let filterDesc = `${typeLabel} · ${classLabel} · ${quotaLabel}`;
-        if (kw) filterDesc += ` · 包含"${kw}"`;
 
         const titleText = `${typeLabel} 基金量化投研评分榜`;
 
@@ -1575,7 +1775,7 @@ const App = (() => {
             const posterWrap = document.createElement('div');
             posterWrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:980px;z-index:-9999;pointer-events:none;';
 
-            const rowsHtml = rankData.map(r => {
+            const rowsHtml = fundsToExport.map(r => {
                 let rankBadge;
                 let rowCls = '';
                 if (r.rank === 1) { rankBadge = '<span class="rkp-rank-badge rank-gold">🥇 1</span>'; rowCls = 'row-gold'; }
@@ -1583,7 +1783,7 @@ const App = (() => {
                 else if (r.rank === 3) { rankBadge = '<span class="rkp-rank-badge rank-bronze">🥉 3</span>'; rowCls = 'row-bronze'; }
                 else { rankBadge = `<span class="rkp-rank-badge">#${r.rank}</span>`; }
 
-                const idxBadge = `<span class="badge-idx ${r.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${r.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`;
+                // 类别信息已在上方横幅醒目展示，标的列仅保留份额徽标与基金名称，彻底释放横向空间
                 const sBadge = shareBadge(r.share_class);
 
                 const mgmt = r.mgmt_fee || 0;
@@ -1633,7 +1833,7 @@ const App = (() => {
                         <td><span class="rkp-code">${r.code}</span></td>
                         <td>
                             <div class="rkp-name-cell">
-                                ${idxBadge}${sBadge}
+                                ${sBadge}
                                 <span class="rkp-fund-name">${r.name}</span>
                             </div>
                         </td>
@@ -1673,8 +1873,21 @@ const App = (() => {
                             <span class="rkp-tag-date">📅 ${todayStr}</span>
                         </div>
                         <h1 class="rkp-title">${titleText}</h1>
-                        <p class="rkp-sub">多因子量化评分：费率 (35%) · 跟踪误差 (20%) · 规模 (15%) · 3年收益 (15%) · 晨星评级 (10%) · 申购费 (5%)</p>
-                        <p class="rkp-meta">筛选范围：${filterDesc} · 共入选 ${rankData.length} 只标的</p>
+                        <p class="rkp-sub">多因子量化评分模型：综合费率 (35%) · 跟踪误差 (20%) · 基金规模 (15%) · 近3年收益 (15%) · 晨星评级 (10%) · 申购费率 (5%)</p>
+                        
+                        <!-- 醒目标题与标的范围横幅 (取代行内重复徽标) -->
+                        <div class="rkp-scope-bar">
+                            <div class="rkp-scope-badge-group">
+                                <span class="rkp-scope-lbl">📌 基金类别</span>
+                                <span class="rkp-scope-highlight ${type === '纳斯达克100' ? 'scope-nq' : (type === '标普500' ? 'scope-sp' : 'scope-all')}">${typeLabel}</span>
+                            </div>
+                            <div class="rkp-scope-chips">
+                                <span class="rkp-chip"><span class="rkp-chip-k">份额：</span><strong>${classLabel}</strong></span>
+                                <span class="rkp-chip"><span class="rkp-chip-k">渠道：</span><strong>${quotaLabel}</strong></span>
+                                ${kw ? `<span class="rkp-chip"><span class="rkp-chip-k">检索：</span><strong>${kw}</strong></span>` : ''}
+                                <span class="rkp-chip chip-count"><span class="rkp-chip-k">选入：</span><strong>${fundsToExport.length}</strong> / ${rankData.length} 只</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="rkp-table-wrap">
@@ -1682,12 +1895,12 @@ const App = (() => {
                             <thead>
                                 <tr>
                                     <th style="width:50px;">#</th>
-                                    <th style="width:74px;">代码</th>
+                                    <th style="width:76px;">代码</th>
                                     <th class="col-name">基金标的</th>
-                                    <th style="width:84px;">综合费率</th>
+                                    <th style="width:86px;">综合费率</th>
                                     <th style="width:115px;">跟踪误差 / IR</th>
                                     <th style="width:68px;">规模</th>
-                                    <th style="width:80px;">近3年</th>
+                                    <th style="width:82px;">近3年</th>
                                     <th style="width:65px;">晨星</th>
                                     <th style="width:150px;">限购(代/直)</th>
                                     <th style="width:76px;">综合评分</th>
@@ -1704,7 +1917,7 @@ const App = (() => {
                             <span class="rkp-brand-name">📊 Fund Advisor</span>
                             <span class="rkp-brand-tag">美股指数基金智能投资分析器 · 量化评分体系</span>
                         </div>
-                        <div class="rkp-footer-meta">
+                        <div class="dbp-footer-meta">
                             <p>数据每日自动巡检更新 · 评分模型仅作客观量化参考</p>
                             <p>本文不构成任何投资建议与销售要约 · 基金有风险，投资需谨慎</p>
                         </div>
@@ -1727,14 +1940,14 @@ const App = (() => {
             openPosterModal({
                 canvas,
                 downloadFilename: `QDII量化评分榜_${type}_${todayStr}.png`,
-                titleText: '全景对比表格截图预览',
-                tagText: `${rankData.length}只标的 · 高清长图`,
-                successToast: '🎉 全景对比表格截图已生成，可直接保存或复制！'
+                titleText: '全景对比表格图片预览',
+                tagText: `${fundsToExport.length}只标的 · 高清长图`,
+                successToast: '🎉 全景对比表格图片已生成，可直接保存或复制！'
             });
 
         } catch (err) {
-            console.error('全景表格截图生成失败:', err);
-            showToast('生成截图失败: ' + (err.message || '未知错误'), 'error');
+            console.error('全景表格图片生成失败:', err);
+            showToast('生成图片失败: ' + (err.message || '未知错误'), 'error');
         } finally {
             if (triggerBtn) {
                 triggerBtn.disabled = false;
@@ -3431,12 +3644,12 @@ const App = (() => {
             });
         }
 
-        // 绑定全景对比表格导出截图按钮
+        // 绑定全景对比表格导出图片按钮 (先打开勾选弹窗)
         const rankExportBtn = document.getElementById('btn-rank-export');
         if (rankExportBtn && !rankExportBtn._bound) {
             rankExportBtn._bound = true;
             rankExportBtn.addEventListener('click', () => {
-                exportRankTablePoster(rankExportBtn);
+                openRankExportSelectModal(rankExportBtn);
             });
         }
 
