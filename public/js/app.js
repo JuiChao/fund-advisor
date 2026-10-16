@@ -1120,8 +1120,13 @@ const App = (() => {
                 const idxBadge = `<span class="badge-idx ${item.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${item.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`;
                 const fundCell = `
                     <div class="q-fund-cell">
-                        <div class="q-fund-title-wrap">${idxBadge}${shareBadge(item.share_class)}<a href="fund/${item.code}.html" class="q-fund-name" target="_blank">${item.name}</a></div>
-                        <div class="q-fund-code"><span class="code-mono">${item.code}</span><button type="button" class="btn-copy-code" data-code="${item.code}" title="复制基金代码">📋</button></div>
+                        <div class="q-fund-meta">
+                            <div class="q-fund-badges">${idxBadge}${shareBadge(item.share_class)}</div>
+                            <div class="q-fund-code"><span class="code-mono">${item.code}</span><button type="button" class="btn-copy-code" data-code="${item.code}" title="复制基金代码">📋</button></div>
+                        </div>
+                        <div class="q-fund-name-wrap">
+                            <a href="fund/${item.code}.html" class="q-fund-name" target="_blank" title="${item.name}">${item.name}</a>
+                        </div>
                     </div>
                 `;
 

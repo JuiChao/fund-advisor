@@ -1794,9 +1794,9 @@ input[type=range]::-moz-range-thumb {
     text-align: left;
     white-space: nowrap;
 }
-.quota-table th:nth-child(1) { width: 100px; min-width: 100px; text-align: center; } /* 变动日期 */
-.quota-table th:nth-child(2) { min-width: 320px; text-align: center; } /* 基金标的 */
-.quota-table th:nth-child(3) { width: 115px; min-width: 115px; text-align: center; } /* 变动性质 */
+.quota-table th:nth-child(1) { width: 95px; min-width: 95px; text-align: center; } /* 变动日期 */
+.quota-table th:nth-child(2) { min-width: 220px; text-align: left; } /* 基金标的 */
+.quota-table th:nth-child(3) { width: 110px; min-width: 105px; text-align: center; } /* 变动性质 */
 .quota-table th:nth-child(4) { width: 215px; min-width: 205px; text-align: left; } /* 额度变动 & 公告 */
 .quota-table th:nth-child(5) { width: 240px; min-width: 225px; text-align: left; } /* 智能平替推荐 */
 
@@ -1827,49 +1827,71 @@ input[type=range]::-moz-range-thumb {
 
 .q-fund-cell {
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 9px;
+    text-align: left;
+    width: 100%;
+}
+.q-fund-meta {
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    gap: 4px;
-    min-width: 280px;
-    width: 100%;
+    gap: 3px;
+    flex-shrink: 0;
+    min-width: 68px;
 }
-.q-fund-title-wrap {
-    display: block;
-    text-align: center;
-    line-height: 1.45;
-    width: 100%;
+.q-fund-badges {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
     white-space: nowrap;
 }
-.q-fund-title-wrap .badge-idx,
-.q-fund-title-wrap .badge-share {
-    margin-right: 3px;
-    vertical-align: 1px;
+.q-fund-badges .badge-idx,
+.q-fund-badges .badge-share {
+    margin: 0;
+    vertical-align: middle;
+}
+.q-fund-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    margin: 0;
+    white-space: nowrap;
+}
+.q-fund-code .code-mono {
+    font-size: 0.74rem;
+    color: var(--txt3);
+    font-weight: 600;
+}
+.q-fund-code .btn-copy-code {
+    margin-left: 0;
+    width: 18px;
+    height: 18px;
+    font-size: 0.65rem;
+}
+.q-fund-name-wrap {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+    line-height: 1.35;
 }
 .q-fund-name {
     display: inline;
     font-weight: 700;
     color: var(--txt);
     text-decoration: none;
-    font-size: 0.85rem;
-    line-height: 1.45;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    word-break: break-all;
     transition: color 0.15s;
-    vertical-align: middle;
-    white-space: nowrap;
 }
 .q-fund-name:hover {
     color: var(--accent2);
-}
-.q-fund-code {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    margin: 0 auto;
-}
-.q-fund-code .btn-copy-code {
-    margin-left: 0;
+    text-decoration: underline;
 }
 
 .badge-qtype {
