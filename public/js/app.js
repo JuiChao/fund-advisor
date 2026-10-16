@@ -434,33 +434,36 @@ const App = (() => {
                         backgroundColor: data.map(d => d.fee <= 0.7 ? '#34d399' : d.fee <= 1.0 ? '#6366f1' : '#f87171'),
                         borderRadius: 4,
                         borderSkipped: false,
+                        maxBarThickness: 16,
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                title: items => data[items[0].dataIndex].name,
+                                title: items => `${data[items[0].dataIndex].code} ${data[items[0].dataIndex].name}`,
                                 label: ctx => `综合费率: ${ctx.parsed.y.toFixed(2)}%`,
                                 afterLabel: ctx => data[ctx.dataIndex].status ? `状态: ${data[ctx.dataIndex].status}` : ''
                             }
                         }
                     },
                     scales: {
-                        x: { grid: { display: false } },
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { size: 9 },
+                                maxRotation: 50,
+                                minRotation: 30,
+                                autoSkip: true
+                            }
+                        },
                         y: { beginAtZero: true, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(99, 102, 241, 0.08)' } }
                     }
                 }
             });
-            // 基金名称列表
-            const listEl = document.getElementById(id + '-list');
-            if (listEl) {
-                listEl.innerHTML = data.map(d =>
-                    `<span class="fund-tag" title="${d.name}">${d.code} ${d.name.length > 6 ? d.name.substring(0, 6) + '..' : d.name}</span>`
-                ).join('');
-            }
         }
         feeChart('ch-nq', nq);
         feeChart('ch-sp', sp);

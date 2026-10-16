@@ -1547,6 +1547,27 @@ input[type=range]::-moz-range-thumb {
     border-left: 3px solid var(--accent);
 }
 
+/* ===== 首页费率分布自适应栅格（7:3比例拉宽纳指/缩窄标普，实现两图柱体等宽） ===== */
+.fee-dist-grid {
+    display: grid;
+    grid-template-columns: 7fr 3fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+    align-items: stretch;
+}
+.fee-dist-grid .card {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+.fee-dist-grid .cht {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 280px;
+    flex: 1;
+}
+
 /* ===== Fund List in Chart ===== */
 .fund-list {
     display: flex;
@@ -3797,6 +3818,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 1024px) {
     .container { padding: 1.5rem; }
     .g2 { grid-template-columns: 1fr; }
+    .fee-dist-grid { grid-template-columns: 1fr; }
+    .fee-dist-grid .cht { height: 250px; }
     .g3 { grid-template-columns: 1fr 1fr; }
     .article-preview-grid { grid-template-columns: 1fr 1fr; }
 }
