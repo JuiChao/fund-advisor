@@ -3436,19 +3436,27 @@ const App = (() => {
         const allocs = variant.allocations || [];
         const hasShared = allocs.some(a => a.quota_sharing === 'SHARED');
         const rows = allocs.map(a => `<tr class="${a.exceeds_limit ? 'wr' : ''}">
-            <td style="color:var(--txt2)">${a.code}</td>
-            <td style="text-align:left;font-weight:500">
-                ${shareBadge(a.share_class)}${a.name}
-                ${a.is_stacked ? '<span class="badge-stacked" title="额度用尽时自动补充的优质份额">额度叠加</span>' : ''}
-                ${a.quota_sharing === 'SHARED' ? `<span class="badge-shared" style="font-size:0.65rem;margin-left:4px;padding:1px 4px;border-radius:4px;background:rgba(245,158,11,0.15);color:var(--warn);border:1px solid rgba(245,158,11,0.3);white-space:nowrap;cursor:help" title="${a.quota_shared_desc || '多类份额共享限额'}">🔗 共享额度</span>` : ''}
+            <td class="pf-col-code" style="color:var(--txt2)">${a.code}</td>
+            <td class="pf-col-name" style="text-align:left;font-weight:500">
+                <div class="pf-name-cell">
+                    ${shareBadge(a.share_class)}
+                    <span class="pf-fund-name" title="${a.name}">${a.name}</span>
+                    ${a.is_stacked ? '<span class="badge-stacked" title="额度用尽时自动补充的优质份额">额度叠加</span>' : ''}
+                </div>
             </td>
-            <td style="${feeC(a.fee)}">${(a.fee*100).toFixed(2)}%</td>
-            <td>${a.daily}元</td>
-            <td style="font-weight:600">${a.monthly}元</td>
-            <td>${(a.actual_weight*100).toFixed(0)}%</td>
-            <td>${pill(a.limit_status)}${a.direct_limit_status ? '<div style="margin-top:2px">' + pill(a.direct_limit_status) + '</div>' : ''}</td>
+            <td class="pf-col-fee" style="${feeC(a.fee)}">${(a.fee*100).toFixed(2)}%</td>
+            <td class="pf-col-daily">${a.daily}元</td>
+            <td class="pf-col-monthly" style="font-weight:600">${a.monthly}元</td>
+            <td class="pf-col-weight">${(a.actual_weight*100).toFixed(0)}%</td>
+            <td class="pf-col-limit">
+                <div class="pf-limit-cell">
+                    <div>${pill(a.limit_status)}</div>
+                    ${a.direct_limit_status ? `<div>${pill(a.direct_limit_status)}</div>` : ''}
+                    ${a.quota_sharing === 'SHARED' ? `<div style="margin-top:2px"><span class="badge-shared" style="font-size:0.65rem;padding:1px 5px;border-radius:4px;background:rgba(245,158,11,0.15);color:var(--warn);border:1px solid rgba(245,158,11,0.3);white-space:nowrap;display:inline-block;cursor:help" title="${a.quota_shared_desc || '多类份额共享限额'}">🔗 共享额度</span></div>` : ''}
+                </div>
+            </td>
         </tr>`).join('');
-        let html = `<div class="table-wrap"><table><thead><tr><th>代码</th><th>名称</th><th>综合费率</th><th>每日</th><th>月合计</th><th>占比</th><th>代销/直销</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        let html = `<div class="table-wrap pf-table-wrap"><table class="pf-table"><thead><tr><th class="pf-col-code">代码</th><th class="pf-col-name">名称</th><th class="pf-col-fee">综合费率</th><th class="pf-col-daily">每日</th><th class="pf-col-monthly">月合计</th><th class="pf-col-weight">占比</th><th class="pf-col-limit">代销/直销</th></tr></thead><tbody>${rows}</tbody></table></div>`;
         if (hasShared) {
             html += `<div style="margin-top:0.6rem;padding:0.5rem 0.75rem;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.22);border-radius:6px;font-size:0.75rem;color:var(--txt2);line-height:1.5">
                 <span style="color:var(--warn);font-weight:600">💡 共享额度避坑提示：</span>
@@ -4667,10 +4675,10 @@ const App = (() => {
 
                     <div class="pf-panel" id="pf-${s.key}-ideal">
                         <p style="color:var(--txt3);font-size:.75rem;margin:.5rem 0">${s.ideal?.note || ''}</p>
-                        <div class="g2">
-                            <div>${renderVariantTable(s.ideal, s.key)}</div>
-                            <div>
-                                <div class="cht"><canvas id="ch-${s.key}-ideal"></canvas></div>
+                        <div class="g2 pf-variant-grid">
+                            <div class="pf-table-col">${renderVariantTable(s.ideal, s.key)}</div>
+                            <div class="pf-chart-col">
+                                <div class="cht pf-cht"><canvas id="ch-${s.key}-ideal"></canvas></div>
                                 ${renderVariantSim(s.ideal, years)}
                                 ${renderRiskContribution(s.ideal, s)}
                             </div>
@@ -4683,10 +4691,10 @@ const App = (() => {
 
                     <div class="pf-panel" id="pf-${s.key}-practical" style="display:none">
                         <p style="color:${(s.practical?.note || '').includes('额度叠加') ? 'var(--ok)' : 'var(--txt3)'};font-size:.78rem;font-weight:500;margin:.5rem 0">${s.practical?.note || ''}</p>
-                        <div class="g2">
-                            <div>${renderVariantTable(s.practical, s.key)}</div>
-                            <div>
-                                <div class="cht"><canvas id="ch-${s.key}-practical"></canvas></div>
+                        <div class="g2 pf-variant-grid">
+                            <div class="pf-table-col">${renderVariantTable(s.practical, s.key)}</div>
+                            <div class="pf-chart-col">
+                                <div class="cht pf-cht"><canvas id="ch-${s.key}-practical"></canvas></div>
                                 ${renderVariantSim(s.practical, years)}
                                 ${renderRiskContribution(s.practical, s)}
                             </div>
@@ -4757,26 +4765,28 @@ const App = (() => {
                         },
                         options: {
                             responsive: true,
-                            cutout: '72%',
-                            layout: { padding: 8 },
+                            maintainAspectRatio: false,
+                            cutout: '68%',
+                            layout: { padding: 4 },
                             plugins: { 
                                 legend: { 
                                     position: 'bottom', 
                                     labels: { 
-                                        padding: 16, 
+                                        padding: 8, 
                                         usePointStyle: true, 
                                         pointStyle: 'circle', 
-                                        font: { size: 12, family: 'system-ui, -apple-system, sans-serif' },
+                                        boxWidth: 8,
+                                        font: { size: 11, family: 'system-ui, -apple-system, sans-serif' },
                                         color: '#64748b'
                                     } 
                                 },
                                 tooltip: {
                                     backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                                    titleFont: { size: 13, family: 'system-ui, -apple-system, sans-serif', weight: 'normal' },
-                                    bodyFont: { size: 13, family: 'system-ui, -apple-system, sans-serif', weight: 'bold' },
-                                    padding: 12,
-                                    cornerRadius: 8,
-                                    boxPadding: 6,
+                                    titleFont: { size: 12, family: 'system-ui, -apple-system, sans-serif', weight: 'normal' },
+                                    bodyFont: { size: 12, family: 'system-ui, -apple-system, sans-serif', weight: 'bold' },
+                                    padding: 10,
+                                    cornerRadius: 6,
+                                    boxPadding: 4,
                                     displayColors: true,
                                     usePointStyle: true
                                 }

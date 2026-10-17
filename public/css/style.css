@@ -7472,4 +7472,182 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
 }
 
+/* ===== 定投方案布局优化：自适应双列、加宽基金名称、紧凑圆环图 ===== */
+.pf-variant-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.pf-table-col {
+    min-width: 0;
+    width: 100%;
+}
+
+.pf-chart-col {
+    min-width: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 适当缩小圆环图尺寸，使左右高度接近 */
+.cht.pf-cht {
+    width: 170px;
+    height: 170px;
+    max-width: 170px;
+    max-height: 170px;
+    margin: 0.2rem auto 0.6rem auto;
+    position: relative;
+}
+
+/* 定投方案表格与列宽 */
+.pf-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.pf-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.pf-table th,
+.pf-table td {
+    vertical-align: middle;
+    padding: 0.65rem 0.55rem;
+    text-align: center;
+}
+
+.pf-table th {
+    background: var(--surface2);
+    font-size: 0.75rem;
+    color: var(--txt2);
+    font-weight: 700;
+    white-space: nowrap;
+    border-bottom: 2px solid var(--border);
+}
+
+.pf-table td {
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8125rem;
+}
+
+.pf-table tr:last-child td {
+    border-bottom: none;
+}
+
+.pf-table .pf-col-code {
+    width: 68px;
+    white-space: nowrap;
+    text-align: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+.pf-table .pf-col-name {
+    min-width: 175px;
+    text-align: left;
+}
+
+.pf-table .pf-col-fee {
+    width: 74px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.pf-table .pf-col-daily {
+    width: 66px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.pf-table .pf-col-monthly {
+    width: 72px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.pf-table .pf-col-weight {
+    width: 56px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.pf-table .pf-col-limit {
+    width: 105px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.pf-name-cell {
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    line-height: 1.35;
+    text-align: left;
+}
+
+.pf-name-cell .badge {
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.pf-name-cell .badge-stacked {
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.pf-fund-name {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+    color: var(--txt);
+    font-weight: 500;
+}
+
+.pf-limit-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 0.72rem;
+}
+
+.pf-chart-col .downside-assessment-card {
+    margin-top: 0.65rem;
+    padding: 0.65rem 0.85rem;
+}
+
+.pf-chart-col .downside-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+}
+
+.pf-chart-col .downside-psychology-tip {
+    margin-top: 0.45rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.7rem;
+    line-height: 1.45;
+}
+
+.pf-chart-col .risk-contribution-card {
+    margin-top: 0.65rem;
+    padding: 0.65rem 0.85rem;
+}
+
+@media (max-width: 992px) {
+    .pf-variant-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+}
+
+
 
