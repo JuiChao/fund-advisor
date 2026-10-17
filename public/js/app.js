@@ -66,11 +66,17 @@ const App = (() => {
             }
         }
 
+        const pfLegendColor = theme === 'dark' ? '#f1f5f9' : '#0f172a';
         Object.values(chartPool).forEach(ch => {
             if (ch && typeof ch.update === 'function') ch.update();
         });
         Object.values(pfCharts).forEach(ch => {
-            if (ch && typeof ch.update === 'function') ch.update();
+            if (ch && typeof ch.update === 'function') {
+                if (ch.options?.plugins?.legend?.labels) {
+                    ch.options.plugins.legend.labels.color = pfLegendColor;
+                }
+                ch.update();
+            }
         });
     }
 
@@ -3470,9 +3476,6 @@ const App = (() => {
         if (!variant) return '';
         const allocs = variant.allocations || [];
         const totalMonthly = allocs.reduce((sum, a) => sum + (a.monthly || 0), 0);
-        const weightedFee = totalMonthly > 0 ? allocs.reduce((sum, a) => sum + (a.fee || 0) * (a.monthly || 0), 0) / totalMonthly : 0;
-        const directAvail = allocs.filter(a => a.direct_limit_status && !a.direct_limit_status.includes('暂停')).length;
-        const channelText = directAvail > 0 ? '代销 + 直销' : '主流代销';
 
         return `
         <div class="pf-donut-box">
@@ -3483,20 +3486,6 @@ const App = (() => {
                 <div class="pf-donut-budget-pill">月定投额: <strong>${money(totalMonthly)}</strong></div>
             </div>
             <div class="cht pf-cht"><canvas id="ch-${s.key}-${vk}"></canvas></div>
-            <div class="pf-donut-metrics">
-                <div class="pf-donut-metric-item">
-                    <div class="lb">加权综合费率</div>
-                    <div class="vl" style="${feeC(weightedFee)}">${(weightedFee * 100).toFixed(2)}%</div>
-                </div>
-                <div class="pf-donut-metric-item">
-                    <div class="lb">配置标的数</div>
-                    <div class="vl" style="color:var(--txt)">${allocs.length} 只基金</div>
-                </div>
-                <div class="pf-donut-metric-item">
-                    <div class="lb">购买渠道覆盖</div>
-                    <div class="vl" style="color:var(--txt)">${channelText}</div>
-                </div>
-            </div>
         </div>`;
     }
 
@@ -4827,34 +4816,62 @@ const App = (() => {
                     const el = document.getElementById(cid);
                     const allocs = s[vk]?.allocations || [];
                     if (!el || !allocs.length) return;
+                    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                    const legendTextColor = isDark ? '#f1f5f9' : '#0f172a';
                     pfCharts[cid] = new Chart(el, {
                         type: 'doughnut',
                         data: {
-                            labels: allocs.map(a => a.name.length > 12 ? a.name.substring(0, 11) + '…' : a.name),
+                            labels: allocs.map(a => {
+                                const clean = (a.name || '').replace(/[（(]QDII[）)]/gi, '').trim();
+                                return clean.length > 18 ? clean.substring(0, 17) + '…' : clean;
+                            }),
                             datasets: [{
                                 data: allocs.map(a => a.monthly),
                                 backgroundColor: pieColors,
                                 borderWidth: 0,
-                                hoverOffset: 8,
+                                hoverOffset: 10,
                                 borderRadius: 6,
-                                spacing: 3
+                                spacing: 4
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            cutout: '60%',
-                            layout: { padding: 4 },
+                            cutout: '54%',
+                            layout: { padding: 6 },
                             plugins: { 
                                 legend: { 
                                     position: 'bottom', 
                                     labels: { 
-                                        padding: 10, 
+                                        padding: 16, 
                                         usePointStyle: true, 
                                         pointStyle: 'circle', 
-                                        boxWidth: 9,
-                                        font: { size: 12, family: 'system-ui, -apple-system, sans-serif' },
-                                        color: '#64748b'
+                                        boxWidth: 12,
+                                        boxHeight: 12,
+                                        font: { size: 14, weight: '600', family: "'Inter', system-ui, -apple-system, sans-serif" },
+                                        color: legendTextColor,
+                                        generateLabels: function(chart) {
+                                            const data = chart.data;
+                                            if (data.labels.length && data.datasets.length) {
+                                                const dataset = data.datasets[0];
+                                                const total = dataset.data.reduce((a, b) => a + b, 0);
+                                                return data.labels.map((label, i) => {
+                                                    const val = dataset.data[i] || 0;
+                                                    const alloc = allocs[i];
+                                                    const pct = alloc ? Math.round((alloc.actual_weight || alloc.weight || (val / total)) * 100) : (total > 0 ? Math.round((val / total) * 100) : 0);
+                                                    return {
+                                                        text: `${label} (${pct}%)`,
+                                                        fillStyle: dataset.backgroundColor[i % dataset.backgroundColor.length],
+                                                        strokeStyle: dataset.backgroundColor[i % dataset.backgroundColor.length],
+                                                        lineWidth: 0,
+                                                        pointStyle: 'circle',
+                                                        hidden: !chart.getDataVisibility(i),
+                                                        index: i
+                                                    };
+                                                });
+                                            }
+                                            return [];
+                                        }
                                     } 
                                 },
                                 tooltip: {
