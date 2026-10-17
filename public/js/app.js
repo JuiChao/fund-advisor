@@ -434,7 +434,7 @@ const App = (() => {
                         backgroundColor: data.map(d => d.fee <= 0.7 ? '#34d399' : d.fee <= 1.0 ? '#6366f1' : '#f87171'),
                         borderRadius: 4,
                         borderSkipped: false,
-                        maxBarThickness: 16,
+                        maxBarThickness: 18,
                     }]
                 },
                 options: {
