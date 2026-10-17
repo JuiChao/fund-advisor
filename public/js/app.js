@@ -803,10 +803,15 @@ const App = (() => {
             resetBtn.style.display = isNonDefault ? 'inline-flex' : 'none';
         }
 
-        // 清空搜索按钮显隐
+        // 清空搜索按钮显隐与输入框快捷键徽章联动
         const clearBtn = document.getElementById('rank-search-clear');
         if (clearBtn) {
             clearBtn.style.display = kw !== '' ? 'flex' : 'none';
+        }
+        const sBox = document.querySelector('.rank-search-box');
+        if (sBox) {
+            if (kw !== '') sBox.classList.add('has-val');
+            else sBox.classList.remove('has-val');
         }
     }
 
@@ -3805,6 +3810,19 @@ const App = (() => {
                 e.stopPropagation();
                 const code = copyBtn.dataset.code;
                 if (code) {
+                    // 即时行内触觉反馈动效
+                    copyBtn.classList.add('copied');
+                    const origHtml = copyBtn.innerHTML;
+                    if (copyBtn.classList.contains('trc-copy-btn') || copyBtn.classList.contains('btn-copy-code') || copyBtn.classList.contains('btn-copy-code-action')) {
+                        copyBtn.innerHTML = '✓';
+                    }
+                    setTimeout(() => {
+                        copyBtn.classList.remove('copied');
+                        if (copyBtn.innerHTML === '✓') {
+                            copyBtn.innerHTML = origHtml;
+                        }
+                    }, 1200);
+
                     if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(code).then(() => {
                             showToast(`基金代码 ${code} 已复制到剪贴板！`, 'success');
@@ -3823,6 +3841,68 @@ const App = (() => {
                 }
             }
         });
+
+        // 全局搜索快捷键 (/ 或 Ctrl+K / Cmd+K)
+        document.addEventListener('keydown', e => {
+            const target = e.target;
+            const tag = target ? target.tagName.toLowerCase() : '';
+            const isEditing = tag === 'input' || tag === 'textarea' || target?.isContentEditable;
+            if (!isEditing) {
+                if (e.key === '/' || ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K'))) {
+                    e.preventDefault();
+                    if (location.hash !== '#ranking') {
+                        location.hash = '#ranking';
+                    }
+                    setTimeout(() => {
+                        const searchInput = document.getElementById('rank-search');
+                        if (searchInput) {
+                            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            searchInput.focus();
+                            searchInput.select();
+                        }
+                    }, 60);
+                }
+            } else if (e.key === 'Escape' && target?.id === 'rank-search') {
+                target.blur();
+            }
+        });
+
+        // 全局便捷悬浮岛滚动监听与交互
+        const floatBar = document.getElementById('floating-quick-bar');
+        const floatTopBtn = document.getElementById('floating-btn-top');
+        const floatSearchBtn = document.getElementById('floating-btn-search');
+
+        if (floatBar) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 450) {
+                    floatBar.style.display = 'flex';
+                } else {
+                    floatBar.style.display = 'none';
+                }
+            }, { passive: true });
+
+            if (floatTopBtn) {
+                floatTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            if (floatSearchBtn) {
+                floatSearchBtn.addEventListener('click', () => {
+                    if (location.hash !== '#ranking') {
+                        location.hash = '#ranking';
+                    }
+                    setTimeout(() => {
+                        const searchInput = document.getElementById('rank-search');
+                        if (searchInput) {
+                            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            searchInput.focus();
+                            searchInput.select();
+                        }
+                    }, 80);
+                });
+            }
+        }
 
         // 算法说明折叠
         const algoToggle = document.getElementById('algo-toggle');

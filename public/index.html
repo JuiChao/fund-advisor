@@ -708,6 +708,7 @@
             <div class="rank-search-box">
                 <span class="rank-search-icon">🔍</span>
                 <input type="text" id="rank-search" placeholder="搜索代码、名称、管理人..." aria-label="搜索基金">
+                <kbd class="search-kbd" id="rank-search-kbd" title="按下 / 键快速搜索">/</kbd>
                 <button type="button" id="rank-search-clear" class="rank-search-clear" title="清空搜索" aria-label="清空搜索" style="display:none">✕</button>
             </div>
         </div>
@@ -1516,6 +1517,18 @@
             </div>
         </div>
     </div>
+
+    <!-- 全局快捷悬浮岛 (返回顶部 / 快捷搜基) -->
+    <aside class="floating-quick-bar" id="floating-quick-bar" aria-label="快捷工具栏" style="display:none">
+        <button type="button" class="floating-btn floating-btn-search" id="floating-btn-search" title="快捷搜基 (按 / 或 Ctrl+K)" aria-label="快捷搜基">
+            <span class="f-icon">🔍</span>
+            <span class="f-text">搜基</span>
+        </button>
+        <button type="button" class="floating-btn floating-btn-top" id="floating-btn-top" title="返回顶部" aria-label="返回顶部">
+            <span class="f-icon">↑</span>
+            <span class="f-text">顶部</span>
+        </button>
+    </aside>
 
     <script src="js/app.js?v=20261009_v6"></script>
 <noscript>
