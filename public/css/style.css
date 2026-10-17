@@ -7541,10 +7541,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* 圆环图尺寸进一步显著放大：由 HTML 图例完全承担文字展示，Canvas 100% 用于呈现饱满圆环 */
 .cht.pf-cht {
     width: 100%;
-    max-width: 260px;
-    height: 185px;
-    max-height: 195px;
-    margin: 0.15rem auto;
+    max-width: 340px;
+    height: 250px;
+    max-height: 260px;
+    margin: 0.2rem auto 0.35rem auto;
     position: relative;
     flex-shrink: 0;
 }
@@ -7553,15 +7553,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .pf-donut-legend {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
     width: 100%;
-    margin: 0.35rem 0 0.45rem 0;
+    margin: 0.35rem 0 0.5rem 0;
 }
 
 .pf-donut-legend.is-multi {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 4px 10px;
+    gap: 5px 12px;
 }
 
 .pf-legend-item {
@@ -7571,8 +7571,13 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     font-size: 0.75rem;
     line-height: 1.35;
     min-width: 0;
-    padding: 2px 4px;
+    padding: 3px 6px;
     border-radius: 4px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.pf-legend-item:hover {
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .pf-legend-dot {
@@ -7609,7 +7614,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     gap: 0.45rem;
     width: 100%;
     margin-top: auto;
-    padding-top: 0.45rem;
+    padding-top: 0.5rem;
     border-top: 1px dashed var(--border);
 }
 
@@ -7617,7 +7622,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 0.35rem 0.45rem;
+    padding: 0.45rem 0.5rem;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -7631,7 +7636,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .pf-donut-metric-item .vl {
-    font-size: 0.8rem;
+    font-size: 0.825rem;
     font-weight: 700;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-variant-numeric: tabular-nums;
