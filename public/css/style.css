@@ -6462,8 +6462,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 .dir-table th:nth-child(2),
 .dir-table td:nth-child(2) {
-    width: 260px;
-    max-width: 275px;
+    min-width: 360px;
 }
 .dir-table td {
     padding: 0.65rem 0.85rem;
@@ -6479,9 +6478,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 .dir-fund-name {
     display: inline-block;
-    max-width: 255px;
-    overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--txt);
     text-decoration: none;
