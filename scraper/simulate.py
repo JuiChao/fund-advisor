@@ -531,9 +531,18 @@ def calc_risk_contributions(w_nq, w_sp, vol_nq, vol_sp, rho, r_nq=None, r_sp=Non
     rc_sp_pct = float(trc_sp / total_trc) if total_trc > 0 else 0.5
 
     sharpe = None
+    sortino = None
+    downside_vol = None
     if r_nq is not None and r_sp is not None:
         expected_r = w_nq * r_nq + w_sp * r_sp
         sharpe = (expected_r - rf) / port_vol
+        import math
+        z = (rf - expected_r) / port_vol if port_vol > 0 else 0.0
+        cdf_z = 0.5 * (1.0 + math.erf(z / math.sqrt(2.0)))
+        pdf_z = math.exp(-0.5 * z * z) / math.sqrt(2.0 * math.pi)
+        downside_var = (port_vol ** 2) * ((z**2 + 1.0) * cdf_z + z * pdf_z)
+        downside_vol = math.sqrt(max(1e-8, downside_var))
+        sortino = (expected_r - rf) / downside_vol if downside_vol > 0 else None
 
     return {
         'nq_weight': round(float(w_nq), 4),
@@ -541,7 +550,9 @@ def calc_risk_contributions(w_nq, w_sp, vol_nq, vol_sp, rho, r_nq=None, r_sp=Non
         'nq_risk_contrib': round(float(rc_nq_pct), 4),
         'sp_risk_contrib': round(float(rc_sp_pct), 4),
         'portfolio_vol': round(float(port_vol), 4),
-        'sharpe_ratio': round(float(sharpe), 4) if sharpe is not None else None
+        'sharpe_ratio': round(float(sharpe), 4) if sharpe is not None else None,
+        'sortino_ratio': round(float(sortino), 4) if sortino is not None else None,
+        'downside_vol': round(float(downside_vol), 4) if downside_vol is not None else None
     }
 
 
@@ -727,6 +738,39 @@ def simulate_portfolio_all_years(funds_list, weights, years_range, budget, sim_p
         total_invested = budget * (y * 12)
         final_values = portfolio_wealth_by_month[:, m_idx]
         returns = (final_values / total_invested - 1) * 100
+
+        sub_wealth = portfolio_wealth_by_month[:, :y * 12]
+        inv_cum = budget * np.arange(1, y * 12 + 1)
+
+        # 1. 定投账面本金浮亏分布
+        pl_ratio = (sub_wealth - inv_cum) / inv_cum
+        worst_loss_per_path = np.min(pl_ratio, axis=1)
+        loss_p50 = max(0.0, -float(np.percentile(worst_loss_per_path, 50))) * 100
+        loss_p95 = max(0.0, -float(np.percentile(worst_loss_per_path, 5))) * 100
+
+        # 2. 峰值资产最大回撤分布 (Peak-to-Trough Drawdown)
+        running_peak = np.maximum.accumulate(sub_wealth, axis=1)
+        drawdowns = (sub_wealth - running_peak) / running_peak
+        worst_dd_per_path = np.min(drawdowns, axis=1)
+        mdd_p50 = max(0.0, -float(np.percentile(worst_dd_per_path, 50))) * 100
+        mdd_p95 = max(0.0, -float(np.percentile(worst_dd_per_path, 5))) * 100
+
+        # 3. 典型回撤修复期 (抽样统计最长回撤连续月份)
+        is_underwater = drawdowns < -0.02
+        max_streaks = []
+        for s_idx in range(min(1000, n_sims)):
+            u = is_underwater[s_idx]
+            cur = 0
+            mx = 0
+            for val in u:
+                if val:
+                    cur += 1
+                    if cur > mx: mx = cur
+                else:
+                    cur = 0
+            max_streaks.append(mx)
+        recovery_months = int(np.median(max_streaks)) if max_streaks else 10
+
         by_years_res[y] = {
             'totalInvested': int(total_invested),
             'mean': int(np.mean(final_values)),
@@ -737,6 +781,11 @@ def simulate_portfolio_all_years(funds_list, weights, years_range, budget, sim_p
             'p95': int(np.percentile(final_values, 95)),
             'annualReturn': round(float(np.mean(returns)) / y, 1),
             'meanReturnPct': round(float(np.mean(returns)), 1),
+            'maxLossP50': round(loss_p50, 1),
+            'maxLossP95': round(loss_p95, 1),
+            'mddP50': round(mdd_p50, 1),
+            'mddP95': round(mdd_p95, 1),
+            'recoveryMonths': recovery_months
         }
 
     return by_years_res

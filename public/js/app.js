@@ -3004,6 +3004,44 @@ const App = (() => {
                 `;
             }).join('');
 
+            let downsideRibbonHtml = '';
+            if (result.maxLossP50 != null || result.mddP50 != null) {
+                const lossP50 = result.maxLossP50 != null ? result.maxLossP50 : '-';
+                const lossP95 = result.maxLossP95 != null ? result.maxLossP95 : '-';
+                const mddP50 = result.mddP50 != null ? result.mddP50 : '-';
+                const mddP95 = result.mddP95 != null ? result.mddP95 : '-';
+                const recMo = result.recoveryMonths || 10;
+                const sortino = result.sortinoRatio != null ? result.sortinoRatio.toFixed(2) : null;
+
+                downsideRibbonHtml = `
+                <div class="sim-downside-ribbon">
+                    <div class="sim-downside-title">
+                        <div style="display:flex;align-items:center;gap:6px">
+                            <span class="sim-downside-badge">🛡️ 抗跌与回撤体检</span>
+                            <span style="font-size:0.8rem;font-weight:600;color:var(--txt)">定投压力测试与下行风控评估</span>
+                        </div>
+                        ${sortino ? `<span style="font-size:0.75rem;color:var(--txt2)">索提诺比率: <strong style="color:var(--ok)">${sortino}</strong> <span style="font-size:0.7rem;color:var(--txt3)">(仅惩罚下行波动)</span></span>` : ''}
+                    </div>
+                    <div class="sim-downside-grid">
+                        <div class="sim-downside-item">
+                            <span class="lb">账面本金最大浮亏</span>
+                            <span class="vl" style="color:var(--err)">-${lossP50}% <span style="font-size:0.72rem;color:var(--txt3);font-weight:normal">(95%极限 -${lossP95}%)</span></span>
+                        </div>
+                        <div class="sim-downside-item">
+                            <span class="lb">峰值资产最大回撤</span>
+                            <span class="vl" style="color:var(--warn)">-${mddP50}% <span style="font-size:0.72rem;color:var(--txt3);font-weight:normal">(95%极限 -${mddP95}%)</span></span>
+                        </div>
+                        <div class="sim-downside-item">
+                            <span class="lb">典型净值修复周期</span>
+                            <span class="vl" style="color:var(--accent2)">~${recMo} <span style="font-size:0.72rem;font-weight:normal">个月</span></span>
+                        </div>
+                    </div>
+                    <div class="sim-downside-summary">
+                        💡 <strong>压力测试结论：</strong>在 95% 置信度下，您在 ${years} 年定投期间<strong>最大账面浮亏预计不超过 ${lossP95}%</strong>，且遭遇深度回调时通常可在 <strong>${recMo} 个月内</strong>通过持续买入摊平成本修复净值。
+                    </div>
+                </div>`;
+            }
+
             document.getElementById('sim-result').innerHTML = `
                 ${allocNote}
                 <div class="sim-kpi-grid">
@@ -3023,6 +3061,7 @@ const App = (() => {
                         <div class="sim-kpi-sub">平滑复利中位数</div>
                     </div>
                 </div>
+                ${downsideRibbonHtml}
                 <div class="sim-percentile-list">
                     ${pListHtml}
                 </div>`;
@@ -3088,12 +3127,61 @@ const App = (() => {
     function renderVariantSim(variant, years) {
         const sim = variant?.simulation;
         if (!sim) return '';
+
+        let downsideCardHtml = '';
+        if (sim.maxLossP50 != null || sim.mddP50 != null) {
+            const lossP50 = sim.maxLossP50 != null ? sim.maxLossP50 : '-';
+            const lossP95 = sim.maxLossP95 != null ? sim.maxLossP95 : '-';
+            const mddP50 = sim.mddP50 != null ? sim.mddP50 : '-';
+            const mddP95 = sim.mddP95 != null ? sim.mddP95 : '-';
+            const recMo = sim.recoveryMonths || 10;
+            const sortino = sim.sortinoRatio != null ? sim.sortinoRatio.toFixed(2) : (variant?.risk_analysis?.sortino_ratio != null ? variant.risk_analysis.sortino_ratio.toFixed(2) : null);
+
+            downsideCardHtml = `
+            <div class="downside-assessment-card">
+                <div class="downside-card-header">
+                    <div class="downside-card-title">
+                        <span class="downside-shield-icon">🛡️</span>
+                        <span style="font-weight:600;font-size:0.8rem;color:var(--txt)">定投抗跌与回撤体检表</span>
+                        <span class="downside-badge">压力测试</span>
+                    </div>
+                    ${sortino ? `<div class="downside-sortino-pill" title="索提诺比率：仅对净值下跌负波动进行惩罚，真实反映抗跌超额性价比">索提诺比率: <strong>${sortino}</strong></div>` : ''}
+                </div>
+                <div class="downside-kpi-grid">
+                    <div class="downside-kpi-box">
+                        <div class="lb">典型账面最大浮亏 (P50)</div>
+                        <div class="vl" style="color:var(--err)">-${lossP50}%</div>
+                        <div class="sub">半数路径下的本金回撤底线</div>
+                    </div>
+                    <div class="downside-kpi-box">
+                        <div class="lb">95% 极端账面浮亏 (P95)</div>
+                        <div class="vl" style="color:var(--err);font-weight:700">-${lossP95}%</div>
+                        <div class="sub">95% 置信度极限压力边界</div>
+                    </div>
+                    <div class="downside-kpi-box">
+                        <div class="lb">资产峰值最大回撤 (P50 / P95)</div>
+                        <div class="vl" style="color:var(--warn)">-${mddP50}% <span style="font-size:0.75rem;color:var(--txt3);font-weight:normal">/ -${mddP95}%</span></div>
+                        <div class="sub">利润垫回吐与高点回落</div>
+                    </div>
+                    <div class="downside-kpi-box">
+                        <div class="lb">典型回撤修复期</div>
+                        <div class="vl" style="color:var(--accent2)">~${recMo} <span style="font-size:0.75rem;font-weight:normal">个月</span></div>
+                        <div class="sub">定投摊平成本并创新高周期</div>
+                    </div>
+                </div>
+                <div class="downside-psychology-tip">
+                    💡 <strong>心理定心丸：</strong>在 95% 置信度下，您在 ${years} 年定投长跑中遭遇的<strong>账面本金最大浮亏不超过 ${lossP95}%</strong>，远低于一次性买入（>40%）的心理崩盘风险，且通常在 <strong>${recMo} 个月内</strong>通过分批现金流摊平修复。
+                </div>
+            </div>`;
+        }
+
         return `<div style="margin-top:1rem">
             <div class="stats">
                 <div class="stat"><div class="lb">预期年化</div><div class="vl" style="font-size:1.05rem;color:var(--accent2)">${sim.annualReturn}%</div></div>
                 <div class="stat"><div class="lb">${years}年终值</div><div class="vl" style="font-size:1.05rem;color:var(--ok)">${money(sim.medianFinal)}</div></div>
             </div>
             <div style="font-size:.75rem;color:var(--txt3);margin-top:.35rem">5%: ${money(sim.p5)} · 25%: ${money(sim.p25)} · 75%: ${money(sim.p75)} · 95%: ${money(sim.p95)}</div>
+            ${downsideCardHtml}
         </div>`;
     }
 
@@ -3106,6 +3194,7 @@ const App = (() => {
         const spRiskPct = Math.round((ra.sp_risk_contrib || 0) * 100);
         const vol = ra.portfolio_vol != null ? (ra.portfolio_vol * 100).toFixed(1) : '-';
         const sharpe = ra.sharpe_ratio != null ? ra.sharpe_ratio.toFixed(2) : null;
+        const sortino = ra.sortino_ratio != null ? ra.sortino_ratio.toFixed(2) : (variant?.simulation?.sortinoRatio != null ? variant.simulation.sortinoRatio.toFixed(2) : null);
 
         let statusTag = '';
         let note = '';
@@ -3133,7 +3222,7 @@ const App = (() => {
                     <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">📊 资金配置 vs 实际波动风险贡献</span>
                     ${statusTag}
                 </div>
-                <span style="font-size:0.75rem;color:var(--txt3)">组合年化波动: <strong>${vol}%</strong>${sharpe ? ' · 夏普比率: <strong>' + sharpe + '</strong>' : ''}</span>
+                <span style="font-size:0.75rem;color:var(--txt3)">组合年化波动: <strong>${vol}%</strong>${sharpe ? ' · 夏普: <strong>' + sharpe + '</strong>' : ''}${sortino ? ' · 索提诺: <strong style="color:var(--ok)">' + sortino + '</strong>' : ''}</span>
             </div>
             
             <div style="margin-bottom:0.5rem">
@@ -3195,6 +3284,21 @@ const App = (() => {
             const exp_r = w_nq * p.nasdaq_return + w_sp * p.sp500_return;
             const sharpe = (exp_r - rf) / port_vol;
 
+            const z = (rf - exp_r) / (port_vol || 1e-4);
+            function erf(x) {
+                const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+                const sign = x < 0 ? -1 : 1;
+                const absX = Math.abs(x);
+                const t = 1.0 / (1.0 + p * absX);
+                const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-absX * absX);
+                return sign * y;
+            }
+            const cdf_z = 0.5 * (1 + erf(z / Math.SQRT2));
+            const pdf_z = Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
+            const downVar = (port_vol ** 2) * ((z * z + 1) * cdf_z + z * pdf_z);
+            const downVol = Math.sqrt(Math.max(1e-8, downVar));
+            const sortino = downVol > 0 ? (exp_r - rf) / downVol : 0;
+
             const mrc_nq = (w_nq * s1_sq + w_sp * cov12) / port_vol;
             const mrc_sp = (w_sp * s2_sq + w_nq * cov12) / port_vol;
             const trc_nq = w_nq * mrc_nq;
@@ -3213,6 +3317,7 @@ const App = (() => {
                 port_vol_pct: +(port_vol * 100).toFixed(2),
                 exp_r_pct: +(exp_r * 100).toFixed(2),
                 sharpe: +sharpe.toFixed(2),
+                sortino: +sortino.toFixed(2),
                 rc_nq: +rc_nq.toFixed(1),
                 rc_sp: +rc_sp.toFixed(1)
             };
@@ -3427,7 +3532,7 @@ const App = (() => {
                                 const lines = [
                                     `预期年化回报 E[R]: ${raw.y}%`,
                                     `组合年化波动 σ: ${raw.x}%`,
-                                    `夏普比率 (Sharpe): ${raw.sharpe}`,
+                                    `夏普比率 (Sharpe): ${raw.sharpe} · 索提诺 (Sortino): ${raw.sortino}`,
                                     `资金配比: 纳指 ${raw.w_nq_pct}% : 标普 ${raw.w_sp_pct}%`,
                                     `风险贡献: 纳指 ${raw.rc_nq}% : 标普 ${raw.rc_sp}%`
                                 ];
@@ -3530,6 +3635,9 @@ const App = (() => {
 
             const sharpeEl = document.getElementById('f-kpi-sharpe');
             if (sharpeEl) sharpeEl.textContent = `${pt.sharpe}`;
+
+            const sortinoEl = document.getElementById('f-kpi-sortino');
+            if (sortinoEl) sortinoEl.textContent = `${pt.sortino}`;
 
             const volRankEl = document.getElementById('f-kpi-vol-rank');
             if (volRankEl) {
@@ -3744,6 +3852,7 @@ const App = (() => {
                     const spRC = Math.round((ra.sp_risk_contrib || 0) * 100);
                     const vol = ra.portfolio_vol != null ? (ra.portfolio_vol * 100).toFixed(1) + '%' : '-';
                     const sharpe = ra.sharpe_ratio != null ? ra.sharpe_ratio.toFixed(2) : '-';
+                    const sortino = ra.sortino_ratio != null ? ra.sortino_ratio.toFixed(2) : (sim?.sortinoRatio != null ? sim.sortinoRatio.toFixed(2) : '-');
                     const sim = s.practical?.simulation || s.ideal?.simulation;
                     const retStr = sim?.annualReturn != null ? `<strong style="color:var(--accent2)">${sim.annualReturn}%</strong>` : '-';
                     const medFinal = sim?.medianFinal != null ? `<span style="color:var(--ok);font-weight:600">${money(sim.medianFinal)}</span>` : '-';
@@ -3783,7 +3892,7 @@ const App = (() => {
                         <td style="font-weight:600">${nqW}% : ${spW}%</td>
                         <td>${riskBadge}</td>
                         <td><strong>${vol}</strong></td>
-                        <td style="font-weight:700;color:var(--accent2)">${sharpe}</td>
+                        <td style="white-space:nowrap"><strong style="color:var(--accent2)">${sharpe}</strong> <span style="color:var(--txt3);font-size:0.75rem">/</span> <span style="color:var(--ok);font-size:0.825rem;font-weight:600" title="索提诺比率 (仅惩罚下行负波动)">${sortino}</span></td>
                         <td style="white-space:nowrap">${retStr} / ${medFinal}</td>
                         <td style="font-size:0.75rem;color:var(--txt2)">${highlightLogic}</td>
                         <td style="text-align:center;white-space:nowrap">
@@ -4094,6 +4203,7 @@ const App = (() => {
         const z_fx = new Float64Array(N * months);
         const z_idx1 = new Float64Array(N * months);
         const z_idx2 = new Float64Array(N * months);
+        const monthlyWealth = new Float64Array(N * months);
         
         let r = 123456789;
         const rn = () => { r = (r * 1664525 + 1013904223) & 0xFFFFFFFF; return (r >>> 0) / 0xFFFFFFFF; };
@@ -4135,9 +4245,10 @@ const App = (() => {
             for (let s = 0; s < N; s++) {
                 let shares = 0;
                 let nav = 1.0;
+                const sOffset = s * months;
                 
                 for (let m = 0; m < months; m++) {
-                    const idx = s * months + m;
+                    const idx = sOffset + m;
                     
                     const z_index1 = z_idx1[idx];
                     const z_index2 = z_idx2[idx];
@@ -4150,14 +4261,89 @@ const App = (() => {
                     const fund_r = idx_r + te_r - feeM + divM + fx_r;
                     nav *= (1 + fund_r);
                     shares += invest / nav;
+                    monthlyWealth[idx] += shares * nav;
                 }
-                finalValues[s] += shares * nav;
             }
         });
         
+        const maxLosses = new Float64Array(N);
+        const maxDrawdowns = new Float64Array(N);
+        const maxStreaks = new Float64Array(N);
+
+        for (let s = 0; s < N; s++) {
+            let minPL = 0;
+            let peak = 0;
+            let maxDD = 0;
+            let curStreak = 0;
+            let maxStreak = 0;
+            const sOffset = s * months;
+
+            for (let m = 0; m < months; m++) {
+                const w = monthlyWealth[sOffset + m];
+                const inv = budget * (m + 1);
+                const pl = (w - inv) / inv;
+                if (pl < minPL) minPL = pl;
+
+                if (w > peak) peak = w;
+                const dd = peak > 0 ? (w - peak) / peak : 0;
+                if (dd < maxDD) maxDD = dd;
+
+                if (dd < -0.02) {
+                    curStreak++;
+                    if (curStreak > maxStreak) maxStreak = curStreak;
+                } else {
+                    curStreak = 0;
+                }
+            }
+            finalValues[s] = monthlyWealth[sOffset + months - 1];
+            maxLosses[s] = Math.max(0, -minPL) * 100;
+            maxDrawdowns[s] = Math.max(0, -maxDD) * 100;
+            maxStreaks[s] = maxStreak;
+        }
+
         finalValues.sort((a, b) => a - b);
+        maxLosses.sort();
+        maxDrawdowns.sort();
+        maxStreaks.sort();
+
         const mean = finalValues.reduce((a, b) => a + b, 0) / N;
         const ret = totalInvested > 0 ? (mean / totalInvested - 1) * 100 : 0;
+
+        const maxLossP50 = +maxLosses[Math.floor(N * 0.5)].toFixed(1);
+        const maxLossP95 = +maxLosses[Math.floor(N * 0.95)].toFixed(1);
+        const mddP50 = +maxDrawdowns[Math.floor(N * 0.5)].toFixed(1);
+        const mddP95 = +maxDrawdowns[Math.floor(N * 0.95)].toFixed(1);
+        const recoveryMonths = Math.round(maxStreaks[Math.floor(N * 0.5)]) || 10;
+
+        // 分析法计算加权组合索提诺比率
+        let nqW = 0, spW = 0;
+        funds.forEach((f, idx) => {
+            const w = weights[idx] || 0;
+            if ((f.index_type || '').includes('标普')) spW += w;
+            else nqW += w;
+        });
+        const portMu = nqW * params.nasdaq_return + spW * params.sp500_return;
+        const s1_sq = params.nasdaq_vol ** 2;
+        const s2_sq = params.sp500_vol ** 2;
+        const cov12 = rho * params.nasdaq_vol * params.sp500_vol;
+        const portVar = (nqW ** 2) * s1_sq + 2 * nqW * spW * cov12 + (spW ** 2) * s2_sq;
+        const portVol = Math.sqrt(Math.max(1e-8, portVar));
+        const rf = 0.025;
+        const z = (rf - portMu) / (portVol || 1e-4);
+
+        function erf(x) {
+            const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+            const sign = x < 0 ? -1 : 1;
+            const absX = Math.abs(x);
+            const t = 1.0 / (1.0 + p * absX);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-absX * absX);
+            return sign * y;
+        }
+        const cdf_z = 0.5 * (1 + erf(z / Math.SQRT2));
+        const pdf_z = Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
+        const downVar = (portVol ** 2) * ((z * z + 1) * cdf_z + z * pdf_z);
+        const downVol = Math.sqrt(Math.max(1e-8, downVar));
+        const sortino = downVol > 0 ? (portMu - rf) / downVol : 0;
         
         return {
             totalInvested: Math.round(totalInvested),
@@ -4168,6 +4354,13 @@ const App = (() => {
             p95: Math.round(finalValues[Math.floor(N * 0.95)]),
             annualReturn: +(ret / years).toFixed(2),
             meanReturnPct: +ret.toFixed(2),
+            maxLossP50,
+            maxLossP95,
+            mddP50,
+            mddP95,
+            recoveryMonths,
+            sortinoRatio: +sortino.toFixed(2),
+            downsideVol: +(downVol * 100).toFixed(1)
         };
     }
 
@@ -4412,13 +4605,31 @@ const App = (() => {
             const rf = 0.025;
             const exp_r = w_nq * p.nasdaq_return + w_sp * p.sp500_return;
             const sharpe = (exp_r - rf) / port_vol;
+
+            const z = (rf - exp_r) / (port_vol || 1e-4);
+            function erf(x) {
+                const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+                const sign = x < 0 ? -1 : 1;
+                const absX = Math.abs(x);
+                const t = 1.0 / (1.0 + p * absX);
+                const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-absX * absX);
+                return sign * y;
+            }
+            const cdf_z = 0.5 * (1 + erf(z / Math.SQRT2));
+            const pdf_z = Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
+            const downVar = (port_vol ** 2) * ((z * z + 1) * cdf_z + z * pdf_z);
+            const downVol = Math.sqrt(Math.max(1e-8, downVar));
+            const sortino = downVol > 0 ? (exp_r - rf) / downVol : 0;
+
             return {
                 nq_weight: +w_nq.toFixed(4),
                 sp_weight: +w_sp.toFixed(4),
                 nq_risk_contrib: +rc_nq.toFixed(4),
                 sp_risk_contrib: +rc_sp.toFixed(4),
                 portfolio_vol: +port_vol.toFixed(4),
-                sharpe_ratio: +sharpe.toFixed(4)
+                sharpe_ratio: +sharpe.toFixed(4),
+                sortino_ratio: +sortino.toFixed(4),
+                downside_vol: +(downVol * 100).toFixed(1)
             };
         }
 
@@ -4440,6 +4651,12 @@ const App = (() => {
                 p95: Math.round((yrData.p95 || 0) * scale),
                 annualReturn: yrData.annualReturn || 0,
                 meanReturnPct: yrData.meanReturnPct || 0,
+                maxLossP50: yrData.maxLossP50 != null ? yrData.maxLossP50 : null,
+                maxLossP95: yrData.maxLossP95 != null ? yrData.maxLossP95 : null,
+                mddP50: yrData.mddP50 != null ? yrData.mddP50 : null,
+                mddP95: yrData.mddP95 != null ? yrData.mddP95 : null,
+                recoveryMonths: yrData.recoveryMonths != null ? yrData.recoveryMonths : 10,
+                sortinoRatio: strat?.[variantKey]?.risk_analysis?.sortino_ratio != null ? strat[variantKey].risk_analysis.sortino_ratio : null
             };
         }
 

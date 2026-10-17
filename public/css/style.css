@@ -6854,4 +6854,177 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     transform: translateY(-1px);
 }
 
+/* ===== Top 2: 索提诺比率与定投最大回撤分布 (Sortino & Downside Assessment) ===== */
+.downside-assessment-card {
+    margin-top: 0.85rem;
+    padding: 0.85rem 1rem;
+    background: var(--surface2, var(--bg2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 8px);
+    transition: all 0.2s ease;
+}
+.downside-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 0.75rem;
+}
+.downside-card-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.downside-shield-icon {
+    font-size: 1rem;
+}
+.downside-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    border-radius: 4px;
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--err);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.downside-sortino-pill {
+    font-size: 0.75rem;
+    color: var(--txt2);
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+.downside-sortino-pill strong {
+    color: var(--ok);
+    font-weight: 700;
+}
+.downside-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+}
+.downside-kpi-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.65rem;
+    display: flex;
+    flex-direction: column;
+}
+.downside-kpi-box .lb {
+    font-size: 0.7rem;
+    color: var(--txt3);
+    margin-bottom: 3px;
+    white-space: nowrap;
+}
+.downside-kpi-box .vl {
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25;
+}
+.downside-kpi-box .sub {
+    font-size: 0.65rem;
+    color: var(--txt3);
+    margin-top: 3px;
+    line-height: 1.2;
+}
+.downside-psychology-tip {
+    padding: 0.5rem 0.75rem;
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 6px;
+    font-size: 0.74rem;
+    color: var(--txt2);
+    line-height: 1.5;
+}
+.downside-psychology-tip strong {
+    color: var(--txt);
+}
+
+/* 蒙特卡洛详情页回撤横幅 */
+.sim-downside-ribbon {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.9rem 1.1rem;
+    background: linear-gradient(180deg, var(--surface2) 0%, rgba(99, 102, 241, 0.04) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    border-radius: var(--radius-sm, 8px);
+}
+.sim-downside-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 0.75rem;
+}
+.sim-downside-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    border-radius: 4px;
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--err);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.sim-downside-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+.sim-downside-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+}
+.sim-downside-item .lb {
+    font-size: 0.72rem;
+    color: var(--txt3);
+    margin-bottom: 3px;
+}
+.sim-downside-item .vl {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25;
+}
+.sim-downside-summary {
+    padding: 0.55rem 0.75rem;
+    background: rgba(16, 185, 129, 0.06);
+    border: 1px solid rgba(16, 185, 129, 0.18);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: var(--txt2);
+    line-height: 1.5;
+}
+.sim-downside-summary strong {
+    color: var(--txt);
+}
+
+@media (max-width: 768px) {
+    .downside-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .sim-downside-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 480px) {
+    .downside-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 

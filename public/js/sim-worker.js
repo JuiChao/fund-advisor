@@ -44,6 +44,8 @@ function simulate(funds, weights, years, budget, cfg) {
         z_idx2[i] = boxMuller();
     }
 
+    const monthlyWealth = new Float64Array(N * months);
+
     funds.forEach((fund, fIdx) => {
         const weight = weights[fIdx];
         if (weight <= 0) return;
@@ -70,9 +72,10 @@ function simulate(funds, weights, years, budget, cfg) {
         for (let s = 0; s < N; s++) {
             let shares = 0;
             let nav = 1.0;
+            const sOffset = s * months;
 
             for (let m = 0; m < months; m++) {
-                const idx = s * months + m;
+                const idx = sOffset + m;
 
                 const z_index1 = z_idx1[idx];
                 const z_index2 = z_idx2[idx];
@@ -85,14 +88,89 @@ function simulate(funds, weights, years, budget, cfg) {
                 const fund_r = idx_r + te_r - feeM + divM + fx_r;
                 nav *= (1 + fund_r);
                 shares += invest / nav;
+                monthlyWealth[idx] += shares * nav;
             }
-            finalValues[s] += shares * nav;
         }
     });
 
+    const maxLosses = new Float64Array(N);
+    const maxDrawdowns = new Float64Array(N);
+    const maxStreaks = new Float64Array(N);
+
+    for (let s = 0; s < N; s++) {
+        let minPL = 0;
+        let peak = 0;
+        let maxDD = 0;
+        let curStreak = 0;
+        let maxStreak = 0;
+        const sOffset = s * months;
+
+        for (let m = 0; m < months; m++) {
+            const w = monthlyWealth[sOffset + m];
+            const inv = budget * (m + 1);
+            const pl = (w - inv) / inv;
+            if (pl < minPL) minPL = pl;
+
+            if (w > peak) peak = w;
+            const dd = peak > 0 ? (w - peak) / peak : 0;
+            if (dd < maxDD) maxDD = dd;
+
+            if (dd < -0.02) {
+                curStreak++;
+                if (curStreak > maxStreak) maxStreak = curStreak;
+            } else {
+                curStreak = 0;
+            }
+        }
+        finalValues[s] = monthlyWealth[sOffset + months - 1];
+        maxLosses[s] = Math.max(0, -minPL) * 100;
+        maxDrawdowns[s] = Math.max(0, -maxDD) * 100;
+        maxStreaks[s] = maxStreak;
+    }
+
     finalValues.sort((a, b) => a - b);
+    maxLosses.sort();
+    maxDrawdowns.sort();
+    maxStreaks.sort();
+
     const mean = finalValues.reduce((a, b) => a + b, 0) / N;
     const ret = totalInvested > 0 ? (mean / totalInvested - 1) * 100 : 0;
+
+    const maxLossP50 = +maxLosses[Math.floor(N * 0.5)].toFixed(1);
+    const maxLossP95 = +maxLosses[Math.floor(N * 0.95)].toFixed(1);
+    const mddP50 = +maxDrawdowns[Math.floor(N * 0.5)].toFixed(1);
+    const mddP95 = +maxDrawdowns[Math.floor(N * 0.95)].toFixed(1);
+    const recoveryMonths = Math.round(maxStreaks[Math.floor(N * 0.5)]) || 10;
+
+    // 分析法计算加权组合索提诺比率
+    let nqW = 0, spW = 0;
+    funds.forEach((f, idx) => {
+        const w = weights[idx] || 0;
+        if ((f.index_type || '').includes('标普')) spW += w;
+        else nqW += w;
+    });
+    const portMu = nqW * params.nasdaq_return + spW * params.sp500_return;
+    const s1_sq = params.nasdaq_vol ** 2;
+    const s2_sq = params.sp500_vol ** 2;
+    const cov12 = rho * params.nasdaq_vol * params.sp500_vol;
+    const portVar = (nqW ** 2) * s1_sq + 2 * nqW * spW * cov12 + (spW ** 2) * s2_sq;
+    const portVol = Math.sqrt(Math.max(1e-8, portVar));
+    const rf = 0.025;
+    const z = (rf - portMu) / (portVol || 1e-4);
+
+    function erf(x) {
+        const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+        const sign = x < 0 ? -1 : 1;
+        const absX = Math.abs(x);
+        const t = 1.0 / (1.0 + p * absX);
+        const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-absX * absX);
+        return sign * y;
+    }
+    const cdf_z = 0.5 * (1 + erf(z / Math.SQRT2));
+    const pdf_z = Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
+    const downVar = (portVol ** 2) * ((z * z + 1) * cdf_z + z * pdf_z);
+    const downVol = Math.sqrt(Math.max(1e-8, downVar));
+    const sortino = downVol > 0 ? (portMu - rf) / downVol : 0;
 
     return {
         totalInvested: Math.round(totalInvested),
@@ -103,5 +181,12 @@ function simulate(funds, weights, years, budget, cfg) {
         p95: Math.round(finalValues[Math.floor(N * 0.95)]),
         annualReturn: +(ret / years).toFixed(2),
         meanReturnPct: +ret.toFixed(2),
+        maxLossP50,
+        maxLossP95,
+        mddP50,
+        mddP95,
+        recoveryMonths,
+        sortinoRatio: +sortino.toFixed(2),
+        downsideVol: +(downVol * 100).toFixed(1)
     };
 }

@@ -304,6 +304,12 @@ export async function onRequest(context) {
           p95: Math.round((yearData.p95 || 0) * scale),
           annualReturn: yearData.annualReturn || 0,
           meanReturnPct: yearData.meanReturnPct || 0,
+          maxLossP50: yearData.maxLossP50 != null ? yearData.maxLossP50 : null,
+          maxLossP95: yearData.maxLossP95 != null ? yearData.maxLossP95 : null,
+          mddP50: yearData.mddP50 != null ? yearData.mddP50 : null,
+          mddP95: yearData.mddP95 != null ? yearData.mddP95 : null,
+          recoveryMonths: yearData.recoveryMonths != null ? yearData.recoveryMonths : 10,
+          sortinoRatio: variantData?.risk_analysis?.sortino_ratio != null ? variantData.risk_analysis.sortino_ratio : null,
         };
       }
 

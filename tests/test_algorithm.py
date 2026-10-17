@@ -474,5 +474,50 @@ class TestQuantFactors(unittest.TestCase):
         self.assertGreater(f1['information_ratio'], 0)
 
 
+class TestDownsideRiskAndSortino(unittest.TestCase):
+    """测试 Top 2: 索提诺比率与定投最大回撤分布"""
+
+    def test_calc_risk_contributions_sortino(self):
+        """测试解析法索提诺比率与下行波动率计算"""
+        rc = calc_risk_contributions(
+            w_nq=0.5, w_sp=0.5,
+            vol_nq=0.1937, vol_sp=0.1248, rho=0.75,
+            r_nq=0.2154, r_sp=0.1642, rf=0.025
+        )
+        self.assertIn('sortino_ratio', rc)
+        self.assertIn('downside_vol', rc)
+        self.assertIsNotNone(rc['sortino_ratio'])
+        self.assertIsNotNone(rc['downside_vol'])
+        self.assertGreater(rc['sortino_ratio'], rc['sharpe_ratio'], "正超额收益下索提诺比率应高于夏普比率（剔除上涨良性波动）")
+        self.assertLess(rc['downside_vol'], rc['portfolio_vol'], "下行波动率应显著小于全波动率")
+
+    def test_simulations_json_downside_metrics(self):
+        """测试预计算 simulations.json 包含完整的定投回撤分布与索提诺比率"""
+        import json
+        sim_path = PROJECT_ROOT / 'public' / 'data' / 'simulations.json'
+        self.assertTrue(sim_path.exists())
+        with open(sim_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        self.assertIn('strategies', data)
+        for strat in data['strategies']:
+            for variant in ['ideal', 'practical']:
+                v_data = strat.get(variant, {})
+                by_years = v_data.get('by_years', {})
+                self.assertIn('10', by_years)
+                yr10 = by_years['10']
+                self.assertIn('maxLossP50', yr10)
+                self.assertIn('maxLossP95', yr10)
+                self.assertIn('mddP50', yr10)
+                self.assertIn('mddP95', yr10)
+                self.assertIn('recoveryMonths', yr10)
+                self.assertGreaterEqual(yr10['maxLossP95'], yr10['maxLossP50'])
+                self.assertGreaterEqual(yr10['mddP95'], yr10['mddP50'])
+                self.assertGreater(yr10['recoveryMonths'], 0)
+                
+                ra = v_data.get('risk_analysis', {})
+                self.assertIn('sortino_ratio', ra)
+                self.assertIsNotNone(ra['sortino_ratio'])
+
+
 if __name__ == '__main__':
     unittest.main()
