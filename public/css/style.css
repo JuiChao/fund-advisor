@@ -7538,13 +7538,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     color: var(--ok);
 }
 
-/* 圆环图尺寸进一步显著放大：由 HTML 图例完全承担文字展示，Canvas 100% 用于呈现饱满圆环 */
+/* 圆环图视觉尺寸再次加大：占据核心视觉高度，使图例大幅下移，进一步压缩与底部指标格子的留白 */
 .cht.pf-cht {
     width: 100%;
-    max-width: 340px;
-    height: 250px;
-    max-height: 260px;
-    margin: 0.2rem auto 0.35rem auto;
+    max-width: 380px;
+    height: 300px;
+    max-height: 320px;
+    min-height: 285px;
+    margin: 0.15rem auto 0.4rem auto;
     position: relative;
     flex-shrink: 0;
 }
@@ -7553,15 +7554,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .pf-donut-legend {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
     width: 100%;
-    margin: 0.35rem 0 0.5rem 0;
+    margin: 0.4rem 0 0.5rem 0;
 }
 
 .pf-donut-legend.is-multi {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 5px 12px;
+    gap: 6px 12px;
 }
 
 .pf-legend-item {
@@ -7611,10 +7612,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .pf-donut-metrics {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.45rem;
+    gap: 0.5rem;
     width: 100%;
     margin-top: auto;
-    padding-top: 0.5rem;
+    padding-top: 0.55rem;
     border-top: 1px dashed var(--border);
 }
 
