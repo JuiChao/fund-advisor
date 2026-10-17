@@ -1218,6 +1218,72 @@
         </div>
     </div>
 
+    <!-- ===== 阶段5：历史极端危机压力测试 (Historical Stress Testing) ===== -->
+    <div class="stress-test-section" id="stress-test-section" style="margin-bottom:2rem">
+        <div class="card stress-test-card">
+            <div class="stress-test-header">
+                <div class="stress-header-title">
+                    <span class="hub-icon">🌪️</span>
+                    <div>
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                            <h2 style="margin:0;font-size:1.15rem;color:var(--txt)">历史极端危机压力测试 (Stress Testing)</h2>
+                            <span class="tag" style="background:rgba(239,68,68,0.12);color:var(--err);font-weight:700">肥尾黑天鹅实测</span>
+                            <span class="tag" style="background:rgba(99,102,241,0.12);color:var(--accent2);font-weight:600">非高斯真实序列</span>
+                        </div>
+                        <p style="margin:4px 0 0;font-size:0.78rem;color:var(--txt3)">复现美股百年 4 大经典崩盘危机：检验在估值暴跌、系统性踩踏与极速 V 反行情中，各定投策略的真实抗跌与修复能力</p>
+                    </div>
+                </div>
+                <div class="stress-scenario-tabs" id="stress-scenario-tabs">
+                    <button class="seg-btn on" data-scenario="gfc">🌊 2008 次贷金融海啸</button>
+                    <button class="seg-btn" data-scenario="covid">🦠 2020 新冠极速熔断</button>
+                    <button class="seg-btn" data-scenario="dotcom">⚡ 2000 互联网泡沫</button>
+                    <button class="seg-btn" data-scenario="ratehike">📈 2022 激进加息熊市</button>
+                </div>
+            </div>
+
+            <!-- 情景背景档案概览条 -->
+            <div class="stress-profile-bar" id="stress-profile-bar">
+                <div class="stress-profile-desc" id="stress-profile-desc"></div>
+                <div class="stress-profile-kpis" id="stress-profile-kpis"></div>
+            </div>
+
+            <!-- 净值轨迹折线图表 -->
+            <div class="stress-chart-wrap">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;flex-wrap:wrap;gap:6px">
+                    <div style="font-size:0.825rem;font-weight:600;color:var(--txt)">📈 定投资产净值 vs 累计投入本金演进轨迹</div>
+                    <div style="font-size:0.75rem;color:var(--txt3)" id="stress-budget-note">当前推演预算: ¥2,000 / 月</div>
+                </div>
+                <div class="stress-canvas-container" style="position:relative;height:320px">
+                    <canvas id="chart-stress-test"></canvas>
+                </div>
+            </div>
+
+            <!-- 5大策略压力测试表现榜单表格 -->
+            <div class="table-wrap" style="margin-top:1.25rem">
+                <table class="stress-test-table">
+                    <thead>
+                        <tr>
+                            <th>策略方案</th>
+                            <th>资金配比 (纳指:标普)</th>
+                            <th>累计投入本金</th>
+                            <th>危机终值</th>
+                            <th>期间累计收益率</th>
+                            <th>最大账面浮亏 (谷底月)</th>
+                            <th>回本修复耗时</th>
+                            <th>抗跌韧性评级</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stress-test-tbody">
+                        <tr><td colspan="8" style="text-align:center;padding:1.5rem;color:var(--txt3)">正在加载历史压力测试数据…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 量化归因与定投启示录 -->
+            <div class="stress-takeaway-callout" id="stress-takeaway-callout"></div>
+        </div>
+    </div>
+
     <div id="pf-container" class="ld"></div>
 </div>
 

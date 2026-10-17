@@ -7027,4 +7027,180 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
 }
 
+/* ===== 阶段5：历史极端危机压力测试 (Historical Stress Testing) ===== */
+.stress-test-section {
+    width: 100%;
+}
+.stress-test-card {
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+.stress-test-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+.stress-header-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+.stress-scenario-tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--surface2);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+.stress-scenario-tabs .seg-btn {
+    border: none;
+    background: transparent;
+    color: var(--txt2);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.45rem 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+.stress-scenario-tabs .seg-btn:hover {
+    color: var(--txt);
+    background: rgba(99, 102, 241, 0.08);
+}
+.stress-scenario-tabs .seg-btn.on {
+    background: var(--surface);
+    color: var(--accent2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.stress-profile-bar {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.9rem 1.15rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 1.25rem;
+}
+.stress-profile-desc {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--txt2);
+}
+.stress-profile-kpis {
+    display: flex;
+    gap: 0.65rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+.stress-kpi-pill {
+    padding: 0.45rem 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    min-width: 95px;
+}
+.stress-kpi-pill .lb {
+    font-size: 0.68rem;
+    color: var(--txt3);
+    margin-bottom: 2px;
+}
+.stress-kpi-pill .vl {
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+.stress-chart-wrap {
+    padding: 1.15rem 1.25rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+}
+.stress-canvas-container {
+    width: 100%;
+}
+
+.stress-test-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.825rem;
+    line-height: 1.5;
+}
+.stress-test-table th {
+    background: var(--surface2);
+    color: var(--txt2);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 2px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
+}
+.stress-test-table td {
+    padding: 0.7rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+.stress-test-table tbody tr:hover td {
+    background: rgba(99, 102, 241, 0.04);
+}
+.stress-takeaway-callout {
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(16, 185, 129, 0.06));
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: var(--radius-sm);
+    font-size: 0.78rem;
+    color: var(--txt2);
+    line-height: 1.6;
+}
+.stress-takeaway-callout strong {
+    color: var(--txt);
+}
+
+@media (max-width: 900px) {
+    .stress-profile-bar {
+        grid-template-columns: 1fr;
+    }
+    .stress-profile-kpis {
+        justify-content: flex-start;
+    }
+}
+@media (max-width: 640px) {
+    .stress-test-card {
+        padding: 1rem;
+    }
+    .stress-test-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .stress-scenario-tabs {
+        width: 100%;
+    }
+    .stress-scenario-tabs .seg-btn {
+        flex: 1 1 45%;
+        text-align: center;
+    }
+    .stress-canvas-container {
+        height: 260px !important;
+    }
+}
+
 

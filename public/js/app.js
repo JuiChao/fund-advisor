@@ -50,6 +50,22 @@ const App = (() => {
             }
         }
 
+        if (chartPool.stress && chartPool.stress.options?.scales) {
+            const isD = theme === 'dark';
+            const gc = isD ? 'rgba(129, 140, 248, 0.12)' : 'rgba(99, 102, 241, 0.08)';
+            const tc = isD ? '#94a3b8' : '#64748b';
+            const sc = chartPool.stress.options.scales;
+            if (sc.x) sc.x.ticks.color = tc;
+            if (sc.y) {
+                sc.y.grid.color = gc;
+                sc.y.ticks.color = tc;
+                if (sc.y.title) sc.y.title.color = tc;
+            }
+            if (chartPool.stress.options.plugins?.legend?.labels) {
+                chartPool.stress.options.plugins.legend.labels.color = tc;
+            }
+        }
+
         Object.values(chartPool).forEach(ch => {
             if (ch && typeof ch.update === 'function') ch.update();
         });
@@ -3775,6 +3791,351 @@ const App = (() => {
         });
     }
 
+    // ===== Top 3: 历史极端危机压力测试 (Historical Crisis Stress Testing) =====
+    const HISTORICAL_SCENARIOS = {
+        gfc: {
+            id: 'gfc',
+            name: '2008 全球次贷金融海啸',
+            period: '2007.10 - 2009.12 (共 27 个月)',
+            bgDesc: '美国次贷危机演变为百年一遇的全球流动性冰封与信用崩塌，雷曼兄弟倒闭，标普500单月暴跌近17%，整体最大回撤超 -52%。但在定投纪律加持下，投资者在低谷贪婪收集极廉价筹码，2009年迎来暴力修复。',
+            ndxDrop: '-50.5%',
+            spxDrop: '-52.6%',
+            troughPeriod: '2009年2-3月 (第17个月)',
+            labels: [
+                '07.10', '07.11', '07.12', '08.01', '08.02', '08.03', '08.04', '08.05', '08.06',
+                '08.07', '08.08', '08.09', '08.10', '08.11', '08.12', '09.01', '09.02', '09.03',
+                '09.04', '09.05', '09.06', '09.07', '09.08', '09.09', '09.10', '09.11', '09.12'
+            ],
+            nq: [0.048, -0.069, -0.004, -0.086, -0.048, 0.012, 0.057, 0.046, -0.073, 0.014, 0.018, -0.119, -0.168, -0.109, 0.035, -0.058, -0.046, 0.109, 0.123, 0.052, 0.034, 0.081, 0.018, 0.046, -0.012, 0.049, 0.056],
+            sp: [0.015, -0.044, -0.009, -0.061, -0.035, -0.006, 0.048, 0.011, -0.086, -0.010, 0.012, -0.091, -0.169, -0.075, 0.008, -0.086, -0.110, 0.085, 0.094, 0.053, 0.000, 0.074, 0.034, 0.036, -0.020, 0.057, 0.018],
+            takeaway: '🌊 <strong>压力测试启示：</strong>在次贷危机最黑暗的 2009 年初，一次性买入投资者账面深度腰斩（-52%），而定投策略的最大账面浮亏仅约 <strong>-29% ~ -32%</strong>。更关键的是：定投仅用 <strong>6~7 个月</strong> 便从谷底彻底抹平浮亏重回盈利，而一次性买入耗时近 4 年才解套！'
+        },
+        covid: {
+            id: 'covid',
+            name: '2020 新冠疫情极速熔断',
+            period: '2020.01 - 2020.12 (共 12 个月)',
+            bgDesc: '新冠病毒全球大流行引爆史诗级流动性危机，美股10天内遭遇 4 次熔断。然而随着美联储无限QE与零利率救市，全球科技巨头业绩逆势暴增，纳斯达克开启人类金融史上最迅猛的 V 型超级大反转。',
+            ndxDrop: '-28.0%',
+            spxDrop: '-33.9%',
+            troughPeriod: '2020年3月 (第3个月)',
+            labels: [
+                '20.01', '20.02', '20.03', '20.04', '20.05', '20.06',
+                '20.07', '20.08', '20.09', '20.10', '20.11', '20.12'
+            ],
+            nq: [0.030, -0.064, -0.076, 0.154, 0.067, 0.063, 0.073, 0.111, -0.057, -0.032, 0.110, 0.051],
+            sp: [-0.002, -0.084, -0.125, 0.127, 0.045, 0.018, 0.055, 0.070, -0.039, -0.028, 0.108, 0.037],
+            takeaway: '🦠 <strong>压力测试启示：</strong>极速暴跌（Flash Crash）是定投的最佳盟友。在 2020 年 3 月熔断中，定投浮亏仅约 <strong>-9%</strong>，随后 4 月即刻凭借反弹完成回本，全年收益率高达 <strong>+22% ~ +27%</strong>。任何在恐慌中暂停定投的人都错失了整轮复利主升浪。'
+        },
+        dotcom: {
+            id: 'dotcom',
+            name: '2000 互联网泡沫破裂',
+            period: '2000.03 - 2002.10 (共 32 个月)',
+            bgDesc: '人类科技史估值泡沫巅峰破裂，纳斯达克100指数累计暴跌超过 -82%，历时近3年才见底。这是科技股历史上最残酷的漫长熊市考验，也是资产多元配置（纳指+标普）价值凸显的终极试金石。',
+            ndxDrop: '-82.9%',
+            spxDrop: '-47.4%',
+            troughPeriod: '2002年9-10月 (第31-32个月)',
+            labels: [
+                '00.03', '00.04', '00.05', '00.06', '00.07', '00.08', '00.09', '00.10', '00.11', '00.12',
+                '01.01', '01.02', '01.03', '01.04', '01.05', '01.06', '01.07', '01.08', '01.09', '01.10', '01.11', '01.12',
+                '02.01', '02.02', '02.03', '02.04', '02.05', '02.06', '02.07', '02.08', '02.09', '02.10'
+            ],
+            nq: [0.042, -0.136, -0.119, 0.166, -0.056, 0.118, -0.127, -0.083, -0.229, -0.036, 0.122, -0.224, -0.146, 0.145, -0.014, -0.033, -0.058, -0.109, -0.169, 0.155, 0.151, -0.005, -0.028, -0.124, 0.068, -0.165, -0.062, -0.128, -0.088, 0.014, -0.135, 0.131],
+            sp: [0.097, -0.031, -0.022, 0.024, -0.016, 0.061, -0.054, -0.005, -0.080, 0.004, 0.035, -0.092, -0.064, 0.077, 0.005, -0.025, -0.011, -0.064, -0.082, 0.018, 0.075, 0.008, -0.016, -0.021, 0.037, -0.061, -0.009, -0.072, -0.079, 0.005, -0.110, 0.086],
+            takeaway: '⚡ <strong>压力测试启示：</strong>在纳指纯单边下跌 -82% 的世纪崩盘中，纯纳指单边定投最大浮亏达 -48.7%；而采用【稳健型 30/70】或【风险平价 38/62】方案，最大浮亏被大幅压缩至 <strong>-27% ~ -32%</strong>，且跌幅远低于标普单边一次性下跌，展现了跨行业因子分散与风险平价配置的保命防御力！'
+        },
+        ratehike: {
+            id: 'ratehike',
+            name: '2022 激进加息高通胀熊市',
+            period: '2022.01 - 2022.12 (共 12 个月)',
+            bgDesc: '美联储遭遇40年来最严重通胀失控，以史无前例的连续4次75bp暴力加息打压需求。高估值成长股首当其冲，纳指全年深跌 -33%，标普跌近 -19%，是检验估值挤泡沫与逆周期布局韧性的最近期样本。',
+            ndxDrop: '-32.4%',
+            spxDrop: '-18.1%',
+            troughPeriod: '2022年10月 (第10个月)',
+            labels: [
+                '22.01', '22.02', '22.03', '22.04', '22.05', '22.06',
+                '22.07', '22.08', '22.09', '22.10', '22.11', '22.12'
+            ],
+            nq: [-0.085, -0.046, 0.042, -0.134, -0.016, -0.090, 0.126, -0.052, -0.106, 0.040, 0.055, -0.090],
+            sp: [-0.053, -0.031, 0.036, -0.088, 0.000, -0.084, 0.091, -0.042, -0.093, 0.080, 0.054, -0.059],
+            takeaway: '📈 <strong>压力测试启示：</strong>2022 年加息熊市中，虽然全年单边收跌，但定投策略由于分批平摊买入成本，年终账面浮亏仅 <strong>-9% ~ -13%</strong>，相比直接买入纳指 -33% 的亏损大幅减少。紧接着 2023 年纳指录得 +54% 暴涨，2022 年坚持定投积累的低成本份额全部转化为超额利润。'
+        }
+    };
+
+    let _activeStressScenario = 'gfc';
+
+    function renderStressTest(scenarioKey, budgetVal, dynParams) {
+        const key = scenarioKey || _activeStressScenario || 'gfc';
+        const sc = HISTORICAL_SCENARIOS[key];
+        if (!sc) return;
+
+        const budget = Number(budgetVal) || Number(document.getElementById('pf-m')?.value) || 2000;
+        const feeM = 0.005 / 12.0;
+
+        // 1. 更新背景档案与关键 KPI
+        const descEl = document.getElementById('stress-profile-desc');
+        if (descEl) {
+            descEl.innerHTML = `<strong style="color:var(--txt);font-size:0.875rem">${sc.name}</strong> <span style="color:var(--accent2);margin-left:6px;font-size:0.75rem">${sc.period}</span><br>${sc.bgDesc}`;
+        }
+        const kpiEl = document.getElementById('stress-profile-kpis');
+        if (kpiEl) {
+            kpiEl.innerHTML = `
+                <div class="stress-kpi-pill">
+                    <span class="lb">纳指峰谷跌幅</span>
+                    <span class="vl" style="color:var(--err)">${sc.ndxDrop}</span>
+                </div>
+                <div class="stress-kpi-pill">
+                    <span class="lb">标普峰谷跌幅</span>
+                    <span class="vl" style="color:var(--err)">${sc.spxDrop}</span>
+                </div>
+                <div class="stress-kpi-pill">
+                    <span class="lb">大盘见底周期</span>
+                    <span class="vl" style="color:var(--txt);font-size:0.78rem">${sc.troughPeriod}</span>
+                </div>
+            `;
+        }
+
+        const budgetNoteEl = document.getElementById('stress-budget-note');
+        if (budgetNoteEl) {
+            budgetNoteEl.textContent = `当前推演预算: ¥${budget.toLocaleString()} / 月`;
+        }
+
+        // 2. 准备参测策略定义
+        const rpWeight = (dynParams?.risk_parity_w_nq != null) ? dynParams.risk_parity_w_nq : 0.38;
+        const msWeight = (dynParams?.max_sharpe_w_nq != null) ? dynParams.max_sharpe_w_nq : 0.60;
+
+        const stratList = [
+            { id: 'rp', name: '💎 风险平价', w_nq: rpWeight, color: '#f59e0b', badge: '<span class="tag" style="background:rgba(245,158,11,0.12);color:#d97706;font-weight:600">💎 平滑抗震</span>' },
+            { id: 'ms', name: '⚖️ 最优夏普', w_nq: msWeight, color: '#8b5cf6', badge: '<span class="tag" style="background:rgba(139,92,246,0.12);color:#7c3aed;font-weight:600">⚖️ 效率兼顾</span>' },
+            { id: 'mod', name: '🛡️ 稳健型', w_nq: 0.30, color: '#10b981', badge: '<span class="tag" style="background:rgba(16,185,129,0.12);color:var(--ok);font-weight:600">🛡️ 极佳防守</span>' },
+            { id: 'bal', name: '🔄 平衡型', w_nq: 0.50, color: '#0ea5e9', badge: '<span class="tag" style="background:rgba(14,165,233,0.12);color:#0284c7;font-weight:600">🔄 均衡抗跌</span>' },
+            { id: 'agg', name: '🚀 进取型', w_nq: 0.70, color: '#6366f1', badge: '<span class="tag" style="background:rgba(99,102,241,0.12);color:var(--accent2);font-weight:600">🚀 弹性进攻</span>' },
+            { id: 'b_nq', name: '100% 纳指基准', w_nq: 1.00, color: '#ec4899', isBenchmark: true, badge: '<span class="tag" style="background:rgba(239,68,68,0.12);color:var(--err);font-weight:600">🔥 极端进攻</span>' },
+            { id: 'b_sp', name: '100% 标普基准', w_nq: 0.00, color: '#14b8a6', isBenchmark: true, badge: '<span class="tag" style="background:rgba(20,184,166,0.12);color:#0d9488;font-weight:600">🏛️ 传统基准</span>' },
+        ];
+
+        // 3. 通算各策略在当前危机中的月度定投资产曲线与指标
+        const simResults = stratList.map(st => {
+            const w_nq = st.w_nq;
+            const w_sp = 1.0 - w_nq;
+            let cumInvest = 0;
+            let wealth = 0;
+            let peak = 0;
+            let minPl = 0;
+            let troughM = 1;
+            const wealthPath = [];
+            const investPath = [];
+            const plPath = [];
+
+            for (let m = 0; m < sc.nq.length; m++) {
+                cumInvest += budget;
+                const rnq = sc.nq[m];
+                const rsp = sc.sp[m];
+                const rp = w_nq * rnq + w_sp * rsp - feeM;
+                wealth = (wealth + budget) * (1.0 + rp);
+
+                const pl = (wealth - cumInvest) / cumInvest;
+                wealthPath.push(Math.round(wealth));
+                investPath.push(cumInvest);
+                plPath.push(pl);
+
+                if (pl < minPl) {
+                    minPl = pl;
+                    troughM = m + 1;
+                }
+                if (wealth > peak) peak = wealth;
+            }
+
+            let recMonths = null;
+            for (let m = troughM; m < plPath.length; m++) {
+                if (plPath[m] >= 0) {
+                    recMonths = (m + 1) - troughM;
+                    break;
+                }
+            }
+
+            const finalReturnPct = ((wealth / cumInvest) - 1.0) * 100.0;
+
+            return {
+                ...st,
+                cumInvest,
+                finalWealth: wealth,
+                finalReturnPct,
+                minPl,
+                troughM,
+                recMonths,
+                wealthPath,
+                investPath
+            };
+        });
+
+        // 4. 渲染压力测试表格
+        const tbodyEl = document.getElementById('stress-test-tbody');
+        if (tbodyEl) {
+            tbodyEl.innerHTML = simResults.map(r => {
+                const retColor = r.finalReturnPct >= 0 ? 'var(--ok)' : 'var(--err)';
+                const retPrefix = r.finalReturnPct > 0 ? '+' : '';
+                const recHtml = r.recMonths != null
+                    ? `<span style="color:var(--ok);font-weight:600">谷底后 ${r.recMonths} 个月</span>`
+                    : `<span style="color:var(--txt3)">周期内未回本</span>`;
+
+                return `
+                    <tr style="${r.isBenchmark ? 'background:rgba(100,116,139,0.03);' : ''}">
+                        <td><strong>${r.name}</strong></td>
+                        <td style="font-variant-numeric:tabular-nums;color:var(--txt2)">${Math.round(r.w_nq * 100)}% : ${Math.round((1 - r.w_nq) * 100)}%</td>
+                        <td style="font-variant-numeric:tabular-nums">¥${r.cumInvest.toLocaleString()}</td>
+                        <td style="font-variant-numeric:tabular-nums;font-weight:700">¥${Math.round(r.finalWealth).toLocaleString()}</td>
+                        <td style="font-variant-numeric:tabular-nums;font-weight:700;color:${retColor}">${retPrefix}${r.finalReturnPct.toFixed(1)}%</td>
+                        <td style="font-variant-numeric:tabular-nums">
+                            <span style="color:var(--err);font-weight:700">${(r.minPl * 100).toFixed(1)}%</span>
+                            <span style="font-size:0.72rem;color:var(--txt3);margin-left:4px">(第${r.troughM}月)</span>
+                        </td>
+                        <td>${recHtml}</td>
+                        <td>${r.badge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 5. 渲染启示录说明
+        const calloutEl = document.getElementById('stress-takeaway-callout');
+        if (calloutEl) {
+            calloutEl.innerHTML = sc.takeaway;
+        }
+
+        // 6. 渲染折线图表 (Chart.js)
+        const canvas = document.getElementById('chart-stress-test');
+        if (!canvas) return;
+
+        if (chartPool.stress) {
+            chartPool.stress.destroy();
+            chartPool.stress = null;
+        }
+
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const gridColor = isDark ? 'rgba(129, 140, 248, 0.12)' : 'rgba(99, 102, 241, 0.08)';
+        const tickColor = isDark ? '#94a3b8' : '#64748b';
+
+        // 基准本金线 (Dashed gray)
+        const baseInvestPath = simResults[0].investPath;
+        const datasets = [
+            {
+                label: '累计投入本金',
+                data: baseInvestPath,
+                borderColor: isDark ? '#64748b' : '#94a3b8',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                pointRadius: 0,
+                pointHoverRadius: 3,
+                fill: false,
+                order: 10
+            }
+        ];
+
+        simResults.forEach(r => {
+            datasets.push({
+                label: r.name.replace(/^[^\w\u4e00-\u9fa5]+/, ''), // 去除前置表情符号使图例更简洁
+                data: r.wealthPath,
+                borderColor: r.color,
+                borderWidth: r.isBenchmark ? 1.5 : (r.id === 'rp' ? 2.8 : 2),
+                borderDash: r.isBenchmark ? [3, 3] : undefined,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                tension: 0.25,
+                fill: false,
+                order: r.id === 'rp' ? 1 : (r.id === 'ms' ? 2 : (r.isBenchmark ? 8 : 4))
+            });
+        });
+
+        chartPool.stress = new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: sc.labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: tickColor,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 12,
+                            font: { size: 11, family: 'Inter, system-ui, sans-serif' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                        titleColor: isDark ? '#f8fafc' : '#0f172a',
+                        bodyColor: isDark ? '#cbd5e1' : '#334155',
+                        borderColor: isDark ? '#334155' : '#e2e8f0',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(ctx) {
+                                const val = ctx.parsed.y;
+                                const dsLabel = ctx.dataset.label || '';
+                                if (dsLabel === '累计投入本金') {
+                                    return ` ${dsLabel}: ¥${val.toLocaleString()}`;
+                                }
+                                const investVal = baseInvestPath[ctx.dataIndex] || 1;
+                                const plPct = ((val - investVal) / investVal) * 100;
+                                const sign = plPct >= 0 ? '+' : '';
+                                return ` ${dsLabel}: ¥${val.toLocaleString()} (${sign}${plPct.toFixed(1)}%)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: tickColor,
+                            font: { size: 11, family: 'Inter, system-ui, sans-serif' },
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 14
+                        }
+                    },
+                    y: {
+                        grid: { color: gridColor },
+                        ticks: {
+                            color: tickColor,
+                            font: { size: 11, family: 'Inter, system-ui, sans-serif' },
+                            callback: function(v) {
+                                if (v >= 10000) return '¥' + (v / 10000).toFixed(1) + '万';
+                                return '¥' + v;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function initStressTestTabs() {
+        const tabsContainer = document.getElementById('stress-scenario-tabs');
+        if (!tabsContainer) return;
+        tabsContainer.querySelectorAll('.seg-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const scKey = btn.dataset.scenario;
+                if (!scKey || scKey === _activeStressScenario) return;
+                tabsContainer.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('on'));
+                btn.classList.add('on');
+                _activeStressScenario = scKey;
+                const monthly = +document.getElementById('pf-m')?.value || 2000;
+                renderStressTest(_activeStressScenario, monthly, _dynamicParams);
+            });
+        });
+    }
+
     function applyPortfolioCategoryFilter(targetCat) {
         const cat = targetCat || document.querySelector('#pf-category-filter .seg-btn.on')?.dataset?.category || 'ALL';
         let matchCount = 0;
@@ -3947,6 +4308,9 @@ const App = (() => {
 
             // 渲染马克维茨均值-方差有效前沿交互图表看板
             renderEfficientFrontier(strategies, dynParams);
+
+            // 渲染历史极端危机压力测试看板
+            renderStressTest(_activeStressScenario || 'gfc', monthly, dynParams);
 
             let html = '';
             strategies.forEach(s => {
@@ -4716,6 +5080,7 @@ const App = (() => {
             initSimQuickPresets();
             syncSliderBadges();
             renderQuotaBulletin();
+            initStressTestTabs();
         } catch (e) {
             document.getElementById('home-stats').innerHTML = '<div class="card"><p style="color:var(--err)">数据加载失败: ' + e.message + '</p></div>';
         }
@@ -4912,6 +5277,9 @@ const App = (() => {
             document.getElementById('pf-mv').textContent = val;
             const b = document.getElementById('pf-mv-badge');
             if (b) b.textContent = val + ' / 月';
+            const stressBudgetEl = document.getElementById('stress-budget-note');
+            if (stressBudgetEl) stressBudgetEl.textContent = `当前推演预算: ${val} / 月`;
+            renderStressTest(_activeStressScenario, +e.target.value, _dynamicParams);
         });
         document.getElementById('pf-y').addEventListener('input', e => {
             document.getElementById('pf-yv').textContent = e.target.value + '年';

@@ -24,6 +24,7 @@ from scraper.simulate import (
     pick_funds_by_style, simulate_portfolio, simulate_portfolio_all_years,
     calc_risk_parity_weights, calc_max_sharpe_weights, calc_risk_contributions,
     calc_fund_quant_factors, enrich_funds_with_quant_factors,
+    HISTORICAL_SCENARIOS, simulate_stress_scenario,
     CONFIG, TRADING_DAYS, BASE_BUDGET
 )
 
@@ -519,5 +520,72 @@ class TestDownsideRiskAndSortino(unittest.TestCase):
                 self.assertIsNotNone(ra['sortino_ratio'])
 
 
+class TestStressTesting(unittest.TestCase):
+    """测试 Top 3: 历史极端危机压力测试 (Stress Testing)"""
+
+    def test_scenario_data_integrity(self):
+        """测试4大经典黑天鹅危机数据完整性"""
+        for sc_key in ['gfc', 'covid', 'dotcom', 'ratehike']:
+            self.assertIn(sc_key, HISTORICAL_SCENARIOS)
+            sc = HISTORICAL_SCENARIOS[sc_key]
+            self.assertEqual(len(sc['labels']), len(sc['nq']), f"{sc_key} labels 与 nq 长度不一致")
+            self.assertEqual(len(sc['nq']), len(sc['sp']), f"{sc_key} nq 与 sp 长度不一致")
+            self.assertGreater(len(sc['nq']), 0)
+            self.assertIn('bg_desc', sc)
+            self.assertIn('trough_period', sc)
+
+        self.assertEqual(len(HISTORICAL_SCENARIOS['gfc']['nq']), 27)
+        self.assertEqual(len(HISTORICAL_SCENARIOS['covid']['nq']), 12)
+        self.assertEqual(len(HISTORICAL_SCENARIOS['dotcom']['nq']), 32)
+        self.assertEqual(len(HISTORICAL_SCENARIOS['ratehike']['nq']), 12)
+
+    def test_stress_gfc_simulation(self):
+        """测试2008次贷金融海啸定投微笑曲线回测"""
+        res = simulate_stress_scenario('gfc', w_nq=0.5, budget=2000)
+        self.assertEqual(res['total_invest'], 54000.0)
+        # 定投穿越次贷海啸最终应取得正收益（筹码摊平与2009反弹）
+        self.assertGreater(res['final_wealth'], 54000.0)
+        self.assertGreater(res['final_return_pct'], 0.0)
+        # 谷底应出现在第16-17月（2009年初）
+        self.assertIn(res['trough_month'], [16, 17])
+        # 最大浮亏应在 -40% 到 -25% 之间，显著优于指数一次性腰斩（-52%）
+        self.assertLess(res['max_floating_loss'], -0.25)
+        self.assertGreater(res['max_floating_loss'], -0.40)
+        # 谷底后应在 6-7 个月内完成回本
+        self.assertIn(res['recovery_months'], [6, 7])
+
+    def test_stress_covid_v_shape(self):
+        """测试2020新冠熔断与极速V反"""
+        res = simulate_stress_scenario('covid', w_nq=0.7, budget=2000)
+        self.assertEqual(res['total_invest'], 24000.0)
+        # 2020科技大牛市，终值应大幅盈利 (>20%)
+        self.assertGreater(res['final_return_pct'], 20.0)
+        # 谷底精准在第3月 (2020.03 熔断月)
+        self.assertEqual(res['trough_month'], 3)
+        # 第4月反弹即回本修复 (耗时 1 个月)
+        self.assertEqual(res['recovery_months'], 1)
+
+    def test_stress_dotcom_diversification(self):
+        """测试2000互联网泡沫破裂下风险平价与多元配置的防守价值"""
+        res_nq100 = simulate_stress_scenario('dotcom', w_nq=1.0, budget=2000)
+        res_rp = simulate_stress_scenario('dotcom', w_nq=0.38, budget=2000)
+        res_mod = simulate_stress_scenario('dotcom', w_nq=0.30, budget=2000)
+
+        # 纯纳指单边定投最大浮亏超过 -50%
+        self.assertLess(res_nq100['max_floating_loss'], -0.50)
+        # 风险平价与稳健型最大浮亏被大幅压缩到 -42% 左右，防守效果提升超 10 个百分点
+        self.assertGreater(res_rp['max_floating_loss'], res_nq100['max_floating_loss'] + 0.10)
+        self.assertGreater(res_mod['max_floating_loss'], res_nq100['max_floating_loss'] + 0.10)
+
+    def test_stress_ratehike_cushion(self):
+        """测试2022加息熊市定投平摊成本效应"""
+        res = simulate_stress_scenario('ratehike', w_nq=0.5, budget=2000)
+        self.assertEqual(res['total_invest'], 24000.0)
+        # 虽然年终收跌，但最大浮亏仅在 -10%~-15% 之间，远低于纳指一次性买入的 -33%
+        self.assertGreater(res['max_floating_loss'], -0.20)
+        self.assertLess(res['max_floating_loss'], -0.05)
+
+
 if __name__ == '__main__':
     unittest.main()
+
