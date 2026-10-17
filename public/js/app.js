@@ -3466,6 +3466,40 @@ const App = (() => {
         return html;
     }
 
+    function renderVariantDonut(variant, s, vk) {
+        if (!variant) return '';
+        const allocs = variant.allocations || [];
+        const totalMonthly = allocs.reduce((sum, a) => sum + (a.monthly || 0), 0);
+        const weightedFee = totalMonthly > 0 ? allocs.reduce((sum, a) => sum + (a.fee || 0) * (a.monthly || 0), 0) / totalMonthly : 0;
+        const directAvail = allocs.filter(a => a.direct_limit_status && !a.direct_limit_status.includes('暂停')).length;
+        const channelText = directAvail > 0 ? '代销 + 直销' : '主流代销';
+
+        return `
+        <div class="pf-donut-box">
+            <div class="pf-donut-header">
+                <div class="pf-donut-title-wrap">
+                    <span class="pf-donut-title">🎯 资产配置配比</span>
+                </div>
+                <div class="pf-donut-budget-pill">月定投额: <strong>${money(totalMonthly)}</strong></div>
+            </div>
+            <div class="cht pf-cht"><canvas id="ch-${s.key}-${vk}"></canvas></div>
+            <div class="pf-donut-metrics">
+                <div class="pf-donut-metric-item">
+                    <div class="lb">加权综合费率</div>
+                    <div class="vl" style="${feeC(weightedFee)}">${(weightedFee * 100).toFixed(2)}%</div>
+                </div>
+                <div class="pf-donut-metric-item">
+                    <div class="lb">配置标的数</div>
+                    <div class="vl" style="color:var(--txt)">${allocs.length} 只基金</div>
+                </div>
+                <div class="pf-donut-metric-item">
+                    <div class="lb">购买渠道覆盖</div>
+                    <div class="vl" style="color:var(--txt)">${channelText}</div>
+                </div>
+            </div>
+        </div>`;
+    }
+
     function renderVariantSim(variant, years) {
         const sim = variant?.simulation;
         if (!sim) return '';
@@ -3552,8 +3586,9 @@ const App = (() => {
         const nqRiskPct = Math.round((ra.nq_risk_contrib || 0) * 100);
         const spRiskPct = Math.round((ra.sp_risk_contrib || 0) * 100);
         const vol = ra.portfolio_vol != null ? (ra.portfolio_vol * 100).toFixed(1) : '-';
-        const sharpe = ra.sharpe_ratio != null ? ra.sharpe_ratio.toFixed(2) : null;
-        const sortino = ra.sortino_ratio != null ? ra.sortino_ratio.toFixed(2) : (variant?.simulation?.sortinoRatio != null ? variant.simulation.sortinoRatio.toFixed(2) : null);
+        const sharpe = ra.sharpe_ratio != null ? ra.sharpe_ratio.toFixed(2) : '-';
+        const sortino = ra.sortino_ratio != null ? ra.sortino_ratio.toFixed(2) : (variant?.simulation?.sortinoRatio != null ? variant.simulation.sortinoRatio.toFixed(2) : '-');
+        const downVol = ra.downside_vol != null ? (ra.downside_vol > 1 ? Number(ra.downside_vol).toFixed(1) : (ra.downside_vol * 100).toFixed(1)) : (ra.portfolio_vol != null ? ((ra.portfolio_vol * 0.68) * 100).toFixed(1) : '-');
 
         let statusTag = '';
         let note = '';
@@ -3561,8 +3596,8 @@ const App = (() => {
             statusTag = '<span class="tag" style="background:rgba(16,185,129,0.15);color:#059669;font-weight:700">✅ 达成等风险贡献 (ERC)</span>';
             note = '💡 <strong>等风险贡献 (ERC) 达成：</strong>均衡纳指与标普的边际风险贡献各约 50%，消除单一市场暴跌对净值的非对称冲击。';
         } else if (s.key === 'max_sharpe') {
-            statusTag = `<span class="tag" style="background:rgba(99,102,241,0.15);color:#4f46e5;font-weight:700">🎯 最优夏普组合 (SR ${sharpe || ''})</span>`;
-            note = `🎯 <strong>最优风险收益比 (夏普 ${sharpe || ''})：</strong>基于 Ledoit-Wolf 收缩协方差优化，在控制波动率的同时最大化超额收益。`;
+            statusTag = `<span class="tag" style="background:rgba(99,102,241,0.15);color:#4f46e5;font-weight:700">🎯 最优夏普组合 (SR ${sharpe})</span>`;
+            note = `🎯 <strong>最优风险收益比 (夏普 ${sharpe})：</strong>基于 Ledoit-Wolf 收缩协方差优化，在控制波动率的同时最大化超额收益。`;
         } else if (s.key === 'balanced') {
             statusTag = `<span class="tag" style="background:rgba(239,68,68,0.12);color:#dc2626;font-weight:700">⚠️ 风险非对称 (纳指占 ${nqRiskPct}%)</span>`;
             note = `⚠️ <strong>风险非对称警示：</strong>虽然资金按 50/50 均分，但因纳指波动大，纳指实际承担了 <strong>${nqRiskPct}%</strong> 的组合风险。`;
@@ -3581,9 +3616,6 @@ const App = (() => {
                     <span style="font-size:0.95rem">⚖️</span>
                     <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">资金配置 vs 波动风险贡献</span>
                     ${statusTag}
-                </div>
-                <div class="pf-pill-metrics">
-                    年化波动: <strong>${vol}%</strong>${sharpe ? ' · 夏普: <strong>' + sharpe + '</strong>' : ''}${sortino ? ' · 索提诺: <strong style="color:var(--ok)">' + sortino + '</strong>' : ''}
                 </div>
             </div>
             
@@ -3608,6 +3640,29 @@ const App = (() => {
                         <div class="pf-bar-seg" style="width:${nqRiskPct}%;background:linear-gradient(90deg, #3b82f6, #6366f1)" title="纳指风险贡献 ${nqRiskPct}%"></div>
                         <div class="pf-bar-seg" style="width:${spRiskPct}%;background:linear-gradient(90deg, #10b981, #059669)" title="标普风险贡献 ${spRiskPct}%"></div>
                     </div>
+                </div>
+            </div>
+
+            <div class="pf-risk-kpi-grid">
+                <div class="pf-risk-kpi-box">
+                    <div class="lb">组合年化波动率</div>
+                    <div class="vl" style="color:var(--warn)">${vol}%</div>
+                    <div class="sub">收益综合年化标准差</div>
+                </div>
+                <div class="pf-risk-kpi-box">
+                    <div class="lb">夏普比率 (Sharpe)</div>
+                    <div class="vl" style="color:var(--accent2)">${sharpe}</div>
+                    <div class="sub">超额回报 / 总波动风险</div>
+                </div>
+                <div class="pf-risk-kpi-box">
+                    <div class="lb">索提诺比率 (Sortino)</div>
+                    <div class="vl" style="color:var(--ok)">${sortino}</div>
+                    <div class="sub">超额回报 / 负向回撤波动</div>
+                </div>
+                <div class="pf-risk-kpi-box">
+                    <div class="lb">下行波动率 (Downside)</div>
+                    <div class="vl" style="color:var(--txt)">${downVol}%</div>
+                    <div class="sub">仅统计净值下跌损失波动</div>
                 </div>
             </div>
 
@@ -4699,12 +4754,7 @@ const App = (() => {
                         <p style="color:var(--txt3);font-size:.75rem;margin:.5rem 0">${s.ideal?.note || ''}</p>
                         <div class="pf-tier-alloc">
                             <div class="pf-table-box">${renderVariantTable(s.ideal, s.key)}</div>
-                            <div class="pf-donut-box">
-                                <div class="pf-donut-header">
-                                    <span class="pf-donut-title">🎯 资产配置配比</span>
-                                </div>
-                                <div class="cht pf-cht"><canvas id="ch-${s.key}-ideal"></canvas></div>
-                            </div>
+                            ${renderVariantDonut(s.ideal, s, 'ideal')}
                         </div>
                         <div class="pf-tier-analytics">
                             <div class="pf-analytics-col">${renderVariantSim(s.ideal, years)}</div>
@@ -4720,12 +4770,7 @@ const App = (() => {
                         <p style="color:${(s.practical?.note || '').includes('额度叠加') ? 'var(--ok)' : 'var(--txt3)'};font-size:.78rem;font-weight:500;margin:.5rem 0">${s.practical?.note || ''}</p>
                         <div class="pf-tier-alloc">
                             <div class="pf-table-box">${renderVariantTable(s.practical, s.key)}</div>
-                            <div class="pf-donut-box">
-                                <div class="pf-donut-header">
-                                    <span class="pf-donut-title">🎯 资产配置配比</span>
-                                </div>
-                                <div class="cht pf-cht"><canvas id="ch-${s.key}-practical"></canvas></div>
-                            </div>
+                            ${renderVariantDonut(s.practical, s, 'practical')}
                         </div>
                         <div class="pf-tier-analytics">
                             <div class="pf-analytics-col">${renderVariantSim(s.practical, years)}</div>
@@ -4785,30 +4830,30 @@ const App = (() => {
                     pfCharts[cid] = new Chart(el, {
                         type: 'doughnut',
                         data: {
-                            labels: allocs.map(a => a.name.length > 11 ? a.name.substring(0, 10) + '…' : a.name),
+                            labels: allocs.map(a => a.name.length > 12 ? a.name.substring(0, 11) + '…' : a.name),
                             datasets: [{
                                 data: allocs.map(a => a.monthly),
                                 backgroundColor: pieColors,
                                 borderWidth: 0,
-                                hoverOffset: 6,
-                                borderRadius: 5,
+                                hoverOffset: 8,
+                                borderRadius: 6,
                                 spacing: 3
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            cutout: '65%',
+                            cutout: '60%',
                             layout: { padding: 4 },
                             plugins: { 
                                 legend: { 
                                     position: 'bottom', 
                                     labels: { 
-                                        padding: 8, 
+                                        padding: 10, 
                                         usePointStyle: true, 
                                         pointStyle: 'circle', 
-                                        boxWidth: 8,
-                                        font: { size: 11, family: 'system-ui, -apple-system, sans-serif' },
+                                        boxWidth: 9,
+                                        font: { size: 12, family: 'system-ui, -apple-system, sans-serif' },
                                         color: '#64748b'
                                     } 
                                 },

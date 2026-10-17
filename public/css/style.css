@@ -7499,9 +7499,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     padding: 0.85rem 1rem;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    justify-content: space-between;
+    align-items: stretch;
     box-sizing: border-box;
+    height: 100%;
 }
 
 .pf-donut-header {
@@ -7509,7 +7510,13 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
+}
+
+.pf-donut-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .pf-donut-title {
@@ -7518,14 +7525,62 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     color: var(--txt);
 }
 
-/* 圆环图尺寸恢复舒展清晰，避免过小或模糊 */
+.pf-donut-budget-pill {
+    font-size: 0.74rem;
+    color: var(--txt2);
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.pf-donut-budget-pill strong {
+    color: var(--ok);
+}
+
+/* 圆环图尺寸进一步增大，舒展醒目，居中自适应 */
 .cht.pf-cht {
     width: 100%;
-    max-width: 270px;
-    height: 200px;
-    max-height: 210px;
+    max-width: 320px;
+    height: 235px;
+    max-height: 245px;
     margin: 0.2rem auto;
     position: relative;
+    flex: 1;
+}
+
+/* 圆环图卡片底部指标栏：紧凑填补空间，展示费率与标的数 */
+.pf-donut-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.45rem;
+    margin-top: 0.4rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border);
+}
+
+.pf-donut-metric-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.35rem 0.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.pf-donut-metric-item .lb {
+    font-size: 0.68rem;
+    color: var(--txt3);
+    margin-bottom: 2px;
+    white-space: nowrap;
+}
+
+.pf-donut-metric-item .vl {
+    font-size: 0.825rem;
+    font-weight: 700;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
 }
 
 /* 定投方案表格与列宽 */
@@ -7786,6 +7841,44 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .pf-bar-seg {
     height: 100%;
+}
+
+.pf-risk-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.pf-risk-kpi-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.65rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.pf-risk-kpi-box .lb {
+    font-size: 0.7rem;
+    color: var(--txt3);
+    margin-bottom: 3px;
+    white-space: nowrap;
+}
+
+.pf-risk-kpi-box .vl {
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25;
+}
+
+.pf-risk-kpi-box .sub {
+    font-size: 0.65rem;
+    color: var(--txt3);
+    margin-top: 3px;
+    line-height: 1.2;
 }
 
 .pf-risk-note {
