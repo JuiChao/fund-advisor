@@ -5410,9 +5410,15 @@ input[type=range]::-moz-range-thumb {
 /* ===== Footer ===== */
 footer {
     border-top: 1px solid var(--border);
-    margin-top: 2rem;
-    background: rgba(255, 255, 255, 0.45);
-    padding: 2rem;
+    margin-top: 3rem;
+    background: var(--surface);
+    padding: 2.25rem 2rem 2.5rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+[data-theme="dark"] footer {
+    background: var(--bg2) !important;
+    border-top: 1px solid var(--border) !important;
+    color: var(--txt2) !important;
 }
 .footer-inner {
     max-width: 1320px;
@@ -5424,27 +5430,67 @@ footer {
     flex-wrap: wrap;
 }
 .footer-info {
-    font-size: .75rem;
-    color: var(--txt3);
+    font-size: 0.8125rem;
+    color: var(--txt2);
     line-height: 1.8;
 }
 .footer-info strong {
-    color: var(--txt2);
-    font-weight: 600;
+    color: var(--txt);
+    font-weight: 700;
 }
 .footer-links {
     display: flex;
-    gap: 1rem;
+    gap: 1.25rem;
     flex-wrap: wrap;
+    align-items: center;
 }
 .footer-links a {
-    font-size: .75rem;
-    color: var(--txt3);
+    font-size: 0.8125rem;
+    color: var(--txt2);
     text-decoration: none;
     transition: var(--transition);
+    padding: 2px 0;
 }
 .footer-links a:hover {
     color: var(--accent);
+}
+[data-theme="dark"] .footer-links a {
+    color: var(--txt2) !important;
+}
+[data-theme="dark"] .footer-links a:hover {
+    color: var(--accent2) !important;
+}
+.footer-disclaimer {
+    max-width: 1320px;
+    margin: 1.5rem auto 0 auto;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--txt2);
+    line-height: 1.7;
+    text-align: left;
+}
+.footer-disclaimer strong {
+    color: var(--txt);
+    font-weight: 700;
+}
+[data-theme="dark"] .footer-disclaimer {
+    color: var(--txt2) !important;
+    border-top-color: var(--border) !important;
+}
+[data-theme="dark"] .footer-disclaimer strong {
+    color: var(--txt) !important;
+}
+[data-theme="dark"] footer a {
+    color: var(--txt2) !important;
+}
+[data-theme="dark"] footer a:hover {
+    color: var(--accent2) !important;
+}
+[data-theme="dark"] footer div,
+[data-theme="dark"] footer p,
+[data-theme="dark"] footer span {
+    color: var(--txt2) !important;
 }
 
 /* ===== Article Preview Cards (Homepage) ===== */
