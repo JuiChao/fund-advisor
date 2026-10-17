@@ -1086,6 +1086,112 @@
             </div>
         </div>
         <div class="quant-frontier-body" id="quant-frontier-body" style="margin-top:1rem">
+            <!-- 交互式马克维茨有效前沿 (Markowitz Efficient Frontier) -->
+            <div class="frontier-interactive-panel" id="frontier-interactive-panel">
+                <div class="frontier-top-bar">
+                    <div class="frontier-title-group">
+                        <div class="frontier-sub-title">
+                            <span class="frontier-pulse-dot"></span>
+                            <span>马克维茨均值-方差有效前沿曲线 (Markowitz Efficient Frontier)</span>
+                        </div>
+                        <div class="frontier-desc-text">
+                            全收益-方差帕累托最优边界 · 探索不同资金配置下的真实风险贡献与夏普比率
+                        </div>
+                    </div>
+                    <div class="frontier-params-badge" id="frontier-params-badge" title="基于当前宏观与基金中位数动态参数">
+                        <span>⏳ 正在同步量化参数…</span>
+                    </div>
+                </div>
+
+                <div class="frontier-filter-row">
+                    <div class="frontier-presets" id="frontier-presets">
+                        <span class="frontier-presets-label">快速锚定:</span>
+                        <button class="frontier-preset-btn on" data-preset="all">全部前沿</button>
+                        <button class="frontier-preset-btn" data-preset="gmv">🛡️ 最小方差 GMV</button>
+                        <button class="frontier-preset-btn" data-preset="risk_parity">💎 风险平价 ERC</button>
+                        <button class="frontier-preset-btn" data-preset="max_sharpe">🎯 最大夏普 MVO</button>
+                        <button class="frontier-preset-btn" data-preset="conservative">稳健 (30/70)</button>
+                        <button class="frontier-preset-btn" data-preset="balanced">平衡 (50/50)</button>
+                        <button class="frontier-preset-btn" data-preset="growth">进取 (70/30)</button>
+                    </div>
+                    <div class="frontier-toggles">
+                        <label class="frontier-toggle-label" title="资本配置线 (Capital Allocation Line)：从无风险利率 Rf 出发与有效前沿相切的射线">
+                            <input type="checkbox" id="toggle-frontier-cal" checked>
+                            <span class="frontier-toggle-text">资本配置线 (CAL 切线)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="frontier-chart-container">
+                    <canvas id="chart-efficient-frontier"></canvas>
+                </div>
+
+                <!-- 交互式量化探测器 HUD (Active Point Inspector & Slider) -->
+                <div class="frontier-inspector-card" id="frontier-inspector-card">
+                    <div class="frontier-inspector-header">
+                        <div class="frontier-point-tag" id="f-hud-name">
+                            <span class="f-hud-icon" id="f-hud-icon">💎</span>
+                            <span class="f-hud-title" id="f-hud-title">等风险贡献组合 (ERC / 风险平价)</span>
+                            <span class="tag f-hud-badge" id="f-hud-badge">帕累托最优</span>
+                        </div>
+                        <div class="f-hud-hint">💡 拖动下方滑块或点击图表点位，即刻实时测算资产配置与风险裂变</div>
+                    </div>
+
+                    <!-- 动态配比滑块 -->
+                    <div class="frontier-slider-wrapper">
+                        <div class="f-slider-label-row">
+                            <span class="f-slider-label-left">标普 500 (100%)</span>
+                            <span class="f-slider-current" id="f-slider-current">当前资金配比: <strong>纳指 39% : 标普 61%</strong></span>
+                            <span class="f-slider-label-right">纳斯达克 100 (100%)</span>
+                        </div>
+                        <input type="range" min="0" max="100" step="1" value="39" class="frontier-range-slider" id="frontier-range-slider" aria-label="纳指配置比例滑块">
+                    </div>
+
+                    <!-- 核心量化指标卡片 -->
+                    <div class="frontier-kpi-grid">
+                        <div class="frontier-kpi-item">
+                            <div class="f-kpi-label">预期年化回报 E[R]</div>
+                            <div class="f-kpi-val" id="f-kpi-ret" style="color:var(--accent2)">--%</div>
+                            <div class="f-kpi-sub">基准无风险利率 Rf = 2.5%</div>
+                        </div>
+                        <div class="frontier-kpi-item">
+                            <div class="f-kpi-label">组合年化波动率 σ</div>
+                            <div class="f-kpi-val" id="f-kpi-vol" style="color:var(--txt)">--%</div>
+                            <div class="f-kpi-sub" id="f-kpi-vol-rank">分散化降波效果</div>
+                        </div>
+                        <div class="frontier-kpi-item">
+                            <div class="f-kpi-label">夏普比率 (Sharpe)</div>
+                            <div class="f-kpi-val" id="f-kpi-sharpe" style="color:var(--ok)">--</div>
+                            <div class="f-kpi-sub">超额回报 / 单位风险</div>
+                        </div>
+                        <div class="frontier-kpi-item f-kpi-bars-item">
+                            <div class="f-kpi-label">资金配比 vs 真实波动风险贡献 (方差分解)</div>
+                            <div class="f-bars-container">
+                                <div class="f-bar-row">
+                                    <span class="f-bar-name">资金配比</span>
+                                    <div class="f-split-bar">
+                                        <div class="f-split-nq" id="f-cap-nq" style="width:39%">39%</div>
+                                        <div class="f-split-sp" id="f-cap-sp" style="width:61%">61%</div>
+                                    </div>
+                                </div>
+                                <div class="f-bar-row">
+                                    <span class="f-bar-name">风险贡献</span>
+                                    <div class="f-split-bar">
+                                        <div class="f-split-nq f-risk-nq" id="f-risk-nq" style="width:50%">50%</div>
+                                        <div class="f-split-sp f-risk-sp" id="f-risk-sp" style="width:50%">50%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="f-bars-legend">
+                                <span><span class="f-dot f-dot-nq"></span>纳指 100</span>
+                                <span><span class="f-dot f-dot-sp"></span>标普 500</span>
+                                <span class="f-bars-note" id="f-bars-note">✨ 达成绝对等风险中性</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="table-wrap">
                 <table class="quant-matrix-table">
                     <thead>

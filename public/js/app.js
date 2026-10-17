@@ -30,6 +30,26 @@ const App = (() => {
             Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.08)';
         }
 
+        if (chartPool.frontier && chartPool.frontier.options?.scales) {
+            const isD = theme === 'dark';
+            const gc = isD ? 'rgba(129, 140, 248, 0.12)' : 'rgba(99, 102, 241, 0.08)';
+            const tc = isD ? '#94a3b8' : '#64748b';
+            const sc = chartPool.frontier.options.scales;
+            if (sc.x) {
+                sc.x.grid.color = gc;
+                sc.x.ticks.color = tc;
+                if (sc.x.title) sc.x.title.color = tc;
+            }
+            if (sc.y) {
+                sc.y.grid.color = gc;
+                sc.y.ticks.color = tc;
+                if (sc.y.title) sc.y.title.color = tc;
+            }
+            if (chartPool.frontier.options.plugins?.legend?.labels) {
+                chartPool.frontier.options.plugins.legend.labels.color = tc;
+            }
+        }
+
         Object.values(chartPool).forEach(ch => {
             if (ch && typeof ch.update === 'function') ch.update();
         });
@@ -3142,6 +3162,511 @@ const App = (() => {
         </div>`;
     }
 
+    // ===== 阶段4：马克维茨均值-方差有效前沿曲线 (Markowitz Efficient Frontier) =====
+    function renderEfficientFrontier(strategies, dynParams) {
+        const canvas = document.getElementById('chart-efficient-frontier');
+        if (!canvas) return;
+
+        const p = dynParams || _dynamicParams || ALGO_CONFIG?.simulation?.params || {
+            nasdaq_return: 0.1979,
+            nasdaq_vol: 0.1899,
+            sp500_return: 0.1610,
+            sp500_vol: 0.1220,
+            correlation_nq_sp: 0.75
+        };
+        const rf = 0.025; // 2.5% 无风险利率基准
+
+        // 更新顶部量化基准参数徽标
+        const badgeEl = document.getElementById('frontier-params-badge');
+        if (badgeEl) {
+            badgeEl.innerHTML = `📊 基准: 纳指 μ ${(p.nasdaq_return * 100).toFixed(1)}% / σ ${(p.nasdaq_vol * 100).toFixed(1)}% · 标普 μ ${(p.sp500_return * 100).toFixed(1)}% / σ ${(p.sp500_vol * 100).toFixed(1)}% · ρ ${(p.correlation_nq_sp || 0.75).toFixed(2)} · Rf 2.5%`;
+        }
+
+        // 计算任意资产权重的量化前沿特征
+        function calcFrontierPoint(w_nq) {
+            w_nq = Math.max(0, Math.min(1, Number(w_nq)));
+            const w_sp = 1 - w_nq;
+            const s1_sq = p.nasdaq_vol ** 2;
+            const s2_sq = p.sp500_vol ** 2;
+            const rho = p.correlation_nq_sp || 0.75;
+            const cov12 = rho * p.nasdaq_vol * p.sp500_vol;
+            const port_var = (w_nq ** 2) * s1_sq + 2 * w_nq * w_sp * cov12 + (w_sp ** 2) * s2_sq;
+            const port_vol = Math.sqrt(Math.max(1e-8, port_var));
+            const exp_r = w_nq * p.nasdaq_return + w_sp * p.sp500_return;
+            const sharpe = (exp_r - rf) / port_vol;
+
+            const mrc_nq = (w_nq * s1_sq + w_sp * cov12) / port_vol;
+            const mrc_sp = (w_sp * s2_sq + w_nq * cov12) / port_vol;
+            const trc_nq = w_nq * mrc_nq;
+            const trc_sp = w_sp * mrc_sp;
+            const total_trc = trc_nq + trc_sp;
+            const rc_nq = total_trc > 0 ? (trc_nq / total_trc) * 100 : 50;
+            const rc_sp = total_trc > 0 ? (trc_sp / total_trc) * 100 : 50;
+
+            return {
+                w_nq,
+                w_sp,
+                w_nq_pct: Math.round(w_nq * 100),
+                w_sp_pct: Math.round(w_sp * 100),
+                x: +(port_vol * 100).toFixed(2),
+                y: +(exp_r * 100).toFixed(2),
+                port_vol_pct: +(port_vol * 100).toFixed(2),
+                exp_r_pct: +(exp_r * 100).toFixed(2),
+                sharpe: +sharpe.toFixed(2),
+                rc_nq: +rc_nq.toFixed(1),
+                rc_sp: +rc_sp.toFixed(1)
+            };
+        }
+
+        // 解析解析解：GMV (全局最小方差) 与 ERC (等风险贡献)
+        const s1_sq = p.nasdaq_vol ** 2;
+        const s2_sq = p.sp500_vol ** 2;
+        const rho = p.correlation_nq_sp || 0.75;
+        const cov12 = rho * p.nasdaq_vol * p.sp500_vol;
+        const gmv_denom = s1_sq + s2_sq - 2 * cov12;
+        const gmv_raw = gmv_denom !== 0 ? (s2_sq - cov12) / gmv_denom : 0;
+        const w_gmv = Math.max(0, Math.min(1, gmv_raw));
+        const w_erc = p.sp500_vol / (p.nasdaq_vol + p.sp500_vol);
+
+        // 离散化 101 点前沿曲线采样 (w_nq 从 0 到 1，步长 0.01)
+        const allCurvePoints = [];
+        for (let i = 0; i <= 100; i++) {
+            allCurvePoints.push(calcFrontierPoint(i / 100));
+        }
+
+        // 寻找最优夏普切线组合 Tangency Portfolio
+        let maxSharpePt = allCurvePoints[0];
+        allCurvePoints.forEach(pt => {
+            if (pt.sharpe > maxSharpePt.sharpe) {
+                maxSharpePt = pt;
+            }
+        });
+        const w_sharpe = maxSharpePt.w_nq;
+
+        // 拆分有效前沿（GMV上方）与无效下半支（GMV下方）
+        const effPoints = [];
+        const ineffPoints = [];
+        allCurvePoints.forEach(pt => {
+            if (pt.w_nq >= w_gmv - 0.0001) {
+                effPoints.push(pt);
+            } else {
+                ineffPoints.push(pt);
+            }
+        });
+        if (ineffPoints.length > 0 && w_gmv > 0.001) {
+            ineffPoints.push(calcFrontierPoint(w_gmv));
+        }
+
+        // 资本配置线 (Capital Allocation Line - CAL)
+        const tanPt = calcFrontierPoint(w_sharpe);
+        const calSlope = (tanPt.exp_r_pct - (rf * 100)) / (tanPt.port_vol_pct || 1);
+        const maxVolX = Math.max(24, Math.round(p.nasdaq_vol * 118));
+        const calPoints = [
+            { x: 0, y: +(rf * 100).toFixed(2), isCal: true },
+            { x: tanPt.x, y: tanPt.y, isCal: true },
+            { x: maxVolX, y: +((rf * 100) + calSlope * maxVolX).toFixed(2), isCal: true }
+        ];
+
+        // 关键量化里程碑组合定义
+        const milestoneDefs = [
+            { key: 'sp500_only', name: '100% 标普 500 (基石底仓)', icon: '⚓', w: 0.0, color: '#14b8a6', badge: '单一基石', desc: '纯标普500基准' },
+            { key: 'gmv', name: '全局最小方差组合 (GMV)', icon: '🛡️', w: w_gmv, color: '#10b981', badge: '全市场最低波动', desc: '全市场方差风险绝对最低点' },
+            { key: 'conservative', name: '稳健型 (30% 纳指 : 70% 标普)', icon: '🛡️', w: 0.30, color: '#0ea5e9', badge: '经典稳健', desc: '低波底仓防御' },
+            { key: 'risk_parity', name: '等风险贡献 (ERC / 风险平价)', icon: '💎', w: w_erc, color: '#8b5cf6', badge: '风险中性 50:50', desc: '消除单一资产高波动主导，两资产风险各50%' },
+            { key: 'balanced', name: '平衡型 (50% 纳指 : 50% 标普)', icon: '⚖️', w: 0.50, color: '#3b82f6', badge: '传统平分 (62%风险)', desc: '资金对半均分，但纳指主导 62% 以上方差风险' },
+            { key: 'max_sharpe', name: '最优夏普组合 (Tangency / MVO)', icon: '🎯', w: w_sharpe, color: '#f59e0b', badge: '最高夏普切线点', desc: '在给定约束下获得单位波动最高超额回报' },
+            { key: 'growth', name: '进取型 (70% 纳指 : 30% 标普)', icon: '🚀', w: 0.70, color: '#f43f5e', badge: '高贝塔进攻', desc: '高比例科技敞口，享受充沛牛市弹性' },
+            { key: 'nasdaq_only', name: '100% 纳斯达克 100 (成长引擎)', icon: '⚡', w: 1.0, color: '#6366f1', badge: '单一成长', desc: '纯纳斯达克100基准' }
+        ];
+
+        const milestonePoints = milestoneDefs.map(m => {
+            const pt = calcFrontierPoint(m.w);
+            return {
+                ...pt,
+                key: m.key,
+                name: m.name,
+                icon: m.icon,
+                color: m.color,
+                badge: m.badge,
+                desc: m.desc,
+                isMilestone: true
+            };
+        });
+
+        // 默认激活点：优先取风险平价组合 ERC
+        let currentWeight = w_erc;
+        let activePoint = calcFrontierPoint(currentWeight);
+
+        // 主题色配置
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const gridColor = isDark ? 'rgba(129, 140, 248, 0.12)' : 'rgba(99, 102, 241, 0.08)';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+
+        // 销毁已有图表实例
+        if (chartPool.frontier) {
+            chartPool.frontier.destroy();
+            chartPool.frontier = null;
+        }
+
+        // 创建 Chart.js 散点与折线图
+        chartPool.frontier = new Chart(canvas, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        type: 'line',
+                        label: '马克维茨有效前沿 (Efficient Frontier)',
+                        data: effPoints,
+                        borderColor: '#6366f1',
+                        backgroundColor: isDark ? 'rgba(99, 102, 241, 0.12)' : 'rgba(99, 102, 241, 0.06)',
+                        fill: false,
+                        tension: 0.35,
+                        borderWidth: 3.5,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        showLine: true,
+                        order: 3
+                    },
+                    {
+                        type: 'line',
+                        label: '无效下半支 (Inefficient Frontier)',
+                        data: ineffPoints,
+                        borderColor: isDark ? 'rgba(148, 163, 184, 0.4)' : 'rgba(148, 163, 184, 0.55)',
+                        borderDash: [5, 5],
+                        tension: 0.35,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        fill: false,
+                        showLine: true,
+                        order: 4
+                    },
+                    {
+                        type: 'line',
+                        label: '资本配置线 (CAL 切线)',
+                        data: calPoints,
+                        borderColor: '#f59e0b',
+                        borderDash: [6, 4],
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                        showLine: true,
+                        order: 5
+                    },
+                    {
+                        type: 'scatter',
+                        label: '关键量化里程碑',
+                        data: milestonePoints,
+                        pointBackgroundColor: ctx => ctx.raw?.color || '#6366f1',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: ctx => (ctx.raw?.key === 'risk_parity' || ctx.raw?.key === 'max_sharpe') ? 9 : 7,
+                        pointHoverRadius: 12,
+                        order: 2
+                    },
+                    {
+                        type: 'scatter',
+                        label: '当前探索点位 (Cursor)',
+                        data: [activePoint],
+                        pointBackgroundColor: '#ec4899',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 3,
+                        pointRadius: 10,
+                        pointHoverRadius: 14,
+                        order: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 600
+                },
+                interaction: {
+                    mode: 'nearest',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: textColor,
+                            font: { size: 11, weight: '500' },
+                            usePointStyle: true,
+                            filter: item => item.text !== '当前探索点位 (Cursor)'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.96)',
+                        titleColor: isDark ? '#f8fafc' : '#0f172a',
+                        bodyColor: isDark ? '#cbd5e1' : '#334155',
+                        borderColor: isDark ? 'rgba(99, 102, 241, 0.4)' : 'rgba(99, 102, 241, 0.25)',
+                        borderWidth: 1,
+                        padding: 12,
+                        boxPadding: 4,
+                        usePointStyle: true,
+                        callbacks: {
+                            title: function(items) {
+                                if (!items.length) return '';
+                                const raw = items[0].raw;
+                                if (raw.isCal) return '📐 资本配置线 (Capital Allocation Line)';
+                                if (raw.name) return `${raw.icon || '📍'} ${raw.name}`;
+                                return `组合配比: 纳指 ${raw.w_nq_pct}% : 标普 ${raw.w_sp_pct}%`;
+                            },
+                            label: function(item) {
+                                const raw = item.raw;
+                                if (raw.isCal) {
+                                    return [
+                                        `波动率: ${raw.x}%`,
+                                        `预期回报: ${raw.y}%`,
+                                        '说明: 连接无风险资产 Rf 与切线组合的高效借贷线'
+                                    ];
+                                }
+                                const lines = [
+                                    `预期年化回报 E[R]: ${raw.y}%`,
+                                    `组合年化波动 σ: ${raw.x}%`,
+                                    `夏普比率 (Sharpe): ${raw.sharpe}`,
+                                    `资金配比: 纳指 ${raw.w_nq_pct}% : 标普 ${raw.w_sp_pct}%`,
+                                    `风险贡献: 纳指 ${raw.rc_nq}% : 标普 ${raw.rc_sp}%`
+                                ];
+                                if (raw.desc) {
+                                    lines.push(`💡 特征: ${raw.desc}`);
+                                }
+                                return lines;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        grid: { color: gridColor },
+                        ticks: {
+                            color: textColor,
+                            font: { size: 11 },
+                            callback: v => v + '%'
+                        },
+                        title: {
+                            display: true,
+                            text: '组合年化波动率 σ (风险维度)',
+                            color: textColor,
+                            font: { size: 11, weight: '600' }
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        grid: { color: gridColor },
+                        ticks: {
+                            color: textColor,
+                            font: { size: 11 },
+                            callback: v => v + '%'
+                        },
+                        title: {
+                            display: true,
+                            text: '预期年化收益率 E[R] (收益维度)',
+                            color: textColor,
+                            font: { size: 11, weight: '600' }
+                        }
+                    }
+                },
+                onClick: (e, elements) => {
+                    if (elements.length > 0) {
+                        const el = elements[0];
+                        const dataset = chartPool.frontier.data.datasets[el.datasetIndex];
+                        const pt = dataset.data[el.index];
+                        if (pt && pt.w_nq != null) {
+                            updateHUD(pt.w_nq);
+                        }
+                    }
+                }
+            }
+        });
+
+        // 更新探测器 HUD 状态
+        function updateHUD(w_nq) {
+            const pt = calcFrontierPoint(w_nq);
+            currentWeight = pt.w_nq;
+
+            // 查找是否靠近关键里程碑
+            const matched = milestonePoints.find(m => Math.abs(m.w_nq - pt.w_nq) <= 0.015);
+
+            const hudIcon = document.getElementById('f-hud-icon');
+            const hudTitle = document.getElementById('f-hud-title');
+            const hudBadge = document.getElementById('f-hud-badge');
+
+            if (matched) {
+                if (hudIcon) hudIcon.textContent = matched.icon;
+                if (hudTitle) hudTitle.textContent = matched.name;
+                if (hudBadge) {
+                    hudBadge.textContent = matched.badge;
+                    hudBadge.style.background = matched.color;
+                }
+            } else {
+                if (hudIcon) hudIcon.textContent = '🧭';
+                if (hudTitle) hudTitle.textContent = `自定义探索配比 (纳指 ${pt.w_nq_pct}% : 标普 ${pt.w_sp_pct}%)`;
+                if (hudBadge) {
+                    hudBadge.textContent = '自定义配置';
+                    hudBadge.style.background = 'var(--accent)';
+                }
+            }
+
+            const slider = document.getElementById('frontier-range-slider');
+            if (slider && Number(slider.value) !== pt.w_nq_pct) {
+                slider.value = pt.w_nq_pct;
+            }
+
+            const curLabel = document.getElementById('f-slider-current');
+            if (curLabel) {
+                curLabel.innerHTML = `当前资金配比: <strong>纳指 ${pt.w_nq_pct}% : 标普 ${pt.w_sp_pct}%</strong>`;
+            }
+
+            const retEl = document.getElementById('f-kpi-ret');
+            if (retEl) retEl.textContent = `${pt.exp_r_pct}%`;
+
+            const volEl = document.getElementById('f-kpi-vol');
+            if (volEl) volEl.textContent = `${pt.port_vol_pct}%`;
+
+            const sharpeEl = document.getElementById('f-kpi-sharpe');
+            if (sharpeEl) sharpeEl.textContent = `${pt.sharpe}`;
+
+            const volRankEl = document.getElementById('f-kpi-vol-rank');
+            if (volRankEl) {
+                if (Math.abs(pt.w_nq - w_gmv) < 0.02) {
+                    volRankEl.textContent = '🛡️ 全局最小方差点 (防守最强)';
+                } else if (Math.abs(pt.w_nq - w_sharpe) < 0.02) {
+                    volRankEl.textContent = '🎯 切线最高夏普比率 (最优超额)';
+                } else if (Math.abs(pt.rc_nq - 50) <= 2) {
+                    volRankEl.textContent = '💎 风险中性 (两资产各承担50%风险)';
+                } else {
+                    volRankEl.textContent = `分散化降波: 降低单一指数极端波动`;
+                }
+            }
+
+            // 资金配比条
+            const capNq = document.getElementById('f-cap-nq');
+            const capSp = document.getElementById('f-cap-sp');
+            if (capNq && capSp) {
+                capNq.style.width = `${pt.w_nq_pct}%`;
+                capNq.textContent = pt.w_nq_pct > 8 ? `${pt.w_nq_pct}%` : '';
+                capSp.style.width = `${pt.w_sp_pct}%`;
+                capSp.textContent = pt.w_sp_pct > 8 ? `${pt.w_sp_pct}%` : '';
+            }
+
+            // 风险贡献条
+            const riskNq = document.getElementById('f-risk-nq');
+            const riskSp = document.getElementById('f-risk-sp');
+            if (riskNq && riskSp) {
+                riskNq.style.width = `${pt.rc_nq}%`;
+                riskNq.textContent = pt.rc_nq > 10 ? `${pt.rc_nq}%` : '';
+                riskSp.style.width = `${pt.rc_sp}%`;
+                riskSp.textContent = pt.rc_sp > 10 ? `${pt.rc_sp}%` : '';
+            }
+
+            // 风险提示文案
+            const noteEl = document.getElementById('f-bars-note');
+            if (noteEl) {
+                if (Math.abs(pt.rc_nq - 50) <= 2) {
+                    noteEl.textContent = '✨ 达成绝对等风险中性 (各50%)';
+                    noteEl.style.color = 'var(--ok)';
+                } else if (pt.w_nq_pct === 50) {
+                    noteEl.textContent = `⚠️ 传统平分: 纳指实际承担 ${pt.rc_nq}% 方差风险`;
+                    noteEl.style.color = 'var(--down)';
+                } else if (pt.rc_nq > 65) {
+                    noteEl.textContent = `⚡ 纳指高贝塔主导 ${pt.rc_nq}% 风险`;
+                    noteEl.style.color = 'var(--down)';
+                } else {
+                    noteEl.textContent = `标普防守主导 ${pt.rc_sp}% 风险`;
+                    noteEl.style.color = 'var(--ok)';
+                }
+            }
+
+            // 更新图表 Cursor 点
+            if (chartPool.frontier) {
+                chartPool.frontier.data.datasets[4].data = [pt];
+                chartPool.frontier.update('none');
+            }
+        }
+
+        // 初始化 HUD 显示
+        updateHUD(currentWeight);
+
+        // 绑定滑块拖动事件
+        const slider = document.getElementById('frontier-range-slider');
+        if (slider) {
+            slider.oninput = (e) => {
+                const w = Number(e.target.value) / 100;
+                updateHUD(w);
+                // 同步更新预设按钮状态
+                const presetBtns = document.querySelectorAll('.frontier-preset-btn');
+                presetBtns.forEach(btn => btn.classList.remove('on'));
+            };
+        }
+
+        // 绑定预设锚点按钮事件
+        const presetContainer = document.getElementById('frontier-presets');
+        if (presetContainer) {
+            presetContainer.querySelectorAll('.frontier-preset-btn').forEach(btn => {
+                btn.onclick = () => {
+                    presetContainer.querySelectorAll('.frontier-preset-btn').forEach(b => b.classList.remove('on'));
+                    btn.classList.add('on');
+                    const preset = btn.dataset.preset;
+                    let targetW = w_erc;
+                    if (preset === 'gmv') targetW = w_gmv;
+                    else if (preset === 'risk_parity') targetW = w_erc;
+                    else if (preset === 'max_sharpe') targetW = w_sharpe;
+                    else if (preset === 'conservative') targetW = 0.30;
+                    else if (preset === 'balanced') targetW = 0.50;
+                    else if (preset === 'growth') targetW = 0.70;
+                    else if (preset === 'all') targetW = w_erc;
+
+                    updateHUD(targetW);
+
+                    // 同步高亮下方矩阵表格中对应的策略
+                    if (preset !== 'all') {
+                        const targetRow = document.querySelector(`.quant-matrix-row[data-strategy="${preset}"]`);
+                        if (targetRow) {
+                            document.querySelectorAll('.quant-matrix-row').forEach(r => r.classList.remove('highlight-pulse'));
+                            targetRow.classList.add('highlight-pulse');
+                            setTimeout(() => targetRow.classList.remove('highlight-pulse'), 2500);
+                        }
+                    }
+                };
+            });
+        }
+
+        // 绑定 CAL 切线显示切换事件
+        const calToggle = document.getElementById('toggle-frontier-cal');
+        if (calToggle) {
+            calToggle.onchange = () => {
+                if (chartPool.frontier) {
+                    chartPool.frontier.data.datasets[2].hidden = !calToggle.checked;
+                    chartPool.frontier.update();
+                }
+            };
+        }
+
+        // 绑定下方策略矩阵行点击事件：点击行即在上方有效前沿高亮并定位
+        const matrixRows = document.querySelectorAll('.quant-matrix-row');
+        matrixRows.forEach(row => {
+            row.style.cursor = 'pointer';
+            row.onclick = (e) => {
+                if (e.target.closest('.btn-jump-strat, .btn-sim-matrix')) return;
+                const stratKey = row.dataset.strategy;
+                if (!stratKey) return;
+                const matchBtn = document.querySelector(`.frontier-preset-btn[data-preset="${stratKey}"]`);
+                if (matchBtn) {
+                    matchBtn.click();
+                    const panel = document.getElementById('frontier-interactive-panel');
+                    if (panel) {
+                        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            };
+        });
+    }
+
     function applyPortfolioCategoryFilter(targetCat) {
         const cat = targetCat || document.querySelector('#pf-category-filter .seg-btn.on')?.dataset?.category || 'ALL';
         let matchCount = 0;
@@ -3252,7 +3777,7 @@ const App = (() => {
                         highlightLogic = '<strong>稳健底仓压舱石：</strong>以标普500低波动为主，防守回撤最强';
                     }
 
-                    mHtml += `<tr class="quant-matrix-row">
+                    mHtml += `<tr class="quant-matrix-row" data-strategy="${s.key}">
                         <td style="font-weight:600;white-space:nowrap">${s.icon || ''} ${s.name}</td>
                         <td>${typeBadge}</td>
                         <td style="font-weight:600">${nqW}% : ${spW}%</td>
@@ -3310,6 +3835,9 @@ const App = (() => {
                     };
                 });
             }
+
+            // 渲染马克维茨均值-方差有效前沿交互图表看板
+            renderEfficientFrontier(strategies, dynParams);
 
             let html = '';
             strategies.forEach(s => {
@@ -4197,6 +4725,9 @@ const App = (() => {
                 const isHidden = qfBody.style.display === 'none';
                 qfBody.style.display = isHidden ? 'block' : 'none';
                 if (qfArrow) qfArrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
+                if (isHidden && chartPool.frontier) {
+                    setTimeout(() => { chartPool.frontier.resize(); }, 50);
+                }
             });
         }
 
