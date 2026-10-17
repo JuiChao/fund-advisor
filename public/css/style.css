@@ -1058,6 +1058,16 @@ tr:hover .tbl-row-expand-arrow {
 .badge-e { background: rgba(217, 119, 6, 0.12); color: #b45309; border: 1px solid rgba(217, 119, 6, 0.25); }
 .badge-f { background: rgba(225, 29, 72, 0.12); color: #be123c; border: 1px solid rgba(225, 29, 72, 0.25); }
 .badge-i { background: rgba(16, 185, 129, 0.12); color: #047857; border: 1px solid rgba(16, 185, 129, 0.25); }
+.badge-other { background: rgba(100, 116, 139, 0.12); color: #475569; border: 1px solid rgba(100, 116, 139, 0.25); }
+
+/* 暗色主题份额徽标高对比色彩 */
+[data-theme="dark"] .badge-a { background: rgba(99, 102, 241, 0.2); color: #c7d2fe; border-color: rgba(99, 102, 241, 0.35); }
+[data-theme="dark"] .badge-c { background: rgba(168, 85, 247, 0.2); color: #e9d5ff; border-color: rgba(168, 85, 247, 0.35); }
+[data-theme="dark"] .badge-d { background: rgba(6, 182, 212, 0.2); color: #a5f3fc; border-color: rgba(6, 182, 212, 0.35); }
+[data-theme="dark"] .badge-e { background: rgba(245, 158, 11, 0.2); color: #fde68a; border-color: rgba(245, 158, 11, 0.35); }
+[data-theme="dark"] .badge-f { background: rgba(244, 63, 94, 0.2); color: #fecdd3; border-color: rgba(244, 63, 94, 0.35); }
+[data-theme="dark"] .badge-i { background: rgba(16, 185, 129, 0.2); color: #a7f3d0; border-color: rgba(16, 185, 129, 0.35); }
+[data-theme="dark"] .badge-other { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border-color: rgba(148, 163, 184, 0.35); }
 .badge-stacked {
     background: linear-gradient(135deg, #10b981, #059669);
     color: #fff;
@@ -1547,10 +1557,10 @@ input[type=range]::-moz-range-thumb {
     border-left: 3px solid var(--accent);
 }
 
-/* ===== 首页费率分布自适应栅格（7:3比例拉宽纳指/缩窄标普，实现两图柱体等宽） ===== */
+/* ===== 首页费率分布自适应栅格（上下排版） ===== */
 .fee-dist-grid {
     display: grid;
-    grid-template-columns: 7fr 3fr;
+    grid-template-columns: 1fr;
     gap: 1.25rem;
     margin-bottom: 1.25rem;
     align-items: stretch;
@@ -2897,6 +2907,12 @@ input[type=range]::-moz-range-thumb {
     color: #cbd5e1;
     border: 1px solid rgba(148, 163, 184, 0.3);
 }
+.dbp-share-badge.badge-a { background: rgba(99, 102, 241, 0.25); color: #c7d2fe; border: 1px solid rgba(99, 102, 241, 0.45); }
+.dbp-share-badge.badge-c { background: rgba(168, 85, 247, 0.25); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.45); }
+.dbp-share-badge.badge-d { background: rgba(8, 145, 178, 0.25); color: #a5f3fc; border: 1px solid rgba(8, 145, 178, 0.45); }
+.dbp-share-badge.badge-e { background: rgba(217, 119, 6, 0.25); color: #fde68a; border: 1px solid rgba(217, 119, 6, 0.45); }
+.dbp-share-badge.badge-f { background: rgba(225, 29, 72, 0.25); color: #fecdd3; border: 1px solid rgba(225, 29, 72, 0.45); }
+.dbp-share-badge.badge-i { background: rgba(16, 185, 129, 0.25); color: #a7f3d0; border: 1px solid rgba(16, 185, 129, 0.45); }
 .dbp-fund-code {
     font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 15px;
@@ -5760,4 +5776,130 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     50% { box-shadow: 0 0 0 12px rgba(99, 102, 241, 0); }
     100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
 }
+
+/* ===== 美股 QDII 指数基金全景档案库 表格与字体排版优化 ===== */
+#funds-directory .card {
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.04);
+}
+#funds-directory .dir-card-title {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--txt);
+    letter-spacing: -0.01em;
+}
+#funds-directory .dir-table-wrap {
+    overflow-x: auto;
+    margin-top: 0.75rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+}
+.dir-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 0.835rem;
+    line-height: 1.5;
+}
+.dir-table thead {
+    background: var(--surface2);
+}
+.dir-table th {
+    background: var(--surface2);
+    color: var(--txt2);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+}
+.dir-table th.col-left {
+    text-align: left;
+}
+.dir-table th.col-center {
+    text-align: center;
+}
+.dir-table th.col-right {
+    text-align: right;
+}
+.dir-table td {
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    transition: background-color 0.15s ease;
+}
+.dir-table tbody tr:last-child td {
+    border-bottom: none;
+}
+.dir-table tbody tr:hover td {
+    background: rgba(99, 102, 241, 0.04);
+}
+.dir-fund-name {
+    color: var(--txt);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: -0.01em;
+    line-height: 1.45;
+    transition: color 0.18s ease;
+}
+.dir-fund-name:hover {
+    color: var(--accent2);
+    text-decoration: underline;
+}
+.dir-fund-mgr {
+    color: var(--txt2);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+}
+.dir-fund-fee {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+.dir-fund-fee.fee-low {
+    color: var(--ok);
+}
+.dir-fund-fee.fee-mid {
+    color: var(--txt);
+}
+.dir-fund-fee.fee-high {
+    color: var(--warn);
+}
+.btn-dir-review {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--accent2);
+    border: 1px solid var(--border2);
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+.btn-dir-review:hover {
+    background: var(--accent-g);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+    transform: translateY(-1px);
+}
+
 

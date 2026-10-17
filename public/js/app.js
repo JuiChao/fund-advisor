@@ -619,7 +619,9 @@ const App = (() => {
 
     // ===== 份额徽章助手 =====
     function shareBadge(sclass) {
-        const c = (sclass || 'A').toUpperCase();
+        let raw = (sclass || 'A').toString().trim().toUpperCase();
+        raw = raw.replace(/类.*$/, '');
+        const c = raw.charAt(0) || 'A';
         const map = {
             'A': 'badge-a',
             'C': 'badge-c',
@@ -628,7 +630,7 @@ const App = (() => {
             'F': 'badge-f',
             'I': 'badge-i'
         };
-        const cls = map[c] || 'badge-a';
+        const cls = map[c] || 'badge-other';
         return `<span class="badge-share ${cls}">${c}类</span>`;
     }
 
