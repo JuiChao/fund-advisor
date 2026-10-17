@@ -173,16 +173,19 @@ body {
     background: var(--surface2);
     border: 1px solid var(--border2);
     color: var(--txt);
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     transition: var(--transition);
     box-shadow: var(--shadow-sm);
+    touch-action: manipulation;
 }
 .theme-toggle:hover {
     transform: rotate(20deg) scale(1.08);
@@ -197,9 +200,14 @@ body {
     border: none;
     cursor: pointer;
     padding: .5rem;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
     flex-direction: column;
     gap: 5px;
     z-index: 101;
+    touch-action: manipulation;
 }
 .nav-toggle span {
     display: block;
@@ -313,6 +321,7 @@ body {
     flex-direction: column;
     box-shadow: var(--shadow-sm);
     cursor: pointer;
+    touch-action: manipulation;
 }
 .journey-card:hover {
     transform: translateY(-4px);
@@ -8074,6 +8083,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         padding-bottom: 0.5rem;
         border-bottom: 1px solid var(--border);
     }
+    .ticker-box:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
     .brand-sub-badge {
         display: none;
     }
@@ -8258,6 +8271,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    min-height: 44px;
     padding: 0.65rem 1rem;
     background: var(--surface2);
     color: var(--txt) !important;
@@ -8268,6 +8282,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     text-decoration: none;
     box-sizing: border-box;
     transition: var(--transition);
+    touch-action: manipulation;
 }
 .btn-engine-cta:hover {
     background: var(--accent);
@@ -8338,5 +8353,64 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
 }
 
+/* ===== 移动端自适应优化与 Google Search Console (GSC) 规范全面增强 ===== */
+@media (max-width: 520px) {
+    .navbar {
+        padding: 0 0.85rem;
+    }
+    .nav-cta-btn {
+        display: none; /* 狭窄手机屏幕腾出顶栏空间，避免与Logo及触控按钮挤压溢出 */
+    }
+}
 
+@media (max-width: 480px) {
+    .navbar {
+        padding: 0 0.75rem;
+    }
+    .quant-flagship-section {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .section-title {
+        font-size: 1.35rem;
+    }
+    .quant-engine-card {
+        padding: 1.1rem;
+    }
+    .engine-title {
+        font-size: 1.05rem;
+    }
+    .home-quota-radar-card {
+        padding: 1rem !important;
+    }
+    /* 移动端圆环图高度精细化适配：大而饱满且留白极致紧凑 */
+    .cht.pf-cht {
+        height: 260px;
+        max-height: 270px;
+        min-height: 240px;
+    }
+    /* 敏感度调谐档位小屏自适应折行 */
+    .sim-sens-tabs {
+        flex-wrap: wrap;
+    }
+    .sim-sens-tabs .sens-btn {
+        flex: 1 1 calc(50% - 4px);
+        min-height: 38px;
+    }
+}
 
+@media (max-width: 420px) {
+    .engine-preview-kpi-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    .hero-banner {
+        padding: 1.25rem 0.85rem;
+    }
+    .hero-title {
+        font-size: 1.35rem;
+    }
+    .hero-desc {
+        font-size: 0.85rem;
+    }
+}
