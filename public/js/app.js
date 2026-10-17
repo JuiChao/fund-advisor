@@ -3517,12 +3517,29 @@ const App = (() => {
             </div>`;
         }
 
-        return `<div style="margin-top:1rem">
-            <div class="stats">
-                <div class="stat"><div class="lb">预期年化</div><div class="vl" style="font-size:1.05rem;color:var(--accent2)">${sim.annualReturn}%</div></div>
-                <div class="stat"><div class="lb">${years}年终值</div><div class="vl" style="font-size:1.05rem;color:var(--ok)">${money(sim.medianFinal)}</div></div>
+        return `
+        <div class="pf-sim-card">
+            <div class="pf-card-head">
+                <div class="pf-card-title">
+                    <span style="font-size:0.95rem">📈</span>
+                    <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">长期定投复利预期 (${years}年)</span>
+                </div>
+                <div class="pf-pill-accent">
+                    预期年化: <strong style="color:var(--accent2)">${sim.annualReturn}%</strong>
+                </div>
             </div>
-            <div style="font-size:.75rem;color:var(--txt3);margin-top:.35rem">5%: ${money(sim.p5)} · 25%: ${money(sim.p25)} · 75%: ${money(sim.p75)} · 95%: ${money(sim.p95)}</div>
+            
+            <div class="pf-sim-summary-row">
+                <div class="pf-sim-summary-item">
+                    <span class="lb">${years}年终值中位数 (P50):</span>
+                    <span class="vl" style="color:var(--ok);font-weight:700">${money(sim.medianFinal)}</span>
+                </div>
+                <div class="pf-sim-summary-item">
+                    <span class="lb">5%~95% 区间:</span>
+                    <span class="vl" style="color:var(--txt2)">${money(sim.p5)} ~ ${money(sim.p95)}</span>
+                </div>
+            </div>
+
             ${downsideCardHtml}
         </div>`;
     }
@@ -3558,38 +3575,43 @@ const App = (() => {
         }
 
         return `
-        <div style="margin-top:1.25rem;padding:0.85rem 1rem;background:var(--surface2, var(--bg2));border-radius:var(--radius-sm, 8px);border:1px solid var(--border)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;flex-wrap:wrap;gap:6px">
-                <div style="display:flex;align-items:center;gap:6px">
-                    <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">📊 资金配置 vs 实际波动风险贡献</span>
+        <div class="pf-risk-card">
+            <div class="pf-card-head">
+                <div class="pf-card-title">
+                    <span style="font-size:0.95rem">⚖️</span>
+                    <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">资金配置 vs 波动风险贡献</span>
                     ${statusTag}
                 </div>
-                <span style="font-size:0.75rem;color:var(--txt3)">组合年化波动: <strong>${vol}%</strong>${sharpe ? ' · 夏普: <strong>' + sharpe + '</strong>' : ''}${sortino ? ' · 索提诺: <strong style="color:var(--ok)">' + sortino + '</strong>' : ''}</span>
+                <div class="pf-pill-metrics">
+                    年化波动: <strong>${vol}%</strong>${sharpe ? ' · 夏普: <strong>' + sharpe + '</strong>' : ''}${sortino ? ' · 索提诺: <strong style="color:var(--ok)">' + sortino + '</strong>' : ''}
+                </div>
             </div>
             
-            <div style="margin-bottom:0.5rem">
-                <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--txt2);margin-bottom:3px">
-                    <span>资金权重 (Capital Weight)</span>
-                    <span>纳指 ${nqCapitalPct}% / 标普 ${spCapitalPct}%</span>
+            <div class="pf-risk-bars">
+                <div class="pf-bar-group">
+                    <div class="pf-bar-label">
+                        <span>资金权重 (Capital Weight)</span>
+                        <span>纳指 ${nqCapitalPct}% / 标普 ${spCapitalPct}%</span>
+                    </div>
+                    <div class="pf-bar-track">
+                        <div class="pf-bar-seg" style="width:${nqCapitalPct}%;background:#3b82f6" title="纳指资金占比 ${nqCapitalPct}%"></div>
+                        <div class="pf-bar-seg" style="width:${spCapitalPct}%;background:#10b981" title="标普资金占比 ${spCapitalPct}%"></div>
+                    </div>
                 </div>
-                <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--border)">
-                    <div style="width:${nqCapitalPct}%;background:#3b82f6" title="纳指资金占比 ${nqCapitalPct}%"></div>
-                    <div style="width:${spCapitalPct}%;background:#10b981" title="标普资金占比 ${spCapitalPct}%"></div>
+
+                <div class="pf-bar-group">
+                    <div class="pf-bar-label">
+                        <span>波动风险贡献 (Risk Contribution)</span>
+                        <span style="font-weight:${s.key === 'risk_parity' ? '700;color:var(--ok)' : '600'}">纳指 ${nqRiskPct}% / 标普 ${spRiskPct}%</span>
+                    </div>
+                    <div class="pf-bar-track">
+                        <div class="pf-bar-seg" style="width:${nqRiskPct}%;background:linear-gradient(90deg, #3b82f6, #6366f1)" title="纳指风险贡献 ${nqRiskPct}%"></div>
+                        <div class="pf-bar-seg" style="width:${spRiskPct}%;background:linear-gradient(90deg, #10b981, #059669)" title="标普风险贡献 ${spRiskPct}%"></div>
+                    </div>
                 </div>
             </div>
 
-            <div style="margin-bottom:0.6rem">
-                <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--txt2);margin-bottom:3px">
-                    <span>波动风险贡献 (Risk Contribution)</span>
-                    <span style="font-weight:${s.key === 'risk_parity' ? '700;color:var(--ok)' : 'normal'}">纳指 ${nqRiskPct}% / 标普 ${spRiskPct}%</span>
-                </div>
-                <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--border)">
-                    <div style="width:${nqRiskPct}%;background:linear-gradient(90deg, #3b82f6, #6366f1)" title="纳指风险贡献 ${nqRiskPct}%"></div>
-                    <div style="width:${spRiskPct}%;background:linear-gradient(90deg, #10b981, #059669)" title="标普风险贡献 ${spRiskPct}%"></div>
-                </div>
-            </div>
-
-            <div style="font-size:0.75rem;color:var(--txt2);line-height:1.4">${note}</div>
+            <div class="pf-risk-note">${note}</div>
         </div>`;
     }
 
@@ -4675,15 +4697,20 @@ const App = (() => {
 
                     <div class="pf-panel" id="pf-${s.key}-ideal">
                         <p style="color:var(--txt3);font-size:.75rem;margin:.5rem 0">${s.ideal?.note || ''}</p>
-                        <div class="g2 pf-variant-grid">
-                            <div class="pf-table-col">${renderVariantTable(s.ideal, s.key)}</div>
-                            <div class="pf-chart-col">
+                        <div class="pf-tier-alloc">
+                            <div class="pf-table-box">${renderVariantTable(s.ideal, s.key)}</div>
+                            <div class="pf-donut-box">
+                                <div class="pf-donut-header">
+                                    <span class="pf-donut-title">🎯 资产配置配比</span>
+                                </div>
                                 <div class="cht pf-cht"><canvas id="ch-${s.key}-ideal"></canvas></div>
-                                ${renderVariantSim(s.ideal, years)}
-                                ${renderRiskContribution(s.ideal, s)}
                             </div>
                         </div>
-                        <div style="margin-top:1.25rem;padding-top:0.85rem;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                        <div class="pf-tier-analytics">
+                            <div class="pf-analytics-col">${renderVariantSim(s.ideal, years)}</div>
+                            <div class="pf-analytics-col">${renderRiskContribution(s.ideal, s)}</div>
+                        </div>
+                        <div class="pf-card-footer">
                             <span style="font-size:0.75rem;color:var(--txt3)">💡 想要自定义定投预算、年限或测试极端市场压力？</span>
                             <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="ideal">🚀 以该理论配置启动蒙特卡洛推演 ➔</button>
                         </div>
@@ -4691,15 +4718,20 @@ const App = (() => {
 
                     <div class="pf-panel" id="pf-${s.key}-practical" style="display:none">
                         <p style="color:${(s.practical?.note || '').includes('额度叠加') ? 'var(--ok)' : 'var(--txt3)'};font-size:.78rem;font-weight:500;margin:.5rem 0">${s.practical?.note || ''}</p>
-                        <div class="g2 pf-variant-grid">
-                            <div class="pf-table-col">${renderVariantTable(s.practical, s.key)}</div>
-                            <div class="pf-chart-col">
+                        <div class="pf-tier-alloc">
+                            <div class="pf-table-box">${renderVariantTable(s.practical, s.key)}</div>
+                            <div class="pf-donut-box">
+                                <div class="pf-donut-header">
+                                    <span class="pf-donut-title">🎯 资产配置配比</span>
+                                </div>
                                 <div class="cht pf-cht"><canvas id="ch-${s.key}-practical"></canvas></div>
-                                ${renderVariantSim(s.practical, years)}
-                                ${renderRiskContribution(s.practical, s)}
                             </div>
                         </div>
-                        <div style="margin-top:1.25rem;padding-top:0.85rem;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                        <div class="pf-tier-analytics">
+                            <div class="pf-analytics-col">${renderVariantSim(s.practical, years)}</div>
+                            <div class="pf-analytics-col">${renderRiskContribution(s.practical, s)}</div>
+                        </div>
+                        <div class="pf-card-footer">
                             <span style="font-size:0.75rem;color:var(--txt3)">💡 想要自定义定投预算、年限或测试极端市场压力？</span>
                             <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="practical">🚀 以该可买配置启动蒙特卡洛推演 ➔</button>
                         </div>
@@ -4753,7 +4785,7 @@ const App = (() => {
                     pfCharts[cid] = new Chart(el, {
                         type: 'doughnut',
                         data: {
-                            labels: allocs.map(a => a.name.substring(0, 8)),
+                            labels: allocs.map(a => a.name.length > 11 ? a.name.substring(0, 10) + '…' : a.name),
                             datasets: [{
                                 data: allocs.map(a => a.monthly),
                                 backgroundColor: pieColors,
@@ -4766,7 +4798,7 @@ const App = (() => {
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            cutout: '68%',
+                            cutout: '65%',
                             layout: { padding: 4 },
                             plugins: { 
                                 legend: { 
@@ -4788,7 +4820,15 @@ const App = (() => {
                                     cornerRadius: 6,
                                     boxPadding: 4,
                                     displayColors: true,
-                                    usePointStyle: true
+                                    usePointStyle: true,
+                                    callbacks: {
+                                        label: function(ctx) {
+                                            const val = ctx.raw || 0;
+                                            const alloc = allocs[ctx.dataIndex];
+                                            const pct = alloc ? (alloc.actual_weight * 100).toFixed(0) : Math.round((val / (allocs.reduce((sum, x) => sum + x.monthly, 0) || 1)) * 100);
+                                            return ` ${alloc?.name || ctx.label}: ${val}元/月 (${pct}%)`;
+                                        }
+                                    }
                                 }
                             }
                         }

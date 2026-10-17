@@ -7472,33 +7472,59 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
 }
 
-/* ===== 定投方案布局优化：自适应双列、加宽基金名称、紧凑圆环图 ===== */
-.pf-variant-grid {
+/* ===== 定投方案分层式布局 (Two-Tier Balanced Architecture) ===== */
+
+/* Tier 1: 资产配置与配比层 (左表格 ~58%, 右圆环图 ~42%) */
+.pf-tier-alloc {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: 1.5rem;
-    align-items: start;
+    grid-template-columns: minmax(0, 1.38fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: stretch;
+    margin-top: 0.5rem;
 }
 
-.pf-table-col {
-    min-width: 0;
-    width: 100%;
-}
-
-.pf-chart-col {
+.pf-table-box {
     min-width: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
 }
 
-/* 适当缩小圆环图尺寸，使左右高度接近 */
+.pf-donut-box {
+    min-width: 0;
+    width: 100%;
+    background: var(--surface2, var(--bg2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 8px);
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.pf-donut-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.pf-donut-title {
+    font-weight: 600;
+    font-size: 0.825rem;
+    color: var(--txt);
+}
+
+/* 圆环图尺寸恢复舒展清晰，避免过小或模糊 */
 .cht.pf-cht {
-    width: 170px;
-    height: 170px;
-    max-width: 170px;
-    max-height: 170px;
-    margin: 0.2rem auto 0.6rem auto;
+    width: 100%;
+    max-width: 270px;
+    height: 200px;
+    max-height: 210px;
+    margin: 0.2rem auto;
     position: relative;
 }
 
@@ -7551,7 +7577,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .pf-table .pf-col-name {
-    min-width: 175px;
+    min-width: 180px;
     text-align: left;
 }
 
@@ -7620,30 +7646,177 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     font-size: 0.72rem;
 }
 
-.pf-chart-col .downside-assessment-card {
-    margin-top: 0.65rem;
-    padding: 0.65rem 0.85rem;
+/* Tier 2: 长期复利预期与量化风控体检层 (左收益与回撤, 右风险贡献与夏普) */
+.pf-tier-analytics {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: stretch;
+    margin-top: 1.25rem;
 }
 
-.pf-chart-col .downside-kpi-grid {
+.pf-analytics-col {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.pf-sim-card,
+.pf-risk-card {
+    height: 100%;
+    background: var(--surface2, var(--bg2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 8px);
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.pf-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 0.65rem;
+}
+
+.pf-card-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pf-pill-accent {
+    font-size: 0.75rem;
+    color: var(--txt2);
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.pf-pill-metrics {
+    font-size: 0.75rem;
+    color: var(--txt3);
+}
+
+.pf-sim-summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0.45rem 0.65rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 0.65rem;
+    font-size: 0.78rem;
+}
+
+.pf-sim-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pf-sim-summary-item .lb {
+    color: var(--txt3);
+    font-size: 0.72rem;
+}
+
+.pf-sim-summary-item .vl {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+.pf-sim-card .downside-assessment-card {
+    margin-top: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.pf-sim-card .downside-card-header {
+    margin-bottom: 0.5rem;
+}
+
+.pf-sim-card .downside-kpi-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.4rem;
+    margin-bottom: 0.5rem;
 }
 
-.pf-chart-col .downside-psychology-tip {
-    margin-top: 0.45rem;
-    padding: 0.4rem 0.6rem;
-    font-size: 0.7rem;
+.pf-sim-card .downside-psychology-tip {
+    margin-top: auto;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.72rem;
     line-height: 1.45;
 }
 
-.pf-chart-col .risk-contribution-card {
-    margin-top: 0.65rem;
-    padding: 0.65rem 0.85rem;
+.pf-risk-bars {
+    margin-bottom: 0.6rem;
 }
 
+.pf-bar-group {
+    margin-bottom: 0.55rem;
+}
+
+.pf-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--txt2);
+    margin-bottom: 3px;
+}
+
+.pf-bar-track {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--border);
+}
+
+.pf-bar-seg {
+    height: 100%;
+}
+
+.pf-risk-note {
+    font-size: 0.75rem;
+    color: var(--txt2);
+    line-height: 1.45;
+    margin-top: auto;
+    padding: 0.5rem 0.65rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.pf-card-footer {
+    margin-top: 1.25rem;
+    padding-top: 0.85rem;
+    border-top: 1px dashed var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* 移动端响应式折叠 */
 @media (max-width: 992px) {
-    .pf-variant-grid {
+    .pf-tier-alloc {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+    .pf-tier-analytics {
         grid-template-columns: 1fr;
         gap: 1.25rem;
     }
