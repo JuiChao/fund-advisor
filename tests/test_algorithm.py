@@ -25,6 +25,7 @@ from scraper.simulate import (
     calc_risk_parity_weights, calc_max_sharpe_weights, calc_risk_contributions,
     calc_fund_quant_factors, enrich_funds_with_quant_factors,
     HISTORICAL_SCENARIOS, simulate_stress_scenario,
+    VALUATION_METRICS, calc_valuation_multiplier, simulate_smart_dynamic_dca,
     CONFIG, TRADING_DAYS, BASE_BUDGET
 )
 
@@ -586,6 +587,91 @@ class TestStressTesting(unittest.TestCase):
         self.assertLess(res['max_floating_loss'], -0.05)
 
 
+class TestSmartDynamicDCA(unittest.TestCase):
+    """测试 Top 4: 估值自适应智能定投 (Valuation-Averaging Dynamic DCA)"""
+
+    def test_valuation_metrics_integrity(self):
+        """测试指数估值分位字典完整性与合理性"""
+        for idx_key in ['nasdaq100', 'sp500']:
+            self.assertIn(idx_key, VALUATION_METRICS)
+            m = VALUATION_METRICS[idx_key]
+            self.assertIn('name', m)
+            self.assertIn('current_pe', m)
+            self.assertIn('pe_percentile', m)
+            self.assertIn('base_multiplier', m)
+            self.assertIn('status_tag', m)
+            self.assertGreater(m['current_pe'], 10.0)
+            self.assertGreater(m['pe_percentile'], 0.0)
+            self.assertLess(m['pe_percentile'], 1.0)
+            self.assertGreater(m['base_multiplier'], 0.5)
+            self.assertLess(m['base_multiplier'], 1.5)
+
+    def test_valuation_multiplier_bounds(self):
+        """测试各灵敏度挡位下的动态定投乘数截断上下限"""
+        # 稳健型 (0.8x ~ 1.2x)
+        self.assertEqual(calc_valuation_multiplier(0.50, 'conservative'), 1.0)
+        self.assertEqual(calc_valuation_multiplier(0.10, 'conservative'), 1.2)
+        self.assertEqual(calc_valuation_multiplier(0.90, 'conservative'), 0.8)
+
+        # 标准型 (0.6x ~ 1.5x)
+        self.assertEqual(calc_valuation_multiplier(0.50, 'standard'), 1.0)
+        self.assertEqual(calc_valuation_multiplier(0.10, 'standard'), 1.5)
+        self.assertEqual(calc_valuation_multiplier(0.90, 'standard'), 0.6)
+
+        # 进取型 (0.5x ~ 1.8x)
+        self.assertEqual(calc_valuation_multiplier(0.50, 'aggressive'), 1.0)
+        self.assertEqual(calc_valuation_multiplier(0.10, 'aggressive'), 1.8)
+        self.assertEqual(calc_valuation_multiplier(0.90, 'aggressive'), 0.5)
+
+    def test_smart_dynamic_dca_simulation(self):
+        """测试成对双轨蒙特卡洛模拟：智能估值定投创造正向 Alpha"""
+        funds = [
+            {'code': '000001', 'name': '纳指测试', 'index_type': '纳斯达克100', 'mgmt_fee': 0.005, 'custody_fee': 0.001, 'tracking_error': 0.008},
+            {'code': '000002', 'name': '标普测试', 'index_type': '标普500', 'mgmt_fee': 0.005, 'custody_fee': 0.001, 'tracking_error': 0.007}
+        ]
+        weights = [0.6, 0.4]
+        res = simulate_smart_dynamic_dca(funds, weights, years=10, budget=2000, sensitivity='standard')
+
+        self.assertIn('standard', res)
+        self.assertIn('smart', res)
+        self.assertIn('alpha', res)
+
+        std = res['standard']
+        smart = res['smart']
+        alpha = res['alpha']
+
+        self.assertEqual(std['total_invest'], 240000)
+        self.assertGreater(std['median_wealth'], std['total_invest'])
+        self.assertGreater(smart['median_wealth'], 0)
+
+        # 检验成对抽样下，智能估值定投通过低位多买高位少买有效拉升 CAGR 和资金效率
+        self.assertGreater(alpha['wealth_gain_pct'], 0.0, "智能定投财富增幅应为正")
+        self.assertGreater(alpha['cagr_gain'], 0.0, "智能定投应取得正向 CAGR Alpha")
+        self.assertGreater(alpha['efficiency_gain_pct'], 0.0, "智能定投资金使用效率应提升")
+        self.assertEqual(alpha['wealth_diff'], smart['median_wealth'] - std['median_wealth'])
+
+    def test_smart_dynamic_dca_all_sensitivities(self):
+        """测试所有灵敏度挡位均能正常执行且随着灵敏度提高财富增量单调递增"""
+        funds = [
+            {'code': '000001', 'name': '纳指测试', 'index_type': '纳斯达克100', 'mgmt_fee': 0.005, 'custody_fee': 0.001, 'tracking_error': 0.008}
+        ]
+        weights = [1.0]
+
+        res_cons = simulate_smart_dynamic_dca(funds, weights, years=10, budget=1000, sensitivity='conservative')
+        res_std = simulate_smart_dynamic_dca(funds, weights, years=10, budget=1000, sensitivity='standard')
+        res_agg = simulate_smart_dynamic_dca(funds, weights, years=10, budget=1000, sensitivity='aggressive')
+
+        for res in [res_cons, res_std, res_agg]:
+            self.assertGreater(res['smart']['median_wealth'], 0)
+            self.assertGreater(res['alpha']['wealth_diff'], 0)
+            self.assertGreater(res['alpha']['wealth_gain_pct'], 0.0)
+
+        # 检验激进度递增：逆向加码力度越强，终值财富增益越大 (稳健 < 标准 < 进取)
+        self.assertLess(res_cons['alpha']['wealth_gain_pct'], res_std['alpha']['wealth_gain_pct'])
+        self.assertLess(res_std['alpha']['wealth_gain_pct'], res_agg['alpha']['wealth_gain_pct'])
+
+
 if __name__ == '__main__':
     unittest.main()
+
 

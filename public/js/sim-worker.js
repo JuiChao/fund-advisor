@@ -7,16 +7,16 @@
  *   出: { id, result } 或 { id, error }
  */
 self.onmessage = function(e) {
-    const { id, funds, weights, years, budget, config } = e.data;
+    const { id, funds, weights, years, budget, config, dynamicDCA, sensitivity } = e.data;
     try {
-        const result = simulate(funds, weights, years, budget, config);
+        const result = simulate(funds, weights, years, budget, config, dynamicDCA, sensitivity);
         self.postMessage({ id, result });
     } catch (err) {
         self.postMessage({ id, error: err.message });
     }
 };
 
-function simulate(funds, weights, years, budget, cfg) {
+function simulate(funds, weights, years, budget, cfg, dynamicDCA, sensitivity) {
     const N = cfg.simulation.n_sims_frontend;
     const months = years * 12;
     const totalInvested = budget * months;
@@ -45,6 +45,16 @@ function simulate(funds, weights, years, budget, cfg) {
     }
 
     const monthlyWealth = new Float64Array(N * months);
+    const isDual = !!dynamicDCA;
+    const smartMonthlyWealth = isDual ? new Float64Array(N * months) : null;
+    const smartInvestTotals = isDual ? new Float64Array(N) : null;
+
+    const sensMap = {
+        conservative: [0.8, 1.2, 0.8],
+        standard: [0.6, 1.5, 1.5],
+        aggressive: [0.5, 1.8, 2.2]
+    };
+    const [minMult, maxMult, sensK] = sensMap[sensitivity] || sensMap.standard;
 
     funds.forEach((fund, fIdx) => {
         const weight = weights[fIdx];
@@ -62,7 +72,15 @@ function simulate(funds, weights, years, budget, cfg) {
         const fxV = params.fx_vol / Math.sqrt(12);
         const feeM = fee / 12;
         const divM = params.dividend_yield / 12 * (1 - params.dividend_tax);
-        const invest = fundBudget * (1 - (fund.purchase_fee || defaults.purchase_fee));
+        const purchaseFeeRate = fund.purchase_fee || defaults.purchase_fee;
+        const invest = fundBudget * (1 - purchaseFeeRate);
+
+        const expNavArr = new Float64Array(months);
+        if (isDual) {
+            for (let m = 0; m < months; m++) {
+                expNavArr[m] = Math.pow(1 + retM, m + 1);
+            }
+        }
 
         const z_te = new Float64Array(N * months);
         for (let i = 0; i < N * months; i++) {
@@ -71,6 +89,7 @@ function simulate(funds, weights, years, budget, cfg) {
 
         for (let s = 0; s < N; s++) {
             let shares = 0;
+            let smartShares = 0;
             let nav = 1.0;
             const sOffset = s * months;
 
@@ -89,6 +108,16 @@ function simulate(funds, weights, years, budget, cfg) {
                 nav *= (1 + fund_r);
                 shares += invest / nav;
                 monthlyWealth[idx] += shares * nav;
+
+                if (isDual) {
+                    const logDev = Math.log(nav / expNavArr[m]);
+                    const mult = Math.max(minMult, Math.min(maxMult, 1.0 - sensK * Math.max(-0.4, Math.min(0.4, logDev))));
+                    const smartFundBudget = fundBudget * mult;
+                    const smartInvest = smartFundBudget * (1 - purchaseFeeRate);
+                    smartShares += smartInvest / nav;
+                    smartMonthlyWealth[idx] += smartShares * nav;
+                    smartInvestTotals[s] += smartFundBudget;
+                }
             }
         }
     });
@@ -172,7 +201,7 @@ function simulate(funds, weights, years, budget, cfg) {
     const downVol = Math.sqrt(Math.max(1e-8, downVar));
     const sortino = downVol > 0 ? (portMu - rf) / downVol : 0;
 
-    return {
+    const stdResult = {
         totalInvested: Math.round(totalInvested),
         medianFinal: Math.round(finalValues[Math.floor(N * 0.5)]),
         p5: Math.round(finalValues[Math.floor(N * 0.05)]),
@@ -181,6 +210,7 @@ function simulate(funds, weights, years, budget, cfg) {
         p95: Math.round(finalValues[Math.floor(N * 0.95)]),
         annualReturn: +(ret / years).toFixed(2),
         meanReturnPct: +ret.toFixed(2),
+        roiMultiple: +(finalValues[Math.floor(N * 0.5)] / totalInvested).toFixed(2),
         maxLossP50,
         maxLossP95,
         mddP50,
@@ -188,5 +218,102 @@ function simulate(funds, weights, years, budget, cfg) {
         recoveryMonths,
         sortinoRatio: +sortino.toFixed(2),
         downsideVol: +(downVol * 100).toFixed(1)
+    };
+
+    if (!isDual) {
+        return stdResult;
+    }
+
+    // 智能估值定投统计
+    const smartFinalValues = new Array(N);
+    const smartMaxLosses = new Float64Array(N);
+    const smartMaxDrawdowns = new Float64Array(N);
+    const smartMaxStreaks = new Float64Array(N);
+
+    for (let s = 0; s < N; s++) {
+        let minPL = 0;
+        let peak = 0;
+        let maxDD = 0;
+        let curStreak = 0;
+        let maxStreak = 0;
+        const sOffset = s * months;
+        const avgMonthlyBudget = smartInvestTotals[s] / months;
+
+        for (let m = 0; m < months; m++) {
+            const w = smartMonthlyWealth[sOffset + m];
+            const inv = avgMonthlyBudget * (m + 1);
+            const pl = (w - inv) / (inv || 1);
+            if (pl < minPL) minPL = pl;
+
+            if (w > peak) peak = w;
+            const dd = peak > 0 ? (w - peak) / peak : 0;
+            if (dd < maxDD) maxDD = dd;
+
+            if (dd < -0.02) {
+                curStreak++;
+                if (curStreak > maxStreak) maxStreak = curStreak;
+            } else {
+                curStreak = 0;
+            }
+        }
+        smartFinalValues[s] = smartMonthlyWealth[sOffset + months - 1];
+        smartMaxLosses[s] = Math.max(0, -minPL) * 100;
+        smartMaxDrawdowns[s] = Math.max(0, -maxDD) * 100;
+        smartMaxStreaks[s] = maxStreak;
+    }
+
+    smartFinalValues.sort((a, b) => a - b);
+    smartMaxLosses.sort();
+    smartMaxDrawdowns.sort();
+    smartMaxStreaks.sort();
+
+    let sumSmartInvest = 0;
+    for (let s = 0; s < N; s++) sumSmartInvest += smartInvestTotals[s];
+    const avgSmartInvest = sumSmartInvest / N;
+
+    const smartMean = smartFinalValues.reduce((a, b) => a + b, 0) / N;
+    const smartRet = avgSmartInvest > 0 ? (smartMean / avgSmartInvest - 1) * 100 : 0;
+    const smartMedian = smartFinalValues[Math.floor(N * 0.5)];
+    const smartCagr = avgSmartInvest > 0 ? (Math.pow(smartMedian / avgSmartInvest, 1 / years) - 1) * 100 : 0;
+    const stdCagr = (Math.pow(stdResult.medianFinal / totalInvested, 1 / years) - 1) * 100;
+
+    const smartLossP50 = +smartMaxLosses[Math.floor(N * 0.5)].toFixed(1);
+    const smartLossP95 = +smartMaxLosses[Math.floor(N * 0.95)].toFixed(1);
+    const smartMddP50 = +smartMaxDrawdowns[Math.floor(N * 0.5)].toFixed(1);
+    const smartMddP95 = +smartMaxDrawdowns[Math.floor(N * 0.95)].toFixed(1);
+    const smartRecMo = Math.round(smartMaxStreaks[Math.floor(N * 0.5)]) || 10;
+
+    const smartResult = {
+        totalInvested: Math.round(avgSmartInvest),
+        medianFinal: Math.round(smartMedian),
+        p5: Math.round(smartFinalValues[Math.floor(N * 0.05)]),
+        p25: Math.round(smartFinalValues[Math.floor(N * 0.25)]),
+        p75: Math.round(smartFinalValues[Math.floor(N * 0.75)]),
+        p95: Math.round(smartFinalValues[Math.floor(N * 0.95)]),
+        annualReturn: +smartCagr.toFixed(2),
+        meanReturnPct: +smartRet.toFixed(2),
+        roiMultiple: +(smartMedian / avgSmartInvest).toFixed(2),
+        maxLossP50: smartLossP50,
+        maxLossP95: smartLossP95,
+        mddP50: smartMddP50,
+        mddP95: smartMddP95,
+        recoveryMonths: smartRecMo,
+        sortinoRatio: stdResult.sortinoRatio,
+        downsideVol: stdResult.downsideVol
+    };
+
+    const alphaResult = {
+        wealthGain: Math.round(smartMedian - stdResult.medianFinal),
+        wealthGainPct: +((smartMedian / stdResult.medianFinal - 1) * 100).toFixed(1),
+        cagrGain: +(smartCagr - stdCagr).toFixed(2),
+        efficiencyGainPct: +(((smartMedian / avgSmartInvest) / (stdResult.medianFinal / totalInvested) - 1) * 100).toFixed(1),
+        maxLossReduction: +(maxLossP50 - smartLossP50).toFixed(1)
+    };
+
+    return {
+        isDualTrack: true,
+        standard: stdResult,
+        smart: smartResult,
+        alpha: alphaResult
     };
 }

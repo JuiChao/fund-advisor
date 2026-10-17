@@ -7203,4 +7203,273 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
 }
 
+/* ===== Top 4: 估值自适应智能定投 (Smart Dynamic DCA) ===== */
+.sim-dynamic-section {
+    margin: 1.15rem 0 0.85rem;
+    padding: 0.9rem 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: all 0.25s ease;
+}
+.sim-dynamic-section:hover {
+    border-color: rgba(99, 102, 241, 0.35);
+}
+.sim-dynamic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+.smart-switch-label {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.smart-switch-label input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.smart-switch-slider {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--border);
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 24px;
+    border: 1px solid var(--border);
+}
+.smart-switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #fff;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.smart-switch-label input:checked + .smart-switch-slider {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-color: #6366f1;
+}
+.smart-switch-label input:checked + .smart-switch-slider:before {
+    transform: translateX(20px);
+}
+
+.sim-dynamic-panel {
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px dashed var(--border);
+    animation: fadeIn 0.25s ease;
+}
+
+.valuation-pill-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+}
+.val-gauge-item {
+    padding: 0.6rem 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+}
+.val-gauge-item .vg-label {
+    font-size: 0.68rem;
+    color: var(--txt3);
+    margin-bottom: 2px;
+}
+.val-gauge-item .vg-val {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--txt);
+    font-variant-numeric: tabular-nums;
+}
+.val-gauge-item .vg-sub {
+    font-size: 0.68rem;
+    font-weight: normal;
+    color: var(--txt3);
+}
+.val-gauge-item .vg-status {
+    font-size: 0.68rem;
+    margin-top: 2px;
+    font-weight: 600;
+}
+.val-gauge-recom {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(16, 185, 129, 0.05));
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.sim-sens-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    padding: 3px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+.sim-sens-tabs .sens-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--txt2);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.4rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    white-space: nowrap;
+}
+.sim-sens-tabs .sens-btn:hover {
+    color: var(--txt);
+}
+.sim-sens-tabs .sens-btn.on {
+    background: var(--surface2);
+    color: var(--accent2);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.sim-dynamic-hint {
+    margin-top: 0.75rem;
+    padding: 0.55rem 0.75rem;
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 6px;
+    font-size: 0.72rem;
+    color: var(--txt2);
+    line-height: 1.5;
+}
+
+/* 双轨对比看板样式 */
+.dual-track-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.dual-track-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0.65rem 0.85rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(16, 185, 129, 0.08));
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: var(--radius-sm);
+}
+.dual-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+}
+.dual-kpi-card {
+    padding: 0.85rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+}
+.dual-kpi-card .dk-label {
+    font-size: 0.72rem;
+    color: var(--txt3);
+    margin-bottom: 4px;
+}
+.dual-kpi-card .dk-vals {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+.dual-kpi-card .dk-val-smart {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ok);
+}
+.dual-kpi-card .dk-val-std {
+    font-size: 0.8rem;
+    color: var(--txt3);
+    text-decoration: line-through;
+}
+.dual-kpi-card .dk-diff {
+    margin-top: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.dual-percentile-row {
+    padding: 0.65rem 0.85rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+.dual-percentile-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    margin-bottom: 5px;
+}
+.dual-bar-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.dual-bar-sub {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+}
+.dual-bar-sub .track-tag {
+    width: 65px;
+    color: var(--txt3);
+    font-size: 0.68rem;
+}
+.dual-bar-sub .bar-outer {
+    flex: 1;
+    height: 7px;
+    background: var(--surface);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.dual-bar-sub .bar-inner {
+    height: 100%;
+    border-radius: 4px;
+}
+.dual-bar-sub .bar-val {
+    width: 85px;
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.72rem;
+}
+
+@media (max-width: 768px) {
+    .valuation-pill-grid {
+        grid-template-columns: 1fr;
+    }
+    .dual-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 480px) {
+    .dual-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 

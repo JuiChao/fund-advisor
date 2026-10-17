@@ -960,6 +960,64 @@
                 <div id="sim-weights-list" style="display:flex; flex-direction:column; gap: 0.85rem;"></div>
             </div>
 
+            <!-- 智能估值自适应定投控制舱 (Smart Dynamic DCA) -->
+            <div class="sim-dynamic-section" id="sim-dynamic-section">
+                <div class="sim-dynamic-header">
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <span class="hub-icon" style="font-size:1.15rem">⚡</span>
+                        <div>
+                            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                                <span style="font-weight:700;font-size:0.875rem;color:var(--txt)">智能估值自适应定投</span>
+                                <span class="tag" style="background:rgba(99,102,241,0.12);color:var(--accent2);font-weight:600;font-size:0.68rem">价值平均 Alpha</span>
+                            </div>
+                            <div style="font-size:0.72rem;color:var(--txt3)">低估逆向多买、高估防守少买，以估值分位自适应调权</div>
+                        </div>
+                    </div>
+                    <label class="smart-switch-label">
+                        <input type="checkbox" id="sim-smart-toggle">
+                        <span class="smart-switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="sim-dynamic-panel" id="sim-smart-panel" style="display:none">
+                    <!-- 当前市场最新估值档案卡 -->
+                    <div class="valuation-pill-grid">
+                        <div class="val-gauge-item">
+                            <div class="vg-label">纳指 100 估值</div>
+                            <div class="vg-val">PE 31.8 <span class="vg-sub">(64.5% 分位)</span></div>
+                            <div class="vg-status" style="color:#d97706">🟡 合理偏高 · 建议 0.90x</div>
+                        </div>
+                        <div class="val-gauge-item">
+                            <div class="vg-label">标普 500 估值</div>
+                            <div class="vg-val">PE 26.4 <span class="vg-sub">(68.2% 分位)</span></div>
+                            <div class="vg-status" style="color:#d97706">🟡 合理偏高 · 建议 0.88x</div>
+                        </div>
+                        <div class="val-gauge-item val-gauge-recom">
+                            <div class="vg-label">当前组合建议扣款</div>
+                            <div class="vg-val" id="vg-recom-budget" style="color:var(--accent2)">¥1,780 <span class="vg-sub">/ 月</span></div>
+                            <div class="vg-status" id="vg-recom-sub" style="color:var(--ok)">建议留存 ¥220/月 备用金</div>
+                        </div>
+                    </div>
+
+                    <!-- 调权灵敏度挡位选择 -->
+                    <div style="margin-top:0.75rem">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+                            <span style="font-size:0.75rem;font-weight:600;color:var(--txt2)">估值调权灵敏度挡位</span>
+                            <span style="font-size:0.7rem;color:var(--txt3)" id="sens-desc-badge">标准平衡型 (0.6x ~ 1.5x)</span>
+                        </div>
+                        <div class="sim-sens-tabs" id="sim-sens-tabs">
+                            <button type="button" class="sens-btn" data-sens="conservative">🛡️ 稳健适度 (0.8x~1.2x)</button>
+                            <button type="button" class="sens-btn on" data-sens="standard">⚖️ 标准平衡 (0.6x~1.5x)</button>
+                            <button type="button" class="sens-btn" data-sens="aggressive">🚀 逆向进取 (0.5x~1.8x)</button>
+                        </div>
+                    </div>
+
+                    <div class="sim-dynamic-hint">
+                        💡 <strong>量化机制：</strong>开启后，推演将并列展示<strong>「普通定投」vs「智能估值定投」</strong>双轨对比。在熊市估值低位自动加码买入廉价份额，牛市高估阶段自动减速留存弹药，显著拉低长期持仓均价并提升 CAGR！
+                    </div>
+                </div>
+            </div>
+
             <button class="btn btn-p" id="btn-sim" style="width:100%;margin-top:.75rem;padding:0.7rem;font-size:0.92rem;font-weight:750">🚀 运行蒙特卡洛模拟推演</button>
         </div>
         <div class="card sim-result-card">

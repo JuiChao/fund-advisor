@@ -2824,6 +2824,127 @@ const App = (() => {
                 valEl.textContent = `¥${actMonthly.toLocaleString('zh-CN')} (${val}%)`;
             }
         });
+        updateSmartValuationGauge();
+    }
+
+    // ===== Top 4: 估值自适应智能定投 (Smart Dynamic DCA) 状态与仪表 =====
+    const VALUATION_DATA = {
+        nasdaq100: {
+            name: '纳斯达克 100',
+            current_pe: 31.8,
+            pe_percentile: 0.645,
+            status_tag: '合理偏高',
+            status_color: '#d97706',
+            base_multiplier: 0.90,
+            pe_10y_median: 27.2
+        },
+        sp500: {
+            name: '标普 500',
+            current_pe: 26.4,
+            pe_percentile: 0.682,
+            status_tag: '合理偏高',
+            status_color: '#d97706',
+            base_multiplier: 0.88,
+            pe_10y_median: 22.4
+        }
+    };
+    let _smartDCASensitivity = 'standard';
+
+    function calcSmartValuationMultiplier(percentile, sensitivity) {
+        const bounds = {
+            conservative: [0.8, 1.2, 0.8],
+            standard: [0.6, 1.5, 1.5],
+            aggressive: [0.5, 1.8, 2.2]
+        };
+        const [lowB, highB, k] = bounds[sensitivity] || bounds.standard;
+        const dev = percentile - 0.50;
+        const mult = 1.0 - k * dev;
+        return Math.max(lowB, Math.min(highB, +mult.toFixed(2)));
+    }
+
+    function updateSmartValuationGauge() {
+        const budgetInput = document.getElementById('sim-m');
+        if (!budgetInput) return;
+        const budget = +budgetInput.value || 2000;
+
+        const listEl = document.getElementById('sim-weights-list');
+        const rows = listEl ? listEl.querySelectorAll('.sim-weight-row') : [];
+        let nqWeight = 0.5, spWeight = 0.5;
+
+        if (rows.length > 0) {
+            let totalW = 0, nqW = 0, spW = 0;
+            rows.forEach(r => {
+                const code = r.dataset.code;
+                const val = +r.querySelector('.sim-weight-input')?.value || 0;
+                const f = FUND_DATA.find(d => d.code === code);
+                if (f) {
+                    if ((f.index_type || '').includes('标普')) spW += val;
+                    else nqW += val;
+                    totalW += val;
+                }
+            });
+            if (totalW > 0) {
+                nqWeight = nqW / totalW;
+                spWeight = spW / totalW;
+            }
+        }
+
+        const nqMult = calcSmartValuationMultiplier(VALUATION_DATA.nasdaq100.pe_percentile, _smartDCASensitivity);
+        const spMult = calcSmartValuationMultiplier(VALUATION_DATA.sp500.pe_percentile, _smartDCASensitivity);
+        const blendedMult = +(nqWeight * nqMult + spWeight * spMult).toFixed(2);
+        const recomMonthly = Math.round(budget * blendedMult);
+        const diff = budget - recomMonthly;
+
+        const recomBudgetEl = document.getElementById('vg-recom-budget');
+        const recomSubEl = document.getElementById('vg-recom-sub');
+
+        if (recomBudgetEl) {
+            recomBudgetEl.innerHTML = `¥${recomMonthly.toLocaleString('zh-CN')} <span class="vg-sub">/ 月 (${blendedMult}x)</span>`;
+        }
+        if (recomSubEl) {
+            if (diff > 0) {
+                recomSubEl.textContent = `建议留存 ¥${diff.toLocaleString('zh-CN')}/月 备用金 (防守蓄力)`;
+                recomSubEl.style.color = 'var(--ok)';
+            } else if (diff < 0) {
+                recomSubEl.textContent = `建议逆向加码 ¥${Math.abs(diff).toLocaleString('zh-CN')}/月 (低位吸筹)`;
+                recomSubEl.style.color = 'var(--accent2)';
+            } else {
+                recomSubEl.textContent = `估值处于合理中枢，按基准 ¥${budget.toLocaleString('zh-CN')} 正常扣款`;
+                recomSubEl.style.color = 'var(--txt2)';
+            }
+        }
+    }
+
+    function initSmartDCAToggle() {
+        const toggle = document.getElementById('sim-smart-toggle');
+        const panel = document.getElementById('sim-smart-panel');
+        if (toggle && panel) {
+            toggle.addEventListener('change', () => {
+                panel.style.display = toggle.checked ? 'block' : 'none';
+                if (toggle.checked) updateSmartValuationGauge();
+            });
+        }
+
+        const sensTabs = document.getElementById('sim-sens-tabs');
+        const sensBadge = document.getElementById('sens-desc-badge');
+        if (sensTabs) {
+            sensTabs.querySelectorAll('.sens-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    sensTabs.querySelectorAll('.sens-btn').forEach(b => b.classList.remove('on'));
+                    btn.classList.add('on');
+                    _smartDCASensitivity = btn.dataset.sens || 'standard';
+                    if (sensBadge) {
+                        const sensTexts = {
+                            conservative: '🛡️ 稳健适度型 (0.8x ~ 1.2x)',
+                            standard: '⚖️ 标准平衡型 (0.6x ~ 1.5x)',
+                            aggressive: '🚀 逆向进取型 (0.5x ~ 1.8x)'
+                        };
+                        sensBadge.textContent = sensTexts[_smartDCASensitivity] || btn.textContent;
+                    }
+                    updateSmartValuationGauge();
+                });
+            });
+        }
     }
 
     function initMultiSelect() {
@@ -2970,7 +3091,8 @@ const App = (() => {
                 });
             }
 
-            const result = await simulateViaWorker(funds, weights, years, monthly, await getDynamicParams());
+            const isSmartDCA = !!document.getElementById('sim-smart-toggle')?.checked;
+            const result = await simulateViaWorker(funds, weights, years, monthly, await getDynamicParams(), isSmartDCA, _smartDCASensitivity);
 
             // 显示预算分配说明
             let allocNote = '';
@@ -2982,6 +3104,202 @@ const App = (() => {
                     allocNote += `· ${f.code} ${f.name}: <strong>${pct}%</strong> (约 ¥${allocated}/月)<br>`;
                 });
                 allocNote += `</p>`;
+            }
+
+            // ===== 智能估值定投双轨展示模式 =====
+            if (result.isDualTrack) {
+                const std = result.standard;
+                const smart = result.smart;
+                const alpha = result.alpha;
+
+                const sensNameMap = {
+                    conservative: '🛡️ 稳健适度型 (0.8x~1.2x)',
+                    standard: '⚖️ 标准平衡型 (0.6x~1.5x)',
+                    aggressive: '🚀 逆向进取型 (0.5x~1.8x)'
+                };
+                const currentSensName = sensNameMap[_smartDCASensitivity] || '标准平衡型';
+
+                let downsideRibbonHtml = '';
+                if (smart.maxLossP50 != null || smart.mddP50 != null) {
+                    const lossP50 = smart.maxLossP50;
+                    const lossP95 = smart.maxLossP95;
+                    const mddP50 = smart.mddP50;
+                    const mddP95 = smart.mddP95;
+                    const recMo = smart.recoveryMonths || 10;
+                    const sortino = smart.sortinoRatio != null ? smart.sortinoRatio.toFixed(2) : null;
+                    const lossImprove = alpha.maxLossReduction > 0 ? `(相比普通定投浮亏收窄 +${alpha.maxLossReduction}%)` : '';
+
+                    downsideRibbonHtml = `
+                    <div class="sim-downside-ribbon" style="border-color:rgba(99,102,241,0.25)">
+                        <div class="sim-downside-title">
+                            <div style="display:flex;align-items:center;gap:6px">
+                                <span class="sim-downside-badge">⚡ 智能定投风控体检</span>
+                                <span style="font-size:0.8rem;font-weight:600;color:var(--txt)">价值平均法压力测试与下行护航</span>
+                            </div>
+                            ${sortino ? `<span style="font-size:0.75rem;color:var(--txt2)">索提诺比率: <strong style="color:var(--ok)">${sortino}</strong></span>` : ''}
+                        </div>
+                        <div class="sim-downside-grid">
+                            <div class="sim-downside-item">
+                                <span class="lb">典型账面最大浮亏</span>
+                                <span class="vl" style="color:var(--err)">-${lossP50}% <span style="font-size:0.7rem;color:var(--txt3);font-weight:normal">${lossImprove}</span></span>
+                            </div>
+                            <div class="sim-downside-item">
+                                <span class="lb">峰值资产最大回撤</span>
+                                <span class="vl" style="color:var(--warn)">-${mddP50}% <span style="font-size:0.7rem;color:var(--txt3);font-weight:normal">(95%极限 -${mddP95}%)</span></span>
+                            </div>
+                            <div class="sim-downside-item">
+                                <span class="lb">典型修复周期</span>
+                                <span class="vl" style="color:var(--accent2)">~${recMo} <span style="font-size:0.7rem;font-weight:normal">个月</span></span>
+                            </div>
+                        </div>
+                        <div class="sim-downside-summary">
+                            💡 <strong>智能调权红利：</strong>在 ${years} 年定投周期内，智能估值定投通过在恐慌低位大幅加买摊低每股成本，使典型最大浮亏控制在 <strong>-${lossP50}%</strong>，中位复利收益多贡献了 <strong>+${money(alpha.wealthGain)}</strong> 的超额财富 Alpha！
+                        </div>
+                    </div>`;
+                }
+
+                const maxFinalVal = Math.max(smart.p95, std.p95, 1);
+                const pLevels = [
+                    { name: '5% 极度悲观', desc: '极端长熊底线', stdVal: std.p5, smartVal: smart.p5, color: '#ef4444' },
+                    { name: '25% 周期偏弱', desc: '弱势震荡市', stdVal: std.p25, smartVal: smart.p25, color: '#f59e0b' },
+                    { name: '50% 典型中位', desc: '基准概率预期', stdVal: std.medianFinal, smartVal: smart.medianFinal, color: '#6366f1', isMedian: true },
+                    { name: '75% 顺风良好', desc: '稳健牛市行情', stdVal: std.p75, smartVal: smart.p75, color: '#10b981' },
+                    { name: '95% 极度乐观', desc: '超级大牛市顶点', stdVal: std.p95, smartVal: smart.p95, color: '#06b6d4' }
+                ];
+
+                let dualPercentileRowsHtml = pLevels.map(pl => {
+                    const stdPct = Math.min(100, Math.max(8, Math.round((pl.stdVal / maxFinalVal) * 100)));
+                    const smartPct = Math.min(100, Math.max(8, Math.round((pl.smartVal / maxFinalVal) * 100)));
+                    const diff = pl.smartVal - pl.stdVal;
+                    const diffPct = ((pl.smartVal / pl.stdVal - 1) * 100).toFixed(1);
+                    return `
+                    <div class="dual-percentile-row" style="${pl.isMedian ? 'border-color:rgba(99,102,241,0.4);background:rgba(99,102,241,0.06)' : ''}">
+                        <div class="dual-percentile-head">
+                            <span style="font-weight:600;color:var(--txt)">
+                                ${pl.name}
+                                <span style="font-size:0.7rem;color:var(--txt3);font-weight:normal;margin-left:4px">(${pl.desc})</span>
+                            </span>
+                            <span style="font-size:0.72rem;color:${diff >= 0 ? 'var(--ok)' : 'var(--txt3)'};font-weight:600">
+                                智能定投超额: ${diff >= 0 ? '+' : ''}${money(diff)} (${diff >= 0 ? '+' : ''}${diffPct}%)
+                            </span>
+                        </div>
+                        <div class="dual-bar-pair">
+                            <div class="dual-bar-sub">
+                                <span class="track-tag">普通固定:</span>
+                                <div class="bar-outer"><div class="bar-inner" style="width:${stdPct}%;background:#94a3b8"></div></div>
+                                <span class="bar-val" style="color:var(--txt2)">${money(pl.stdVal)}</span>
+                            </div>
+                            <div class="dual-bar-sub">
+                                <span class="track-tag" style="color:var(--accent2);font-weight:600">⚡ 智能估值:</span>
+                                <div class="bar-outer"><div class="bar-inner" style="width:${smartPct}%;background:${pl.color}"></div></div>
+                                <span class="bar-val" style="color:var(--ok)">${money(pl.smartVal)}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                document.getElementById('sim-result').innerHTML = `
+                    ${allocNote}
+                    <div class="dual-track-header">
+                        <div style="display:flex;align-items:center;gap:6px">
+                            <span style="font-size:1.1rem">⚡</span>
+                            <strong style="font-size:0.875rem;color:var(--txt)">双轨蒙特卡洛模拟：普通固定定投 vs 智能估值定投</strong>
+                        </div>
+                        <span class="tag" style="background:rgba(99,102,241,0.12);color:var(--accent2);font-size:0.72rem;font-weight:600">
+                            当前档位：${currentSensName}
+                        </span>
+                    </div>
+
+                    <div class="dual-kpi-grid">
+                        <div class="dual-kpi-card" style="border-color:rgba(16,185,129,0.3);background:linear-gradient(180deg, var(--surface2) 0%, rgba(16,185,129,0.06) 100%)">
+                            <div class="dk-label">中位数财富终值</div>
+                            <div class="dk-vals">
+                                <span class="dk-val-smart">${money(smart.medianFinal)}</span>
+                                <span class="dk-val-std">${money(std.medianFinal)}</span>
+                            </div>
+                            <div class="dk-diff" style="color:var(--ok)">+${money(alpha.wealthGain)} (+${alpha.wealthGainPct}%)</div>
+                        </div>
+
+                        <div class="dual-kpi-card" style="border-color:rgba(99,102,241,0.3);background:linear-gradient(180deg, var(--surface2) 0%, rgba(99,102,241,0.06) 100%)">
+                            <div class="dk-label">年化复合收益率 (CAGR)</div>
+                            <div class="dk-vals">
+                                <span class="dk-val-smart" style="color:var(--accent2)">${smart.annualReturn}%</span>
+                                <span class="dk-val-std">${std.annualReturn}%</span>
+                            </div>
+                            <div class="dk-diff" style="color:var(--accent2)">Alpha 提升 +${alpha.cagrGain}%</div>
+                        </div>
+
+                        <div class="dual-kpi-card">
+                            <div class="dk-label">实际平均总本金</div>
+                            <div class="dk-vals">
+                                <span class="dk-val-smart" style="color:var(--txt)">${money(smart.totalInvested)}</span>
+                                <span class="dk-val-std">${money(std.totalInvested)}</span>
+                            </div>
+                            <div class="dk-diff" style="color:var(--txt2)">
+                                ROI乘数: <strong style="color:var(--ok)">${smart.roiMultiple}x</strong> (普通 ${std.roiMultiple}x)
+                            </div>
+                        </div>
+
+                        <div class="dual-kpi-card">
+                            <div class="dk-label">资金使用效率提升</div>
+                            <div class="dk-vals">
+                                <span class="dk-val-smart" style="color:#d97706">+${alpha.efficiencyGainPct}%</span>
+                            </div>
+                            <div class="dk-diff" style="color:var(--txt3)">
+                                单笔本金创造的终值效率
+                            </div>
+                        </div>
+                    </div>
+
+                    ${downsideRibbonHtml}
+
+                    <div style="margin-top:1rem">
+                        <div style="font-size:0.8rem;font-weight:700;color:var(--txt);margin-bottom:0.6rem;display:flex;align-items:center;gap:6px">
+                            <span>📊</span> 分位收益双轨对比明细 (成对抽样消除随机误差)
+                        </div>
+                        ${dualPercentileRowsHtml}
+                    </div>
+                `;
+
+                if (chartPool.sim) chartPool.sim.destroy();
+                chartPool.sim = new Chart(document.getElementById('ch-sim'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['5% 悲观', '25% 偏弱', '50% 中位', '75% 顺风', '95% 乐观'],
+                        datasets: [
+                            {
+                                label: '普通固定定投 (万元)',
+                                data: [std.p5/10000, std.p25/10000, std.medianFinal/10000, std.p75/10000, std.p95/10000],
+                                backgroundColor: '#94a3b8',
+                                borderRadius: 5,
+                                borderSkipped: false
+                            },
+                            {
+                                label: '⚡ 智能估值定投 (Alpha)',
+                                data: [smart.p5/10000, smart.p25/10000, smart.medianFinal/10000, smart.p75/10000, smart.p95/10000],
+                                backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#10b981', '#06b6d4'],
+                                borderRadius: 5,
+                                borderSkipped: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: { font: { size: 11 }, boxWidth: 14 }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false } },
+                            y: { title: { display: true, text: '万元' }, grid: { color: 'rgba(99, 102, 241, 0.08)' } }
+                        }
+                    }
+                });
+                btn.disabled = false; btn.textContent = '运行模拟';
+                return;
             }
 
             const invested = result.totalInvested || (monthly * years * 12);
@@ -4535,10 +4853,10 @@ const App = (() => {
         return _simWorker;
     }
 
-    function simulateViaWorker(funds, weights, years, budget, dynamicParams) {
+    function simulateViaWorker(funds, weights, years, budget, dynamicParams, dynamicDCA = false, sensitivity = 'standard') {
         return new Promise((resolve) => {
             const worker = getSimWorker();
-            const fallbackArgs = [funds, weights, years, budget, dynamicParams];
+            const fallbackArgs = [funds, weights, years, budget, dynamicParams, dynamicDCA, sensitivity];
             if (!worker) {
                 resolve(localSimulatePortfolio(...fallbackArgs));
                 return;
@@ -4548,11 +4866,11 @@ const App = (() => {
             const effectiveConfig = { ...cfg, simulation: { ...cfg.simulation, params: effectiveParams } };
             const id = ++_msgId;
             _pendingPromises.set(id, { resolve, fallbackArgs });
-            worker.postMessage({ id, funds, weights, years, budget, config: effectiveConfig });
+            worker.postMessage({ id, funds, weights, years, budget, config: effectiveConfig, dynamicDCA, sensitivity });
         });
     }
 
-    function localSimulatePortfolio(funds, weights, years, budget, dynamicParams) {
+    function localSimulatePortfolio(funds, weights, years, budget, dynamicParams, dynamicDCA = false, sensitivity = 'standard') {
         const cfg = ALGO_CONFIG;
         const N = cfg.simulation.n_sims_frontend;
         const months = years * 12;
@@ -4568,6 +4886,17 @@ const App = (() => {
         const z_idx1 = new Float64Array(N * months);
         const z_idx2 = new Float64Array(N * months);
         const monthlyWealth = new Float64Array(N * months);
+
+        const isDual = !!dynamicDCA;
+        const smartMonthlyWealth = isDual ? new Float64Array(N * months) : null;
+        const smartInvestTotals = isDual ? new Float64Array(N) : null;
+
+        const sensMap = {
+            conservative: [0.8, 1.2, 0.8],
+            standard: [0.6, 1.5, 1.5],
+            aggressive: [0.5, 1.8, 2.2]
+        };
+        const [minMult, maxMult, sensK] = sensMap[sensitivity] || sensMap.standard;
         
         let r = 123456789;
         const rn = () => { r = (r * 1664525 + 1013904223) & 0xFFFFFFFF; return (r >>> 0) / 0xFFFFFFFF; };
@@ -4599,7 +4928,15 @@ const App = (() => {
             const fxV = params.fx_vol / Math.sqrt(12);
             const feeM = fee / 12;
             const divM = params.dividend_yield / 12 * (1 - params.dividend_tax);
-            const invest = fundBudget * (1 - (fund.purchase_fee || defaults.purchase_fee));
+            const purchaseFeeRate = fund.purchase_fee || defaults.purchase_fee;
+            const invest = fundBudget * (1 - purchaseFeeRate);
+
+            const expNavArr = new Float64Array(months);
+            if (isDual) {
+                for (let m = 0; m < months; m++) {
+                    expNavArr[m] = Math.pow(1 + retM, m + 1);
+                }
+            }
             
             const z_te = new Float64Array(N * months);
             for (let i = 0; i < N * months; i++) {
@@ -4608,6 +4945,7 @@ const App = (() => {
             
             for (let s = 0; s < N; s++) {
                 let shares = 0;
+                let smartShares = 0;
                 let nav = 1.0;
                 const sOffset = s * months;
                 
@@ -4626,6 +4964,16 @@ const App = (() => {
                     nav *= (1 + fund_r);
                     shares += invest / nav;
                     monthlyWealth[idx] += shares * nav;
+
+                    if (isDual) {
+                        const logDev = Math.log(nav / expNavArr[m]);
+                        const mult = Math.max(minMult, Math.min(maxMult, 1.0 - sensK * Math.max(-0.4, Math.min(0.4, logDev))));
+                        const smartFundBudget = fundBudget * mult;
+                        const smartInvest = smartFundBudget * (1 - purchaseFeeRate);
+                        smartShares += smartInvest / nav;
+                        smartMonthlyWealth[idx] += smartShares * nav;
+                        smartInvestTotals[s] += smartFundBudget;
+                    }
                 }
             }
         });
@@ -4709,7 +5057,7 @@ const App = (() => {
         const downVol = Math.sqrt(Math.max(1e-8, downVar));
         const sortino = downVol > 0 ? (portMu - rf) / downVol : 0;
         
-        return {
+        const stdResult = {
             totalInvested: Math.round(totalInvested),
             medianFinal: Math.round(finalValues[Math.floor(N * 0.5)]),
             p5: Math.round(finalValues[Math.floor(N * 0.05)]),
@@ -4718,6 +5066,7 @@ const App = (() => {
             p95: Math.round(finalValues[Math.floor(N * 0.95)]),
             annualReturn: +(ret / years).toFixed(2),
             meanReturnPct: +ret.toFixed(2),
+            roiMultiple: +(finalValues[Math.floor(N * 0.5)] / totalInvested).toFixed(2),
             maxLossP50,
             maxLossP95,
             mddP50,
@@ -4725,6 +5074,103 @@ const App = (() => {
             recoveryMonths,
             sortinoRatio: +sortino.toFixed(2),
             downsideVol: +(downVol * 100).toFixed(1)
+        };
+
+        if (!isDual) {
+            return stdResult;
+        }
+
+        // 智能估值定投统计
+        const smartFinalValues = new Array(N);
+        const smartMaxLosses = new Float64Array(N);
+        const smartMaxDrawdowns = new Float64Array(N);
+        const smartMaxStreaks = new Float64Array(N);
+
+        for (let s = 0; s < N; s++) {
+            let minPL = 0;
+            let peak = 0;
+            let maxDD = 0;
+            let curStreak = 0;
+            let maxStreak = 0;
+            const sOffset = s * months;
+            const avgMonthlyBudget = smartInvestTotals[s] / months;
+
+            for (let m = 0; m < months; m++) {
+                const w = smartMonthlyWealth[sOffset + m];
+                const inv = avgMonthlyBudget * (m + 1);
+                const pl = (w - inv) / (inv || 1);
+                if (pl < minPL) minPL = pl;
+
+                if (w > peak) peak = w;
+                const dd = peak > 0 ? (w - peak) / peak : 0;
+                if (dd < maxDD) maxDD = dd;
+
+                if (dd < -0.02) {
+                    curStreak++;
+                    if (curStreak > maxStreak) maxStreak = curStreak;
+                } else {
+                    curStreak = 0;
+                }
+            }
+            smartFinalValues[s] = smartMonthlyWealth[sOffset + months - 1];
+            smartMaxLosses[s] = Math.max(0, -minPL) * 100;
+            smartMaxDrawdowns[s] = Math.max(0, -maxDD) * 100;
+            smartMaxStreaks[s] = maxStreak;
+        }
+
+        smartFinalValues.sort((a, b) => a - b);
+        smartMaxLosses.sort();
+        smartMaxDrawdowns.sort();
+        smartMaxStreaks.sort();
+
+        let sumSmartInvest = 0;
+        for (let s = 0; s < N; s++) sumSmartInvest += smartInvestTotals[s];
+        const avgSmartInvest = sumSmartInvest / N;
+
+        const smartMean = smartFinalValues.reduce((a, b) => a + b, 0) / N;
+        const smartRet = avgSmartInvest > 0 ? (smartMean / avgSmartInvest - 1) * 100 : 0;
+        const smartMedian = smartFinalValues[Math.floor(N * 0.5)];
+        const smartCagr = avgSmartInvest > 0 ? (Math.pow(smartMedian / avgSmartInvest, 1 / years) - 1) * 100 : 0;
+        const stdCagr = (Math.pow(stdResult.medianFinal / totalInvested, 1 / years) - 1) * 100;
+
+        const smartLossP50 = +smartMaxLosses[Math.floor(N * 0.5)].toFixed(1);
+        const smartLossP95 = +smartMaxLosses[Math.floor(N * 0.95)].toFixed(1);
+        const smartMddP50 = +smartMaxDrawdowns[Math.floor(N * 0.5)].toFixed(1);
+        const smartMddP95 = +smartMaxDrawdowns[Math.floor(N * 0.95)].toFixed(1);
+        const smartRecMo = Math.round(smartMaxStreaks[Math.floor(N * 0.5)]) || 10;
+
+        const smartResult = {
+            totalInvested: Math.round(avgSmartInvest),
+            medianFinal: Math.round(smartMedian),
+            p5: Math.round(smartFinalValues[Math.floor(N * 0.05)]),
+            p25: Math.round(smartFinalValues[Math.floor(N * 0.25)]),
+            p75: Math.round(smartFinalValues[Math.floor(N * 0.75)]),
+            p95: Math.round(smartFinalValues[Math.floor(N * 0.95)]),
+            annualReturn: +smartCagr.toFixed(2),
+            meanReturnPct: +smartRet.toFixed(2),
+            roiMultiple: +(smartMedian / avgSmartInvest).toFixed(2),
+            maxLossP50: smartLossP50,
+            maxLossP95: smartLossP95,
+            mddP50: smartMddP50,
+            mddP95: smartMddP95,
+            recoveryMonths: smartRecMo,
+            sortinoRatio: stdResult.sortinoRatio,
+            downsideVol: stdResult.downsideVol
+        };
+
+        const alphaResult = {
+            wealthGain: Math.round(smartMedian - stdResult.medianFinal),
+            wealthGainPct: +((smartMedian / stdResult.medianFinal - 1) * 100).toFixed(1),
+            cagrGain: +(smartCagr - stdCagr).toFixed(2),
+            efficiencyGainPct: +(((smartMedian / avgSmartInvest) / (stdResult.medianFinal / totalInvested) - 1) * 100).toFixed(1),
+            maxLossReduction: +(maxLossP50 - smartLossP50).toFixed(1)
+        };
+
+        return {
+            isDualTrack: true,
+            standard: stdResult,
+            smart: smartResult,
+            alpha: alphaResult
         };
     }
 
@@ -5287,6 +5733,8 @@ const App = (() => {
             if (b) b.textContent = e.target.value + ' 年';
         });
         document.getElementById('btn-sim').addEventListener('click', runSimulation);
+        initSmartDCAToggle();
+        updateSmartValuationGauge();
         document.getElementById('btn-pf').addEventListener('click', computePortfolio);
 
         // 定投方案策略分类筛选（经典 / 量化 / 全部）

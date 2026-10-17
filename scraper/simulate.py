@@ -924,6 +924,168 @@ def simulate_stress_scenario(scenario_key, w_nq, budget=2000, fee_annual=0.005):
     }
 
 
+# ===== Top 4: 估值自适应智能定投 (Valuation-Averaging Dynamic DCA) =====
+VALUATION_METRICS = {
+    'nasdaq100': {
+        'name': '纳斯达克 100',
+        'current_pe': 31.8,
+        'pe_percentile': 0.645,  # 64.5% 分位
+        'status_tag': '合理略偏高',
+        'status_color': '#f59e0b',
+        'base_multiplier': 0.90,
+        'pe_10y_low': 16.8,
+        'pe_10y_median': 27.2,
+        'pe_10y_high': 40.5
+    },
+    'sp500': {
+        'name': '标普 500',
+        'current_pe': 26.4,
+        'pe_percentile': 0.682,  # 68.2% 分位
+        'status_tag': '合理略偏高',
+        'status_color': '#f59e0b',
+        'base_multiplier': 0.88,
+        'pe_10y_low': 15.2,
+        'pe_10y_median': 22.4,
+        'pe_10y_high': 34.1
+    }
+}
+
+
+def calc_valuation_multiplier(percentile, sensitivity='standard'):
+    """
+    根据估值分位数与灵敏度配置计算动态定投乘数
+    """
+    bounds = {
+        'conservative': (0.8, 1.2, 0.8),
+        'standard': (0.6, 1.5, 1.5),
+        'aggressive': (0.5, 1.8, 2.2),
+    }
+    low_b, high_b, k = bounds.get(sensitivity, (0.6, 1.5, 1.5))
+    dev = percentile - 0.50  # 相对合理中枢 50% 分位的偏离度
+    mult = 1.0 - k * dev
+    return max(low_b, min(high_b, round(mult, 2)))
+
+
+def simulate_smart_dynamic_dca(funds, weights, years, budget=2000, dynamic_params=None, sensitivity='standard'):
+    """
+    智能估值定投 vs 普通固定定投 双轨成对蒙特卡洛模拟引擎
+    成对随机数（Paired Monte Carlo）保证剔除纯随机方差，精准剥离价值平均法 Alpha
+    """
+    n_sims = CONFIG['simulation']['n_sims_python']
+    months = years * 12
+    cfg = CONFIG
+    params = dynamic_params if dynamic_params else PARAMS_FALLBACK
+    rho = cfg['simulation']['correlation_nq_sp']
+    defaults = cfg['defaults']
+
+    bounds = {
+        'conservative': (0.8, 1.2, 0.8),
+        'standard': (0.6, 1.5, 1.5),
+        'aggressive': (0.5, 1.8, 2.2),
+    }
+    min_mult, max_mult, sens_factor = bounds.get(sensitivity, (0.6, 1.5, 1.5))
+
+    np.random.seed(RNG_SEED)
+
+    # 抽取公共随机数
+    z_fx = np.random.standard_normal((n_sims, months))
+    z_idx1 = np.random.standard_normal((n_sims, months))
+    z_idx2 = np.random.standard_normal((n_sims, months))
+
+    wealth_std = np.zeros(n_sims)
+    wealth_smart = np.zeros(n_sims)
+    invest_smart_totals = np.zeros(n_sims)
+    invest_std_total = budget * months
+
+    for fund, weight in zip(funds, weights):
+        if weight <= 0:
+            continue
+        fund_budget = budget * weight
+        is_sp = '标普' in fund.get('index_type', '')
+        te = fund.get('tracking_error') or defaults['tracking_error_for_simulation']
+        fee = (fund.get('mgmt_fee') or defaults['mgmt_fee']) + \
+              (fund.get('custody_fee') or defaults['custody_fee']) + \
+              (fund.get('sales_fee') or 0.0)
+
+        ret_m = (params['sp500_return'] if is_sp else params['nasdaq_return']) / 12.0
+        vol_m = (params['sp500_vol'] if is_sp else params['nasdaq_vol']) / np.sqrt(12.0)
+        te_v = te / np.sqrt(12.0)
+        fx_m = params['fx_drift'] / 12.0
+        fx_v = params['fx_vol'] / np.sqrt(12.0)
+        fee_m = fee / 12.0
+        div_m = (params['dividend_yield'] / 12.0) * (1.0 - params['dividend_tax'])
+        fee_factor = 1.0 - (fund.get('purchase_fee') or defaults['purchase_fee'])
+
+        z_te = np.random.standard_normal((n_sims, months))
+        z_idx_val = (rho * z_idx1 + np.sqrt(1.0 - rho ** 2) * z_idx2) if is_sp else z_idx1
+
+        idx_r = ret_m + vol_m * z_idx_val
+        te_r = te_v * z_te
+        fx_r = fx_m + fx_v * z_fx
+        fund_r = idx_r + te_r - fee_m + div_m + fx_r
+
+        # 净值路径 (N, months)
+        nav_paths = np.cumprod(1.0 + fund_r, axis=1)
+
+        # 理论无噪对数复利期望基准 (1, months)
+        m_arr = np.arange(1, months + 1)
+        expected_nav = (1.0 + ret_m) ** m_arr
+
+        # 估值偏离度 (N, months)
+        log_dev = np.log(nav_paths / expected_nav)
+        # 估值动态乘数
+        mult = 1.0 - sens_factor * np.clip(log_dev, -0.4, 0.4)
+        mult = np.clip(mult, min_mult, max_mult)
+
+        # 普通定投
+        std_invest = fund_budget * fee_factor
+        std_shares = np.sum(std_invest / nav_paths, axis=1)
+        wealth_std += std_shares * nav_paths[:, -1]
+
+        # 智能估值定投
+        smart_budgets = fund_budget * mult
+        smart_invests = smart_budgets * fee_factor
+        smart_shares = np.sum(smart_invests / nav_paths, axis=1)
+        wealth_smart += smart_shares * nav_paths[:, -1]
+        invest_smart_totals += np.sum(smart_budgets, axis=1)
+
+    std_median = float(np.median(wealth_std))
+    smart_median = float(np.median(wealth_smart))
+    avg_smart_invest = float(np.mean(invest_smart_totals))
+
+    std_cagr = round(float((std_median / invest_std_total) ** (1.0 / years) - 1.0) * 100.0, 2)
+    smart_cagr = round(float((smart_median / avg_smart_invest) ** (1.0 / years) - 1.0) * 100.0, 2)
+
+    return {
+        'standard': {
+            'total_invest': int(invest_std_total),
+            'median_wealth': int(std_median),
+            'p5': int(np.percentile(wealth_std, 5)),
+            'p25': int(np.percentile(wealth_std, 25)),
+            'p75': int(np.percentile(wealth_std, 75)),
+            'p95': int(np.percentile(wealth_std, 95)),
+            'cagr': std_cagr,
+            'roi_multiple': round(std_median / invest_std_total, 2)
+        },
+        'smart': {
+            'total_invest': int(avg_smart_invest),
+            'median_wealth': int(smart_median),
+            'p5': int(np.percentile(wealth_smart, 5)),
+            'p25': int(np.percentile(wealth_smart, 25)),
+            'p75': int(np.percentile(wealth_smart, 75)),
+            'p95': int(np.percentile(wealth_smart, 95)),
+            'cagr': smart_cagr,
+            'roi_multiple': round(smart_median / avg_smart_invest, 2)
+        },
+        'alpha': {
+            'wealth_diff': int(smart_median) - int(std_median),
+            'wealth_gain_pct': round((smart_median / std_median - 1.0) * 100.0, 2),
+            'cagr_gain': round(smart_cagr - std_cagr, 2),
+            'efficiency_gain_pct': round(((smart_median / avg_smart_invest) / (std_median / invest_std_total) - 1.0) * 100.0, 2)
+        }
+    }
+
+
 def main():
     print('加载基金数据...')
     raw_funds = load_funds()
