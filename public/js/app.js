@@ -1308,11 +1308,87 @@ const App = (() => {
 
     // 全局导出图片风格偏好（默认深色，持久化于 localStorage）
     let currentExportTheme = localStorage.getItem('fa_export_theme') || 'dark';
+    let activePosterBlobUrl = null;
+    let posterThemeCache = {};
+
+    // Canvas 转 Blob 异步轻量化辅助函数（杜绝主线程大 Base64 编码卡顿）
+    function canvasToBlob(canvas) {
+        return new Promise((resolve, reject) => {
+            if (canvas.toBlob) {
+                canvas.toBlob(blob => {
+                    if (blob) resolve(blob);
+                    else reject(new Error('Canvas 转 Blob 失败'));
+                }, 'image/png');
+            } else {
+                try {
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const binStr = atob(dataUrl.split(',')[1]);
+                    const len = binStr.length;
+                    const arr = new Uint8Array(len);
+                    for (let i = 0; i < len; i++) arr[i] = binStr.charCodeAt(i);
+                    resolve(new Blob([arr], { type: 'image/png' }));
+                } catch (e) {
+                    reject(e);
+                }
+            }
+        });
+    }
+
+    // 核心性能提速渲染器：忽略页面无关 DOM、精准限制视口、优化超采样倍率
+    async function renderPosterToCanvas(renderTarget, posterWrap, isLight, isRank) {
+        const width = renderTarget.offsetWidth;
+        const height = renderTarget.offsetHeight;
+        // 表格长图(980px宽)采用 1.5x 超采样(输出 1470px 超清)，公告看板(750px宽)采用 2x 超采样(输出 1500px 超清)
+        // 统一输出 ~1500px 移动端视网膜分辨率，像素运算量锐减 50% 以上，渲染速度飞跃
+        const exportScale = isRank ? 1.5 : 2;
+
+        return await window.html2canvas(renderTarget, {
+            scale: exportScale,
+            width: width,
+            height: height,
+            windowWidth: width,
+            windowHeight: height,
+            scrollX: 0,
+            scrollY: 0,
+            useCORS: false,
+            allowTaint: true,
+            imageTimeout: 0,
+            logging: false,
+            backgroundColor: isLight ? '#ffffff' : (isRank ? '#0b0f19' : '#0d1322'),
+            onclone: (clonedDoc) => {
+                const clonedWrap = clonedDoc.getElementById('fa-export-poster-wrap');
+                if (clonedWrap) {
+                    clonedWrap.style.left = '0';
+                    clonedWrap.style.top = '0';
+                    clonedWrap.style.position = 'static';
+                }
+            },
+            ignoreElements: (el) => {
+                // 关键加速点：跳过页面主内容其他数千个节点的无谓遍历和样式解析
+                if (el.parentNode === document.body && el !== posterWrap) return true;
+                if (el.tagName === 'SCRIPT' || el.tagName === 'NOSCRIPT') return true;
+                return false;
+            }
+        });
+    }
 
     // ===== 通用图片海报预览与导出弹窗 =====
-    function openPosterModal({ canvas, downloadFilename, titleText, tagText, successToast, onThemeChange, currentTheme = currentExportTheme }) {
+    function openPosterModal({ blob, downloadFilename, titleText, tagText, successToast, onThemeChange, currentTheme = currentExportTheme }) {
         currentExportTheme = currentTheme;
-        const dataUrl = canvas.toDataURL('image/png');
+
+        // 释放先前 blob URL 防止内存泄露
+        if (activePosterBlobUrl) {
+            URL.revokeObjectURL(activePosterBlobUrl);
+            activePosterBlobUrl = null;
+        }
+
+        activePosterBlobUrl = URL.createObjectURL(blob);
+        posterThemeCache[currentTheme] = {
+            blob,
+            blobUrl: activePosterBlobUrl,
+            downloadFilename
+        };
+
         const modal = document.getElementById('poster-modal-backdrop');
         const previewImg = document.getElementById('poster-preview-img');
         const downloadBtn = document.getElementById('btn-poster-download');
@@ -1324,54 +1400,77 @@ const App = (() => {
 
         if (titleEl) titleEl.textContent = titleText || '导出图片预览';
         if (tagEl) tagEl.textContent = tagText || '高清排版';
-        if (previewImg) previewImg.src = dataUrl;
+        if (previewImg) previewImg.src = activePosterBlobUrl;
         if (downloadBtn) {
-            downloadBtn.href = dataUrl;
+            downloadBtn.href = activePosterBlobUrl;
             downloadBtn.download = downloadFilename || 'QDII图片.png';
         }
 
-        // 绑定预览弹窗内部的风格即时切换按钮
+        // 绑定预览弹窗内部的风格即时切换按钮（支持 0 毫秒缓存秒切）
         if (themeToggle) {
             themeToggle.querySelectorAll('.btn-prev-theme').forEach(btn => {
                 const isCur = btn.dataset.theme === currentTheme;
                 btn.classList.toggle('on', isCur);
                 btn.onclick = async () => {
-                    if (btn.dataset.theme === currentTheme) return;
+                    if (btn.dataset.theme === currentExportTheme) return;
                     const newTheme = btn.dataset.theme;
                     currentExportTheme = newTheme;
                     try {
                         localStorage.setItem('fa_export_theme', newTheme);
                     } catch (e) {}
                     themeToggle.querySelectorAll('.btn-prev-theme').forEach(b => b.classList.toggle('on', b.dataset.theme === newTheme));
+
+                    // 1. 若当前会话已有该风格渲染结果，立即秒切
+                    if (posterThemeCache[newTheme]) {
+                        const cached = posterThemeCache[newTheme];
+                        if (previewImg) previewImg.src = cached.blobUrl;
+                        if (downloadBtn) {
+                            downloadBtn.href = cached.blobUrl;
+                            downloadBtn.download = cached.downloadFilename;
+                        }
+                        if (tagEl) {
+                            tagEl.textContent = tagEl.textContent.replace(/(浅色清新|深色商务)/, newTheme === 'light' ? '浅色清新' : '深色商务');
+                        }
+                        return;
+                    }
+
+                    // 2. 否则异步生成
                     if (onThemeChange) {
                         btn.textContent = '⏳ ...';
-                        await onThemeChange(newTheme);
-                        btn.textContent = newTheme === 'light' ? '☀️ 浅色' : '🌙 深色';
+                        try {
+                            await onThemeChange(newTheme);
+                        } finally {
+                            btn.textContent = newTheme === 'light' ? '☀️ 浅色' : '🌙 深色';
+                        }
                     }
                 };
             });
         }
 
         if (copyBtn) {
-            copyBtn.onclick = () => {
-                canvas.toBlob(async blob => {
-                    if (navigator.clipboard && window.ClipboardItem && blob) {
-                        try {
-                            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                            showToast('✅ 图片已复制到剪贴板！可直接粘贴发布', 'success');
-                        } catch (e) {
-                            showToast('浏览器限制直接复制，请点击“保存图片”', 'info');
-                        }
-                    } else {
-                        showToast('当前浏览器不支持直接写入图片，请点击“保存图片”', 'info');
+            copyBtn.onclick = async () => {
+                const curBlob = posterThemeCache[currentExportTheme]?.blob || blob;
+                if (navigator.clipboard && window.ClipboardItem && curBlob) {
+                    try {
+                        await navigator.clipboard.write([new ClipboardItem({ 'image/png': curBlob })]);
+                        showToast('✅ 图片已复制到剪贴板！可直接粘贴发布', 'success');
+                    } catch (e) {
+                        showToast('浏览器限制直接复制，请点击“保存图片”', 'info');
                     }
-                }, 'image/png');
+                } else {
+                    showToast('当前浏览器不支持直接写入图片，请点击“保存图片”', 'info');
+                }
             };
         }
 
         const closeModal = () => {
             if (modal) modal.style.display = 'none';
             document.removeEventListener('keydown', escHandler);
+            Object.values(posterThemeCache).forEach(item => {
+                if (item.blobUrl) URL.revokeObjectURL(item.blobUrl);
+            });
+            posterThemeCache = {};
+            activePosterBlobUrl = null;
         };
 
         const escHandler = e => {
@@ -1632,6 +1731,7 @@ const App = (() => {
                 }
                 const selectedItems = displayHistory.filter(h => selectedCodes.has(h.code));
                 closeSelectModal();
+                showToast('⏳ 正在渲染高清图片，请稍候...', 'info');
                 exportQuotaBulletinPoster(selectedItems, triggerBtn, currentExportTheme);
             };
         }
@@ -1670,6 +1770,11 @@ const App = (() => {
         if (triggerBtn) {
             triggerBtn.disabled = true;
             triggerBtn.innerHTML = '<span>⏳ 正在生成...</span>';
+            // 全局新发起导出时，清空上一次会话缓存
+            Object.values(posterThemeCache).forEach(item => {
+                if (item.blobUrl) URL.revokeObjectURL(item.blobUrl);
+            });
+            posterThemeCache = {};
         }
 
         try {
@@ -1677,6 +1782,7 @@ const App = (() => {
 
             // 构建专为竖版打造的离屏海报 DOM（无平替列，无网页交互元素）
             const posterWrap = document.createElement('div');
+            posterWrap.id = 'fa-export-poster-wrap';
             posterWrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:750px;z-index:-9999;pointer-events:none;';
 
             let cardsHtml = '';
@@ -1796,17 +1902,12 @@ const App = (() => {
             document.body.appendChild(posterWrap);
             const renderTarget = document.getElementById('dbp-render-target');
 
-            const canvas = await window.html2canvas(renderTarget, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                backgroundColor: isLight ? '#ffffff' : '#0d1322'
-            });
-
+            const canvas = await renderPosterToCanvas(renderTarget, posterWrap, isLight, false);
             document.body.removeChild(posterWrap);
+            const blob = await canvasToBlob(canvas);
 
             openPosterModal({
-                canvas,
+                blob,
                 downloadFilename: `QDII限购变动速递_${isLight ? '浅色_' : ''}${todayStr}.png`,
                 titleText: '公告看板图片预览',
                 tagText: `${itemsToExport.length}只变动 · ${isLight ? '☀️ 浅色清新' : '🌙 深色商务'}`,
@@ -2037,6 +2138,7 @@ const App = (() => {
                 }
                 const selectedFunds = rankData.filter(r => selectedCodes.has(r.code));
                 closeSelectModal();
+                showToast('⏳ 正在渲染高清图片，请稍候...', 'info');
                 exportRankTablePoster(selectedFunds, triggerBtn, currentExportTheme);
             };
         }
@@ -2075,13 +2177,19 @@ const App = (() => {
         if (triggerBtn) {
             triggerBtn.disabled = true;
             triggerBtn.innerHTML = '<span>⏳ 正在生成...</span>';
+            // 全局新发起导出时，清空上一次会话缓存
+            Object.values(posterThemeCache).forEach(item => {
+                if (item.blobUrl) URL.revokeObjectURL(item.blobUrl);
+            });
+            posterThemeCache = {};
         }
 
         try {
             await loadHtml2Canvas();
 
-            // 构建离屏表格海报 DOM（980px 宽度，高分屏 scale: 2 渲染为 1960px 宽度超清图）
+            // 构建离屏表格海报 DOM（980px 宽度，高分屏 1.5x 超采样输出 1470px 视网膜超清图）
             const posterWrap = document.createElement('div');
+            posterWrap.id = 'fa-export-poster-wrap';
             posterWrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:980px;z-index:-9999;pointer-events:none;';
 
             const rowsHtml = fundsToExport.map(r => {
@@ -2237,17 +2345,12 @@ const App = (() => {
             document.body.appendChild(posterWrap);
             const renderTarget = document.getElementById('rkp-render-target');
 
-            const canvas = await window.html2canvas(renderTarget, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                backgroundColor: isLight ? '#ffffff' : '#0b0f19'
-            });
-
+            const canvas = await renderPosterToCanvas(renderTarget, posterWrap, isLight, true);
             document.body.removeChild(posterWrap);
+            const blob = await canvasToBlob(canvas);
 
             openPosterModal({
-                canvas,
+                blob,
                 downloadFilename: `QDII量化评分榜_${type}_${isLight ? '浅色_' : ''}${todayStr}.png`,
                 titleText: '全景对比表格图片预览',
                 tagText: `${fundsToExport.length}只标的 · ${isLight ? '☀️ 浅色清新' : '🌙 深色商务'}`,
