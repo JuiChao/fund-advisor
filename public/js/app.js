@@ -3621,7 +3621,7 @@ const App = (() => {
                         <div class="sub">95% 置信度极限压力边界</div>
                     </div>
                     <div class="downside-kpi-box">
-                        <div class="lb">资产峰值最大回撤 (P50 / P95)</div>
+                        <div class="lb">峰值最大回撤 (P50/P95)</div>
                         <div class="vl" style="color:var(--warn)">-${mddP50}% <span style="font-size:0.75rem;color:var(--txt3);font-weight:normal">/ -${mddP95}%</span></div>
                         <div class="sub">利润垫回吐与高点回落</div>
                     </div>

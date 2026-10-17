@@ -6958,9 +6958,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 .downside-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.5rem;
     margin-bottom: 0.65rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 .downside-kpi-box {
     background: var(--surface);
@@ -6969,12 +6971,17 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     padding: 0.5rem 0.65rem;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 .downside-kpi-box .lb {
     font-size: 0.7rem;
     color: var(--txt3);
     margin-bottom: 3px;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.3;
 }
 .downside-kpi-box .vl {
     font-size: 1.05rem;
@@ -7918,9 +7925,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .pf-sim-card .downside-kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.4rem;
     margin-bottom: 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .pf-sim-card .downside-psychology-tip {
@@ -7960,9 +7970,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .pf-risk-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.4rem;
     margin-bottom: 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .pf-risk-kpi-box {
@@ -7972,13 +7984,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     padding: 0.5rem 0.65rem;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .pf-risk-kpi-box .lb {
     font-size: 0.7rem;
     color: var(--txt3);
     margin-bottom: 3px;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.3;
 }
 
 .pf-risk-kpi-box .vl {
@@ -8443,6 +8460,40 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         flex: 1 1 calc(50% - 4px);
         min-height: 38px;
     }
+
+    /* 定投方案长期复利卡片与风险贡献卡片移动端防溢出 */
+    .pf-sim-card,
+    .pf-risk-card {
+        padding: 0.85rem 0.75rem;
+    }
+    .pf-sim-card .downside-kpi-grid,
+    .pf-risk-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.35rem;
+        width: 100%;
+    }
+    .downside-kpi-box,
+    .pf-risk-kpi-box {
+        padding: 0.45rem 0.45rem;
+        min-width: 0;
+    }
+    .downside-kpi-box .lb,
+    .pf-risk-kpi-box .lb {
+        font-size: 0.67rem;
+        line-height: 1.25;
+        white-space: normal;
+        word-break: break-word;
+    }
+    .downside-kpi-box .vl,
+    .pf-risk-kpi-box .vl {
+        font-size: 0.95rem;
+    }
+    .downside-kpi-box .sub,
+    .pf-risk-kpi-box .sub {
+        font-size: 0.62rem;
+        line-height: 1.2;
+        word-break: break-word;
+    }
 }
 
 @media (max-width: 420px) {
@@ -8458,5 +8509,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
     .hero-desc {
         font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .pf-sim-card .downside-kpi-grid,
+    .pf-risk-kpi-grid {
+        grid-template-columns: 1fr;
     }
 }
