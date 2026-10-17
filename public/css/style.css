@@ -6435,30 +6435,16 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     border-bottom: 2px solid var(--border);
     white-space: nowrap;
 }
+.dir-table th,
+.dir-table td,
 .dir-table th.col-left,
 .dir-table td.col-left,
-.dir-table th:nth-child(2),
-.dir-table td:nth-child(2),
-.dir-table th:nth-child(4),
-.dir-table td:nth-child(4),
-.dir-table td.dir-fund-mgr {
-    text-align: left;
-}
-.dir-table th.col-center,
-.dir-table td.col-center,
-.dir-table th:nth-child(1),
-.dir-table td:nth-child(1),
-.dir-table th:nth-child(3),
-.dir-table td:nth-child(3),
-.dir-table th:nth-child(6),
-.dir-table td:nth-child(6) {
-    text-align: center;
-}
 .dir-table th.col-right,
 .dir-table td.col-right,
-.dir-table th:nth-child(5),
-.dir-table td:nth-child(5) {
-    text-align: right;
+.dir-table th.col-center,
+.dir-table td.col-center,
+.dir-table td.dir-fund-mgr {
+    text-align: center;
 }
 .dir-table th:nth-child(2),
 .dir-table td:nth-child(2) {
@@ -6485,7 +6471,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     font-size: 0.85rem;
     letter-spacing: -0.01em;
     line-height: 1.45;
-    text-align: left;
+    text-align: center;
     vertical-align: middle;
     transition: color 0.18s ease;
 }
@@ -6497,7 +6483,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     color: var(--txt2);
     font-size: 0.8125rem;
     white-space: nowrap;
-    text-align: left;
+    text-align: center;
 }
 .dir-fund-fee {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
