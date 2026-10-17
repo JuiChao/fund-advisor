@@ -177,6 +177,7 @@
     <a href="#home" class="brand">
         <img src="favicon.png" alt="Fund Advisor" class="brand-logo">
         <span class="brand-text">FUND ADVISOR</span>
+        <span class="brand-sub-badge"><span class="brand-pulse-dot"></span> QDII 实时量化监控</span>
     </a>
     <div class="links" id="nav-links" role="navigation" aria-label="主导航">
         <a href="#home" data-page="home" class="on">概览</a>
@@ -188,6 +189,7 @@
         <a href="/about">关于我们</a>
     </div>
     <div class="nav-actions">
+        <a href="#portfolio" class="nav-cta-btn" title="立即开启量化资产配置">🚀 启动量化定投</a>
         <button class="theme-toggle" id="theme-toggle" aria-label="切换主题" title="切换深色/浅色模式">
             <span class="theme-icon">🌙</span>
         </button>
@@ -205,35 +207,285 @@
     <!-- 现代化 Fintech 科技风 Hero Banner -->
     <div class="hero-banner">
         <div class="hero-badge-wrap">
-            <span class="hero-pill">⚡ 2026 量化定投升级</span>
-            <span class="hero-pill" style="background:rgba(16,185,129,0.1);color:var(--ok);border-color:rgba(16,185,129,0.25)">💎 MPT 风险平价 (ERC)</span>
+            <span class="hero-pill">⚡ 2026 美股量化投研中枢</span>
+            <span class="hero-pill" style="background:rgba(99,102,241,0.12);color:var(--accent2);border-color:rgba(99,102,241,0.3)">💎 MPT 马克维茨有效前沿</span>
+            <span class="hero-pill" style="background:rgba(239,68,68,0.1);color:var(--err);border-color:rgba(239,68,68,0.25)">🌪️ 黑天鹅压力测试</span>
+            <span class="hero-pill" style="background:rgba(16,185,129,0.1);color:var(--ok);border-color:rgba(16,185,129,0.25)">📈 估值自适应动态定投</span>
             <span class="hero-pill" style="background:rgba(8,145,178,0.1);color:var(--cyan);border-color:rgba(8,145,178,0.25)">🚀 3D 张量通算引擎</span>
         </div>
-        <h1 class="hero-title">科学定投美股核心资产 · <span>稳健穿越牛熊</span></h1>
+        <h1 class="hero-title">用专业量化金融工程 · <span>重新定义普通人的美股定投</span></h1>
         <p class="hero-desc">
-            专为境内投资者打造的<strong>纳斯达克100 & 标普500 QDII</strong>智能量化投研与资产配置系统。每日自动穿透全市场公告捕获真实代销/直销限额，结合现代投资组合理论（MPT）与蒙特卡洛全周期通算，助您消除外汇限购阻碍，定制最优复利方案。
+            专为境内投资者打造的<strong>纳斯达克100 & 标普500 QDII</strong>全生命周期量化资产配置中枢。系统深度融合<strong>马克维茨有效前沿 (MPT)</strong>、<strong>下行风险体检 (Sortino)</strong>、<strong>历史极端黑天鹅压力测试</strong>与<strong>估值动态定投双轨推演</strong>，每日自动穿透全市场公募代销与直销限额，助您消除外汇限购阻碍，定制最优复利方案。
         </p>
+
+        <!-- 平台核心量化实时行情指标栏 (Live Quant Ticker Bar) -->
+        <div class="hero-quant-ticker" id="hero-quant-ticker">
+            <div class="ticker-box">
+                <div class="tk-label">标的池监控</div>
+                <div class="tk-val" id="tk-pool-count">60 只</div>
+                <div class="tk-sub">纳指 44 · 标普 16 (全份额)</div>
+            </div>
+            <div class="ticker-box">
+                <div class="tk-label">可购通道覆盖</div>
+                <div class="tk-val" id="tk-avail-count">23 代销 / 25 直销</div>
+                <div class="tk-sub">每日自动穿透限额公告</div>
+            </div>
+            <div class="ticker-box">
+                <div class="tk-label">最优综合年费</div>
+                <div class="tk-val" id="tk-min-fee" style="color:var(--ok)">0.60%</div>
+                <div class="tk-sub">管理+托管+销售费</div>
+            </div>
+            <div class="ticker-box">
+                <div class="tk-label">美股宏观估值中枢</div>
+                <div class="tk-val" style="color:#d97706">纳指 PE 31.8 · 标普 PE 26.4</div>
+                <div class="tk-sub">历史百分位 ~65% (合理偏高)</div>
+            </div>
+            <div class="ticker-box">
+                <div class="tk-label">高维通算能力</div>
+                <div class="tk-val" style="color:var(--accent2)">5,000 条 / 秒级</div>
+                <div class="tk-sub">Web Worker 向量化蒙特卡洛</div>
+            </div>
+        </div>
 
         <!-- 3步科学定投决策向导卡片 -->
         <div class="hero-journey-grid">
             <a href="#ranking" class="journey-card" data-jump="ranking">
                 <span class="journey-step">STEP 01 · 标的雷达</span>
                 <div class="journey-title"><span>🔍 全景选基排名</span></div>
-                <div class="journey-text">60 只标的综合费率、跟踪偏离度 (TD)、信息比率 (IR) 与代销/直销额度每日实时监控。</div>
+                <div class="journey-text">60+ 只标的综合费率、跟踪偏离度 (TD)、信息比率 (IR) 与代销/直销真实额度每日实时监控。</div>
                 <div class="journey-action">探索优质标的 ➔</div>
             </a>
             <a href="#portfolio" class="journey-card" data-jump="portfolio">
                 <span class="journey-step">STEP 02 · 科学配比</span>
                 <div class="journey-title"><span>⚖️ MPT 定投方案</span></div>
-                <div class="journey-text">传统资金平分 vs 风险平价 (38:62 等风险贡献) 与 Ledoit-Wolf 最大夏普收缩模型。</div>
+                <div class="journey-text">传统资金平分 vs 风险平价 (38:62 等风险贡献)，穿透实际可买额度与 A/C 共享额度避坑。</div>
                 <div class="journey-action">匹配配置方案 ➔</div>
             </a>
             <a href="#simulator" class="journey-card" data-jump="simulator">
                 <span class="journey-step">STEP 03 · 压力推演</span>
                 <div class="journey-title"><span>📈 蒙特卡洛推演</span></div>
-                <div class="journey-text">3D 张量单次秒级通算 5~30 年 5000 次市场随机漫步，预见未来中位财富与最差底线。</div>
+                <div class="journey-text">5~30 年 5000 次市场随机漫步，并支持普通定投 vs 智能估值动态定投双轨并列推演。</div>
                 <div class="journey-action">启动财富推演 ➔</div>
             </a>
+        </div>
+    </div>
+
+    <!-- ===== 四大旗舰量化投研引擎专区 (Flagship Quant Engines Showcase) ===== -->
+    <section class="quant-flagship-section">
+        <div class="section-header-wrap">
+            <div class="section-title-group">
+                <span class="section-eyebrow">WALL STREET QUANT TOOLS · 旗舰功能直通车</span>
+                <h2 class="section-title">四大核心量化金融工程引擎</h2>
+                <p class="section-desc">告别单指标粗糙选基与线性复利误导，平台将华尔街对冲基金级量化投研模型转化为普通投资者的敏捷决策工具。</p>
+            </div>
+            <div class="section-badge-pill">
+                <span class="brand-pulse-dot"></span>
+                <span>量化投研模型全时在线</span>
+            </div>
+        </div>
+
+        <div class="quant-flagship-grid">
+            <!-- 引擎 1: Top 1 MPT 马克维茨有效前沿 -->
+            <div class="quant-engine-card engine-card-frontier">
+                <div class="engine-badge-row">
+                    <span class="engine-badge" style="background:rgba(99,102,241,0.15);color:var(--accent2);border-color:rgba(99,102,241,0.3)">🏆 TOP 1 核心引擎</span>
+                    <span class="engine-tag">帕累托最优边界</span>
+                </div>
+                <h3 class="engine-title">
+                    <span class="engine-icon">💎</span>
+                    <span>马克维茨 MPT 有效前沿曲线 & 交互探针</span>
+                </h3>
+                <p class="engine-desc">
+                    突破传统资金 50:50 等分盲区！根据资产协方差与 Ledoit-Wolf 收缩模型，计算纳指与标普的收益-方差帕累托前沿，捕捉<strong>最大夏普 (MVO)</strong> 与 <strong>等风险贡献 (ERC 风险平价 38:62)</strong> 切点。
+                </p>
+                <div class="engine-preview-box">
+                    <div class="engine-preview-kpi-row">
+                        <div class="ep-kpi">
+                            <div class="ep-label">风险平价最优比</div>
+                            <div class="ep-val" style="color:var(--ok)">纳指 39% : 标普 61%</div>
+                            <div class="ep-sub">达成 50:50 波动风险中性</div>
+                        </div>
+                        <div class="ep-kpi">
+                            <div class="ep-label">最大夏普比率</div>
+                            <div class="ep-val" style="color:var(--accent2)">0.78 <span style="font-size:0.7rem;font-weight:normal">/ 索提诺 1.42</span></div>
+                            <div class="ep-sub">资本配置线 CAL 最优切点</div>
+                        </div>
+                    </div>
+                    <div class="engine-feature-tags">
+                        <span>✨ 交互式配比探针 HUD</span>
+                        <span>✨ 资金配比 vs 风险裂变方差分解</span>
+                        <span>✨ CAL 资本配置线</span>
+                    </div>
+                </div>
+                <div class="engine-card-footer">
+                    <a href="#portfolio?section=frontier" class="btn-engine-cta">
+                        <span>🔬 启动马克维茨前沿曲线探针</span>
+                        <span class="cta-arrow">➔</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 引擎 2: Top 2 索提诺比率与定投抗跌回撤体检表 -->
+            <div class="quant-engine-card engine-card-downside">
+                <div class="engine-badge-row">
+                    <span class="engine-badge" style="background:rgba(16,185,129,0.15);color:var(--ok);border-color:rgba(16,185,129,0.3)">🛡️ TOP 2 风险体检</span>
+                    <span class="engine-tag">下行半方差 · 极限压力</span>
+                </div>
+                <h3 class="engine-title">
+                    <span class="engine-icon">🩺</span>
+                    <span>索提诺比率与定投抗跌回撤体检表</span>
+                </h3>
+                <p class="engine-desc">
+                    拒绝惩罚上涨收益的粗暴标准差！采用对冲基金级<strong>索提诺比率 (Sortino Ratio)</strong> 专项惩罚下行负波动，并在 95% 置信度极限压力边界下，全面体检定投在最恶劣行情下的本金回撤底线。
+                </p>
+                <div class="engine-preview-box">
+                    <div class="engine-preview-kpi-row">
+                        <div class="ep-kpi">
+                            <div class="ep-label">95% 极端账面浮亏</div>
+                            <div class="ep-val" style="color:var(--err)">-24% ~ -28%</div>
+                            <div class="ep-sub">远优于一次性买入 (>40%)</div>
+                        </div>
+                        <div class="ep-kpi">
+                            <div class="ep-label">典型回撤修复期</div>
+                            <div class="ep-val" style="color:var(--accent2)">~10 个月</div>
+                            <div class="ep-sub">分批现金流高效摊平修复</div>
+                        </div>
+                    </div>
+                    <div class="engine-feature-tags">
+                        <span>✨ 索提诺真实抗跌性价比</span>
+                        <span>✨ P50/P95 最大账面浮亏预测</span>
+                        <span>✨ 资产峰值回撤修复周期</span>
+                    </div>
+                </div>
+                <div class="engine-card-footer">
+                    <a href="#portfolio?section=downside" class="btn-engine-cta">
+                        <span>🛡️ 查阅定投抗跌与回撤体检表</span>
+                        <span class="cta-arrow">➔</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 引擎 3: Top 3 历史极端危机黑天鹅压力测试 -->
+            <div class="quant-engine-card engine-card-stress">
+                <div class="engine-badge-row">
+                    <span class="engine-badge" style="background:rgba(239,68,68,0.15);color:var(--err);border-color:rgba(239,68,68,0.3)">🌪️ TOP 3 危机回放</span>
+                    <span class="engine-tag">非高斯真实序列 · 肥尾实测</span>
+                </div>
+                <h3 class="engine-title">
+                    <span class="engine-icon">⚡</span>
+                    <span>历史极端危机黑天鹅压力测试</span>
+                </h3>
+                <p class="engine-desc">
+                    历史不会重复，但总是押着相同的韵脚。复现美股百年最具破坏力的 4 大经典崩盘危机：<strong>2008 次贷海啸</strong>、<strong>2020 新冠极速熔断</strong>、<strong>2000 互联网泡沫</strong>与<strong>2022 紧缩加息熊市</strong>，严苛实证定投穿越风暴的韧性。
+                </p>
+                <div class="engine-preview-box">
+                    <div class="engine-preview-kpi-row">
+                        <div class="ep-kpi">
+                            <div class="ep-label">2008 次贷指数暴跌</div>
+                            <div class="ep-val" style="color:var(--err)">-50.8%</div>
+                            <div class="ep-sub">定投浮亏仅 -21.6% (平滑60%)</div>
+                        </div>
+                        <div class="ep-kpi">
+                            <div class="ep-label">危机回本修复耗时</div>
+                            <div class="ep-val" style="color:var(--ok)">16 个月</div>
+                            <div class="ep-sub">较一次性买入提前近 3 年</div>
+                        </div>
+                    </div>
+                    <div class="engine-feature-tags">
+                        <span>✨ 百年 4 大黑天鹅真实日线回放</span>
+                        <span>✨ 5 大定投策略同台抗压打擂</span>
+                        <span>✨ 净值 vs 累计本金演进轨迹</span>
+                    </div>
+                </div>
+                <div class="engine-card-footer">
+                    <a href="#portfolio?section=stress" class="btn-engine-cta">
+                        <span>⚠️ 运行黑天鹅极端压力测试</span>
+                        <span class="cta-arrow">➔</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 引擎 4: Top 4 估值自适应智能动态定投双轨引擎 -->
+            <div class="quant-engine-card engine-card-dynamic">
+                <div class="engine-badge-row">
+                    <span class="engine-badge" style="background:rgba(245,158,11,0.15);color:var(--warn);border-color:rgba(245,158,11,0.3)">🚀 TOP 4 超额 Alpha</span>
+                    <span class="engine-tag">价值平均法 · 动态调权</span>
+                </div>
+                <h3 class="engine-title">
+                    <span class="engine-icon">📈</span>
+                    <span>估值自适应智能动态定投双轨推演</span>
+                </h3>
+                <p class="engine-desc">
+                    突破机械定投瓶颈！基于纳斯达克 100 与标普 500 的 10 年 PE 历史分位，<strong>熊市估值低位自动加码买入廉价份额 (1.2x~1.8x)，牛市高估阶段主动减速留存弹药 (0.8x~0.9x)</strong>，获取长期复合超额收益。
+                </p>
+                <div class="engine-preview-box">
+                    <div class="engine-preview-kpi-row">
+                        <div class="ep-kpi">
+                            <div class="ep-label">当前估值调节倍数</div>
+                            <div class="ep-val" style="color:var(--warn)">0.88x ~ 0.90x</div>
+                            <div class="ep-sub">分位 65%~68% · 适度防守</div>
+                        </div>
+                        <div class="ep-kpi">
+                            <div class="ep-label">预期年化超额增强</div>
+                            <div class="ep-val" style="color:var(--ok)">+1.5% ~ +2.8%</div>
+                            <div class="ep-sub">显著拉低全周期持仓均价</div>
+                        </div>
+                    </div>
+                    <div class="engine-feature-tags">
+                        <span>✨ 实时 PE 估值分位雷达</span>
+                        <span>✨ 普通定投 vs 动态定投双轨对比</span>
+                        <span>✨ 3 档灵敏度挡位自由调节</span>
+                    </div>
+                </div>
+                <div class="engine-card-footer">
+                    <a href="#simulator?smart=1" class="btn-engine-cta">
+                        <span>🚀 体验智能动态定投双轨推演</span>
+                        <span class="cta-arrow">➔</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 实时限购穿透雷达与额度快报专区 (CDC Purchase Limit Radar) ===== -->
+    <div class="card home-quota-radar-card" style="margin-top:2rem;background:linear-gradient(135deg, rgba(99,102,241,0.05) 0%, rgba(16,185,129,0.05) 100%);border:1px solid rgba(99,102,241,0.22);padding:1.4rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:12px">
+                <span style="font-size:1.8rem">📡</span>
+                <div>
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                        <h3 style="margin:0;font-size:1.15rem;color:var(--txt)">全市场 QDII 限购穿透雷达 & 共享额度避坑系统</h3>
+                        <span class="hero-pill" style="background:rgba(16,185,129,0.12);color:var(--ok);border-color:rgba(16,185,129,0.3);font-size:0.68rem;padding:2px 8px">CDC 自动捕获</span>
+                    </div>
+                    <p style="margin:4px 0 0;font-size:0.8rem;color:var(--txt2)">每日自动解析基金公司最新公告，穿透代销（天天/支付宝）与官方直销限额，首创 A/C/定制份额共享额度避坑标识</p>
+                </div>
+            </div>
+            <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+                <a href="#ranking?section=quota" class="btn-jump-strat" style="font-size:0.8rem;padding:0.45rem 0.95rem">查阅实时额度快报 ➔</a>
+            </div>
+        </div>
+        <div class="home-quota-features-grid">
+            <div class="hq-feature-item">
+                <div class="hq-icon">🔗</div>
+                <div class="hq-content">
+                    <div class="hq-title">A/C 跨份额共享额度预警</div>
+                    <div class="hq-desc">标明基金公司按身份证合并控制限额的标的，防止同日重复申购不同份额被银行退款。</div>
+                </div>
+            </div>
+            <div class="hq-feature-item">
+                <div class="hq-icon">🏢</div>
+                <div class="hq-content">
+                    <div class="hq-title">代销 vs 直销额度穿透</div>
+                    <div class="hq-desc">代销暂停时直销渠道往往有独立大额申购额度，助您开辟第二购买通道。</div>
+                </div>
+            </div>
+            <div class="hq-feature-item">
+                <div class="hq-icon">📱</div>
+                <div class="hq-content">
+                    <div class="hq-title">一键导出快报海报</div>
+                    <div class="hq-desc">支持一键生成小红书 / 抖音 3:4 比例额度快报图片，随身随时查看最新限购行情。</div>
+                </div>
+            </div>
         </div>
     </div>
 

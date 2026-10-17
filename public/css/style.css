@@ -7975,5 +7975,368 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
 }
 
+/* ===== 顶部导航品牌呼吸灯与快捷量化 CTA ===== */
+.brand-sub-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--ok);
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+.brand-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 8px var(--ok);
+    animation: pulseLive 2s infinite;
+}
+@keyframes pulseLive {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+}
+.nav-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.38rem 0.85rem;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff !important;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+    transition: var(--transition);
+    white-space: nowrap;
+}
+.nav-cta-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.45);
+}
+
+/* ===== 首页核心量化实时行情指标栏 (Live Quant Ticker Bar) ===== */
+.hero-quant-ticker {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    margin: 1.25rem 0 1.5rem 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1rem;
+    box-shadow: var(--shadow-sm);
+}
+.ticker-box {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    padding-right: 0.75rem;
+}
+.ticker-box:last-child {
+    border-right: none;
+    padding-right: 0;
+}
+.ticker-box .tk-label {
+    font-size: 0.7rem;
+    color: var(--txt3);
+    margin-bottom: 2px;
+    white-space: nowrap;
+}
+.ticker-box .tk-val {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--txt);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 2px;
+}
+.ticker-box .tk-sub {
+    font-size: 0.67rem;
+    color: var(--txt2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+@media (max-width: 992px) {
+    .hero-quant-ticker {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .ticker-box {
+        border-right: none;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .brand-sub-badge {
+        display: none;
+    }
+}
+@media (max-width: 576px) {
+    .hero-quant-ticker {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== 四大旗舰量化投研引擎专区 (Flagship Quant Engines Showcase) ===== */
+.quant-flagship-section {
+    margin-top: 2.25rem;
+    margin-bottom: 2.25rem;
+}
+.section-header-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.section-eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+}
+.section-title {
+    font-size: 1.55rem;
+    font-weight: 850;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.35rem 0;
+    color: var(--txt);
+}
+.section-desc {
+    font-size: 0.875rem;
+    color: var(--txt2);
+    margin: 0;
+    max-width: 720px;
+    line-height: 1.55;
+}
+.section-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ok);
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+}
+.quant-flagship-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+}
+@media (max-width: 900px) {
+    .quant-flagship-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.quant-engine-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    overflow: hidden;
+}
+.quant-engine-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+.engine-card-frontier:hover { border-color: rgba(99, 102, 241, 0.55); }
+.engine-card-downside:hover { border-color: rgba(16, 185, 129, 0.55); }
+.engine-card-stress:hover { border-color: rgba(239, 68, 68, 0.55); }
+.engine-card-dynamic:hover { border-color: rgba(245, 158, 11, 0.55); }
+
+.engine-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 0.75rem;
+}
+.engine-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    letter-spacing: 0.02em;
+}
+.engine-tag {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--txt3);
+}
+.engine-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--txt);
+    margin: 0 0 0.65rem 0;
+    line-height: 1.35;
+}
+.engine-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+.engine-desc {
+    font-size: 0.8125rem;
+    color: var(--txt2);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    flex: 1;
+}
+.engine-preview-box {
+    background: var(--surface2, var(--bg2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.15rem;
+}
+.engine-preview-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px dashed var(--border);
+}
+.ep-kpi .ep-label {
+    font-size: 0.68rem;
+    color: var(--txt3);
+    margin-bottom: 2px;
+}
+.ep-kpi .ep-val {
+    font-size: 0.95rem;
+    font-weight: 800;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 2px;
+}
+.ep-kpi .ep-sub {
+    font-size: 0.67rem;
+    color: var(--txt2);
+    line-height: 1.3;
+}
+.engine-feature-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.engine-feature-tags span {
+    display: inline-block;
+    font-size: 0.68rem;
+    color: var(--txt2);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+.btn-engine-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.65rem 1rem;
+    background: var(--surface2);
+    color: var(--txt) !important;
+    font-size: 0.825rem;
+    font-weight: 700;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: var(--transition);
+}
+.btn-engine-cta:hover {
+    background: var(--accent);
+    color: #fff !important;
+    border-color: var(--accent);
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+}
+.btn-engine-cta .cta-arrow {
+    transition: transform 0.2s ease;
+}
+.btn-engine-cta:hover .cta-arrow {
+    transform: translateX(4px);
+}
+
+/* ===== 额度快报与共享额度穿透卡片 ===== */
+.home-quota-features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+@media (max-width: 768px) {
+    .home-quota-features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.hq-feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem;
+}
+.hq-feature-item .hq-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.hq-feature-item .hq-title {
+    font-size: 0.825rem;
+    font-weight: 700;
+    color: var(--txt);
+    margin-bottom: 4px;
+}
+.hq-feature-item .hq-desc {
+    font-size: 0.72rem;
+    color: var(--txt2);
+    line-height: 1.45;
+}
+
+/* ===== 平滑跳转高亮光环动画 ===== */
+.highlight-glow {
+    animation: pulseGlow 2.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.75);
+        border-color: var(--accent);
+    }
+    40% {
+        box-shadow: 0 0 28px 8px rgba(99, 102, 241, 0.45);
+        border-color: var(--accent);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    }
+}
+
 
 

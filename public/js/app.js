@@ -398,14 +398,63 @@ const App = (() => {
             renderRanking();
             renderQuotaBulletin();
             applyRankView(currentRankView);
+            if (queryParams.section === 'quota') {
+                setTimeout(() => {
+                    const el = document.getElementById('quota-bulletin-section');
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        el.classList.add('highlight-glow');
+                        setTimeout(() => el.classList.remove('highlight-glow'), 2200);
+                    }
+                }, 150);
+            }
         }
         if (pName === 'simulator') {
             populateSimSelect();
             syncSliderBadges();
+            if (queryParams.smart === '1' || queryParams.action === 'smart-dca') {
+                setTimeout(() => {
+                    const toggle = document.getElementById('sim-smart-toggle');
+                    if (toggle && !toggle.checked) {
+                        toggle.checked = true;
+                        toggle.dispatchEvent(new Event('change'));
+                    }
+                    const sec = document.getElementById('sim-dynamic-section');
+                    if (sec) {
+                        sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        sec.classList.add('highlight-glow');
+                        setTimeout(() => sec.classList.remove('highlight-glow'), 2200);
+                    }
+                }, 150);
+            }
         }
         if (pName === 'portfolio') {
             computePortfolio();
             syncSliderBadges();
+            if (queryParams.section) {
+                setTimeout(() => {
+                    const secMap = {
+                        'frontier': 'quant-frontier-card',
+                        'stress': 'stress-test-section',
+                        'downside': 'quant-matrix-card',
+                    };
+                    const secId = secMap[queryParams.section] || queryParams.section;
+                    const el = document.getElementById(secId);
+                    if (el) {
+                        if (secId === 'quant-frontier-card') {
+                            const body = document.getElementById('quant-frontier-body');
+                            const arrow = document.getElementById('quant-frontier-arrow');
+                            if (body && body.style.display === 'none') {
+                                body.style.display = 'block';
+                                if (arrow) arrow.style.transform = 'rotate(180deg)';
+                            }
+                        }
+                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        el.classList.add('highlight-glow');
+                        setTimeout(() => el.classList.remove('highlight-glow'), 2200);
+                    }
+                }, 150);
+            }
         }
     }
 
@@ -450,12 +499,23 @@ const App = (() => {
         const availDirect = FUND_DATA.filter(f => f.direct_limit_status && !f.direct_limit_status.includes('暂停') && !f.direct_limit_status.includes('未开通'));
         const minFee = Math.min(...FUND_DATA.map(f => (f.mgmt_fee || 0) + (f.custody_fee || 0) + (f.sales_fee || 0)));
 
-        document.getElementById('home-stats').innerHTML = `
-            <div class="stat"><div class="lb">收录份额</div><div class="vl">${FUND_DATA.length}</div><div class="sub">纳指 ${nq.length} · 标普 ${sp.length} (涵盖A/C/D/E/F/I)</div></div>
-            <div class="stat"><div class="lb">可购份额</div><div class="vl">${availAgency.length}</div><div class="sub">代销可买 (直销可买${availDirect.length})</div></div>
-            <div class="stat"><div class="lb">最低综合年费</div><div class="vl">${(minFee * 100).toFixed(2)}%</div><div class="sub">管理+托管+销售费</div></div>
-            <div class="stat"><div class="lb">数据更新</div><div class="vl" style="font-size:1rem">${FUND_DATA[0]?.updated_at?.split('T')[0] || '-'}</div><div class="sub">每日自动抓取</div></div>
-        `;
+        const homeStatsEl = document.getElementById('home-stats');
+        if (homeStatsEl) {
+            homeStatsEl.innerHTML = `
+                <div class="stat"><div class="lb">收录份额</div><div class="vl">${FUND_DATA.length}</div><div class="sub">纳指 ${nq.length} · 标普 ${sp.length} (涵盖A/C/D/E/F/I)</div></div>
+                <div class="stat"><div class="lb">可购份额</div><div class="vl">${availAgency.length}</div><div class="sub">代销可买 (直销可买${availDirect.length})</div></div>
+                <div class="stat"><div class="lb">最低综合年费</div><div class="vl">${(minFee * 100).toFixed(2)}%</div><div class="sub">管理+托管+销售费</div></div>
+                <div class="stat"><div class="lb">数据更新</div><div class="vl" style="font-size:1rem">${FUND_DATA[0]?.updated_at?.split('T')[0] || '-'}</div><div class="sub">每日自动抓取</div></div>
+            `;
+        }
+
+        // 同步顶部实时量化行情指标条 (Hero Quant Ticker)
+        const tkPool = document.getElementById('tk-pool-count');
+        if (tkPool) tkPool.textContent = `${FUND_DATA.length} 只`;
+        const tkAvail = document.getElementById('tk-avail-count');
+        if (tkAvail) tkAvail.textContent = `${availAgency.length} 代销 / ${availDirect.length} 直销`;
+        const tkMinFee = document.getElementById('tk-min-fee');
+        if (tkMinFee) tkMinFee.textContent = `${(minFee * 100).toFixed(2)}%`;
 
         // 费率分布图
         function feeChart(id, list) {
