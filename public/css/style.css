@@ -2402,6 +2402,37 @@ input[type=range]::-moz-range-thumb {
     color: var(--accent2);
     font-weight: 600;
 }
+.poster-modal-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface);
+    padding: 2.5px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    gap: 2px;
+    margin-left: auto;
+    margin-right: 12px;
+}
+.btn-prev-theme {
+    border: none;
+    background: transparent;
+    color: var(--txt2);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    line-height: 1.2;
+}
+.btn-prev-theme:hover {
+    color: var(--txt);
+}
+.btn-prev-theme.on {
+    background: var(--accent-g);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+}
 .poster-modal-close {
     background: none;
     border: none;
@@ -2800,6 +2831,46 @@ input[type=range]::-moz-range-thumb {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
+}
+
+.fund-export-theme-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 4px;
+}
+.theme-sel-label {
+    font-size: 0.78rem;
+    color: var(--txt3);
+    font-weight: 600;
+}
+.theme-sel-group {
+    display: inline-flex;
+    background: var(--surface);
+    padding: 2.5px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    gap: 2px;
+}
+.btn-theme-sel {
+    border: none;
+    background: transparent;
+    color: var(--txt2);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2.5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-theme-sel:hover {
+    color: var(--txt);
+}
+.btn-theme-sel.on {
+    background: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .btn-rks-cancel {
@@ -3107,6 +3178,137 @@ input[type=range]::-moz-range-thumb {
 }
 .dbp-footer-meta p {
     margin: 0;
+}
+
+/* ===== 浅色清新风格：公告看板导出海报 ===== */
+.douyin-poster-export.theme-light {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    color: #0f172a;
+}
+.douyin-poster-export.theme-light .dbp-top-tag {
+    background: rgba(79, 70, 229, 0.08);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    color: #4338ca;
+}
+.douyin-poster-export.theme-light .dbp-tag-date {
+    background: rgba(79, 70, 229, 0.12);
+    color: #3730a3;
+}
+.douyin-poster-export.theme-light .dbp-title {
+    color: #0f172a;
+}
+.douyin-poster-export.theme-light .dbp-sub {
+    color: #475569;
+}
+.douyin-poster-export.theme-light .dbp-stat-chip.chip-tightened {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #dc2626;
+}
+.douyin-poster-export.theme-light .dbp-stat-chip.chip-relaxed {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+    color: #059669;
+}
+.douyin-poster-export.theme-light .dbp-stat-chip.chip-monitored {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    color: #4338ca;
+}
+.douyin-poster-export.theme-light .dbp-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+}
+.douyin-poster-export.theme-light .dbp-card-relaxed {
+    border-left: 4.5px solid #10b981;
+}
+.douyin-poster-export.theme-light .dbp-card-tightened {
+    border-left: 4.5px solid #ef4444;
+}
+.douyin-poster-export.theme-light .dbp-card-channel_div {
+    border-left: 4.5px solid #3b82f6;
+}
+.douyin-poster-export.theme-light .dbp-idx-badge.badge-nq {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+.douyin-poster-export.theme-light .dbp-idx-badge.badge-sp {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
+}
+.douyin-poster-export.theme-light .dbp-share-badge {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #cbd5e1;
+}
+.douyin-poster-export.theme-light .dbp-share-badge.badge-a { background: rgba(79, 70, 229, 0.1); color: #4338ca; border-color: rgba(79, 70, 229, 0.25); }
+.douyin-poster-export.theme-light .dbp-share-badge.badge-c { background: rgba(147, 51, 234, 0.1); color: #7e22ce; border-color: rgba(147, 51, 234, 0.25); }
+.douyin-poster-export.theme-light .dbp-share-badge.badge-d { background: rgba(8, 145, 178, 0.1); color: #0e7490; border-color: rgba(8, 145, 178, 0.25); }
+.douyin-poster-export.theme-light .dbp-share-badge.badge-e { background: rgba(217, 119, 6, 0.1); color: #b45309; border-color: rgba(217, 119, 6, 0.25); }
+.douyin-poster-export.theme-light .dbp-share-badge.badge-f { background: rgba(225, 29, 72, 0.1); color: #be123c; border-color: rgba(225, 29, 72, 0.25); }
+.douyin-poster-export.theme-light .dbp-share-badge.badge-i { background: rgba(16, 185, 129, 0.1); color: #047857; border-color: rgba(16, 185, 129, 0.25); }
+.douyin-poster-export.theme-light .dbp-fund-code {
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+}
+.douyin-poster-export.theme-light .dbp-fund-name {
+    color: #0f172a;
+}
+.douyin-poster-export.theme-light .dbp-change-pill.pill-relaxed {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+.douyin-poster-export.theme-light .dbp-change-pill.pill-tightened {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+.douyin-poster-export.theme-light .dbp-change-pill.pill-div {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+.douyin-poster-export.theme-light .dbp-channel-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+.douyin-poster-export.theme-light .dbp-ch-lbl {
+    color: #64748b;
+}
+.douyin-poster-export.theme-light .dbp-val-before {
+    color: #94a3b8;
+}
+.douyin-poster-export.theme-light .dbp-flow-arr {
+    color: #94a3b8;
+}
+.douyin-poster-export.theme-light .dbp-val-after {
+    color: #0f172a;
+}
+.douyin-poster-export.theme-light .dbp-val-after.relaxed {
+    color: #047857;
+}
+.douyin-poster-export.theme-light .dbp-val-after.tightened {
+    color: #dc2626;
+}
+.douyin-poster-export.theme-light .dbp-val-after.suspended {
+    color: #b91c1c;
+}
+.douyin-poster-export.theme-light .dbp-footer {
+    border-top: 1px solid #e2e8f0;
+}
+.douyin-poster-export.theme-light .dbp-brand-name {
+    color: #0f172a;
+}
+.douyin-poster-export.theme-light .dbp-brand-tag {
+    color: #4f46e5;
+}
+.douyin-poster-export.theme-light .dbp-footer-meta {
+    color: #64748b;
 }
 
 /* ===== 全景对比表格海报导出专用样式 ===== */
@@ -3459,6 +3661,151 @@ input[type=range]::-moz-range-thumb {
 .rank-poster-export .tbl-limit-lbl { color: #94a3b8; font-size: 11px; }
 .rank-poster-export .tbl-limit-na { color: #64748b; font-size: 11px; }
 .rank-poster-export .pill { font-size: 10.5px; padding: 1.5px 6px; }
+
+/* ===== 浅色清新风格：全景对比表格导出海报 ===== */
+.rank-poster-export.theme-light {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    color: #0f172a;
+}
+.rank-poster-export.theme-light .rkp-top-tag {
+    background: rgba(79, 70, 229, 0.08);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    color: #4338ca;
+}
+.rank-poster-export.theme-light .rkp-tag-date {
+    background: rgba(79, 70, 229, 0.12);
+    color: #3730a3;
+}
+.rank-poster-export.theme-light .rkp-title {
+    color: #0f172a;
+}
+.rank-poster-export.theme-light .rkp-sub {
+    color: #475569;
+}
+.rank-poster-export.theme-light .rkp-meta {
+    color: #64748b;
+}
+.rank-poster-export.theme-light .rkp-scope-bar {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.rank-poster-export.theme-light .rkp-scope-lbl {
+    color: #64748b;
+}
+.rank-poster-export.theme-light .rkp-scope-highlight.scope-nq {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+.rank-poster-export.theme-light .rkp-scope-highlight.scope-sp {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+.rank-poster-export.theme-light .rkp-scope-highlight.scope-all {
+    background: #f5f3ff;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+}
+.rank-poster-export.theme-light .rkp-chip {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+}
+.rank-poster-export.theme-light .rkp-chip strong {
+    color: #0f172a;
+}
+.rank-poster-export.theme-light .rkp-chip.chip-count {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    color: #4338ca;
+}
+.rank-poster-export.theme-light .rkp-chip.chip-count strong {
+    color: #3730a3;
+}
+.rank-poster-export.theme-light .rkp-table-wrap {
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+.rank-poster-export.theme-light .rkp-table th {
+    background: #f8fafc;
+    color: #334155;
+    border-bottom: 2px solid #cbd5e1;
+}
+.rank-poster-export.theme-light .rkp-table td {
+    border-bottom: 1px solid #e2e8f0;
+    color: #1e293b;
+    background: #ffffff;
+}
+.rank-poster-export.theme-light .rkp-table tbody tr:nth-child(even) td {
+    background: #f8fafc;
+}
+.rank-poster-export.theme-light .rkp-table tr.row-gold td {
+    background: #fef9c3 !important;
+}
+.rank-poster-export.theme-light .rkp-table tr.row-silver td {
+    background: #f1f5f9 !important;
+}
+.rank-poster-export.theme-light .rkp-table tr.row-bronze td {
+    background: #ffedd5 !important;
+}
+.rank-poster-export.theme-light .rkp-rank-badge {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+.rank-poster-export.theme-light .rkp-code {
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+}
+.rank-poster-export.theme-light .rkp-fund-name {
+    color: #0f172a;
+}
+.rank-poster-export.theme-light .rkp-fee.low {
+    color: #059669;
+}
+.rank-poster-export.theme-light .rkp-badge-low {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+}
+.rank-poster-export.theme-light .rkp-te-sub {
+    color: #64748b;
+}
+.rank-poster-export.theme-light .rkp-score-badge {
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    color: #4338ca;
+}
+.rank-poster-export.theme-light .rkp-footer {
+    border-top: 1px solid #e2e8f0;
+}
+.rank-poster-export.theme-light .rkp-brand-name {
+    color: #0f172a;
+}
+.rank-poster-export.theme-light .rkp-brand-tag {
+    color: #4f46e5;
+}
+.rank-poster-export.theme-light .rkp-footer-meta {
+    color: #64748b;
+}
+.rank-poster-export.theme-light .badge-a { background: rgba(79, 70, 229, 0.1); color: #4338ca; border-color: rgba(79, 70, 229, 0.25); }
+.rank-poster-export.theme-light .badge-c { background: rgba(147, 51, 234, 0.1); color: #7e22ce; border-color: rgba(147, 51, 234, 0.25); }
+.rank-poster-export.theme-light .badge-d { background: rgba(8, 145, 178, 0.1); color: #0e7490; border-color: rgba(8, 145, 178, 0.25); }
+.rank-poster-export.theme-light .badge-e { background: rgba(217, 119, 6, 0.1); color: #b45309; border-color: rgba(217, 119, 6, 0.25); }
+.rank-poster-export.theme-light .badge-f { background: rgba(225, 29, 72, 0.1); color: #be123c; border-color: rgba(225, 29, 72, 0.25); }
+.rank-poster-export.theme-light .badge-i { background: rgba(16, 185, 129, 0.1); color: #047857; border-color: rgba(16, 185, 129, 0.25); }
+.rank-poster-export.theme-light .badge-shared { background: rgba(16, 185, 129, 0.1); color: #047857; border-color: rgba(16, 185, 129, 0.25); }
+.rank-poster-export.theme-light .badge-indep { background: rgba(79, 70, 229, 0.1); color: #4338ca; border-color: rgba(79, 70, 229, 0.25); }
+.rank-poster-export.theme-light .pg { background: #ecfdf5; color: #047857; }
+.rank-poster-export.theme-light .py { background: #fffbeb; color: #b45309; }
+.rank-poster-export.theme-light .pr { background: #fef2f2; color: #be123c; }
+.rank-poster-export.theme-light .pb { background: #eff6ff; color: #1d4ed8; }
+.rank-poster-export.theme-light .tbl-limit-lbl { color: #64748b; }
+.rank-poster-export.theme-light .tbl-limit-na { color: #94a3b8; }
 
 /* ===== 基金排名控制中枢 (Two-Tier Control Hub) ===== */
 .rank-control-hub {

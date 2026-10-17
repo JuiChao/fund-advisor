@@ -1306,8 +1306,12 @@ const App = (() => {
         });
     }
 
+    // 全局导出图片风格偏好（默认深色，持久化于 localStorage）
+    let currentExportTheme = localStorage.getItem('fa_export_theme') || 'dark';
+
     // ===== 通用图片海报预览与导出弹窗 =====
-    function openPosterModal({ canvas, downloadFilename, titleText, tagText, successToast }) {
+    function openPosterModal({ canvas, downloadFilename, titleText, tagText, successToast, onThemeChange, currentTheme = currentExportTheme }) {
+        currentExportTheme = currentTheme;
         const dataUrl = canvas.toDataURL('image/png');
         const modal = document.getElementById('poster-modal-backdrop');
         const previewImg = document.getElementById('poster-preview-img');
@@ -1316,6 +1320,7 @@ const App = (() => {
         const closeBtn = document.getElementById('poster-modal-close');
         const titleEl = document.getElementById('poster-modal-title-text');
         const tagEl = document.getElementById('poster-modal-tag');
+        const themeToggle = document.getElementById('poster-modal-theme-toggle');
 
         if (titleEl) titleEl.textContent = titleText || '导出图片预览';
         if (tagEl) tagEl.textContent = tagText || '高清排版';
@@ -1323,6 +1328,28 @@ const App = (() => {
         if (downloadBtn) {
             downloadBtn.href = dataUrl;
             downloadBtn.download = downloadFilename || 'QDII图片.png';
+        }
+
+        // 绑定预览弹窗内部的风格即时切换按钮
+        if (themeToggle) {
+            themeToggle.querySelectorAll('.btn-prev-theme').forEach(btn => {
+                const isCur = btn.dataset.theme === currentTheme;
+                btn.classList.toggle('on', isCur);
+                btn.onclick = async () => {
+                    if (btn.dataset.theme === currentTheme) return;
+                    const newTheme = btn.dataset.theme;
+                    currentExportTheme = newTheme;
+                    try {
+                        localStorage.setItem('fa_export_theme', newTheme);
+                    } catch (e) {}
+                    themeToggle.querySelectorAll('.btn-prev-theme').forEach(b => b.classList.toggle('on', b.dataset.theme === newTheme));
+                    if (onThemeChange) {
+                        btn.textContent = '⏳ ...';
+                        await onThemeChange(newTheme);
+                        btn.textContent = newTheme === 'light' ? '☀️ 浅色' : '🌙 深色';
+                    }
+                };
+            });
         }
 
         if (copyBtn) {
@@ -1584,6 +1611,19 @@ const App = (() => {
             if (e.target === modal) closeSelectModal();
         };
 
+        // 风格选择器联动
+        const qksThemeGroup = document.getElementById('qks-theme-group');
+        if (qksThemeGroup) {
+            qksThemeGroup.querySelectorAll('.btn-theme-sel').forEach(btn => {
+                btn.classList.toggle('on', btn.dataset.theme === currentExportTheme);
+                btn.onclick = () => {
+                    currentExportTheme = btn.dataset.theme;
+                    try { localStorage.setItem('fa_export_theme', currentExportTheme); } catch (e) {}
+                    qksThemeGroup.querySelectorAll('.btn-theme-sel').forEach(b => b.classList.toggle('on', b === btn));
+                };
+            });
+        }
+
         if (btnConfirm) {
             btnConfirm.onclick = () => {
                 if (selectedCodes.size === 0) {
@@ -1592,7 +1632,7 @@ const App = (() => {
                 }
                 const selectedItems = displayHistory.filter(h => selectedCodes.has(h.code));
                 closeSelectModal();
-                exportQuotaBulletinPoster(selectedItems, triggerBtn);
+                exportQuotaBulletinPoster(selectedItems, triggerBtn, currentExportTheme);
             };
         }
 
@@ -1601,7 +1641,9 @@ const App = (() => {
     }
 
     // ===== 导出适合社交发布的 3:4 公告看板图片 (按勾选标的渲染，剥离平替推荐与网页交互控件) =====
-    async function exportQuotaBulletinPoster(selectedItems, triggerBtn) {
+    async function exportQuotaBulletinPoster(selectedItems, triggerBtn, exportTheme = currentExportTheme) {
+        currentExportTheme = exportTheme;
+        const isLight = exportTheme === 'light';
         const data = LIMIT_CHANGES_DATA;
         if (!data) {
             showToast('未检测到限购公告数据', 'info');
@@ -1642,8 +1684,8 @@ const App = (() => {
                 cardsHtml = `
                     <div class="dbp-card" style="text-align:center;padding:36px 20px;border-left:none;">
                         <div style="font-size:36px;margin-bottom:12px">🛡️</div>
-                        <div style="font-size:18px;font-weight:700;color:#f8fafc;margin-bottom:6px">全市场额度平稳运行</div>
-                        <div style="font-size:14px;color:#94a3b8">今日无新增限购收紧或暂停申购变动</div>
+                        <div style="font-size:18px;font-weight:700;color:${isLight ? '#0f172a' : '#f8fafc'};margin-bottom:6px">全市场额度平稳运行</div>
+                        <div style="font-size:14px;color:${isLight ? '#64748b' : '#94a3b8'}">今日无新增限购收紧或暂停申购变动</div>
                     </div>
                 `;
             } else {
@@ -1698,13 +1740,14 @@ const App = (() => {
                                     </div>
                                 </div>
                             </div>
+                            ${item.notice_title ? `<div class="dbp-card-notice">📑 公告：《${item.notice_title}》</div>` : ''}
                         </div>
                     `;
                 }).join('');
             }
 
             posterWrap.innerHTML = `
-                <div class="douyin-poster-export" id="dbp-render-target">
+                <div class="douyin-poster-export ${isLight ? 'theme-light' : ''}" id="dbp-render-target">
                     <div class="dbp-header">
                         <div class="dbp-top-tag">
                             <span>📢</span>
@@ -1757,16 +1800,22 @@ const App = (() => {
                 scale: 2,
                 useCORS: true,
                 logging: false,
-                backgroundColor: '#0d1322'
+                backgroundColor: isLight ? '#ffffff' : '#0d1322'
             });
 
             document.body.removeChild(posterWrap);
 
             openPosterModal({
                 canvas,
-                downloadFilename: `QDII限购变动速递_${todayStr}.png`,
+                downloadFilename: `QDII限购变动速递_${isLight ? '浅色_' : ''}${todayStr}.png`,
                 titleText: '公告看板图片预览',
-                tagText: `${itemsToExport.length}只变动 · 3:4 竖版 (无平替)`,
+                tagText: `${itemsToExport.length}只变动 · ${isLight ? '☀️ 浅色清新' : '🌙 深色商务'}`,
+                currentTheme: exportTheme,
+                onThemeChange: async (newTheme) => {
+                    currentExportTheme = newTheme;
+                    try { localStorage.setItem('fa_export_theme', newTheme); } catch (e) {}
+                    await exportQuotaBulletinPoster(itemsToExport, null, newTheme);
+                },
                 successToast: '🎉 公告看板图片已生成，可直接保存或复制！'
             });
 
@@ -1790,7 +1839,7 @@ const App = (() => {
 
         const modal = document.getElementById('rank-select-modal');
         if (!modal) {
-            exportRankTablePoster(rankData, triggerBtn);
+            exportRankTablePoster(rankData, triggerBtn, currentExportTheme);
             return;
         }
 
@@ -1967,6 +2016,19 @@ const App = (() => {
             if (e.target === modal) closeSelectModal();
         };
 
+        // 风格选择器联动
+        const rksThemeGroup = document.getElementById('rks-theme-group');
+        if (rksThemeGroup) {
+            rksThemeGroup.querySelectorAll('.btn-theme-sel').forEach(btn => {
+                btn.classList.toggle('on', btn.dataset.theme === currentExportTheme);
+                btn.onclick = () => {
+                    currentExportTheme = btn.dataset.theme;
+                    try { localStorage.setItem('fa_export_theme', currentExportTheme); } catch (e) {}
+                    rksThemeGroup.querySelectorAll('.btn-theme-sel').forEach(b => b.classList.toggle('on', b === btn));
+                };
+            });
+        }
+
         if (btnConfirm) {
             btnConfirm.onclick = () => {
                 if (selectedCodes.size === 0) {
@@ -1975,7 +2037,7 @@ const App = (() => {
                 }
                 const selectedFunds = rankData.filter(r => selectedCodes.has(r.code));
                 closeSelectModal();
-                exportRankTablePoster(selectedFunds, triggerBtn);
+                exportRankTablePoster(selectedFunds, triggerBtn, currentExportTheme);
             };
         }
 
@@ -1984,7 +2046,9 @@ const App = (() => {
     }
 
     // ===== 导出全景对比表格高清长图图片 (按勾选标的渲染，剔除网页交互控件与重复类别徽标) =====
-    async function exportRankTablePoster(selectedFunds, triggerBtn) {
+    async function exportRankTablePoster(selectedFunds, triggerBtn, exportTheme = currentExportTheme) {
+        currentExportTheme = exportTheme;
+        const isLight = exportTheme === 'light';
         const fundsToExport = (selectedFunds && selectedFunds.length) ? selectedFunds : rankData;
         if (!fundsToExport || fundsToExport.length === 0) {
             showToast('未选择任何标的，无法导出', 'info');
@@ -2110,7 +2174,7 @@ const App = (() => {
             }).join('');
 
             posterWrap.innerHTML = `
-                <div class="rank-poster-export" id="rkp-render-target">
+                <div class="rank-poster-export ${isLight ? 'theme-light' : ''}" id="rkp-render-target">
                     <div class="rkp-header">
                         <div class="rkp-top-tag">
                             <span>🏆</span>
@@ -2177,16 +2241,22 @@ const App = (() => {
                 scale: 2,
                 useCORS: true,
                 logging: false,
-                backgroundColor: '#0b0f19'
+                backgroundColor: isLight ? '#ffffff' : '#0b0f19'
             });
 
             document.body.removeChild(posterWrap);
 
             openPosterModal({
                 canvas,
-                downloadFilename: `QDII量化评分榜_${type}_${todayStr}.png`,
+                downloadFilename: `QDII量化评分榜_${type}_${isLight ? '浅色_' : ''}${todayStr}.png`,
                 titleText: '全景对比表格图片预览',
-                tagText: `${fundsToExport.length}只标的 · 高清长图`,
+                tagText: `${fundsToExport.length}只标的 · ${isLight ? '☀️ 浅色清新' : '🌙 深色商务'}`,
+                currentTheme: exportTheme,
+                onThemeChange: async (newTheme) => {
+                    currentExportTheme = newTheme;
+                    try { localStorage.setItem('fa_export_theme', newTheme); } catch (e) {}
+                    await exportRankTablePoster(fundsToExport, null, newTheme);
+                },
                 successToast: '🎉 全景对比表格图片已生成，可直接保存或复制！'
             });
 

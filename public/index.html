@@ -1429,6 +1429,13 @@
                     💡 提示：仅勾选的标的将按当前排序规则渲染进导出的高清图片中。
                 </div>
                 <div class="fund-select-actions">
+                    <div class="fund-export-theme-selector">
+                        <span class="theme-sel-label">图片风格：</span>
+                        <div class="theme-sel-group" id="rks-theme-group">
+                            <button type="button" class="btn-theme-sel on" data-theme="dark">🌙 深色</button>
+                            <button type="button" class="btn-theme-sel" data-theme="light">☀️ 浅色</button>
+                        </div>
+                    </div>
                     <button type="button" class="btn-rks-cancel" id="btn-rks-cancel">取消</button>
                     <button type="button" class="btn-rks-confirm" id="btn-rks-confirm">
                         <span>📷 生成导出图片</span>
@@ -1480,6 +1487,13 @@
                     💡 提示：仅勾选的变动标的会呈现在导出的公告速报图片中。
                 </div>
                 <div class="fund-select-actions">
+                    <div class="fund-export-theme-selector">
+                        <span class="theme-sel-label">图片风格：</span>
+                        <div class="theme-sel-group" id="qks-theme-group">
+                            <button type="button" class="btn-theme-sel on" data-theme="dark">🌙 深色</button>
+                            <button type="button" class="btn-theme-sel" data-theme="light">☀️ 浅色</button>
+                        </div>
+                    </div>
                     <button type="button" class="btn-rks-cancel" id="btn-qks-cancel">取消</button>
                     <button type="button" class="btn-rks-confirm" id="btn-qks-confirm">
                         <span>📷 生成导出图片</span>
@@ -1498,6 +1512,10 @@
                     <span class="poster-modal-icon">📷</span>
                     <strong id="poster-modal-title-text">导出图片预览</strong>
                     <span class="poster-modal-tag" id="poster-modal-tag">高清排版</span>
+                </div>
+                <div class="poster-modal-theme-toggle" id="poster-modal-theme-toggle">
+                    <button type="button" class="btn-prev-theme on" data-theme="dark" title="切换深色风格">🌙 深色</button>
+                    <button type="button" class="btn-prev-theme" data-theme="light" title="切换浅色风格">☀️ 浅色</button>
                 </div>
                 <button type="button" class="poster-modal-close" id="poster-modal-close" title="关闭弹窗">✕</button>
             </div>
