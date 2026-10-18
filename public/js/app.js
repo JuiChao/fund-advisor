@@ -2071,14 +2071,23 @@ const App = (() => {
             return Boolean(agencyOk || directOk);
         };
 
+        const currentType = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
+        const nqList = rankData.filter(r => r.index_type === '纳斯达克100');
+        const spList = rankData.filter(r => r.index_type === '标普500');
+        const isGrouped = (currentType === 'ALL' || (nqList.length > 0 && spList.length > 0));
+
+        const nqListWithRanks = nqList.map((r, idx) => ({ ...r, displayRank: idx + 1 }));
+        const spListWithRanks = spList.map((r, idx) => ({ ...r, displayRank: idx + 1 }));
+        const orderedList = isGrouped ? [...nqListWithRanks, ...spListWithRanks] : rankData;
+
         const quotaFundsCount = rankData.filter(isFundWithQuota).length;
         if (quotaNumEl) quotaNumEl.textContent = quotaFundsCount;
         if (btnQuota) {
             btnQuota.innerHTML = `🟢 有额度 (${quotaFundsCount})`;
         }
 
-        // 默认全选当前展示的 rankData 集合
-        const selectedCodes = new Set(rankData.map(r => r.code));
+        // 默认全选当前展示的集合 (全部美股QDII时按 纳指在上、标普在下 排列)
+        const selectedCodes = new Set(orderedList.map(r => r.code));
 
         const updateCountUI = () => {
             const count = selectedCodes.size;
@@ -2086,6 +2095,14 @@ const App = (() => {
             if (confirmCountEl) confirmCountEl.textContent = `(${count}只)`;
             if (btnConfirm) {
                 btnConfirm.disabled = (count === 0);
+            }
+            if (isGrouped) {
+                const nqSelected = nqList.filter(r => selectedCodes.has(r.code)).length;
+                const spSelected = spList.filter(r => selectedCodes.has(r.code)).length;
+                const nqStatEl = document.getElementById('rks-nq-stat');
+                const spStatEl = document.getElementById('rks-sp-stat');
+                if (nqStatEl) nqStatEl.textContent = `(已选 ${nqSelected}/${nqList.length} 只)`;
+                if (spStatEl) spStatEl.textContent = `(已选 ${spSelected}/${spList.length} 只)`;
             }
         };
 
@@ -2104,31 +2121,79 @@ const App = (() => {
             }
         };
 
+        const renderItem = r => {
+            const isChecked = selectedCodes.has(r.code);
+            const totalFee = (r.mgmt_fee || 0) + (r.custody_fee || 0) + (r.sales_fee || 0);
+            const rankNum = r.displayRank || r.rank || 1;
+            let rankBadge = rankNum === 1 ? '🥇' : (rankNum === 2 ? '🥈' : (rankNum === 3 ? '🥉' : `#${rankNum}`));
+            const hasQuota = isFundWithQuota(r);
+            const quotaBadge = getQuotaBadgeHtml(r);
+            const quotaSearchText = `${r.limit_status || ''} ${r.direct_limit_status || ''} ${hasQuota ? '有额度 可申购 可买 有申购额度' : '暂停申购 无额度'}`;
+
+            return `
+                <label class="rks-item ${isChecked ? 'checked' : ''}" data-code="${r.code}" data-has-quota="${hasQuota}" data-quota="${quotaSearchText}" data-index-type="${r.index_type}">
+                    <input type="checkbox" class="rks-checkbox" value="${r.code}" ${isChecked ? 'checked' : ''} />
+                    <span class="rks-rank">${rankBadge}</span>
+                    <span class="rks-code">${r.code}</span>
+                    ${shareBadge(r.share_class)}
+                    <span class="rks-name" title="${r.name}">${r.name}</span>
+                    ${quotaBadge}
+                    <div class="rks-meta">
+                        <span class="rks-fee" title="综合费率">${fmt(totalFee)}</span>
+                        <span class="rks-score" title="综合评分">${r.score}分</span>
+                    </div>
+                </label>
+            `;
+        };
+
         const renderList = () => {
             if (!listEl) return;
-            listEl.innerHTML = rankData.map(r => {
-                const isChecked = selectedCodes.has(r.code);
-                const totalFee = (r.mgmt_fee || 0) + (r.custody_fee || 0) + (r.sales_fee || 0);
-                let rankBadge = r.rank === 1 ? '🥇' : (r.rank === 2 ? '🥈' : (r.rank === 3 ? '🥉' : `#${r.rank}`));
-                const hasQuota = isFundWithQuota(r);
-                const quotaBadge = getQuotaBadgeHtml(r);
-                const quotaSearchText = `${r.limit_status || ''} ${r.direct_limit_status || ''} ${hasQuota ? '有额度 可申购 可买 有申购额度' : '暂停申购 无额度'}`;
-
-                return `
-                    <label class="rks-item ${isChecked ? 'checked' : ''}" data-code="${r.code}" data-has-quota="${hasQuota}" data-quota="${quotaSearchText}">
-                        <input type="checkbox" class="rks-checkbox" value="${r.code}" ${isChecked ? 'checked' : ''} />
-                        <span class="rks-rank">${rankBadge}</span>
-                        <span class="rks-code">${r.code}</span>
-                        ${shareBadge(r.share_class)}
-                        <span class="rks-name" title="${r.name}">${r.name}</span>
-                        ${quotaBadge}
-                        <div class="rks-meta">
-                            <span class="rks-fee" title="综合费率">${fmt(totalFee)}</span>
-                            <span class="rks-score" title="综合评分">${r.score}分</span>
+            if (isGrouped) {
+                let html = '';
+                if (nqList.length > 0) {
+                    html += `
+                        <div class="rks-group-section rks-group-nq" data-group="nq">
+                            <div class="rks-group-header">
+                                <div class="rks-group-title">
+                                    <span class="rks-group-badge nq-badge">NASDAQ 100</span>
+                                    <span class="rks-group-name">纳斯达克 100 指数标的</span>
+                                    <span class="rks-group-stat" id="rks-nq-stat">(已选 0/${nqList.length} 只)</span>
+                                </div>
+                                <div class="rks-group-tools">
+                                    <button type="button" class="btn-rks-sub-tool" data-action="all" data-target="nq" title="全选纳指100所有标的">全选本组</button>
+                                    <button type="button" class="btn-rks-sub-tool" data-action="none" data-target="nq" title="清空纳指100所有标的勾选">清空本组</button>
+                                </div>
+                            </div>
+                            <div class="rks-group-items">
+                                ${nqListWithRanks.map(renderItem).join('')}
+                            </div>
                         </div>
-                    </label>
-                `;
-            }).join('');
+                    `;
+                }
+                if (spList.length > 0) {
+                    html += `
+                        <div class="rks-group-section rks-group-sp" data-group="sp">
+                            <div class="rks-group-header">
+                                <div class="rks-group-title">
+                                    <span class="rks-group-badge sp-badge">S&P 500</span>
+                                    <span class="rks-group-name">标普 500 指数标的</span>
+                                    <span class="rks-group-stat" id="rks-sp-stat">(已选 0/${spList.length} 只)</span>
+                                </div>
+                                <div class="rks-group-tools">
+                                    <button type="button" class="btn-rks-sub-tool" data-action="all" data-target="sp" title="全选标普500所有标的">全选本组</button>
+                                    <button type="button" class="btn-rks-sub-tool" data-action="none" data-target="sp" title="清空标普500所有标的勾选">清空本组</button>
+                                </div>
+                            </div>
+                            <div class="rks-group-items">
+                                ${spListWithRanks.map(renderItem).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                listEl.innerHTML = html;
+            } else {
+                listEl.innerHTML = rankData.map(renderItem).join('');
+            }
 
             // 绑定每项勾选点击
             listEl.querySelectorAll('.rks-item').forEach(item => {
@@ -2149,6 +2214,39 @@ const App = (() => {
                     updateCountUI();
                 });
             });
+
+            // 绑定组内全选/清空
+            if (isGrouped) {
+                listEl.querySelectorAll('.btn-rks-sub-tool').forEach(btn => {
+                    btn.addEventListener('click', e => {
+                        e.stopPropagation();
+                        const action = btn.dataset.action;
+                        const targetGroup = btn.dataset.target;
+                        const groupType = targetGroup === 'nq' ? '纳斯达克100' : '标普500';
+                        const targetFunds = rankData.filter(r => r.index_type === groupType);
+
+                        if (action === 'all') {
+                            targetFunds.forEach(r => selectedCodes.add(r.code));
+                        } else if (action === 'none') {
+                            targetFunds.forEach(r => selectedCodes.delete(r.code));
+                        }
+
+                        const sec = btn.closest('.rks-group-section');
+                        if (sec) {
+                            sec.querySelectorAll('.rks-item').forEach(item => {
+                                const code = item.dataset.code;
+                                const cb = item.querySelector('.rks-checkbox');
+                                const isChecked = selectedCodes.has(code);
+                                if (cb) cb.checked = isChecked;
+                                if (isChecked) item.classList.add('checked');
+                                else item.classList.remove('checked');
+                            });
+                        }
+
+                        updateCountUI();
+                    });
+                });
+            }
         };
 
         renderList();
@@ -2254,7 +2352,13 @@ const App = (() => {
             btn.onclick = () => {
                 const topN = parseInt(btn.dataset.top, 10) || 10;
                 selectedCodes.clear();
-                rankData.slice(0, topN).forEach(r => selectedCodes.add(r.code));
+                if (isGrouped) {
+                    const perGroup = Math.floor(topN / 2);
+                    nqList.slice(0, perGroup).forEach(r => selectedCodes.add(r.code));
+                    spList.slice(0, perGroup).forEach(r => selectedCodes.add(r.code));
+                } else {
+                    rankData.slice(0, topN).forEach(r => selectedCodes.add(r.code));
+                }
                 if (listEl) {
                     listEl.querySelectorAll('.rks-item').forEach(item => {
                         const code = item.dataset.code;
@@ -2288,6 +2392,13 @@ const App = (() => {
                     }
                     item.style.display = match ? 'flex' : 'none';
                 });
+
+                if (isGrouped) {
+                    listEl.querySelectorAll('.rks-group-section').forEach(sec => {
+                        const hasVisible = Array.from(sec.querySelectorAll('.rks-item')).some(item => item.style.display !== 'none');
+                        sec.style.display = hasVisible ? '' : 'none';
+                    });
+                }
             };
         }
 
@@ -2325,7 +2436,9 @@ const App = (() => {
                     showToast('请至少勾选一只基金进行导出', 'info');
                     return;
                 }
-                const selectedFunds = rankData.filter(r => selectedCodes.has(r.code));
+                const selectedFunds = isGrouped
+                    ? [...nqList.filter(r => selectedCodes.has(r.code)), ...spList.filter(r => selectedCodes.has(r.code))]
+                    : rankData.filter(r => selectedCodes.has(r.code));
                 closeSelectModal();
                 showToast('⏳ 正在渲染高清图片，请稍候...', 'info');
                 exportRankTablePoster(selectedFunds, triggerBtn, currentExportTheme);
@@ -2381,13 +2494,17 @@ const App = (() => {
             posterWrap.id = 'fa-export-poster-wrap';
             posterWrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:980px;z-index:-9999;pointer-events:none;';
 
-            const rowsHtml = fundsToExport.map(r => {
+            const nqExport = fundsToExport.filter(r => r.index_type === '纳斯达克100');
+            const spExport = fundsToExport.filter(r => r.index_type === '标普500');
+            const isGroupedExport = (type === 'ALL' || (nqExport.length > 0 && spExport.length > 0));
+
+            const renderRow = (r, rankNum) => {
                 let rankBadge;
                 let rowCls = '';
-                if (r.rank === 1) { rankBadge = '<span class="rkp-rank-badge rank-gold">🥇 1</span>'; rowCls = 'row-gold'; }
-                else if (r.rank === 2) { rankBadge = '<span class="rkp-rank-badge rank-silver">🥈 2</span>'; rowCls = 'row-silver'; }
-                else if (r.rank === 3) { rankBadge = '<span class="rkp-rank-badge rank-bronze">🥉 3</span>'; rowCls = 'row-bronze'; }
-                else { rankBadge = `<span class="rkp-rank-badge">#${r.rank}</span>`; }
+                if (rankNum === 1) { rankBadge = '<span class="rkp-rank-badge rank-gold">🥇 1</span>'; rowCls = 'row-gold'; }
+                else if (rankNum === 2) { rankBadge = '<span class="rkp-rank-badge rank-silver">🥈 2</span>'; rowCls = 'row-silver'; }
+                else if (rankNum === 3) { rankBadge = '<span class="rkp-rank-badge rank-bronze">🥉 3</span>'; rowCls = 'row-bronze'; }
+                else { rankBadge = `<span class="rkp-rank-badge">#${rankNum}</span>`; }
 
                 // 类别信息已在上方横幅醒目展示，标的列仅保留份额徽标与基金名称，彻底释放横向空间
                 const sBadge = shareBadge(r.share_class);
@@ -2468,7 +2585,51 @@ const App = (() => {
                         <td><span class="rkp-score-badge">${r.score}</span></td>
                     </tr>
                 `;
-            }).join('');
+            };
+
+            let tableBodyHtml = '';
+            if (isGroupedExport) {
+                if (nqExport.length > 0) {
+                    tableBodyHtml += `
+                        <tr class="rkp-group-row">
+                            <td colspan="10">
+                                <div class="rkp-poster-group-banner rkp-banner-nq">
+                                    <div class="rkp-pgb-left">
+                                        <span class="rkp-pgb-pill pill-nq">NASDAQ 100</span>
+                                        <span class="rkp-pgb-title">纳斯达克 100 指数</span>
+                                        <span class="rkp-pgb-sub">(科技成长核心标的)</span>
+                                    </div>
+                                    <div class="rkp-pgb-right">
+                                        <span class="rkp-pgb-count">本组选入 <strong>${nqExport.length}</strong> 只</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        ${nqExport.map((r, idx) => renderRow(r, idx + 1)).join('')}
+                    `;
+                }
+                if (spExport.length > 0) {
+                    tableBodyHtml += `
+                        <tr class="rkp-group-row">
+                            <td colspan="10">
+                                <div class="rkp-poster-group-banner rkp-banner-sp">
+                                    <div class="rkp-pgb-left">
+                                        <span class="rkp-pgb-pill pill-sp">S&P 500</span>
+                                        <span class="rkp-pgb-title">标普 500 指数</span>
+                                        <span class="rkp-pgb-sub">(大盘蓝筹基石标的)</span>
+                                    </div>
+                                    <div class="rkp-pgb-right">
+                                        <span class="rkp-pgb-count">本组选入 <strong>${spExport.length}</strong> 只</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        ${spExport.map((r, idx) => renderRow(r, idx + 1)).join('')}
+                    `;
+                }
+            } else {
+                tableBodyHtml = fundsToExport.map((r, idx) => renderRow(r, idx + 1)).join('');
+            }
 
             posterWrap.innerHTML = `
                 <div class="rank-poster-export ${isLight ? 'theme-light' : ''}" id="rkp-render-target">
@@ -2491,7 +2652,7 @@ const App = (() => {
                                 <span class="rkp-chip"><span class="rkp-chip-k">份额：</span><strong>${classLabel}</strong></span>
                                 <span class="rkp-chip"><span class="rkp-chip-k">渠道：</span><strong>${quotaLabel}</strong></span>
                                 ${kw ? `<span class="rkp-chip"><span class="rkp-chip-k">检索：</span><strong>${kw}</strong></span>` : ''}
-                                <span class="rkp-chip chip-count"><span class="rkp-chip-k">选入：</span><strong>${fundsToExport.length}</strong> / ${rankData.length} 只</span>
+                                <span class="rkp-chip chip-count"><span class="rkp-chip-k">选入：</span><strong>${fundsToExport.length}</strong> / ${rankData.length} 只${isGroupedExport && nqExport.length > 0 && spExport.length > 0 ? ` (纳指 ${nqExport.length} · 标普 ${spExport.length})` : ''}</span>
                             </div>
                         </div>
                     </div>
@@ -2513,7 +2674,7 @@ const App = (() => {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${rowsHtml}
+                                ${tableBodyHtml}
                             </tbody>
                         </table>
                     </div>

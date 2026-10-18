@@ -2748,6 +2748,113 @@ input[type=range]::-moz-range-thumb {
     gap: 5px;
 }
 
+.rks-group-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.rks-group-section:last-child {
+    margin-bottom: 0;
+}
+
+.rks-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.45rem 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.rks-group-section.rks-group-nq .rks-group-header {
+    border-left: 3px solid #6366f1;
+}
+
+.rks-group-section.rks-group-sp .rks-group-header {
+    border-left: 3px solid #10b981;
+}
+
+.rks-group-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--txt);
+}
+
+.rks-group-badge {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 1.5px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+    line-height: 1.25;
+}
+
+.rks-group-badge.nq-badge {
+    background: rgba(99, 102, 241, 0.18);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.35);
+}
+
+.rks-group-badge.sp-badge {
+    background: rgba(16, 185, 129, 0.18);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.rks-group-name {
+    color: var(--txt);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.rks-group-stat {
+    font-size: 0.74rem;
+    color: var(--txt3);
+    font-weight: 500;
+}
+
+.rks-group-tools {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-rks-sub-tool {
+    padding: 0.2rem 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--txt2);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-rks-sub-tool:hover {
+    color: var(--txt);
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.35);
+}
+
+.rks-group-items {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
 .rks-item {
     display: flex;
     align-items: center;
@@ -3594,6 +3701,80 @@ input[type=range]::-moz-range-thumb {
 .rkp-table tr.row-bronze td {
     background: linear-gradient(90deg, rgba(217, 119, 6, 0.14) 0%, rgba(217, 119, 6, 0.03) 100%) !important;
 }
+.rkp-table tr.rkp-group-row td {
+    padding: 0 !important;
+    border-bottom: none !important;
+    background: transparent !important;
+}
+.rkp-poster-group-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 14px;
+    box-sizing: border-box;
+}
+.rkp-banner-nq {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.28) 0%, rgba(139, 92, 246, 0.14) 50%, rgba(15, 23, 42, 0.5) 100%);
+    border-top: 1px solid rgba(99, 102, 241, 0.4);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+}
+.rkp-banner-sp {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.28) 0%, rgba(5, 150, 105, 0.14) 50%, rgba(15, 23, 42, 0.5) 100%);
+    border-top: 2px solid rgba(16, 185, 129, 0.45);
+    border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+}
+.rkp-pgb-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.rkp-pgb-pill {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2.5px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+.pill-nq {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.35);
+}
+.pill-sp {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+}
+.rkp-pgb-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.02em;
+}
+.rkp-pgb-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-left: 2px;
+}
+.rkp-pgb-right {
+    display: flex;
+    align-items: center;
+}
+.rkp-pgb-count {
+    font-size: 11px;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2.5px 9px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.rkp-pgb-count strong {
+    color: #ffffff;
+    font-weight: 800;
+}
 .rkp-rank-badge {
     display: inline-flex;
     align-items: center;
@@ -3867,6 +4048,30 @@ input[type=range]::-moz-range-thumb {
 }
 .rank-poster-export.theme-light .rkp-table tr.row-bronze td {
     background: linear-gradient(90deg, #ffedd5 0%, #fff7ed 60%, #ffffff 100%) !important;
+}
+.rank-poster-export.theme-light .rkp-banner-nq {
+    background: linear-gradient(90deg, #ede9fe 0%, #f5f3ff 60%, #ffffff 100%);
+    border-top: 1px solid #c7d2fe;
+    border-bottom: 1px solid #c7d2fe;
+}
+.rank-poster-export.theme-light .rkp-banner-sp {
+    background: linear-gradient(90deg, #d1fae5 0%, #ecfdf5 60%, #ffffff 100%);
+    border-top: 2px solid #6ee7b7;
+    border-bottom: 1px solid #a7f3d0;
+}
+.rank-poster-export.theme-light .rkp-pgb-title {
+    color: #1e293b;
+}
+.rank-poster-export.theme-light .rkp-pgb-sub {
+    color: #64748b;
+}
+.rank-poster-export.theme-light .rkp-pgb-count {
+    color: #334155;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+}
+.rank-poster-export.theme-light .rkp-pgb-count strong {
+    color: #0f172a;
 }
 .rank-poster-export.theme-light .rkp-rank-badge {
     background: #f1f5f9;
@@ -8610,5 +8815,22 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .rks-quota-badge {
         font-size: 0.68rem;
         padding: 1px 4px;
+    }
+    .rks-group-header {
+        padding: 0.35rem 0.5rem;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+    .rks-group-title {
+        font-size: 0.78rem;
+        gap: 6px;
+    }
+    .rks-group-badge {
+        font-size: 0.62rem;
+        padding: 1px 4px;
+    }
+    .btn-rks-sub-tool {
+        padding: 0.15rem 0.4rem;
+        font-size: 0.68rem;
     }
 }
