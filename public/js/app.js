@@ -2074,7 +2074,7 @@ const App = (() => {
         const quotaFundsCount = rankData.filter(isFundWithQuota).length;
         if (quotaNumEl) quotaNumEl.textContent = quotaFundsCount;
         if (btnQuota) {
-            btnQuota.innerHTML = `🟢 有申购额度 (${quotaFundsCount})`;
+            btnQuota.innerHTML = `🟢 有额度 (${quotaFundsCount})`;
         }
 
         // 默认全选当前展示的 rankData 集合
@@ -2112,7 +2112,7 @@ const App = (() => {
                 let rankBadge = r.rank === 1 ? '🥇' : (r.rank === 2 ? '🥈' : (r.rank === 3 ? '🥉' : `#${r.rank}`));
                 const hasQuota = isFundWithQuota(r);
                 const quotaBadge = getQuotaBadgeHtml(r);
-                const quotaSearchText = `${r.limit_status || ''} ${r.direct_limit_status || ''} ${hasQuota ? '有额度 有申购额度 可买' : '暂停申购 无额度'}`;
+                const quotaSearchText = `${r.limit_status || ''} ${r.direct_limit_status || ''} ${hasQuota ? '有额度 可申购 可买 有申购额度' : '暂停申购 无额度'}`;
 
                 return `
                     <label class="rks-item ${isChecked ? 'checked' : ''}" data-code="${r.code}" data-has-quota="${hasQuota}" data-quota="${quotaSearchText}">
@@ -2205,7 +2205,7 @@ const App = (() => {
             };
         }
 
-        // 快捷操作：有申购额度 (一键选择代销或直销有额度的基金)
+        // 快捷操作：有额度 (一键选择代销或直销有额度的基金)
         if (btnQuota) {
             btnQuota.onclick = () => {
                 const kw = searchInput ? searchInput.value.trim().toLowerCase() : '';
@@ -2215,7 +2215,7 @@ const App = (() => {
                 rankData.forEach(r => {
                     if (isFundWithQuota(r)) {
                         if (kw) {
-                            const quotaText = `${r.limit_status || ''} ${r.direct_limit_status || ''} 有额度 有申购额度 可买`;
+                            const quotaText = `${r.limit_status || ''} ${r.direct_limit_status || ''} 有额度 可申购 可买 有申购额度`;
                             const matchKw = r.code.toLowerCase().includes(kw) ||
                                            (r.name || '').toLowerCase().includes(kw) ||
                                            quotaText.toLowerCase().includes(kw);
@@ -2242,9 +2242,9 @@ const App = (() => {
                 }
                 updateCountUI();
                 if (matchedCount > 0) {
-                    showToast(`已为您勾选 ${matchedCount} 只代销/直销有申购额度的标的`, 'success');
+                    showToast(`已为您勾选 ${matchedCount} 只代销/直销有额度的标的`, 'success');
                 } else {
-                    showToast('当前筛选列表中暂无可申购额度的基金', 'info');
+                    showToast('当前筛选列表中暂无有可用额度的基金', 'info');
                 }
             };
         }
@@ -2281,7 +2281,7 @@ const App = (() => {
                     const hasQuota = item.dataset.hasQuota === 'true';
 
                     let match = !kw || code.includes(kw) || name.includes(kw) || quota.includes(kw);
-                    if (kw === '有额度' || kw === '有申购额度' || kw === '可买') {
+                    if (kw === '有额度' || kw === '可申购' || kw === '可买' || kw === '有申购额度') {
                         match = hasQuota;
                     } else if (kw === '暂停' || kw === '暂停申购' || kw === '无额度') {
                         match = !hasQuota;
