@@ -2676,6 +2676,19 @@ input[type=range]::-moz-range-thumb {
     background: rgba(99, 102, 241, 0.08);
 }
 
+.btn-rks-quota {
+    font-weight: 700;
+    color: var(--ok);
+    background: var(--ok-bg);
+    border-color: rgba(16, 185, 129, 0.35);
+}
+
+.btn-rks-quota:hover {
+    color: var(--ok);
+    background: rgba(16, 185, 129, 0.22);
+    border-color: var(--ok);
+}
+
 .btn-qks-filter[data-type="TIGHTENED"] {
     font-weight: 700;
     color: #f87171;
@@ -2817,6 +2830,49 @@ input[type=range]::-moz-range-thumb {
     background: rgba(99, 102, 241, 0.1);
     padding: 1px 5px;
     border-radius: 4px;
+}
+
+.rks-quota-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 1.5px 6px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1.25;
+    flex-shrink: 0;
+}
+
+.rks-quota-badge.quota-both {
+    background: var(--ok-bg);
+    color: var(--ok);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.rks-quota-badge.quota-agency {
+    background: var(--ok-bg);
+    color: var(--ok);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.rks-quota-badge.quota-direct {
+    background: var(--warn-bg);
+    color: var(--warn);
+    border: 1px solid rgba(245, 158, 11, 0.28);
+}
+
+.rks-quota-badge.quota-paused {
+    background: var(--err-bg);
+    color: var(--err);
+    border: 1px solid rgba(239, 68, 68, 0.22);
+    opacity: 0.85;
+}
+
+.text-ok {
+    color: var(--ok);
+    font-weight: 700;
 }
 
 .fund-select-footer {
@@ -8516,5 +8572,43 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .pf-sim-card .downside-kpi-grid,
     .pf-risk-kpi-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .fund-select-dialog {
+        max-height: 92vh;
+        border-radius: var(--radius-sm);
+    }
+    .fund-select-toolbar {
+        padding: 0.5rem 0.75rem;
+        gap: 6px;
+    }
+    .fund-select-quick-actions {
+        gap: 4px;
+        width: 100%;
+    }
+    .btn-rks-tool {
+        padding: 0.28rem 0.5rem;
+        font-size: 0.74rem;
+    }
+    .fund-select-search-wrap {
+        width: 100%;
+        min-width: 100%;
+    }
+    .rks-item {
+        gap: 6px;
+        padding: 0.45rem 0.5rem;
+    }
+    .rks-name {
+        font-size: 0.78rem;
+    }
+    .rks-meta {
+        gap: 4px;
+        font-size: 0.7rem;
+    }
+    .rks-quota-badge {
+        font-size: 0.68rem;
+        padding: 1px 4px;
     }
 }

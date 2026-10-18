@@ -2048,12 +2048,14 @@ const App = (() => {
 
         const totalNumEl = document.getElementById('rks-total-num');
         const selectedNumEl = document.getElementById('rks-selected-num');
+        const quotaNumEl = document.getElementById('rks-quota-num');
         const confirmCountEl = document.getElementById('btn-rks-confirm-count');
         const listEl = document.getElementById('rks-fund-list');
         const searchInput = document.getElementById('rks-search-input');
         const btnAll = document.getElementById('btn-rks-select-all');
         const btnNone = document.getElementById('btn-rks-select-none');
         const btnInvert = document.getElementById('btn-rks-invert');
+        const btnQuota = document.getElementById('btn-rks-select-quota');
         const btnConfirm = document.getElementById('btn-rks-confirm');
         const btnCancel = document.getElementById('btn-rks-cancel');
         const btnClose = document.getElementById('btn-rks-close');
@@ -2061,6 +2063,19 @@ const App = (() => {
 
         if (searchInput) searchInput.value = '';
         if (totalNumEl) totalNumEl.textContent = rankData.length;
+
+        // 判断基金是否具有代销或直销申购额度
+        const isFundWithQuota = r => {
+            const agencyOk = !(r.limit_status || '').includes('暂停') && !(r.limit_status || '').includes('未开通');
+            const directOk = Boolean(r.direct_limit_status && !r.direct_limit_status.includes('暂停') && !r.direct_limit_status.includes('未开通'));
+            return Boolean(agencyOk || directOk);
+        };
+
+        const quotaFundsCount = rankData.filter(isFundWithQuota).length;
+        if (quotaNumEl) quotaNumEl.textContent = quotaFundsCount;
+        if (btnQuota) {
+            btnQuota.innerHTML = `🟢 有申购额度 (${quotaFundsCount})`;
+        }
 
         // 默认全选当前展示的 rankData 集合
         const selectedCodes = new Set(rankData.map(r => r.code));
@@ -2074,19 +2089,39 @@ const App = (() => {
             }
         };
 
+        const getQuotaBadgeHtml = r => {
+            const agencyOk = !(r.limit_status || '').includes('暂停') && !(r.limit_status || '').includes('未开通');
+            const directOk = Boolean(r.direct_limit_status && !r.direct_limit_status.includes('暂停') && !r.direct_limit_status.includes('未开通'));
+
+            if (agencyOk && directOk) {
+                return `<span class="rks-quota-badge quota-both" title="代销: ${r.limit_status} · 直销: ${r.direct_limit_status}">🟢 代销/直销有额度</span>`;
+            } else if (agencyOk) {
+                return `<span class="rks-quota-badge quota-agency" title="代销: ${r.limit_status}">🟢 代销:${r.limit_status}</span>`;
+            } else if (directOk) {
+                return `<span class="rks-quota-badge quota-direct" title="代销暂停 · 直销: ${r.direct_limit_status}">🟡 直销:${r.direct_limit_status}</span>`;
+            } else {
+                return `<span class="rks-quota-badge quota-paused" title="代销与直销均已暂停或未开通">🔴 暂停申购</span>`;
+            }
+        };
+
         const renderList = () => {
             if (!listEl) return;
             listEl.innerHTML = rankData.map(r => {
                 const isChecked = selectedCodes.has(r.code);
                 const totalFee = (r.mgmt_fee || 0) + (r.custody_fee || 0) + (r.sales_fee || 0);
                 let rankBadge = r.rank === 1 ? '🥇' : (r.rank === 2 ? '🥈' : (r.rank === 3 ? '🥉' : `#${r.rank}`));
+                const hasQuota = isFundWithQuota(r);
+                const quotaBadge = getQuotaBadgeHtml(r);
+                const quotaSearchText = `${r.limit_status || ''} ${r.direct_limit_status || ''} ${hasQuota ? '有额度 有申购额度 可买' : '暂停申购 无额度'}`;
+
                 return `
-                    <label class="rks-item ${isChecked ? 'checked' : ''}" data-code="${r.code}">
+                    <label class="rks-item ${isChecked ? 'checked' : ''}" data-code="${r.code}" data-has-quota="${hasQuota}" data-quota="${quotaSearchText}">
                         <input type="checkbox" class="rks-checkbox" value="${r.code}" ${isChecked ? 'checked' : ''} />
                         <span class="rks-rank">${rankBadge}</span>
                         <span class="rks-code">${r.code}</span>
                         ${shareBadge(r.share_class)}
                         <span class="rks-name" title="${r.name}">${r.name}</span>
+                        ${quotaBadge}
                         <div class="rks-meta">
                             <span class="rks-fee" title="综合费率">${fmt(totalFee)}</span>
                             <span class="rks-score" title="综合评分">${r.score}分</span>
@@ -2170,6 +2205,50 @@ const App = (() => {
             };
         }
 
+        // 快捷操作：有申购额度 (一键选择代销或直销有额度的基金)
+        if (btnQuota) {
+            btnQuota.onclick = () => {
+                const kw = searchInput ? searchInput.value.trim().toLowerCase() : '';
+                selectedCodes.clear();
+                let matchedCount = 0;
+
+                rankData.forEach(r => {
+                    if (isFundWithQuota(r)) {
+                        if (kw) {
+                            const quotaText = `${r.limit_status || ''} ${r.direct_limit_status || ''} 有额度 有申购额度 可买`;
+                            const matchKw = r.code.toLowerCase().includes(kw) ||
+                                           (r.name || '').toLowerCase().includes(kw) ||
+                                           quotaText.toLowerCase().includes(kw);
+                            if (matchKw) {
+                                selectedCodes.add(r.code);
+                                matchedCount++;
+                            }
+                        } else {
+                            selectedCodes.add(r.code);
+                            matchedCount++;
+                        }
+                    }
+                });
+
+                if (listEl) {
+                    listEl.querySelectorAll('.rks-item').forEach(item => {
+                        const code = item.dataset.code;
+                        const cb = item.querySelector('.rks-checkbox');
+                        const isChecked = selectedCodes.has(code);
+                        if (cb) cb.checked = isChecked;
+                        if (isChecked) item.classList.add('checked');
+                        else item.classList.remove('checked');
+                    });
+                }
+                updateCountUI();
+                if (matchedCount > 0) {
+                    showToast(`已为您勾选 ${matchedCount} 只代销/直销有申购额度的标的`, 'success');
+                } else {
+                    showToast('当前筛选列表中暂无可申购额度的基金', 'info');
+                }
+            };
+        }
+
         // 快捷操作：Top N
         topBtns.forEach(btn => {
             btn.onclick = () => {
@@ -2190,15 +2269,23 @@ const App = (() => {
             };
         });
 
-        // 弹窗内搜索检索
+        // 弹窗内搜索检索 (支持代码、名称、额度状态关键词)
         if (searchInput) {
             searchInput.oninput = e => {
                 const kw = e.target.value.trim().toLowerCase();
                 if (!listEl) return;
                 listEl.querySelectorAll('.rks-item').forEach(item => {
-                    const code = item.dataset.code.toLowerCase();
+                    const code = (item.dataset.code || '').toLowerCase();
                     const name = (item.querySelector('.rks-name')?.textContent || '').toLowerCase();
-                    const match = !kw || code.includes(kw) || name.includes(kw);
+                    const quota = (item.dataset.quota || '').toLowerCase();
+                    const hasQuota = item.dataset.hasQuota === 'true';
+
+                    let match = !kw || code.includes(kw) || name.includes(kw) || quota.includes(kw);
+                    if (kw === '有额度' || kw === '有申购额度' || kw === '可买') {
+                        match = hasQuota;
+                    } else if (kw === '暂停' || kw === '暂停申购' || kw === '无额度') {
+                        match = !hasQuota;
+                    }
                     item.style.display = match ? 'flex' : 'none';
                 });
             };
