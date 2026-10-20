@@ -1284,7 +1284,7 @@ const App = (() => {
                 const dateCellHtml = `
                     <div class="q-date-cell-wrap">
                         <span class="q-date-pill q-eff-pill" title="实际生效起始日期: ${effDate}">📅 生效: <strong>${effDate}</strong></span>
-                        ${isDiffDate ? `<span class="q-pub-hint" title="公告发布送出日期: ${pubDate}">(${pubDate}发)</span>` : ''}
+                        ${isDiffDate ? `<span class="q-pub-hint" title="公告发布送出日期: ${pubDate}">(${pubDate}发布)</span>` : ''}
                     </div>
                 `;
 
@@ -1339,7 +1339,7 @@ const App = (() => {
                         <div class="qmc-header">
                             <div class="qmc-date-wrap">
                                 <span class="q-date-pill q-eff-pill" title="实际生效起始日期: ${effDate}">📅 生效: <strong>${effDate}</strong></span>
-                                ${isDiffDate ? `<span class="qmc-pub-hint" title="公告发布送出日期: ${pubDate}">(${pubDate}发)</span>` : ''}
+                                ${isDiffDate ? `<span class="qmc-pub-hint" title="公告发布送出日期: ${pubDate}">(${pubDate}发布)</span>` : ''}
                             </div>
                             ${typeBadge}
                         </div>
@@ -1699,7 +1699,7 @@ const App = (() => {
                         <span class="rks-code">${item.code}</span>
                         <span class="rks-name" title="${item.name}">${item.name}</span>
                         <div class="rks-meta">
-                            <span class="rks-eff-pill" style="font-size:11px;color:var(--accent);font-weight:700;margin-right:8px">生效: ${effDate}${isDiffDate ? ` (${pubDate}发)` : ''}</span>
+                            <span class="rks-eff-pill" style="font-size:11px;color:var(--accent);font-weight:700;margin-right:8px">生效: ${effDate}${isDiffDate ? ` (${pubDate}发布)` : ''}</span>
                             <span style="font-size:11px;color:var(--txt3)">${agencyTxt} · ${directTxt}</span>
                         </div>
                     </label>
@@ -1952,7 +1952,7 @@ const App = (() => {
                                     <span class="dbp-fund-name">${item.name}</span>
                                 </div>
                                 <div class="dbp-top-right-group">
-                                    <span class="dbp-eff-pill">生效: ${effDate}${isDiffDate ? ` (${pubDate}发)` : ''}</span>
+                                    <span class="dbp-eff-pill">生效: ${effDate}</span>
                                     <div class="dbp-change-pill ${pillClass}">
                                         ${changeLabel}
                                     </div>
