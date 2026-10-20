@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-10-20T08:54:20",
+  "last_updated": "2026-10-20T17:20:22",
   "today_date": "2026-10-20",
   "today_count": 2,
   "recent_7d_count": 9,
@@ -7,7 +7,7 @@
   "history": [
     {
       "date": "2026-10-20",
-      "timestamp": "2026-10-20T08:54:20",
+      "timestamp": "2026-10-20T17:20:22",
       "code": "014978",
       "name": "华安纳斯达克100ETF联接(QDII)C",
       "index_type": "纳斯达克100",
@@ -16,19 +16,19 @@
       "change_type_label": "额度下调 / 暂停申购",
       "agency": {
         "before_status": "限5元/日",
-        "after_status": "限5元/日",
-        "before_limit": 5,
-        "after_limit": 5,
-        "direction": null
-      },
-      "direct": {
-        "before_status": "限5元/日",
         "after_status": "暂停申购",
         "before_limit": 5,
         "after_limit": 0,
         "direction": "TIGHTENED"
       },
-      "summary": "直销: 限5元/日 ➔ 暂停申购",
+      "direct": {
+        "before_status": "暂停申购",
+        "after_status": "暂停申购",
+        "before_limit": 0,
+        "after_limit": 0,
+        "direction": null
+      },
+      "summary": "代销: 限5元/日 ➔ 暂停申购",
       "announcement_id": "AN202610201830698096",
       "announcement_url": "https://data.eastmoney.com/notices/detail/014978/AN202610201830698096.html",
       "substitutes": [
@@ -75,7 +75,7 @@
     },
     {
       "date": "2026-10-20",
-      "timestamp": "2026-10-20T08:54:20",
+      "timestamp": "2026-10-20T17:20:22",
       "code": "040046",
       "name": "华安纳斯达克100ETF联接(QDII)A",
       "index_type": "纳斯达克100",
@@ -84,19 +84,19 @@
       "change_type_label": "额度下调 / 暂停申购",
       "agency": {
         "before_status": "限5元/日",
-        "after_status": "限5元/日",
-        "before_limit": 5,
-        "after_limit": 5,
-        "direction": null
-      },
-      "direct": {
-        "before_status": "限5元/日",
         "after_status": "暂停申购",
         "before_limit": 5,
         "after_limit": 0,
         "direction": "TIGHTENED"
       },
-      "summary": "直销: 限5元/日 ➔ 暂停申购",
+      "direct": {
+        "before_status": "暂停申购",
+        "after_status": "暂停申购",
+        "before_limit": 0,
+        "after_limit": 0,
+        "direction": null
+      },
+      "summary": "代销: 限5元/日 ➔ 暂停申购",
       "announcement_id": "AN202610201830698096",
       "announcement_url": "https://data.eastmoney.com/notices/detail/040046/AN202610201830698096.html",
       "substitutes": [
