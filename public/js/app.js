@@ -1184,8 +1184,9 @@ const App = (() => {
                     icon = '🔵';
                 }
                 const shortName = getStandardFundShortName(item);
-                const dateShort = item.date ? item.date.slice(5) : '';
-                return `<span class="ticker-chip ${badgeClass}" title="${item.name} | ${item.summary || ''}">${icon} ${dateShort} ${item.code} ${shortName} · ${item.change_type_label || ''}</span>`;
+                const effDate = item.effective_date || item.date || '';
+                const dateShort = effDate ? effDate.slice(5) : '';
+                return `<span class="ticker-chip ${badgeClass}" title="${item.name} | ${item.summary || ''} | 生效日期: ${effDate}">${icon} ${dateShort}生效 ${item.code} ${shortName} · ${item.change_type_label || ''}</span>`;
             }).join('');
         }
 
@@ -1277,9 +1278,19 @@ const App = (() => {
                     </div>
                 ` : `<span style="color:var(--txt3);font-size:0.75rem">—</span>`;
 
+                const effDate = item.effective_date || item.date;
+                const pubDate = item.announcement_pub_date || item.date;
+                const isDiffDate = effDate && pubDate && effDate !== pubDate;
+                const dateCellHtml = `
+                    <div class="q-date-cell-wrap">
+                        <span class="q-date-pill q-eff-pill" title="实际生效起始日期: ${effDate}">📅 生效: <strong>${effDate}</strong></span>
+                        ${isDiffDate ? `<span class="q-pub-hint" title="公告发布送出日期: ${pubDate}">(${pubDate}发)</span>` : ''}
+                    </div>
+                `;
+
                 return `
                     <tr class="q-row-${(item.change_type || '').toLowerCase()}">
-                        <td><span class="q-date-pill" title="公告生效起始日期">📅 ${item.date}</span></td>
+                        <td>${dateCellHtml}</td>
                         <td>${fundCell}</td>
                         <td>${typeBadge}</td>
                         <td>${changeAndAnnCell}</td>
@@ -1319,10 +1330,17 @@ const App = (() => {
                     </div>
                 ` : '';
 
+                const effDate = item.effective_date || item.date;
+                const pubDate = item.announcement_pub_date || item.date;
+                const isDiffDate = effDate && pubDate && effDate !== pubDate;
+
                 return `
                     <div class="quota-mobile-card q-card-${(item.change_type || '').toLowerCase()}">
                         <div class="qmc-header">
-                            <span class="q-date-pill" title="公告生效起始日期">📅 起始日: ${item.date}</span>
+                            <div class="qmc-date-wrap">
+                                <span class="q-date-pill q-eff-pill" title="实际生效起始日期: ${effDate}">📅 生效: <strong>${effDate}</strong></span>
+                                ${isDiffDate ? `<span class="qmc-pub-hint" title="公告发布送出日期: ${pubDate}">(${pubDate}发)</span>` : ''}
+                            </div>
                             ${typeBadge}
                         </div>
                         <div class="qmc-title-row">
@@ -1668,6 +1686,9 @@ const App = (() => {
 
                 const agencyTxt = `代销: ${item.agency?.after_status || '未知'}`;
                 const directTxt = `直销: ${item.direct?.after_status || '未知'}`;
+                const effDate = item.effective_date || item.date;
+                const pubDate = item.announcement_pub_date || item.date;
+                const isDiffDate = effDate && pubDate && effDate !== pubDate;
 
                 return `
                     <label class="rks-item ${isChecked ? 'checked' : ''}" data-code="${item.code}" data-type="${changeType}">
@@ -1678,6 +1699,7 @@ const App = (() => {
                         <span class="rks-code">${item.code}</span>
                         <span class="rks-name" title="${item.name}">${item.name}</span>
                         <div class="rks-meta">
+                            <span class="rks-eff-pill" style="font-size:11px;color:var(--accent);font-weight:700;margin-right:8px">生效: ${effDate}${isDiffDate ? ` (${pubDate}发)` : ''}</span>
                             <span style="font-size:11px;color:var(--txt3)">${agencyTxt} · ${directTxt}</span>
                         </div>
                     </label>
@@ -1916,6 +1938,10 @@ const App = (() => {
                     const agencyDir = (item.agency && item.agency.direction) ? item.agency.direction.toLowerCase() : '';
                     const directDir = (item.direct && item.direct.direction) ? item.direct.direction.toLowerCase() : '';
 
+                    const effDate = item.effective_date || item.date;
+                    const pubDate = item.announcement_pub_date || item.date;
+                    const isDiffDate = effDate && pubDate && effDate !== pubDate;
+
                     return `
                         <div class="dbp-card dbp-card-${changeType.toLowerCase()}">
                             <div class="dbp-card-top">
@@ -1925,8 +1951,11 @@ const App = (() => {
                                     <span class="dbp-fund-code">${item.code}</span>
                                     <span class="dbp-fund-name">${item.name}</span>
                                 </div>
-                                <div class="dbp-change-pill ${pillClass}">
-                                    ${changeLabel}
+                                <div class="dbp-top-right-group">
+                                    <span class="dbp-eff-pill">生效: ${effDate}${isDiffDate ? ` (${pubDate}发)` : ''}</span>
+                                    <div class="dbp-change-pill ${pillClass}">
+                                        ${changeLabel}
+                                    </div>
                                 </div>
                             </div>
                             

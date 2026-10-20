@@ -22,13 +22,13 @@
         "direction": "TIGHTENED"
       },
       "direct": {
-        "before_status": "暂停申购",
+        "before_status": "限5元/日",
         "after_status": "暂停申购",
-        "before_limit": 0,
+        "before_limit": 5,
         "after_limit": 0,
-        "direction": null
+        "direction": "TIGHTENED"
       },
-      "summary": "代销: 限5元/日 ➔ 暂停申购",
+      "summary": "代销: 限5元/日 ➔ 暂停申购；直销: 限5元/日 ➔ 暂停申购",
       "announcement_id": "AN202610201830698096",
       "announcement_url": "https://data.eastmoney.com/notices/detail/014978/AN202610201830698096.html",
       "substitutes": [
@@ -71,7 +71,9 @@
           "max_quota": 100,
           "score": 0
         }
-      ]
+      ],
+      "effective_date": "2026-10-21",
+      "announcement_pub_date": "2026-10-20"
     },
     {
       "date": "2026-10-20",
@@ -90,13 +92,13 @@
         "direction": "TIGHTENED"
       },
       "direct": {
-        "before_status": "暂停申购",
+        "before_status": "限5元/日",
         "after_status": "暂停申购",
-        "before_limit": 0,
+        "before_limit": 5,
         "after_limit": 0,
-        "direction": null
+        "direction": "TIGHTENED"
       },
-      "summary": "代销: 限5元/日 ➔ 暂停申购",
+      "summary": "代销: 限5元/日 ➔ 暂停申购；直销: 限5元/日 ➔ 暂停申购",
       "announcement_id": "AN202610201830698096",
       "announcement_url": "https://data.eastmoney.com/notices/detail/040046/AN202610201830698096.html",
       "substitutes": [
@@ -139,7 +141,9 @@
           "max_quota": 100,
           "score": 0
         }
-      ]
+      ],
+      "effective_date": "2026-10-21",
+      "announcement_pub_date": "2026-10-20"
     },
     {
       "date": "2026-10-15",
@@ -207,7 +211,9 @@
           "max_quota": 10,
           "score": 0
         }
-      ]
+      ],
+      "effective_date": "2026-10-16",
+      "announcement_pub_date": "2026-10-15"
     },
     {
       "date": "2026-10-15",
@@ -275,7 +281,9 @@
           "max_quota": 10,
           "score": 0
         }
-      ]
+      ],
+      "effective_date": "2026-10-16",
+      "announcement_pub_date": "2026-10-15"
     },
     {
       "date": "2026-10-14",
@@ -343,7 +351,9 @@
           "max_quota": 100,
           "score": 0
         }
-      ]
+      ],
+      "effective_date": "2026-10-14",
+      "announcement_pub_date": "2026-10-14"
     },
     {
       "date": "2026-10-14",
@@ -411,7 +421,9 @@
           "max_quota": 100,
           "score": 0
         }
-      ]
+      ],
+      "effective_date": "2026-10-14",
+      "announcement_pub_date": "2026-10-14"
     },
     {
       "date": "2026-10-14",
@@ -479,7 +491,9 @@
           "max_quota": 100,
           "score": 0
         }
-      ]
+      ],
+      "effective_date": "2026-10-14",
+      "announcement_pub_date": "2026-10-14"
     },
     {
       "date": "2026-10-14",
@@ -547,7 +561,9 @@
           "max_quota": 100,
           "score": 0
         }
-      ]
+      ],
+      "effective_date": "2026-10-14",
+      "announcement_pub_date": "2026-10-14"
     },
     {
       "date": "2026-10-14",
@@ -615,7 +631,9 @@
           "max_quota": 100,
           "score": 0
         }
-      ]
+      ],
+      "effective_date": "2026-10-14",
+      "announcement_pub_date": "2026-10-14"
     }
   ]
 }

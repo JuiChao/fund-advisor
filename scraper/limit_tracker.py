@@ -203,10 +203,13 @@ def diff_fund_limits(old_funds_map, new_funds_list, today_str=None):
 
         ann_id = new_f.get('limit_announcement_id') or old_f.get('limit_announcement_id')
         ann_url = new_f.get('announcement_url') or (f"https://data.eastmoney.com/notices/detail/{code}/{ann_id}.html" if ann_id else f"https://fundf10.eastmoney.com/jjgg_{code}.html")
-        record_date = new_f.get('effective_date') or new_f.get('announcement_pub_date') or today_str
+        effective_date = new_f.get('effective_date') or old_f.get('effective_date') or today_str
+        pub_date = new_f.get('announcement_pub_date') or today_str
 
         changes.append({
-            'date': record_date,
+            'date': pub_date,
+            'effective_date': effective_date,
+            'announcement_pub_date': pub_date,
             'timestamp': datetime.now(BEIJING_TZ).strftime('%Y-%m-%dT%H:%M:%S'),
             'code': code,
             'name': new_f.get('name'),
@@ -295,7 +298,7 @@ def update_limit_changes_file(new_funds, old_funds_path=FUNDS_FILE, changes_path
     cutoff_7d = (datetime.now(BEIJING_TZ) - timedelta(days=7)).strftime('%Y-%m-%d')
     updated_history = [item for item in updated_history if (item.get('date') or '') >= cutoff_7d]
     # 按生效日期与时间戳倒序排列（最新发布的排在最前面）
-    updated_history.sort(key=lambda x: (x.get('date', ''), x.get('timestamp', '')), reverse=True)
+    updated_history.sort(key=lambda x: (x.get('effective_date') or x.get('date', ''), x.get('timestamp', '')), reverse=True)
 
     # 2. 同一只基金一周内若出现多次变更，只保留最新的一笔变更内容（按基金代码去重）
     deduped_history = []

@@ -8834,3 +8834,52 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         font-size: 0.68rem;
     }
 }
+
+/* ===== 实际生效日期展示组件 ===== */
+.q-date-cell-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+}
+.q-eff-pill {
+    color: var(--txt) !important;
+    background: rgba(99, 102, 241, 0.12) !important;
+    border-color: rgba(99, 102, 241, 0.35) !important;
+}
+.q-pub-hint {
+    font-size: 0.68rem;
+    color: var(--txt3);
+    padding-left: 2px;
+}
+.qmc-date-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.qmc-pub-hint {
+    font-size: 0.72rem;
+    color: var(--txt3);
+}
+.dbp-top-right-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dbp-eff-pill {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    white-space: nowrap;
+}
+.douyin-poster-export.theme-light .dbp-eff-pill {
+    color: #334155;
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}

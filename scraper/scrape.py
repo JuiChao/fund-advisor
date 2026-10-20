@@ -420,20 +420,24 @@ def scrape_limit_announcement(code):
             except Exception:
                 pass
 
-        # 提取公告正文中的生效起始日
+        # 提取公告正文中的生效起始日 (以实际公告内容为准，兼容表格折行与带空格格式)
         effective_date = None
         if content:
-            m_eff = re.search(r'(?:暂停|恢复|调整|限制|开展)?(?:相关)?(?:业务)?(?:的)?(?:起始日|生效日|开始日)[：:\s]*(\d{4})[年\-\/](\d{1,2})[月\-\/](\d{1,2})[日]?', content)
+            m_eff = re.search(r'(?:调整|暂停|恢复|限制|开通|开展)?\s*(?:大额)?\s*(?:申购|定期定额|定投|投资|业务|相关)?\s*(?:的)?\s*起\s*(?:始日)?\s*[:：\s]*(\d{4})\s*[年\-\/]\s*(\d{1,2})\s*[月\-\/]\s*(\d{1,2})\s*[日]?', content)
             if m_eff:
                 effective_date = f'{m_eff.group(1)}-{int(m_eff.group(2)):02d}-{int(m_eff.group(3)):02d}'
             else:
-                m_eff2 = re.search(r'(?:自|从|将于)\s*(\d{4})[年\-\/](\d{1,2})[月\-\/](\d{1,2})[日]?\s*起', content)
+                m_eff2 = re.search(r'(?:自|从|将于)\s*(\d{4})\s*[年\-\/]\s*(\d{1,2})\s*[月\-\/]\s*(\d{1,2})\s*[日]?\s*起', content)
                 if m_eff2:
                     effective_date = f'{m_eff2.group(1)}-{int(m_eff2.group(2)):02d}-{int(m_eff2.group(3)):02d}'
                 else:
-                    m_eff3 = re.search(r'公告(?:送出)?日期[：:\s]*(\d{4})[年\-\/](\d{1,2})[月\-\/](\d{1,2})[日]?', content)
+                    m_eff3 = re.search(r'(?:起始日|生效日|开始日)[：:\s]*(\d{4})\s*[年\-\/]\s*(\d{1,2})\s*[月\-\/]\s*(\d{1,2})\s*[日]?', content)
                     if m_eff3:
                         effective_date = f'{m_eff3.group(1)}-{int(m_eff3.group(2)):02d}-{int(m_eff3.group(3)):02d}'
+                    else:
+                        m_eff4 = re.search(r'公告(?:送出)?日期[：:\s]*(\d{4})\s*[年\-\/]\s*(\d{1,2})\s*[月\-\/]\s*(\d{1,2})\s*[日]?', content)
+                        if m_eff4:
+                            effective_date = f'{m_eff4.group(1)}-{int(m_eff4.group(2)):02d}-{int(m_eff4.group(3)):02d}'
         if not effective_date:
             effective_date = target_pub_date
 
@@ -834,8 +838,10 @@ def scrape_single_fund_record(code, index_type, fallback_item, cached_item=None,
     if base.get('limit_status') == '未开通代销' and not is_agency_explicit:
         merged['limit_status'] = '未开通代销'
         merged['daily_limit'] = 0
-    elif is_agency_explicit and agency_ann_status is not None:
-        # 公告显式指定了代销渠道政策，公告作为最高法定第一信源，裁决覆盖第三方网页
+    elif agency_ann_status is not None:
+        # 公告看板原则：只做最新法定公告限购情况展示，以基金公司法定公告为最高第一信源，
+        # 不做15点收盘前销售平台页面是否延迟切换的验证。只要最新公告明确了政策（无论是全基金停购还是渠道专属限额），
+        # 直接采纳公告最新状态，确保全天各抓取节点展示一致
         merged['limit_status'] = agency_ann_status
         merged['daily_limit'] = agency_ann_limit
     elif base.get('limit_status') == '暂停申购' and not is_agency_explicit:
