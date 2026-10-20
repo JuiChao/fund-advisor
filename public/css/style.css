@@ -8873,20 +8873,41 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
 }
 .dbp-eff-pill {
-    font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
     font-weight: 700;
-    color: #e2e8f0;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fbbf24;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.35) 100%);
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(251, 191, 36, 0.85);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
     white-space: nowrap;
+    letter-spacing: 0.2px;
+}
+.dbp-eff-pill .dbp-eff-icon {
+    font-size: 12px;
+    line-height: 1;
+}
+.dbp-eff-pill strong {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-left: 2px;
+    letter-spacing: 0.5px;
 }
 .douyin-poster-export.theme-light .dbp-eff-pill {
-    color: #334155;
-    background: #f1f5f9;
-    border-color: #cbd5e1;
+    color: #92400e;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1.5px solid #d97706;
+    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.15);
+}
+.douyin-poster-export.theme-light .dbp-eff-pill strong {
+    color: #78350f;
 }

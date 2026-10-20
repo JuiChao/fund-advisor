@@ -1699,7 +1699,7 @@ const App = (() => {
                         <span class="rks-code">${item.code}</span>
                         <span class="rks-name" title="${item.name}">${item.name}</span>
                         <div class="rks-meta">
-                            <span class="rks-eff-pill" style="font-size:11px;color:var(--accent);font-weight:700;margin-right:8px">生效: ${effDate}${isDiffDate ? ` (${pubDate}发布)` : ''}</span>
+                            <span class="rks-eff-pill" style="font-size:11.5px;color:#f59e0b;font-weight:700;margin-right:8px">📅 生效: <strong>${effDate}</strong>${isDiffDate ? ` <span style="font-size:10.5px;color:var(--txt3);font-weight:normal">(${pubDate}发布)</span>` : ''}</span>
                             <span style="font-size:11px;color:var(--txt3)">${agencyTxt} · ${directTxt}</span>
                         </div>
                     </label>
@@ -1952,7 +1952,7 @@ const App = (() => {
                                     <span class="dbp-fund-name">${item.name}</span>
                                 </div>
                                 <div class="dbp-top-right-group">
-                                    <span class="dbp-eff-pill">生效: ${effDate}</span>
+                                    <span class="dbp-eff-pill"><span class="dbp-eff-icon">📅</span> 生效: <strong>${effDate}</strong></span>
                                     <div class="dbp-change-pill ${pillClass}">
                                         ${changeLabel}
                                     </div>
