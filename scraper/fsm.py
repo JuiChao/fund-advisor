@@ -82,10 +82,10 @@ class FinancialEventFSM:
 
     # 额度合并与共享识别模式 (A/C等份额共享额度 vs 独立计算)
     COMBINED_QUOTA_REGEX = re.compile(
-        r'合并计算|合计不超过|合并进行限制|各份额合并|份额合并|各类别基金份额合并|两类份额合并'
+        r'(?<!不)合并计算|合计不超过|合并进行限制|各份额合并|份额合并|各类别基金份额合并|两类份额合并'
     )
     SEPARATE_QUOTA_REGEX = re.compile(
-        r'不同份额分别计算|各类份额单独计算|分别计算|各份额独立'
+        r'不合并(?:计算)?|不同份额分别计算|各类份额单独计算|分别计算|各份额独立|单独计算'
     )
 
     @classmethod
@@ -114,8 +114,8 @@ class FinancialEventFSM:
 
         # 2. 正文清理与分句切分
         text_clean = re.sub(r'<[^>]+>', ' ', content or '')
-        # 将行内软折行替换为空格，避免PDF/表格提取时中句断裂
-        text_clean = re.sub(r'(?<![。；;\n\r])\n(?![0-9一二三四1234][、\.（(])', ' ', text_clean)
+        # 将行内软折行替换为空格，避免PDF/表格提取时中句断裂（兼容连续换行\n\n与空白缩进）
+        text_clean = re.sub(r'(?<![。；;！!？?])\s*[\r\n]+\s*(?![0-9一二三四1234][、\.（(])', ' ', text_clean)
         clauses_raw = cls.CLAUSE_SPLIT_REGEX.split(text_clean)
 
         parsed_clauses: List[FSMClause] = []

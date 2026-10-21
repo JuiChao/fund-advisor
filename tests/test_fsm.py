@@ -32,6 +32,30 @@ class TestFinancialEventFSM(unittest.TestCase):
         self.assertEqual(res_a.agency_daily_limit, 10)
         self.assertEqual(res_a.agency_limit_status, '限10元/日')
 
+    def test_wanjia_soft_wrap_dual_quota_oct21(self):
+        """测试万家基金2026-10-21真实公告：带换行折行干扰与独立计算，代销5元，直销100元"""
+        title = "关于万家纳斯达克100指数型发起式证券投资基金(QDII)调整大额申购(含定期定额投资)业务金额限制的公告"
+        content = (
+            "（1）为保证基金的平稳运作，万家基金管理有限公司（以下简称“本公司” ）决定自2026年10月21\n\n"
+            "  日起，万家纳斯达克100指数发起式（QDII）A类份额和C类份额代销渠道单日单个基金账户单笔或多笔\n\n"
+            "  申购（含定期定额投资）累计金额限制调整为5元（不含5元）（A类、C类份额不合并计算）；直销渠道单\n\n"
+            "  日单个基金账户单笔或多笔申购（含定期定额投资）累计金额限制仍为100元（不含100元）（A类、C类\n\n"
+            "  份额不合并计算）。"
+        )
+        res_a = FinancialEventFSM.parse_announcement(content, title=title, fund_code='019441', share_class='A')
+        self.assertEqual(res_a.direct_daily_limit, 100)
+        self.assertEqual(res_a.direct_limit_status, '限100元/日')
+        self.assertEqual(res_a.agency_daily_limit, 5)
+        self.assertEqual(res_a.agency_limit_status, '限5元/日')
+        self.assertEqual(res_a.quota_sharing, 'INDEPENDENT')
+
+        res_c = FinancialEventFSM.parse_announcement(content, title=title, fund_code='019442', share_class='C')
+        self.assertEqual(res_c.direct_daily_limit, 100)
+        self.assertEqual(res_c.direct_limit_status, '限100元/日')
+        self.assertEqual(res_c.agency_daily_limit, 5)
+        self.assertEqual(res_c.agency_limit_status, '限5元/日')
+        self.assertEqual(res_c.quota_sharing, 'INDEPENDENT')
+
     def test_dacheng_dual_quota(self):
         """测试大成基金双轨公告：代销100元，直销1000元"""
         title = "大成标普500等权重指数证券投资基金调整大额申购限额的公告"

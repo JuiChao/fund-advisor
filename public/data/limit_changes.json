@@ -14,8 +14,8 @@
       "name": "万家纳斯达克100指数发起式(QDII)A",
       "index_type": "纳斯达克100",
       "share_class": "A",
-      "change_type": "CHANNEL_DIV",
-      "change_type_label": "渠道分化调整",
+      "change_type": "RELAXED",
+      "change_type_label": "额度放宽 / 恢复申购",
       "agency": {
         "before_status": "暂停申购",
         "after_status": "限5元/日",
@@ -25,12 +25,12 @@
       },
       "direct": {
         "before_status": "限10元/日",
-        "after_status": "限5元/日",
+        "after_status": "限100元/日",
         "before_limit": 10,
-        "after_limit": 5,
-        "direction": "TIGHTENED"
+        "after_limit": 100,
+        "direction": "RELAXED"
       },
-      "summary": "代销: 暂停申购 ➔ 限5元/日；直销: 限10元/日 ➔ 限5元/日",
+      "summary": "代销: 暂停申购 ➔ 限5元/日；直销: 限10元/日 ➔ 限100元/日",
       "announcement_id": "AN202610211830733237",
       "announcement_url": "https://data.eastmoney.com/notices/detail/019441/AN202610211830733237.html",
       "substitutes": [
@@ -84,8 +84,8 @@
       "name": "万家纳斯达克100指数发起式(QDII)C",
       "index_type": "纳斯达克100",
       "share_class": "C",
-      "change_type": "CHANNEL_DIV",
-      "change_type_label": "渠道分化调整",
+      "change_type": "RELAXED",
+      "change_type_label": "额度放宽 / 恢复申购",
       "agency": {
         "before_status": "暂停申购",
         "after_status": "限5元/日",
@@ -95,12 +95,12 @@
       },
       "direct": {
         "before_status": "限10元/日",
-        "after_status": "限5元/日",
+        "after_status": "限100元/日",
         "before_limit": 10,
-        "after_limit": 5,
-        "direction": "TIGHTENED"
+        "after_limit": 100,
+        "direction": "RELAXED"
       },
-      "summary": "代销: 暂停申购 ➔ 限5元/日；直销: 限10元/日 ➔ 限5元/日",
+      "summary": "代销: 暂停申购 ➔ 限5元/日；直销: 限10元/日 ➔ 限100元/日",
       "announcement_id": "AN202610211830733237",
       "announcement_url": "https://data.eastmoney.com/notices/detail/019442/AN202610211830733237.html",
       "substitutes": [

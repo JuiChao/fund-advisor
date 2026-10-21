@@ -156,13 +156,13 @@
   {
     "code": "019441",
     "index_type": "纳斯达克100",
-    "agency_status": "限10元/日",
-    "agency_limit": 10,
+    "agency_status": "限5元/日",
+    "agency_limit": 5,
     "fee_page_status": "限大额",
     "fee_page_limit": 10,
-    "direct_status": null,
-    "direct_limit": null,
-    "ann_id": "AN202607091826830545"
+    "direct_status": "限100元/日",
+    "direct_limit": 100,
+    "ann_id": "AN202610211830733237"
   },
   {
     "code": "019524",
