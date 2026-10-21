@@ -194,8 +194,13 @@ def diff_fund_limits(old_funds_map, new_funds_list, today_str=None):
         parts = []
         if agency_dir:
             parts.append(f"代销: {old_agency_st or '未记录'} ➔ {new_agency_st or '未记录'}")
+        elif old_agency_st:
+            parts.append(f"代销: 维持{new_agency_st or '原状'}")
+
         if direct_dir:
             parts.append(f"直销: {old_direct_st or '未记录'} ➔ {new_direct_st or '未记录'}")
+        elif old_direct_st:
+            parts.append(f"直销: 维持{new_direct_st or '原状'}")
         summary_text = '；'.join(parts)
 
         # 查找智能平替
@@ -222,14 +227,14 @@ def diff_fund_limits(old_funds_map, new_funds_list, today_str=None):
                 'after_status': new_agency_st or '—',
                 'before_limit': old_agency_limit,
                 'after_limit': new_agency_limit,
-                'direction': agency_dir,
+                'direction': agency_dir or 'UNCHANGED',
             },
             'direct': {
                 'before_status': old_direct_st or '—',
                 'after_status': new_direct_st or '—',
                 'before_limit': old_direct_limit,
                 'after_limit': new_direct_limit,
-                'direction': direct_dir,
+                'direction': direct_dir or 'UNCHANGED',
             },
             'summary': summary_text,
             'announcement_id': ann_id,

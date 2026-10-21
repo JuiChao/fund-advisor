@@ -231,6 +231,42 @@ class TestLimitTracker(unittest.TestCase):
             self.assertIn('暂停申购', result['history'][0]['summary'])
 
 
+    def test_single_channel_tightened_with_unchanged(self):
+        """测试单渠道额度下调，另一渠道维持不变（如万家纳指100：代销10->5，直销维持100）"""
+        old_map = {
+            '019441': {
+                'code': '019441',
+                'name': '万家纳斯达克100指数发起式(QDII)A',
+                'index_type': '纳斯达克100',
+                'share_class': 'A',
+                'limit_status': '限10元/日',
+                'daily_limit': 10,
+                'direct_limit_status': '限100元/日',
+                'direct_daily_limit': 100
+            }
+        }
+        new_list = [
+            {
+                'code': '019441',
+                'name': '万家纳斯达克100指数发起式(QDII)A',
+                'index_type': '纳斯达克100',
+                'share_class': 'A',
+                'limit_status': '限5元/日',
+                'daily_limit': 5,
+                'direct_limit_status': '限100元/日',
+                'direct_daily_limit': 100
+            }
+        ]
+        changes = diff_fund_limits(old_map, new_list, today_str='2026-10-21')
+        self.assertEqual(len(changes), 1)
+        ch = changes[0]
+        self.assertEqual(ch['change_type'], 'TIGHTENED')
+        self.assertEqual(ch['agency']['direction'], 'TIGHTENED')
+        self.assertEqual(ch['direct']['direction'], 'UNCHANGED')
+        self.assertIn('代销: 限10元/日 ➔ 限5元/日', ch['summary'])
+        self.assertIn('直销: 维持限100元/日', ch['summary'])
+
+
 if __name__ == '__main__':
     unittest.main()
 
