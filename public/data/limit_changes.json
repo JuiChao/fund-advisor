@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-10-21T17:16:47",
+  "last_updated": "2026-10-21T22:46:32",
   "today_date": "2026-10-21",
   "today_count": 2,
   "recent_7d_count": 11,
@@ -427,6 +427,76 @@
     },
     {
       "date": "2026-10-14",
+      "effective_date": "2026-10-15",
+      "announcement_pub_date": "2026-10-14",
+      "timestamp": "2026-10-21T22:46:32",
+      "code": "021778",
+      "name": "广发纳指100ETF联接(QDII)人民币F",
+      "index_type": "纳斯达克100",
+      "share_class": "F",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "未开通代销",
+        "after_status": "暂停申购",
+        "before_limit": 0,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "暂停申购",
+        "after_status": "暂停申购",
+        "before_limit": 0,
+        "after_limit": 0,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 未开通代销 ➔ 暂停申购；直销: 维持暂停申购",
+      "announcement_id": "AN202610141830429076",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/021778/AN202610141830429076.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "限5元/日",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 5,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "限5元/日",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 5,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-10-14",
       "timestamp": "2026-10-14T20:44:01",
       "code": "006479",
       "name": "广发纳指100ETF联接(QDII)人民币C",
@@ -451,76 +521,6 @@
       "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 限10元/日 ➔ 暂停申购",
       "announcement_id": "AN202610141830429076",
       "announcement_url": "https://data.eastmoney.com/notices/detail/006479/AN202610141830429076.html",
-      "substitutes": [
-        {
-          "code": "021000",
-          "name": "南方纳斯达克100指数发起(QDII)I",
-          "share_class": "I",
-          "index_type": "纳斯达克100",
-          "total_fee": 0.0066,
-          "limit_status": "未开通代销",
-          "direct_limit_status": "限200元/日",
-          "daily_limit": 0,
-          "direct_daily_limit": 200,
-          "max_quota": 200,
-          "score": 0
-        },
-        {
-          "code": "000834",
-          "name": "大成纳斯达克100ETF联接(QDII)A",
-          "share_class": "A",
-          "index_type": "纳斯达克100",
-          "total_fee": 0.01,
-          "limit_status": "限10元/日",
-          "direct_limit_status": "限100元/日",
-          "daily_limit": 10,
-          "direct_daily_limit": 100,
-          "max_quota": 100,
-          "score": 0
-        },
-        {
-          "code": "008971",
-          "name": "大成纳斯达克100ETF联接(QDII)C",
-          "share_class": "C",
-          "index_type": "纳斯达克100",
-          "total_fee": 0.013,
-          "limit_status": "限10元/日",
-          "direct_limit_status": "限100元/日",
-          "daily_limit": 10,
-          "direct_daily_limit": 100,
-          "max_quota": 100,
-          "score": 0
-        }
-      ],
-      "effective_date": "2026-10-14",
-      "announcement_pub_date": "2026-10-14"
-    },
-    {
-      "date": "2026-10-14",
-      "timestamp": "2026-10-14T20:44:01",
-      "code": "021778",
-      "name": "广发纳指100ETF联接(QDII)人民币F",
-      "index_type": "纳斯达克100",
-      "share_class": "F",
-      "change_type": "TIGHTENED",
-      "change_type_label": "额度下调 / 暂停申购",
-      "agency": {
-        "before_status": "限100元/日",
-        "after_status": "未开通代销",
-        "before_limit": 100,
-        "after_limit": 0,
-        "direction": "TIGHTENED"
-      },
-      "direct": {
-        "before_status": "限100元/日",
-        "after_status": "暂停申购",
-        "before_limit": 100,
-        "after_limit": 0,
-        "direction": "TIGHTENED"
-      },
-      "summary": "代销: 限100元/日 ➔ 未开通代销；直销: 限100元/日 ➔ 暂停申购",
-      "announcement_id": "AN202610141830429076",
-      "announcement_url": "https://data.eastmoney.com/notices/detail/021778/AN202610141830429076.html",
       "substitutes": [
         {
           "code": "021000",
