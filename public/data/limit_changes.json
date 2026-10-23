@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-22T22:46:28",
-  "today_date": "2026-10-22",
+  "last_updated": "2026-10-23T08:32:24",
+  "today_date": "2026-10-23",
   "today_count": 0,
-  "recent_7d_count": 6,
+  "recent_7d_count": 4,
   "total_monitored": 60,
   "history": [
     {
@@ -284,146 +284,6 @@
       ],
       "effective_date": "2026-10-21",
       "announcement_pub_date": "2026-10-20"
-    },
-    {
-      "date": "2026-10-15",
-      "timestamp": "2026-10-15T08:16:57",
-      "code": "008401",
-      "name": "大成标普500等权重指数(QDII)C人民币",
-      "index_type": "标普500",
-      "share_class": "C",
-      "change_type": "TIGHTENED",
-      "change_type_label": "额度下调 / 暂停申购",
-      "agency": {
-        "before_status": "限100元/日",
-        "after_status": "限50元/日",
-        "before_limit": 100,
-        "after_limit": 50,
-        "direction": "TIGHTENED"
-      },
-      "direct": {
-        "before_status": "限1000元/日",
-        "after_status": "限500元/日",
-        "before_limit": 1000,
-        "after_limit": 500,
-        "direction": "TIGHTENED"
-      },
-      "summary": "代销: 限100元/日 ➔ 限50元/日；直销: 限1000元/日 ➔ 限500元/日",
-      "announcement_id": "AN202610151830479604",
-      "announcement_url": "https://data.eastmoney.com/notices/detail/008401/AN202610151830479604.html",
-      "substitutes": [
-        {
-          "code": "096001",
-          "name": "大成标普500等权重指数(QDII)A人民币",
-          "share_class": "A",
-          "index_type": "标普500",
-          "total_fee": 0.012,
-          "limit_status": "限50元/日",
-          "direct_limit_status": "限500元/日",
-          "daily_limit": 50,
-          "direct_daily_limit": 500,
-          "max_quota": 500,
-          "score": 0
-        },
-        {
-          "code": "017641",
-          "name": "摩根标普500指数(QDII)人民币A",
-          "share_class": "A",
-          "index_type": "标普500",
-          "total_fee": 0.0065,
-          "limit_status": "限10元/日",
-          "direct_limit_status": "限10元/日",
-          "daily_limit": 10,
-          "direct_daily_limit": 10,
-          "max_quota": 10,
-          "score": 0
-        },
-        {
-          "code": "019305",
-          "name": "摩根标普500指数(QDII)人民币C",
-          "share_class": "C",
-          "index_type": "标普500",
-          "total_fee": 0.0095,
-          "limit_status": "限10元/日",
-          "direct_limit_status": "限10元/日",
-          "daily_limit": 10,
-          "direct_daily_limit": 10,
-          "max_quota": 10,
-          "score": 0
-        }
-      ],
-      "effective_date": "2026-10-16",
-      "announcement_pub_date": "2026-10-15"
-    },
-    {
-      "date": "2026-10-15",
-      "timestamp": "2026-10-15T08:16:57",
-      "code": "096001",
-      "name": "大成标普500等权重指数(QDII)A人民币",
-      "index_type": "标普500",
-      "share_class": "A",
-      "change_type": "TIGHTENED",
-      "change_type_label": "额度下调 / 暂停申购",
-      "agency": {
-        "before_status": "限100元/日",
-        "after_status": "限50元/日",
-        "before_limit": 100,
-        "after_limit": 50,
-        "direction": "TIGHTENED"
-      },
-      "direct": {
-        "before_status": "限1000元/日",
-        "after_status": "限500元/日",
-        "before_limit": 1000,
-        "after_limit": 500,
-        "direction": "TIGHTENED"
-      },
-      "summary": "代销: 限100元/日 ➔ 限50元/日；直销: 限1000元/日 ➔ 限500元/日",
-      "announcement_id": "AN202610151830479604",
-      "announcement_url": "https://data.eastmoney.com/notices/detail/096001/AN202610151830479604.html",
-      "substitutes": [
-        {
-          "code": "008401",
-          "name": "大成标普500等权重指数(QDII)C人民币",
-          "share_class": "C",
-          "index_type": "标普500",
-          "total_fee": 0.015,
-          "limit_status": "限50元/日",
-          "direct_limit_status": "限500元/日",
-          "daily_limit": 50,
-          "direct_daily_limit": 500,
-          "max_quota": 500,
-          "score": 0
-        },
-        {
-          "code": "017641",
-          "name": "摩根标普500指数(QDII)人民币A",
-          "share_class": "A",
-          "index_type": "标普500",
-          "total_fee": 0.0065,
-          "limit_status": "限10元/日",
-          "direct_limit_status": "限10元/日",
-          "daily_limit": 10,
-          "direct_daily_limit": 10,
-          "max_quota": 10,
-          "score": 0
-        },
-        {
-          "code": "019305",
-          "name": "摩根标普500指数(QDII)人民币C",
-          "share_class": "C",
-          "index_type": "标普500",
-          "total_fee": 0.0095,
-          "limit_status": "限10元/日",
-          "direct_limit_status": "限10元/日",
-          "daily_limit": 10,
-          "direct_daily_limit": 10,
-          "max_quota": 10,
-          "score": 0
-        }
-      ],
-      "effective_date": "2026-10-16",
-      "announcement_pub_date": "2026-10-15"
     }
   ]
 }
