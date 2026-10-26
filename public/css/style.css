@@ -8911,3 +8911,90 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .douyin-poster-export.theme-light .dbp-eff-pill strong {
     color: #78350f;
 }
+
+/* ===== E-E-A-T Author & Methodology Box ===== */
+.eeat-author-card {
+    margin: 2.5rem 0 1.5rem;
+    padding: 1.35rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.eeat-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+}
+.eeat-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+.eeat-meta {
+    flex: 1;
+}
+.eeat-author-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.05rem;
+    color: var(--txt);
+    margin-bottom: 4px;
+}
+.eeat-badge {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--ok);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 999px;
+    font-weight: 600;
+}
+.eeat-author-desc {
+    font-size: 0.85rem;
+    color: var(--txt2);
+    line-height: 1.5;
+}
+.eeat-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0.85rem 0;
+}
+.eeat-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+.eeat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.82rem;
+}
+.eeat-lbl {
+    color: var(--txt3);
+    font-weight: 500;
+}
+.eeat-val {
+    color: var(--txt);
+    font-weight: 600;
+}
+.eeat-disclaimer {
+    padding: 0.75rem 1rem;
+    background: rgba(234, 179, 8, 0.08);
+    border-left: 3px solid #eab308;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--txt2);
+    line-height: 1.5;
+}

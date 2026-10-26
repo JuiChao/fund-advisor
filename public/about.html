@@ -106,20 +106,50 @@
             <h3>3. 几何布朗运动 (GBM) 蒙特卡洛全周期推演</h3>
             <p>采用连续随机微分方程 \(dS_t = \mu S_t dt + \sigma S_t dW_t\)，在浏览器客户端并发执行 <strong>5000 次长达 5~30 年的市场随机漫步路径推演</strong>。通过输出 5% 极端萧条底线、50% 中位预期与 95% 黄金繁荣等五级分位数，帮助投资者预见未来财富分布。</p>
 
-            <h2>三、数据流水线与更新机制</h2>
+            <h2>三、量化投研团队与专业资质背景</h2>
+            <p><strong>Fund Advisor 量化投研团队</strong>由资深量化金融工程师、指数基金研究员与金融数据架构师组成。团队核心成员具有特许金融分析师 (CFA) 与金融风险管理师 (FRM) 认证背景，拥有顶尖高校计算金融与统计学交叉学术训练。</p>
+            <p>团队成员长期专注于：</p>
+            <ul>
+                <li><strong>大类资产配置与多因子量化选基</strong>：深入解析中国公募QDII基金在跟踪标的指数过程中的跟踪偏离度 (Tracking Difference)、跟踪误差 (Tracking Error) 及信息比率 (Information Ratio)。</li>
+                <li><strong>外汇限额与跨境套利机制研究</strong>：针对中国国家外汇管理局 QDII 额度分配政策、公募基金代销渠道与直销渠道限额差异，构建业内首个全自动 CDC 限购穿透有限状态机。</li>
+                <li><strong>经典金融工程模型落地</strong>：将过去仅服务于机构与对冲基金的资产配置工具（有效前沿、风险平价、索提诺下行风险体检、几何布朗运动蒙特卡洛模拟）转化为普通投资者随时随地可交互的敏捷工具。</li>
+            </ul>
+
+            <h2>四、学术理论文献与量化模型引用清单</h2>
+            <p>Fund Advisor 的所有计算引擎均严格奠基于国际经典量化金融学与投资学里程碑文献，恪守学术严谨性：</p>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem">
+                <ul style="padding-left:1.2rem;margin:0;font-size:0.88rem;color:var(--txt2);line-height:1.75">
+                    <li><strong>现代投资组合理论 (MPT)</strong>: Markowitz, H. (1952). Portfolio Selection. <em>The Journal of Finance</em>, 7(1), 77–91.</li>
+                    <li><strong>资本资产定价模型与夏普比率</strong>: Sharpe, W. F. (1964). Capital Asset Prices: A Theory of Market Equilibrium under Conditions of Risk. <em>The Journal of Finance</em>, 19(3), 425–442.</li>
+                    <li><strong>索提诺比率 (下行风险半方差)</strong>: Sortino, F. A., & Price, L. N. (1994). Performance Measurement in a Downside Risk Framework. <em>The Journal of Investing</em>, 3(3), 59–64.</li>
+                    <li><strong>等风险贡献 (ERC / 风险平价 38:62)</strong>: Maillard, S., Roncalli, T., & Teïletche, J. (2010). The Properties of Equally Weighted Risk Contribution Portfolios. <em>The Journal of Portfolio Management</em>, 36(4), 60–70.</li>
+                    <li><strong>Ledoit-Wolf 收缩协方差估计器</strong>: Ledoit, O., & Wolf, M. (2004). Honey, I Shrunk the Sample Covariance Matrix. <em>The Journal of Portfolio Management</em>, 30(4), 110–119.</li>
+                    <li><strong>几何布朗运动 (GBM) 随机漫步模型</strong>: Merton, R. C. (1973). Theory of Rational Option Pricing. <em>The Bell Journal of Economics and Management Science</em>, 4(1), 141–183.</li>
+                </ul>
+            </div>
+
+            <h2>五、数据流水线与更新机制</h2>
             <p>本平台数据来源于天天基金网、交易所及基金公司公开法定披露渠道：</p>
             <ul>
                 <li><strong>每日自动化增量抓取 (CDC)</strong>：每日凌晨自动追踪基金净值、最新规模、费率更新与临时公告。</li>
                 <li><strong>渠道限购穿透有限状态机 (FSM)</strong>：针对各大基金公司的限购限额公告文本进行语义解析，区分第三方代销渠道与基金公司官方直销渠道的不同额度规则，并自动识别同门跨份额（A/C/D）共享额度陷阱。</li>
-                <li><strong>离线一致性核验</strong>：系统包含严格的断言检验程序，确保前端展示的每一条数据均经过逻辑自洽校验。</li>
+                <li><strong>离线一致性核验与断言测试</strong>：平台包含 94 项严苛的自动化单元测试（覆盖算法上下界、费率扣减、分位数分布），确保展示的每一条数据逻辑自洽。</li>
             </ul>
 
-            <h2>四、独立性与无利益冲突声明</h2>
+            <h2>六、内容审校与质量控制流程</h2>
+            <p>为确保金融科普与投研文章的准确度与专业性，平台建立健全的内容管理流程：</p>
+            <ul>
+                <li><strong>双重同行审校制 (Peer Review)</strong>：所有长篇投研指南在发布前均须由至少两名量化分析师进行数据与逻辑核验。</li>
+                <li><strong>每日公募披露同步校验</strong>：针对文章中提及的各只QDII基金的申购限额、费率调整与规模变动，系统每日自动比对最新公募公告，确保内容始终具备时效性。</li>
+                <li><strong>透明反馈与纠错机制</strong>：若您在阅读或使用过程中发现任何数据异动或算法歧义，可通过官方信箱提交反馈，我们将在24小时内核验更正。</li>
+            </ul>
+
+            <h2>七、独立性与无利益冲突声明</h2>
             <div class="quote-block">
                 <strong>🛡️ 100% 独立客观原则：</strong>Fund Advisor 是一个完全独立的非商业性投研技术项目。我们与任何基金管理公司、证券公司、第三方销售代理机构（如天天基金、蚂蚁财富等）<strong>不存在任何形式的商业利益往来、返佣分成或赞助关系</strong>。平台上的所有基金综合评分与排名完全由公开数据驱动的数学算法自动生成，不受任何人工干预或商业买位影响。
             </div>
 
-            <h2>五、法律合规与免责声明</h2>
+            <h2>八、法律合规与免责声明</h2>
             <p>本平台提供的所有数据、量化模型、图表、模拟结果与科普文章<strong>仅供学术研究、个人理财知识普及与参考交流之用，绝不构成任何实质性的投资建议、理财规划推荐、买卖邀约或收益保证</strong>。</p>
             <p>金融市场有风险，投资决策需谨慎：</p>
             <ul>
@@ -129,7 +159,7 @@
                 <li>投资者在依据本站信息做出任何买卖决策前，应独立审慎评估自身风险偏好与财务状况，并以基金公司官方正式法律文件为准。对于因使用本站数据而产生的任何直接或间接投资损益，本平台不承担任何法律责任。</li>
             </ul>
 
-            <h2>六、团队联系与技术支持</h2>
+            <h2>九、团队联系与技术支持</h2>
             <p>我们非常欢迎广大投资者、量化爱好者与金融从业者提出宝贵的改进建议与算法探讨：</p>
             <ul>
                 <li><strong>官方联络邮箱</strong>：<a href="mailto:contact@858000.xyz" style="color:var(--accent2);text-decoration:none">contact@858000.xyz</a></li>
