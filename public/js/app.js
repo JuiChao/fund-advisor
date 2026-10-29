@@ -473,10 +473,17 @@ const App = (() => {
         const navToggle = document.querySelector('.nav-toggle');
         const navLinks = document.querySelector('.navbar .links');
         if (navToggle && navLinks) {
-            navToggle.addEventListener('click', () => {
+            navToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const isOpen = navLinks.classList.toggle('show');
                 navToggle.classList.toggle('open', isOpen);
                 navToggle.setAttribute('aria-expanded', isOpen);
+            });
+            // 点击页面外部区域自动收起抽屉
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.navbar')) {
+                    closeMobileNav();
+                }
             });
         }
 
