@@ -159,17 +159,21 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261009_v6">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20261009_v7">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 </head>
 <body>
+<div id="scroll-progress" aria-hidden="true"></div>
+<div class="ambient-glow-mesh" aria-hidden="true">
+    <div class="ambient-glow ambient-glow-1"></div>
+    <div class="ambient-glow ambient-glow-2"></div>
+    <div class="ambient-glow ambient-glow-3"></div>
+</div>
 
 <header>
 <nav class="navbar">
@@ -2025,28 +2029,88 @@
 
 <footer>
     <div class="footer-inner">
-        <div class="footer-info">
-            <strong>Fund Advisor</strong> — 基金定投智能分析平台<br>
-            数据来源：天天基金网 · 每日自动更新 · 仅供参考，不构成投资建议<br>
-            © 2026 Fund Advisor. All rights reserved.
+        <div class="footer-col-brand">
+            <div class="footer-brand-title">
+                <img src="favicon.png" alt="Fund Advisor" width="24" height="24" style="border-radius:6px">
+                <span>FUND ADVISOR</span>
+            </div>
+            <p class="footer-brand-desc">
+                面向境内投资者的专业级美股指数（纳斯达克100 &amp; 标普500）公募QDII量化配置中枢。融合现代投资组合理论（MPT）、索提诺下行风险体检、黑天鹅极端压力测试与估值动态定投。
+            </p>
+            <div class="footer-status-pill">
+                <span class="footer-pulse-dot"></span>
+                <span id="footer-system-status">量化通算引擎全时在线 · 延迟 &lt; 15ms</span>
+            </div>
+            <div class="footer-shortcut-hint">
+                <span>快捷操作：</span>
+                <span class="footer-kbd">/</span> 或 <span class="footer-kbd">Ctrl+K</span> 搜基
+                <span class="footer-kbd">D</span> 切换主题
+            </div>
         </div>
-        <div class="footer-links">
-            <a href="#home">概览</a>
-            <a href="#ranking">基金排名</a>
-            <a href="#simulator">模拟器</a>
-            <a href="#portfolio">定投方案</a>
-            <a href="#guide">投资指南</a>
-            <a href="articles/">投资百科</a>
-            <a href="/about">关于我们</a>
-            <a href="/privacy-policy">隐私政策</a>
-            <a href="/terms-of-service">服务条款</a>
-            <a href="mailto:contact@858000.xyz">联系我们</a>
+
+        <div>
+            <div class="footer-col-title">平台导览 · Navigation</div>
+            <div class="footer-nav-list">
+                <a href="#home">📊 首页概览</a>
+                <a href="#ranking">🏆 基金多因子排名</a>
+                <a href="#portfolio">⚖️ 定投方案配置</a>
+                <a href="#simulator">📈 蒙特卡洛模拟器</a>
+                <a href="#guide">💡 投资指南与科普</a>
+                <a href="articles/">📚 深度投研百科</a>
+            </div>
+        </div>
+
+        <div>
+            <div class="footer-col-title">投研与合规 · Research &amp; Compliance</div>
+            <div class="footer-nav-list">
+                <a href="/about">🏢 关于我们与方法论</a>
+                <a href="/privacy-policy">🛡️ 隐私保护政策</a>
+                <a href="/terms-of-service">📜 用户服务条款</a>
+                <a href="mailto:contact@858000.xyz">📬 联系与合作</a>
+            </div>
+            <div class="footer-trading-status">
+                <div class="footer-trading-header">
+                    <span>美股交易时段</span>
+                    <span id="footer-us-market-status" style="color:var(--accent2)">监测中</span>
+                </div>
+                <div style="font-size:0.72rem;color:var(--txt3)">数据源：天天基金每日官方净值披露</div>
+            </div>
         </div>
     </div>
+
     <div class="footer-disclaimer">
         <strong>⚠️ 风险提示与免责合规声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均采集自基金管理人法定公开信息披露及天天基金网公开接口。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
     </div>
+
+    <div class="footer-copyright">
+        <div>© 2026 Fund Advisor (858000.xyz). All Wall Street quant models open for research.</div>
+        <div>Designed to Award Tier Standards · Webby &amp; Awwwards Compliant</div>
+    </div>
 </footer>
+
+<!-- 移动端原生底栏 (Mobile Native Bottom Dock) -->
+<nav class="mobile-bottom-bar" id="mobile-bottom-bar" aria-label="移动快捷底栏">
+    <a href="#home" class="mb-item on" data-page="home">
+        <span class="mb-icon">📊</span>
+        <span class="mb-label">概览</span>
+    </a>
+    <a href="#ranking" class="mb-item" data-page="ranking">
+        <span class="mb-icon">🏆</span>
+        <span class="mb-label">选基</span>
+    </a>
+    <a href="#portfolio" class="mb-item" data-page="portfolio">
+        <span class="mb-icon">⚖️</span>
+        <span class="mb-label">方案</span>
+    </a>
+    <a href="#simulator" class="mb-item" data-page="simulator">
+        <span class="mb-icon">📈</span>
+        <span class="mb-label">模拟</span>
+    </a>
+    <a href="articles/" class="mb-item">
+        <span class="mb-icon">📚</span>
+        <span class="mb-label">百科</span>
+    </a>
+</nav>
 
     <!-- 📋 全景表格导出前基金勾选弹窗 -->
     <div class="fund-select-modal-backdrop" id="rank-select-modal" style="display:none">

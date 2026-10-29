@@ -380,6 +380,10 @@ const App = (() => {
             if (x.dataset.page === pName) x.classList.add('on');
             else x.classList.remove('on');
         });
+        document.querySelectorAll('#mobile-bottom-bar a').forEach(x => {
+            if (x.dataset.page === pName) x.classList.add('on');
+            else x.classList.remove('on');
+        });
         document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display = 'none');
         const target = document.getElementById('page-' + pName);
         if (!target) return;
@@ -6021,13 +6025,16 @@ const App = (() => {
             }
         });
 
-        // 全局搜索快捷键 (/ 或 Ctrl+K / Cmd+K)
+        // 全局键盘快捷键 (/ 或 Ctrl+K 搜基, D 切换深浅主题)
         document.addEventListener('keydown', e => {
             const target = e.target;
             const tag = target ? target.tagName.toLowerCase() : '';
             const isEditing = tag === 'input' || tag === 'textarea' || target?.isContentEditable;
             if (!isEditing) {
-                if (e.key === '/' || ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K'))) {
+                if (e.key === 'd' || e.key === 'D') {
+                    e.preventDefault();
+                    toggleTheme();
+                } else if (e.key === '/' || ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K'))) {
                     e.preventDefault();
                     if (location.hash !== '#ranking') {
                         location.hash = '#ranking';
@@ -6045,6 +6052,46 @@ const App = (() => {
                 target.blur();
             }
         });
+
+        // 顶部滚动进度条优雅降级兼容 (针对不支持 animation-timeline 的旧版浏览器)
+        const progressEl = document.getElementById('scroll-progress');
+        if (progressEl && (!window.CSS || !CSS.supports || !CSS.supports('animation-timeline', 'scroll()'))) {
+            window.addEventListener('scroll', () => {
+                const totalH = document.documentElement.scrollHeight - window.innerHeight;
+                if (totalH > 0) {
+                    const ratio = Math.min(1, Math.max(0, window.scrollY / totalH));
+                    progressEl.style.transform = `scaleX(${ratio})`;
+                    progressEl.style.transformOrigin = '0 50%';
+                }
+            }, { passive: true });
+        }
+
+        // 美股与境内公开市场时钟指示器
+        function updateMarketStatusIndicator() {
+            const el = document.getElementById('footer-us-market-status');
+            if (!el) return;
+            try {
+                const now = new Date();
+                const nyTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+                const day = nyTime.getDay();
+                const totalMins = nyTime.getHours() * 60 + nyTime.getMinutes();
+                const isWeekday = day >= 1 && day <= 5;
+
+                if (isWeekday && totalMins >= 570 && totalMins < 960) {
+                    el.innerHTML = '<span style="color:var(--ok)">● 美股开盘交易中</span>';
+                } else if (isWeekday && totalMins >= 240 && totalMins < 570) {
+                    el.innerHTML = '<span style="color:var(--warn)">◑ 美股盘前交易时段</span>';
+                } else if (isWeekday && totalMins >= 960 && totalMins < 1200) {
+                    el.innerHTML = '<span style="color:var(--warn)">◐ 美股盘后交易时段</span>';
+                } else {
+                    el.innerHTML = '<span style="color:var(--txt3)">○ 已休市 (等待开盘)</span>';
+                }
+            } catch (e) {
+                el.textContent = '监测正常';
+            }
+        }
+        updateMarketStatusIndicator();
+        setInterval(updateMarketStatusIndicator, 60000);
 
         // 全局便捷悬浮岛滚动监听与交互
         const floatBar = document.getElementById('floating-quick-bar');

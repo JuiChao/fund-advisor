@@ -71,7 +71,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, {share_class}类份额, 费率, 限购, 收益率, 定投, Fund Advisor">
 <link rel="canonical" href="https://858000.xyz/fund/{fund_code}">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="/css/style.css?v=20261009_v6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=20261009_v7">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {json_ld}
@@ -89,6 +92,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </script>
 </head>
 <body>
+<div id="scroll-progress" aria-hidden="true"></div>
+<div class="ambient-glow-mesh" aria-hidden="true">
+    <div class="ambient-glow ambient-glow-1"></div>
+    <div class="ambient-glow ambient-glow-2"></div>
+</div>
 <header>
 <nav class="navbar navbar-subpage">
     <div class="brand">
