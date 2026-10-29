@@ -46,7 +46,7 @@
             <span class="brand-text">FUND ADVISOR</span>
         </a>
     </div>
-    <div class="links">
+    <div class="links" id="nav-links">
         <a href="/">返回首页</a>
         <a href="/#ranking">基金排名</a>
         <a href="/#simulator">模拟器</a>
@@ -54,6 +54,9 @@
         <a href="/articles/">投资百科</a>
         <a href="/about">关于我们</a>
     </div>
+    <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false" onclick="var l=document.getElementById('nav-links');var b=this;var o=l.classList.toggle('show');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);">
+        <span></span><span></span><span></span>
+    </button>
 </nav>
 </header>
 <main class="container">
@@ -111,6 +114,7 @@
             <div style="padding:1rem 1.15rem;background:rgba(99,102,241,0.06);border-left:4px solid var(--accent2);border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.65">
                 🚀 <strong>直销大额额度优势</strong>：该标的代销渠道限额为 <strong>限10元/日</strong>，而官方直销渠道单日限额高达 <strong>限100元/日</strong>，直销单日额度是代销的 <strong>10.0 倍</strong>！若您的月度定投预算较高，选择官方直销渠道可大幅提升单次扣款上限。
             </div>
+            
 
             <div style='padding:0.75rem 1.15rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;margin-bottom:1rem;font-size:0.88rem'>⚠️ <strong>跨份额合并限额预警</strong>：与 C类(008971) 共享代销限额 10 元/日，合并计算。基金公司按同一投资者身份证在全市场合并计算限额。若您当天已申购满 A 类份额，请勿在同日重复申购 C 类份额，否则超额部分将被系统自动退款。</div>
 
@@ -127,7 +131,7 @@
                             <tr>
                                 <th class="col-center" style="width:65px">份额</th>
                                 <th class="col-center" style="width:80px">代码</th>
-                                <th>基金简称</th>
+                                <th style="min-width:200px">基金简称</th>
                                 <th class="col-center" style="width:85px">综合年费</th>
                                 <th class="col-center" style="width:95px">代销渠道</th>
                                 <th class="col-center" style="width:95px">直销渠道</th>

@@ -33,8 +33,7 @@
   "description": "基于蒙特卡洛模拟的指数基金定投智能分析平台，支持纳斯达克100和标普500基金量化分析。自动抓取天天基金数据，提供基金排名、收益率模拟及最佳资产配置方案。",
   "applicationCategory": "FinanceApplication",
   "operatingSystem": "All",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
-  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "128" }
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" }
 }
 </script>
 <script type="application/ld+json">
@@ -682,7 +681,7 @@
             <h3 style="margin-bottom:0">📐 策略方案全景对比</h3>
             <a href="#portfolio" class="btn-jump-strat" style="font-size:0.8rem;padding:0.4rem 0.85rem">进入定投方案页配置 ➔</a>
         </div>
-        <div id="home-strategies" class="ld">
+        <div id="home-strategies">
             <div class="home-strat-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1rem;">
                 <div class="card" style="margin-bottom:0;padding:1.1rem;background:var(--surface2)">
                     <h4 style="margin:0 0 0.4rem;font-size:0.95rem;">⚖️ 传统平衡型 (50:50)</h4>
@@ -1281,14 +1280,14 @@
                     <td>
                         <div class="tbl-rank-code-cell">
                             <div class="trc-badge-wrap"><span class="tbl-rank-badge rank-silver">🥈 2</span></div>
-                            <div class="trc-code-wrap"><span class="code-mono trc-code-btn" data-code="006075" title="点击复制基金代码">006075</span></div>
+                            <div class="trc-code-wrap"><span class="code-mono trc-code-btn" data-code="040046" title="点击复制基金代码">040046</span></div>
                             <div class="trc-actions-wrap">
-                                <button type="button" class="trc-copy-btn" data-code="006075" title="复制基金代码">📋</button>
-                                <a href="/fund/006075" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a>
+                                <button type="button" class="trc-copy-btn" data-code="040046" title="复制基金代码">📋</button>
+                                <a href="/fund/040046" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a>
                             </div>
                         </div>
                     </td>
-                    <td><div class="tbl-name-cell"><span class="badge-share badge-a">A类</span><a href="/fund/006075" class="fund-name-link">华安纳斯达克100联接A</a></div></td>
+                    <td><div class="tbl-name-cell"><span class="badge-share badge-a">A类</span><a href="/fund/040046" class="fund-name-link">华安纳斯达克100联接A</a></div></td>
                     <td>0.80%/年</td>
                     <td>限1000元/日</td>
                     <td>开放申购</td>
@@ -1773,7 +1772,7 @@
         </div>
     </div>
 
-    <div id="pf-container" class="ld"></div>
+    <div id="pf-container"></div>
 </div>
 
 <!-- ===== 投资指南 ===== -->
@@ -2214,10 +2213,9 @@
     <script defer src="js/html2canvas.min.js"></script>
     <script src="js/app.js?v=20261009_v6"></script>
 <noscript>
-<style>
-/* JavaScript 禁用时显示所有内容 */
-#page-ranking, #page-simulator, #page-portfolio, #page-guide, #page-about { display: block !important; }
-</style>
+    <div style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:14px 20px;margin:2rem auto;max-width:1100px;border-radius:10px;text-align:center;font-size:0.92rem;line-height:1.6;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+        ⚠️ <strong>提示</strong>：您当前浏览器的 JavaScript 已禁用。您仍可正常查阅首页标杆基金透视表、全景档案库及投资百科研究长文；如需使用蒙特卡洛定投回测、资产配置优化器及交互式动态筛选工具，请开启浏览器的 JavaScript 支持。
+    </div>
 </noscript>
 </body>
 </html>

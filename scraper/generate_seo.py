@@ -10,6 +10,10 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 # 路径配置
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+from scraper.limit_tracker import find_substitutes
 DATA_FILE = os.path.join(ROOT_DIR, 'public', 'data', 'funds.json')
 FUND_DIR = os.path.join(ROOT_DIR, 'public', 'fund')
 ARTICLES_DIR = os.path.join(ROOT_DIR, 'public', 'articles')
@@ -93,7 +97,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <span class="brand-text">FUND ADVISOR</span>
         </a>
     </div>
-    <div class="links">
+    <div class="links" id="nav-links">
         <a href="/">返回首页</a>
         <a href="/#ranking">基金排名</a>
         <a href="/#simulator">模拟器</a>
@@ -101,6 +105,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <a href="/articles/">投资百科</a>
         <a href="/about">关于我们</a>
     </div>
+    <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false" onclick="var l=document.getElementById('nav-links');var b=this;var o=l.classList.toggle('show');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);">
+        <span></span><span></span><span></span>
+    </button>
 </nav>
 </header>
 <main class="container">
@@ -298,11 +305,54 @@ for fund in funds:
 
     # 4. 渠道限额与决策
     channel_eval = ""
-    if "暂停" in agency_status and "暂停" in direct_status:
-        channel_eval = f"⚠️ <strong>全渠道暂停申购提示</strong>：目前天天基金、支付宝等代销渠道与基金公司官方直销平台均处于暂停申购状态，表明该基金管理人的外汇额度余量极低。定投投资者建议无需恐慌，可通过下方推荐平替至其他正常开放的同指数基金，以确保定投计划不中断。"
-    elif "暂停" in agency_status and "暂停" not in direct_status:
+    substitutes_html = ""
+    agency_is_paused = ("暂停" in agency_status) or ("未开通" in agency_status)
+    direct_is_paused = ("暂停" in direct_status) or ("未开通" in direct_status) or (not direct_status)
+    is_all_paused = agency_is_paused and direct_is_paused
+
+    if is_all_paused:
+        channel_eval = f"⚠️ <strong>全渠道暂停申购提示</strong>：目前天天基金、支付宝等代销渠道与基金公司官方直销平台均处于暂停申购或未开放状态，表明该基金管理人的外汇额度余量极低或定制份额未开放散户直销。定投投资者建议无需恐慌，可通过下方推荐平替至其他正常开放的同指数基金，以确保定投计划不中断。"
+        subs = find_substitutes(fund, funds, max_count=3)
+        if subs:
+            sub_cards = []
+            for s in subs:
+                s_code = s['code']
+                s_name = s['name']
+                s_fee_str = f"{s['total_fee'] * 100:.2f}%"
+                s_class = s.get('share_class') or 'A'
+                ag_st = s.get('limit_status') or '正常'
+                dir_st = s.get('direct_limit_status') or ag_st
+                sub_cards.append(
+                    f"<div style='background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.9rem;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);'>"
+                    f"<div>"
+                    f"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;'>"
+                    f"<span class='code-mono' style='font-weight:700;color:var(--accent2);'>{s_code}</span>"
+                    f"<span class='badge-share badge-{s_class.lower()}'>{s_class}类</span>"
+                    f"</div>"
+                    f"<a href='/fund/{s_code}' style='color:var(--txt);font-weight:600;font-size:0.9rem;text-decoration:none;display:block;margin-bottom:0.5rem;line-height:1.4;'>{s_name}</a>"
+                    f"<div style='font-size:0.8rem;color:var(--txt2);margin-bottom:0.3rem;'>"
+                    f"<span>综合费率: <strong style='color:var(--txt);'>{s_fee_str}</strong></span>"
+                    f"</div>"
+                    f"<div style='font-size:0.8rem;color:var(--txt2);margin-bottom:0.6rem;'>"
+                    f"<span>当前额度: <span style='color:var(--ok);font-weight:600;'>代销({ag_st}) / 直销({dir_st})</span></span>"
+                    f"</div>"
+                    f"</div>"
+                    f"<a href='/fund/{s_code}' class='btn-dir-review' style='display:block;text-align:center;padding:0.4rem 0.6rem;font-size:0.8rem;margin-top:auto;'>查看平替专页 ➔</a>"
+                    f"</div>"
+                )
+            substitutes_html = (
+                f"<div style='margin:1rem 0 1.25rem;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:1.15rem;'>"
+                f"<h4 style='margin:0 0 0.75rem;font-size:0.95rem;color:var(--ok);display:flex;align-items:center;gap:6px;'>"
+                f"<span>🛡️</span> 优质平替基金推荐（同跟踪 {index_type} 且当前开放申购）"
+                f"</h4>"
+                f"<div style='display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.85rem;'>"
+                f"{''.join(sub_cards)}"
+                f"</div>"
+                f"</div>"
+            )
+    elif agency_is_paused and not direct_is_paused:
         channel_eval = f"💡 <strong>直销渠道突破策略</strong>：虽然天天基金/支付宝等三方代销渠道已暂停申购，但基金公司官网或官方 APP <strong>直销渠道仍处于可买状态（{direct_status}）</strong>！对于希望持续定投该基金的投资者，强烈建议开通基金公司官方直销账户，即可规避代销渠道暂停的阻碍。"
-    elif "限" in agency_status and direct_daily_limit is not None and daily_limit is not None and direct_daily_limit > daily_limit:
+    elif "限" in agency_status and direct_daily_limit is not None and daily_limit is not None and daily_limit > 0 and direct_daily_limit > daily_limit:
         multiplier = direct_daily_limit / daily_limit
         channel_eval = f"🚀 <strong>直销大额额度优势</strong>：该标的代销渠道限额为 <strong>{agency_status}</strong>，而官方直销渠道单日限额高达 <strong>{direct_status}</strong>，直销单日额度是代销的 <strong>{multiplier:.1f} 倍</strong>！若您的月度定投预算较高，选择官方直销渠道可大幅提升单次扣款上限。"
     else:
@@ -357,7 +407,7 @@ for fund in funds:
                             <tr>
                                 <th class="col-center" style="width:65px">份额</th>
                                 <th class="col-center" style="width:80px">代码</th>
-                                <th>基金简称</th>
+                                <th style="min-width:200px">基金简称</th>
                                 <th class="col-center" style="width:85px">综合年费</th>
                                 <th class="col-center" style="width:95px">代销渠道</th>
                                 <th class="col-center" style="width:95px">直销渠道</th>
@@ -414,6 +464,7 @@ for fund in funds:
             <div style="padding:1rem 1.15rem;background:rgba(99,102,241,0.06);border-left:4px solid var(--accent2);border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.65">
                 {channel_eval}
             </div>
+            {substitutes_html}
 
             {f"<div style='padding:0.75rem 1.15rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;margin-bottom:1rem;font-size:0.88rem'>{quota_rule_eval}</div>" if quota_rule_eval else ""}
 

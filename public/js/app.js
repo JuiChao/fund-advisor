@@ -747,14 +747,14 @@ const App = (() => {
             else if (r.rank === 3) rankBadge = '<span class="tbl-rank-badge rank-bronze" title="综合排名第3">🥉 3</span>';
             else rankBadge = `<span class="tbl-rank-badge">#${r.rank}</span>`;
 
-            return `<div class="tbl-rank-code-cell"><div class="trc-badge-wrap" title="点击展开详情看板">${rankBadge}</div><div class="trc-code-wrap"><span class="code-mono trc-code-btn" data-code="${r.code}" title="点击复制基金代码">${r.code}</span></div><div class="trc-actions-wrap"><button type="button" class="trc-copy-btn" data-code="${r.code}" title="复制基金代码">📋</button><a href="fund/${r.code}.html" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div></div>`;
+            return `<div class="tbl-rank-code-cell"><div class="trc-badge-wrap" title="点击展开详情看板">${rankBadge}</div><div class="trc-code-wrap"><span class="code-mono trc-code-btn" data-code="${r.code}" title="点击复制基金代码">${r.code}</span></div><div class="trc-actions-wrap"><button type="button" class="trc-copy-btn" data-code="${r.code}" title="复制基金代码">📋</button><a href="/fund/${r.code}" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div></div>`;
         } },
         { key: 'name', label: '名称', render: r => {
             const curType = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
             const idxBadge = curType === 'ALL'
                 ? `<span class="badge-idx ${r.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${r.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`
                 : '';
-            return `<div class="tbl-name-cell">${idxBadge}${shareBadge(r.share_class)}<a href="fund/${r.code}.html" class="fund-name-link" data-code="${r.code}" title="点击展开多因子详情看板">${r.name}</a><span class="tbl-row-expand-arrow" title="点击展开/收起详情">▾</span></div>`;
+            return `<div class="tbl-name-cell">${idxBadge}${shareBadge(r.share_class)}<a href="/fund/${r.code}" class="fund-name-link" data-code="${r.code}" title="点击展开多因子详情看板">${r.name}</a><span class="tbl-row-expand-arrow" title="点击展开/收起详情">▾</span></div>`;
         } },
         { key: 'fee', label: '综合费率', render: r => {
             const mgmt = r.mgmt_fee || 0;
@@ -1244,7 +1244,7 @@ const App = (() => {
                             <div class="q-fund-code"><span class="code-mono">${item.code}</span><button type="button" class="btn-copy-code" data-code="${item.code}" title="复制基金代码">📋</button></div>
                         </div>
                         <div class="q-fund-name-wrap">
-                            <a href="fund/${item.code}.html" class="q-fund-name" target="_blank" title="${item.name}">${item.name}</a>
+                            <a href="/fund/${item.code}" class="q-fund-name" target="_blank" title="${item.name}">${item.name}</a>
                         </div>
                     </div>
                 `;
@@ -1345,7 +1345,7 @@ const App = (() => {
                         </div>
                         <div class="qmc-title-row">
                             ${idxBadge}${shareBadge(item.share_class)}
-                            <a href="fund/${item.code}.html" target="_blank" class="qmc-fund-name">${item.name}</a>
+                            <a href="/fund/${item.code}" target="_blank" class="qmc-fund-name">${item.name}</a>
                             <span class="code-mono">${item.code}</span>
                         </div>
                         <div class="qmc-diff-grid">
@@ -1399,7 +1399,7 @@ const App = (() => {
                             setTimeout(() => targetEl.classList.remove('hl-target-pulse'), 3000);
                             showToast(`已为您在基金排名中定位平替标的: ${code}`, 'success');
                         } else {
-                            window.open(`fund/${code}.html`, '_blank');
+                            window.open(`/fund/${code}`, '_blank');
                         }
                     }, 150);
                 }
@@ -2882,8 +2882,8 @@ const App = (() => {
 
                     <!-- 基金主名称 -->
                     <div class="fmc-name-row">
-                        <a href="fund/${r.code}.html" class="fmc-title" data-code="${r.code}">${r.name}</a>
-                        <a href="fund/${r.code}.html" target="_blank" class="fmc-page-link" title="在新标签打开独立专页">评测专页 ↗</a>
+                        <a href="/fund/${r.code}" class="fmc-title" data-code="${r.code}">${r.name}</a>
+                        <a href="/fund/${r.code}" target="_blank" class="fmc-page-link" title="在新标签打开独立专页">评测专页 ↗</a>
                     </div>
 
                     <!-- 核心 4 宫格量化指标 -->
@@ -2963,7 +2963,7 @@ const App = (() => {
 
                             <!-- 卡片快捷操作 -->
                             <div class="fmc-actions">
-                                <a href="fund/${r.code}.html" target="_blank" class="fmc-btn-act fmc-btn-primary">
+                                <a href="/fund/${r.code}" target="_blank" class="fmc-btn-act fmc-btn-primary">
                                     📄 打开独立深度评测专页 ↗
                                 </a>
                                 <button type="button" class="fmc-btn-act btn-sim-card-single" data-code="${r.code}">
@@ -3021,7 +3021,7 @@ const App = (() => {
                     }
                     setTimeout(() => targetCard.classList.remove('highlight-pulse'), 3000);
                 } else {
-                    window.open(`fund/${sibCode}.html`, '_blank');
+                    window.open(`/fund/${sibCode}`, '_blank');
                 }
             });
         });
@@ -6345,7 +6345,7 @@ const App = (() => {
                 </div>
                 ${f.benchmark ? `<div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border); font-size:0.8rem; color:var(--txt3);"><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
                 <div class="fund-detail-actions">
-                    <a href="fund/${f.code}.html" target="_blank" class="btn-fund-page-action" title="在新标签页中打开这只基金的独立评测专页">
+                    <a href="/fund/${f.code}" target="_blank" class="btn-fund-page-action" title="在新标签页中打开这只基金的独立评测专页">
                         📄 打开独立评测专页 ↗
                     </a>
                     <button type="button" class="btn-copy-code-action" data-code="${f.code}">

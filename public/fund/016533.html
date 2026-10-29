@@ -46,7 +46,7 @@
             <span class="brand-text">FUND ADVISOR</span>
         </a>
     </div>
-    <div class="links">
+    <div class="links" id="nav-links">
         <a href="/">返回首页</a>
         <a href="/#ranking">基金排名</a>
         <a href="/#simulator">模拟器</a>
@@ -54,6 +54,9 @@
         <a href="/articles/">投资百科</a>
         <a href="/about">关于我们</a>
     </div>
+    <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false" onclick="var l=document.getElementById('nav-links');var b=this;var o=l.classList.toggle('show');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);">
+        <span></span><span></span><span></span>
+    </button>
 </nav>
 </header>
 <main class="container">
@@ -109,8 +112,9 @@
 
             <h3 style="font-size:1.08rem;color:var(--txt);margin-top:1.5rem;margin-bottom:0.6rem;font-weight:700;">🛒 渠道额度穿透与定投实操建议</h3>
             <div style="padding:1rem 1.15rem;background:rgba(99,102,241,0.06);border-left:4px solid var(--accent2);border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.65">
-                ⚠️ <strong>全渠道暂停申购提示</strong>：目前天天基金、支付宝等代销渠道与基金公司官方直销平台均处于暂停申购状态，表明该基金管理人的外汇额度余量极低。定投投资者建议无需恐慌，可通过下方推荐平替至其他正常开放的同指数基金，以确保定投计划不中断。
+                ⚠️ <strong>全渠道暂停申购提示</strong>：目前天天基金、支付宝等代销渠道与基金公司官方直销平台均处于暂停申购或未开放状态，表明该基金管理人的外汇额度余量极低或定制份额未开放散户直销。定投投资者建议无需恐慌，可通过下方推荐平替至其他正常开放的同指数基金，以确保定投计划不中断。
             </div>
+            <div style='margin:1rem 0 1.25rem;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:1.15rem;'><h4 style='margin:0 0 0.75rem;font-size:0.95rem;color:var(--ok);display:flex;align-items:center;gap:6px;'><span>🛡️</span> 优质平替基金推荐（同跟踪 纳斯达克100 且当前开放申购）</h4><div style='display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.85rem;'><div style='background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.9rem;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);'><div><div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;'><span class='code-mono' style='font-weight:700;color:var(--accent2);'>021000</span><span class='badge-share badge-i'>I类</span></div><a href='/fund/021000' style='color:var(--txt);font-weight:600;font-size:0.9rem;text-decoration:none;display:block;margin-bottom:0.5rem;line-height:1.4;'>南方纳斯达克100指数发起(QDII)I</a><div style='font-size:0.8rem;color:var(--txt2);margin-bottom:0.3rem;'><span>综合费率: <strong style='color:var(--txt);'>0.66%</strong></span></div><div style='font-size:0.8rem;color:var(--txt2);margin-bottom:0.6rem;'><span>当前额度: <span style='color:var(--ok);font-weight:600;'>代销(未开通代销) / 直销(限200元/日)</span></span></div></div><a href='/fund/021000' class='btn-dir-review' style='display:block;text-align:center;padding:0.4rem 0.6rem;font-size:0.8rem;margin-top:auto;'>查看平替专页 ➔</a></div><div style='background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.9rem;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);'><div><div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;'><span class='code-mono' style='font-weight:700;color:var(--accent2);'>019441</span><span class='badge-share badge-a'>A类</span></div><a href='/fund/019441' style='color:var(--txt);font-weight:600;font-size:0.9rem;text-decoration:none;display:block;margin-bottom:0.5rem;line-height:1.4;'>万家纳斯达克100指数发起式(QDII)A</a><div style='font-size:0.8rem;color:var(--txt2);margin-bottom:0.3rem;'><span>综合费率: <strong style='color:var(--txt);'>0.65%</strong></span></div><div style='font-size:0.8rem;color:var(--txt2);margin-bottom:0.6rem;'><span>当前额度: <span style='color:var(--ok);font-weight:600;'>代销(限5元/日) / 直销(限100元/日)</span></span></div></div><a href='/fund/019441' class='btn-dir-review' style='display:block;text-align:center;padding:0.4rem 0.6rem;font-size:0.8rem;margin-top:auto;'>查看平替专页 ➔</a></div><div style='background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.9rem;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);'><div><div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;'><span class='code-mono' style='font-weight:700;color:var(--accent2);'>019442</span><span class='badge-share badge-c'>C类</span></div><a href='/fund/019442' style='color:var(--txt);font-weight:600;font-size:0.9rem;text-decoration:none;display:block;margin-bottom:0.5rem;line-height:1.4;'>万家纳斯达克100指数发起式(QDII)C</a><div style='font-size:0.8rem;color:var(--txt2);margin-bottom:0.3rem;'><span>综合费率: <strong style='color:var(--txt);'>0.85%</strong></span></div><div style='font-size:0.8rem;color:var(--txt2);margin-bottom:0.6rem;'><span>当前额度: <span style='color:var(--ok);font-weight:600;'>代销(限5元/日) / 直销(限100元/日)</span></span></div></div><a href='/fund/019442' class='btn-dir-review' style='display:block;text-align:center;padding:0.4rem 0.6rem;font-size:0.8rem;margin-top:auto;'>查看平替专页 ➔</a></div></div></div>
 
             <div style='padding:0.75rem 1.15rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;margin-bottom:1rem;font-size:0.88rem'>⚠️ <strong>跨份额合并限额预警</strong>：与 A类(016532)、I类(021838) 合并计算（当前暂停申购）。基金公司按同一投资者身份证在全市场合并计算限额。若您当天已申购满 A 类份额，请勿在同日重复申购 C 类份额，否则超额部分将被系统自动退款。</div>
 
@@ -127,7 +131,7 @@
                             <tr>
                                 <th class="col-center" style="width:65px">份额</th>
                                 <th class="col-center" style="width:80px">代码</th>
-                                <th>基金简称</th>
+                                <th style="min-width:200px">基金简称</th>
                                 <th class="col-center" style="width:85px">综合年费</th>
                                 <th class="col-center" style="width:95px">代销渠道</th>
                                 <th class="col-center" style="width:95px">直销渠道</th>
