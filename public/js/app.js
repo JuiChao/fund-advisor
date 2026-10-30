@@ -6151,7 +6151,7 @@ const App = (() => {
             }
         });
 
-        // ===== Hero 量化多资产波动 Canvas 视觉引擎 =====
+        // ===== Hero 量化多资产波动 Canvas 视觉引擎 (Award Tier Dynamic Wave & Particle Nodes) =====
         function initHeroVectorCanvas() {
             const canvas = document.getElementById('hero-vector-canvas');
             if (!canvas) return;
@@ -6163,8 +6163,25 @@ const App = (() => {
             let height = 0;
             let step = 0;
             let isVisible = true;
+            let mouseX = -999;
+            let mouseY = -999;
+            let mouseTargetX = -999;
+            let mouseTargetY = -999;
 
             const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            const heroBanner = canvas.closest('.hero-banner');
+            if (heroBanner) {
+                heroBanner.addEventListener('mousemove', e => {
+                    const rect = canvas.getBoundingClientRect();
+                    mouseTargetX = e.clientX - rect.left;
+                    mouseTargetY = e.clientY - rect.top;
+                }, { passive: true });
+                heroBanner.addEventListener('mouseleave', () => {
+                    mouseTargetX = -999;
+                    mouseTargetY = -999;
+                }, { passive: true });
+            }
 
             function resize() {
                 const rect = canvas.getBoundingClientRect();
@@ -6203,30 +6220,119 @@ const App = (() => {
                     animId = null;
                     return;
                 }
-                step += 0.014;
+                step += 0.016;
                 ctx.clearRect(0, 0, width, height);
+
+                // Smooth mouse interpolation
+                if (mouseTargetX > 0) {
+                    mouseX += (mouseTargetX - mouseX) * 0.1;
+                    mouseY += (mouseTargetY - mouseY) * 0.1;
+                } else {
+                    mouseX = -999;
+                    mouseY = -999;
+                }
 
                 const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
                 
-                // 3 条平滑起伏的正弦随机漫步波浪 (模拟量化组合多标的动态收益率波动轨迹)
+                // 3 条平滑起伏的正弦随机漫步金融波浪
                 const waves = [
-                    { amp: 20, freq: 0.0035, speed: 0.9, phase: 0, color: isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(79, 70, 229, 0.14)', yOffset: height * 0.45 },
-                    { amp: 26, freq: 0.0028, speed: 1.1, phase: 2.1, color: isDark ? 'rgba(168, 85, 247, 0.20)' : 'rgba(124, 58, 237, 0.11)', yOffset: height * 0.55 },
-                    { amp: 16, freq: 0.0042, speed: 0.7, phase: 4.2, color: isDark ? 'rgba(6, 182, 212, 0.22)' : 'rgba(8, 145, 178, 0.10)', yOffset: height * 0.65 }
+                    { 
+                        amp: 24, freq: 0.0032, speed: 0.85, phase: 0, 
+                        stroke: isDark ? 'rgba(99, 102, 241, 0.75)' : 'rgba(79, 70, 229, 0.45)',
+                        fillGrad: [
+                            [0, isDark ? 'rgba(99, 102, 241, 0.28)' : 'rgba(79, 70, 229, 0.12)'],
+                            [1, isDark ? 'rgba(99, 102, 241, 0.0)' : 'rgba(79, 70, 229, 0.0)']
+                        ],
+                        yOffset: height * 0.48,
+                        nodeInterval: 140
+                    },
+                    { 
+                        amp: 30, freq: 0.0025, speed: 1.05, phase: 2.1, 
+                        stroke: isDark ? 'rgba(168, 85, 247, 0.65)' : 'rgba(124, 58, 237, 0.35)',
+                        fillGrad: [
+                            [0, isDark ? 'rgba(168, 85, 247, 0.22)' : 'rgba(124, 58, 237, 0.08)'],
+                            [1, isDark ? 'rgba(168, 85, 247, 0.0)' : 'rgba(124, 58, 237, 0.0)']
+                        ],
+                        yOffset: height * 0.58,
+                        nodeInterval: 180
+                    },
+                    { 
+                        amp: 18, freq: 0.0040, speed: 0.7, phase: 4.2, 
+                        stroke: isDark ? 'rgba(6, 182, 212, 0.75)' : 'rgba(8, 145, 178, 0.40)',
+                        fillGrad: [
+                            [0, isDark ? 'rgba(6, 182, 212, 0.24)' : 'rgba(8, 145, 178, 0.08)'],
+                            [1, isDark ? 'rgba(6, 182, 212, 0.0)' : 'rgba(8, 145, 178, 0.0)']
+                        ],
+                        yOffset: height * 0.68,
+                        nodeInterval: 160
+                    }
                 ];
 
                 for (let i = 0; i < waves.length; i++) {
                     const w = waves[i];
+                    const pts = [];
+
+                    for (let x = 0; x <= width + 8; x += 8) {
+                        let y = w.yOffset + Math.sin(x * w.freq + step * w.speed + w.phase) * w.amp + Math.cos(x * 0.0014 + step * 0.35) * (w.amp * 0.35);
+                        
+                        // Interactive disturbance near cursor
+                        if (mouseX > 0) {
+                            const dx = x - mouseX;
+                            const dist = Math.abs(dx);
+                            if (dist < 180) {
+                                const factor = (1 - dist / 180) * 16;
+                                y += Math.sin((dx / 180) * Math.PI) * factor;
+                            }
+                        }
+                        pts.push({ x, y });
+                    }
+
+                    // 1. Draw Wave Fill
                     ctx.beginPath();
                     ctx.moveTo(0, height);
-                    for (let x = 0; x <= width; x += 6) {
-                        const y = w.yOffset + Math.sin(x * w.freq + step * w.speed + w.phase) * w.amp + Math.cos(x * 0.0012 + step * 0.4) * (w.amp * 0.35);
-                        ctx.lineTo(x, y);
+                    for (let p = 0; p < pts.length; p++) {
+                        ctx.lineTo(pts[p].x, pts[p].y);
                     }
                     ctx.lineTo(width, height);
                     ctx.closePath();
-                    ctx.fillStyle = w.color;
+                    
+                    const grad = ctx.createLinearGradient(0, w.yOffset - w.amp, 0, height);
+                    for (let g = 0; g < w.fillGrad.length; g++) {
+                        grad.addColorStop(w.fillGrad[g][0], w.fillGrad[g][1]);
+                    }
+                    ctx.fillStyle = grad;
                     ctx.fill();
+
+                    // 2. Draw Wave Ribbon Stroke with Soft Glow
+                    ctx.beginPath();
+                    for (let p = 0; p < pts.length; p++) {
+                        if (p === 0) ctx.moveTo(pts[p].x, pts[p].y);
+                        else ctx.lineTo(pts[p].x, pts[p].y);
+                    }
+                    ctx.strokeStyle = w.stroke;
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+
+                    // 3. Draw Sparkling Data Nodes along the Curve
+                    for (let p = 0; p < pts.length; p++) {
+                        if (pts[p].x > 20 && pts[p].x < width - 20 && (Math.floor(pts[p].x) % w.nodeInterval < 8)) {
+                            const nodePulse = Math.sin(step * 3 + p) * 0.5 + 0.5;
+                            const r = 2.2 + nodePulse * 1.5;
+                            ctx.beginPath();
+                            ctx.arc(pts[p].x, pts[p].y, r, 0, Math.PI * 2);
+                            ctx.fillStyle = isDark ? '#ffffff' : w.stroke;
+                            ctx.fill();
+
+                            // Micro Glow Ring
+                            if (isDark) {
+                                ctx.beginPath();
+                                ctx.arc(pts[p].x, pts[p].y, r + 3, 0, Math.PI * 2);
+                                ctx.strokeStyle = w.stroke;
+                                ctx.lineWidth = 0.8;
+                                ctx.stroke();
+                            }
+                        }
+                    }
                 }
 
                 if (!isReducedMotion) {
@@ -6240,17 +6346,17 @@ const App = (() => {
         }
         initHeroVectorCanvas();
 
-        // ===== 奖项级鼠标聚光灯高定控制器 (Spotlight Controller) =====
+        // ===== 奖项级鼠标聚光灯高定控制器 (Spotlight Controller - Comprehensive Universal Scope) =====
         let mouseRaf = null;
         document.addEventListener('mousemove', e => {
             if (mouseRaf) return;
             mouseRaf = requestAnimationFrame(() => {
                 mouseRaf = null;
-                const cards = document.querySelectorAll('.hero-banner, .quant-frontier-card, .journey-card, .sim-kpi-card, .stat, .ticker-box');
+                const cards = document.querySelectorAll('.hero-banner, .quant-frontier-card, .journey-card, .sim-kpi-card, .stat, .ticker-box, .quant-engine-card, .card, .home-quota-radar-card, .home-benchmark-card, .pf-card, .sim-params-card, .sim-result-card, .pf-params-card, .stress-test-card, .algo-card');
                 for (let i = 0; i < cards.length; i++) {
                     const rect = cards[i].getBoundingClientRect();
-                    if (e.clientX >= rect.left - 100 && e.clientX <= rect.right + 100 &&
-                        e.clientY >= rect.top - 100 && e.clientY <= rect.bottom + 100) {
+                    if (e.clientX >= rect.left - 120 && e.clientX <= rect.right + 120 &&
+                        e.clientY >= rect.top - 120 && e.clientY <= rect.bottom + 120) {
                         const x = e.clientX - rect.left;
                         const y = e.clientY - rect.top;
                         cards[i].style.setProperty('--mouse-x', `${x}px`);

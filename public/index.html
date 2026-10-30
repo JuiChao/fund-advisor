@@ -174,6 +174,7 @@
     <div class="ambient-glow ambient-glow-1"></div>
     <div class="ambient-glow ambient-glow-2"></div>
     <div class="ambient-glow ambient-glow-3"></div>
+    <div class="ambient-glow ambient-glow-4"></div>
 </div>
 
 <header>
@@ -212,41 +213,69 @@
     <div class="hero-banner">
         <canvas id="hero-vector-canvas" class="hero-vector-canvas" aria-hidden="true"></canvas>
         <div class="hero-badge-wrap">
-            <span class="hero-pill">⚡ 2026 美股量化投研中枢</span>
+            <span class="hero-pill hero-pill-live"><span class="brand-pulse-dot"></span> LIVE QUANT RADAR // 2026 EDITION</span>
             <span class="hero-pill" style="background:rgba(99,102,241,0.12);color:var(--accent2);border-color:rgba(99,102,241,0.3)">💎 MPT 马克维茨有效前沿</span>
             <span class="hero-pill" style="background:rgba(239,68,68,0.1);color:var(--err);border-color:rgba(239,68,68,0.25)">🌪️ 黑天鹅压力测试</span>
             <span class="hero-pill" style="background:rgba(16,185,129,0.1);color:var(--ok);border-color:rgba(16,185,129,0.25)">📈 估值自适应动态定投</span>
             <span class="hero-pill" style="background:rgba(8,145,178,0.1);color:var(--cyan);border-color:rgba(8,145,178,0.25)">🚀 3D 张量通算引擎</span>
         </div>
-        <h1 class="hero-title">用专业量化金融工程 · <span>重新定义普通人的美股定投</span></h1>
+        <h1 class="hero-title">用专业量化金融工程 · <br><span class="hero-title-gradient">重新定义普通人的美股定投</span></h1>
         <p class="hero-desc">
             专为境内投资者打造的<strong>纳斯达克100 & 标普500 QDII</strong>全生命周期量化资产配置中枢。系统深度融合<strong>马克维茨有效前沿 (MPT)</strong>、<strong>下行风险体检 (Sortino)</strong>、<strong>历史极端黑天鹅压力测试</strong>与<strong>估值动态定投双轨推演</strong>，每日自动穿透全市场公募代销与直销限额，助您消除外汇限购阻碍，定制最优复利方案。
         </p>
 
+        <!-- 现代化高引力 Hero 核心操作集群 (Hero CTA Action Cluster) -->
+        <div class="hero-cta-cluster">
+            <a href="#ranking" class="hero-btn-primary" data-jump="ranking">
+                <span class="btn-shine"></span>
+                <span class="btn-icon">🚀</span>
+                <span>立即开启量化选基</span>
+                <span class="btn-arrow">➔</span>
+            </a>
+            <a href="#portfolio" class="hero-btn-secondary" data-jump="portfolio">
+                <span class="btn-icon">⚖️</span>
+                <span>匹配 MPT 定投方案</span>
+            </a>
+            <a href="#simulator" class="hero-btn-ghost" data-jump="simulator">
+                <span class="btn-icon">🎲</span>
+                <span>5,000次财富推演</span>
+            </a>
+        </div>
+
         <!-- 平台核心量化实时行情指标栏 (Live Quant Ticker Bar) -->
         <div class="hero-quant-ticker" id="hero-quant-ticker">
-            <div class="ticker-box">
-                <div class="tk-label">标的池监控</div>
+            <div class="ticker-header-bar" aria-hidden="true">
+                <div class="ticker-header-left">
+                    <span class="brand-pulse-dot"></span>
+                    <span class="ticker-sys-title">SYSTEM TELEMETRY DECK // QDII REALTIME QUANT STREAM</span>
+                </div>
+                <div class="ticker-header-right">
+                    <span class="ticker-tag">LATENCY: 8ms</span>
+                    <span class="ticker-tag" style="color:var(--ok)">STATUS: NOMINAL</span>
+                </div>
+            </div>
+            <div class="ticker-box" data-pod="pool">
+                <div class="tk-label"><span class="tk-dot"></span>标的池监控</div>
                 <div class="tk-val" id="tk-pool-count">60 只</div>
                 <div class="tk-sub">纳指 44 · 标普 16 (全份额)</div>
             </div>
-            <div class="ticker-box">
-                <div class="tk-label">可购通道覆盖</div>
+            <div class="ticker-box" data-pod="channel">
+                <div class="tk-label"><span class="tk-dot"></span>可购通道覆盖</div>
                 <div class="tk-val" id="tk-avail-count">23 代销 / 25 直销</div>
                 <div class="tk-sub">每日自动穿透限额公告</div>
             </div>
-            <div class="ticker-box">
-                <div class="tk-label">最优综合年费</div>
+            <div class="ticker-box" data-pod="fee">
+                <div class="tk-label"><span class="tk-dot"></span>最优综合年费</div>
                 <div class="tk-val" id="tk-min-fee" style="color:var(--ok)">0.60%</div>
                 <div class="tk-sub">管理+托管+销售费</div>
             </div>
-            <div class="ticker-box">
-                <div class="tk-label">美股宏观估值中枢</div>
+            <div class="ticker-box" data-pod="valuation">
+                <div class="tk-label"><span class="tk-dot"></span>美股宏观估值中枢</div>
                 <div class="tk-val" style="color:#d97706">纳指 PE 31.8 · 标普 PE 26.4</div>
                 <div class="tk-sub">历史百分位 ~65% (合理偏高)</div>
             </div>
-            <div class="ticker-box">
-                <div class="tk-label">高维通算能力</div>
+            <div class="ticker-box" data-pod="perf">
+                <div class="tk-label"><span class="tk-dot"></span>高维通算能力</div>
                 <div class="tk-val" style="color:var(--accent2)">5,000 条 / 秒级</div>
                 <div class="tk-sub">Web Worker 向量化蒙特卡洛</div>
             </div>
@@ -254,19 +283,19 @@
 
         <!-- 3步科学定投决策向导卡片 -->
         <div class="hero-journey-grid">
-            <a href="#ranking" class="journey-card" data-jump="ranking">
+            <a href="#ranking" class="journey-card" data-jump="ranking" data-step-num="01">
                 <span class="journey-step">STEP 01 · 标的雷达</span>
                 <div class="journey-title"><span>🔍 全景选基排名</span></div>
                 <div class="journey-text">60+ 只标的综合费率、跟踪偏离度 (TD)、信息比率 (IR) 与代销/直销真实额度每日实时监控。</div>
                 <div class="journey-action">探索优质标的 ➔</div>
             </a>
-            <a href="#portfolio" class="journey-card" data-jump="portfolio">
+            <a href="#portfolio" class="journey-card" data-jump="portfolio" data-step-num="02">
                 <span class="journey-step">STEP 02 · 科学配比</span>
                 <div class="journey-title"><span>⚖️ MPT 定投方案</span></div>
                 <div class="journey-text">传统资金平分 vs 风险平价 (38:62 等风险贡献)，穿透实际可买额度与 A/C 共享额度避坑。</div>
                 <div class="journey-action">匹配配置方案 ➔</div>
             </a>
-            <a href="#simulator" class="journey-card" data-jump="simulator">
+            <a href="#simulator" class="journey-card" data-jump="simulator" data-step-num="03">
                 <span class="journey-step">STEP 03 · 压力推演</span>
                 <div class="journey-title"><span>📈 蒙特卡洛推演</span></div>
                 <div class="journey-text">5~30 年 5000 次市场随机漫步，并支持普通定投 vs 智能估值动态定投双轨并列推演。</div>
@@ -453,7 +482,16 @@
     </section>
 
     <!-- ===== 实时限购穿透雷达与额度快报专区 (CDC Purchase Limit Radar) ===== -->
-    <div class="card home-quota-radar-card" style="margin-top:2rem;background:linear-gradient(135deg, rgba(99,102,241,0.05) 0%, rgba(16,185,129,0.05) 100%);border:1px solid rgba(99,102,241,0.22);padding:1.4rem">
+    <div class="card home-quota-radar-card" style="margin-top:2rem">
+        <div class="terminal-chrome" aria-hidden="true">
+            <div class="terminal-dots">
+                <span class="dot-red"></span>
+                <span class="dot-yellow"></span>
+                <span class="dot-green"></span>
+            </div>
+            <div class="terminal-title"><span class="brand-pulse-dot"></span> CDC STREAM // 全市场 QDII 额度穿透雷达终端</div>
+            <div class="terminal-status"><span class="terminal-tag">CDC ACTIVE</span> <span>每日自动捕获</span></div>
+        </div>
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
             <div style="display:flex;align-items:center;gap:12px">
                 <span style="font-size:1.8rem">📡</span>
@@ -504,6 +542,15 @@
 
     <!-- ===== QDII 核心标杆标的量化透视表 (Static Benchmark Funds Quant Overview) ===== -->
     <div class="card home-benchmark-card" style="margin-top:2rem">
+        <div class="terminal-chrome" aria-hidden="true">
+            <div class="terminal-dots">
+                <span class="dot-red"></span>
+                <span class="dot-yellow"></span>
+                <span class="dot-green"></span>
+            </div>
+            <div class="terminal-title"><span class="brand-pulse-dot"></span> QUANT DATASTREAM // QDII 标杆透视终端</div>
+            <div class="terminal-status"><span class="terminal-tag">LIVE FEED</span> <span>12ms · 实时</span></div>
+        </div>
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem">
             <div>
                 <h3 style="margin:0;font-size:1.2rem;display:flex;align-items:center;gap:8px">
@@ -1253,6 +1300,15 @@
 
     <div class="mobile-swipe-hint" id="rank-swipe-hint">👈 左右滑动表格查看年化收益、跟踪偏离度及直销/代销限购 👉</div>
     <div class="table-wrap" id="rank-table-wrap">
+        <div class="terminal-chrome" aria-hidden="true">
+            <div class="terminal-dots">
+                <span class="dot-red"></span>
+                <span class="dot-yellow"></span>
+                <span class="dot-green"></span>
+            </div>
+            <div class="terminal-title"><span class="brand-pulse-dot"></span> QUANT MATRIX // 60 标的全景质量排序终端</div>
+            <div class="terminal-status"><span class="terminal-tag">LIVE SORTING</span> <span>6维量化加权算法</span></div>
+        </div>
         <table id="rank-table">
             <thead>
                 <tr>

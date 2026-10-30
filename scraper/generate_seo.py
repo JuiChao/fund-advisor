@@ -97,6 +97,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <div class="ambient-glow-mesh" aria-hidden="true">
     <div class="ambient-glow ambient-glow-1"></div>
     <div class="ambient-glow ambient-glow-2"></div>
+    <div class="ambient-glow ambient-glow-3"></div>
+    <div class="ambient-glow ambient-glow-4"></div>
 </div>
 <header>
 <nav class="navbar navbar-subpage">
@@ -104,6 +106,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <a href="/" style="display:flex;align-items:center;text-decoration:none;color:inherit">
             <img src="/favicon.png" alt="Fund Advisor" class="brand-logo">
             <span class="brand-text">FUND ADVISOR</span>
+            <span class="brand-sub-badge"><span class="brand-pulse-dot"></span> QDII 实时量化监控</span>
         </a>
     </div>
     <div class="links" id="nav-links">
@@ -132,29 +135,38 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <span>{fund_name} ({fund_code})</span>
     </nav>
     <div class="card" style="margin-top:1rem">
+        <div class="terminal-chrome" aria-hidden="true">
+            <div class="terminal-dots">
+                <span class="dot-red"></span>
+                <span class="dot-yellow"></span>
+                <span class="dot-green"></span>
+            </div>
+            <div class="terminal-title"><span class="brand-pulse-dot"></span> QUANT SECURITY ANALYSIS // {fund_code}</div>
+            <div class="terminal-status"><span class="terminal-tag">{index_type}</span> <span>{share_class}类份额</span></div>
+        </div>
         <h1 style="font-size:1.5rem;margin-bottom:0.5rem"><span class="badge-share badge-{share_class_lower}">{share_class}类</span> {fund_name} (<span style="color:var(--txt2)">{fund_code}</span>)</h1>
         <p style="color:var(--txt2);margin-bottom:1.5rem">{full_name} | {manager_company} | 基金经理: {fund_manager} | 成立日期: {inception_date}</p>
         
         <div class="g2" style="margin-bottom:1.5rem">
-            <div style="background:var(--bg2);padding:1rem;border-radius:8px">
-                <div style="color:var(--txt3);font-size:0.85rem">综合年费率</div>
-                <div style="font-size:1.25rem;font-weight:600;color:var(--txt)">{total_fee}%/年</div>
-                <div style="font-size:0.8rem;color:var(--txt3);margin-top:0.25rem">管理费 {mgmt_fee}% + 托管费 {custody_fee}%{sales_fee_str}</div>
+            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
+                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">综合年费率</div>
+                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--txt);letter-spacing:-0.02em;margin:4px 0">{total_fee}%<span style="font-size:0.8rem;color:var(--txt3);font-weight:normal">/年</span></div>
+                <div style="font-size:0.75rem;color:var(--txt2)">管理费 {mgmt_fee}% + 托管费 {custody_fee}%{sales_fee_str}</div>
             </div>
-            <div style="background:var(--bg2);padding:1rem;border-radius:8px">
-                <div style="color:var(--txt3);font-size:0.85rem">代销限购状态</div>
-                <div style="font-size:1.25rem;font-weight:600;color:var(--txt)">{agency_status}</div>
-                <div style="font-size:0.8rem;color:var(--txt3);margin-top:0.25rem">天天基金/支付宝等三方渠道</div>
+            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
+                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">代销限购状态</div>
+                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--txt);letter-spacing:-0.02em;margin:4px 0">{agency_status}</div>
+                <div style="font-size:0.75rem;color:var(--txt2)">天天基金/支付宝等三方渠道</div>
             </div>
-            <div style="background:var(--bg2);padding:1rem;border-radius:8px">
-                <div style="color:var(--txt3);font-size:0.85rem">直销限购状态</div>
-                <div style="font-size:1.25rem;font-weight:600;color:var(--txt)">{direct_status}</div>
-                <div style="font-size:0.8rem;color:var(--txt3);margin-top:0.25rem">基金公司官网/官方APP通道</div>
+            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
+                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">直销限购状态</div>
+                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--txt);letter-spacing:-0.02em;margin:4px 0">{direct_status}</div>
+                <div style="font-size:0.75rem;color:var(--txt2)">基金公司官网/官方APP通道</div>
             </div>
-            <div style="background:var(--bg2);padding:1rem;border-radius:8px">
-                <div style="color:var(--txt3);font-size:0.85rem">近3年收益率</div>
-                <div style="font-size:1.25rem;font-weight:600;color:var(--{return_color})">{return_3yr}%</div>
-                <div style="font-size:0.8rem;color:var(--txt3);margin-top:0.25rem">近1年收益: {return_1yr}%</div>
+            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
+                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">近3年收益率</div>
+                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--{return_color});letter-spacing:-0.02em;margin:4px 0">{return_3yr}%</div>
+                <div style="font-size:0.75rem;color:var(--txt2)">近1年收益: {return_1yr}%</div>
             </div>
         </div>
 

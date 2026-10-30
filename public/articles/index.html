@@ -99,19 +99,21 @@
     opacity: 0;
     transition: var(--transition);
 }
-.article-card:hover { border-color: rgba(79, 110, 247, 0.2); box-shadow: var(--shadow); transform: translateY(-3px); }
+.article-card:hover { border-color: var(--accent2); box-shadow: 0 20px 48px -12px rgba(99, 102, 241, 0.35); transform: translateY(-5px); }
 .article-card:hover::before { opacity: 1; }
 .article-card .ac-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px; height: 32px;
+    width: 34px; height: 34px;
     background: var(--accent-g);
     color: #fff;
-    border-radius: 8px;
+    border-radius: 9px;
     font-weight: 800;
     font-size: 0.95rem;
+    font-family: var(--font-mono);
     margin-bottom: 0.85rem;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
 }
 .article-card .ac-title {
     font-size: 1.15rem;
@@ -157,7 +159,9 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
+    transition: transform 0.25s var(--spring-easing);
 }
+.article-card:hover .ac-link { transform: translateX(3px); }
 .article-card .ac-link:hover { text-decoration: underline; }
 @media (min-width: 768px) {
     .article-list { grid-template-columns: repeat(2, 1fr); }
@@ -169,6 +173,8 @@
 <div class="ambient-glow-mesh" aria-hidden="true">
     <div class="ambient-glow ambient-glow-1"></div>
     <div class="ambient-glow ambient-glow-2"></div>
+    <div class="ambient-glow ambient-glow-3"></div>
+    <div class="ambient-glow ambient-glow-4"></div>
 </div>
 
 <header>
@@ -177,6 +183,7 @@
         <a href="/" style="display:flex;align-items:center;text-decoration:none;color:inherit">
             <img src="../favicon.png" alt="" class="brand-logo">
             <span class="brand-text">FUND ADVISOR</span>
+            <span class="brand-sub-badge"><span class="brand-pulse-dot"></span> QDII 实时量化监控</span>
         </a>
     </div>
     <div class="links" id="nav-links">
