@@ -84,7 +84,7 @@ const App = (() => {
         const current = document.documentElement.getAttribute('data-theme') || 'light';
         const next = current === 'dark' ? 'light' : 'dark';
         applyTheme(next);
-        showToast(next === 'dark' ? '🌙 已切换至暗夜科技模式' : '☀️ 已切换至清新明亮模式', 'info');
+        showToast(next === 'dark' ? '🌙 已切换至暗夜科技模式' : '☀️ 已切换至清新明亮模式', 'info', 'theme');
     }
 
     function initTheme() {
@@ -96,15 +96,18 @@ const App = (() => {
     }
 
     // ===== 优雅悬浮 Toast 提示系统 =====
-    function showToast(msg, type = 'info') {
+    function showToast(msg, type = 'info', cat = 'general') {
         let container = document.getElementById('toast-container');
         if (!container) {
             container = document.createElement('div');
             container.id = 'toast-container';
             document.body.appendChild(container);
         }
+        if (cat === 'theme') {
+            container.querySelectorAll('.toast-theme').forEach(t => t.remove());
+        }
         const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
+        toast.className = `toast toast-${type} ${cat === 'theme' ? 'toast-theme' : ''}`;
         const icon = type === 'success' ? '✅' : '💡';
         toast.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
         container.appendChild(toast);
@@ -145,6 +148,36 @@ const App = (() => {
                         c.classList.remove('active');
                     }
                 });
+            });
+        });
+        initInputSteppers();
+    }
+
+    // ===== 预算与年限微调步进器 (Precision Input Steppers) =====
+    let _pfStepperTimer = null;
+    function initInputSteppers() {
+        document.querySelectorAll('.input-stepper-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const targetId = btn.dataset.for;
+                const step = +btn.dataset.step || 0;
+                const slider = document.getElementById(targetId);
+                if (!slider) return;
+                const min = +slider.min || 0;
+                const max = +slider.max || 100000;
+                const cur = +slider.value;
+                const next = Math.max(min, Math.min(max, cur + step));
+                if (next !== cur) {
+                    slider.value = next;
+                    slider.dispatchEvent(new Event('input', { bubbles: true }));
+                    if (targetId.startsWith('pf-')) {
+                        if (_pfStepperTimer) clearTimeout(_pfStepperTimer);
+                        _pfStepperTimer = setTimeout(() => {
+                            computePortfolio();
+                        }, 220);
+                    }
+                }
             });
         });
     }
@@ -1025,7 +1058,23 @@ const App = (() => {
 
         const thead = document.querySelector('#rank-table thead');
         if (thead) {
-            thead.innerHTML = '<tr>' + rankCols.map(c => `<th data-key="${c.key}">${c.label} <span class="arr">⇅</span></th>`).join('') + '</tr>';
+            const colTooltips = {
+                rank: '多因子量化综合排位与基金代码',
+                name: '标的简称，点击展开六维量化体检抽屉',
+                fee: '综合年费率 (管理+托管+销售服务费)，复利最大磨损源',
+                purchase_fee: '公募申购前端费率，A类普遍1折(0.12%)，C类无申购费',
+                tracking_error: '跟踪误差 (TE) 反映指数偏离，IR反映超额稳定性',
+                scale: '最新基金资产净值（亿元），规避迷你清盘风险',
+                return_3yr: '近3年累计收益率（不足3年折算实际区间）',
+                morningstar: '晨星中国官方基金星级评定 (★)',
+                limit_status: '代销渠道（第三方）与直销渠道最新单日申购限额',
+                score: '基于费率、跟踪误差、规模与评级的六维量化综合得分'
+            };
+            thead.innerHTML = '<tr>' + rankCols.map((c, idx) => {
+                const align = idx === 0 ? 'data-tooltip-align="left"' : (idx >= rankCols.length - 2 ? 'data-tooltip-align="right"' : '');
+                const tip = colTooltips[c.key] || '';
+                return `<th data-key="${c.key}" data-tooltip="${tip}" data-tooltip-pos="bottom" ${align}>${c.label} <span class="arr">⇅</span></th>`;
+            }).join('') + '</tr>';
         }
 
         function draw() {
@@ -1090,6 +1139,20 @@ const App = (() => {
         }
         draw();
         renderRankCards(rankData);
+
+        const tableWrap = document.getElementById('rank-table-wrap') || document.querySelector('#page-ranking .table-wrap');
+        if (tableWrap && !tableWrap._hasScrollListener) {
+            tableWrap._hasScrollListener = true;
+            tableWrap.addEventListener('scroll', () => {
+                const tbl = document.getElementById('rank-table');
+                if (!tbl) return;
+                if (tableWrap.scrollLeft > 6) {
+                    tbl.classList.add('is-scrolled-x');
+                } else {
+                    tbl.classList.remove('is-scrolled-x');
+                }
+            }, { passive: true });
+        }
     }
 
     // ===== 双视图控制与智能卡片流渲染 (桌面与移动端自适应) =====
@@ -3119,12 +3182,16 @@ const App = (() => {
                 }
             }
             return `
-                <div class="sim-weight-row" data-code="${code}" style="display:flex; flex-direction:column; gap: 0.25rem;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-                        <span style="color:var(--txt); font-weight:500; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:200px;">${code} ${name}</span>
-                        <span class="sim-weight-val" style="color:var(--accent2); font-weight:700;">-</span>
+                <div class="sim-weight-row" data-code="${code}" style="display:flex; flex-direction:column; gap: 0.35rem;">
+                    <div class="sim-weight-header">
+                        <span class="sim-weight-name" title="${code} ${name}">${code} ${name}</span>
+                        <div class="sim-weight-controls">
+                            <button type="button" class="sim-stepper-btn btn-sim-step-down" data-code="${code}" aria-label="减少份额" title="微调减少 1%">−</button>
+                            <span class="sim-weight-val" style="color:var(--accent2); font-weight:700;">-</span>
+                            <button type="button" class="sim-stepper-btn btn-sim-step-up" data-code="${code}" aria-label="增加份额" title="微调增加 1%">+</button>
+                        </div>
                     </div>
-                    <input type="range" class="sim-weight-input" min="0" max="100" step="1" value="${val}" style="width:100%; height:4px; opacity:0.8; cursor:pointer;">
+                    <input type="range" class="sim-weight-input" min="0" max="100" step="1" value="${val}" style="width:100%; height:6px; opacity:0.85; cursor:pointer;">
                 </div>
             `;
         }).join('');
@@ -3186,6 +3253,25 @@ const App = (() => {
                 }
                 
                 updateWeightDisplays();
+            });
+        });
+
+        // 绑定步进微调按钮 (Precision Stepper Buttons)
+        listEl.querySelectorAll('.sim-stepper-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.preventDefault();
+                const code = btn.dataset.code;
+                const row = listEl.querySelector(`.sim-weight-row[data-code="${code}"]`);
+                if (!row) return;
+                const inp = row.querySelector('.sim-weight-input');
+                const isInc = btn.classList.contains('btn-sim-step-up');
+                const step = isInc ? 1 : -1;
+                saveStartValues();
+                const nextVal = Math.max(0, Math.min(100, (+inp.value || 0) + step));
+                if (nextVal !== +inp.value) {
+                    inp.value = nextVal;
+                    inp.dispatchEvent(new Event('input', { bubbles: true }));
+                }
             });
         });
         

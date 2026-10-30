@@ -22,6 +22,7 @@
 <meta name="twitter:image" content="https://858000.xyz/og-image.jpg">
 <link rel="canonical" href="https://858000.xyz/articles/dca-strategy-guide">
 <title>基金定投策略完全指南：微笑曲线与复利效应 | Fund Advisor</title>
+<script>(function(){var t=localStorage.getItem('fa_theme')||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -75,9 +76,15 @@
         <a href="https://858000.xyz/articles/">投资百科</a>
         <a href="https://858000.xyz/about">关于我们</a>
     </div>
-    <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false" onclick="var l=document.getElementById('nav-links');var b=this;var o=l.classList.toggle('show');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);">
+    <div class="nav-actions">
+        <a href="/#portfolio" class="nav-cta-btn" title="立即开启量化资产配置">🚀 定投方案</a>
+        <button class="theme-toggle" id="theme-toggle" aria-label="切换主题" title="切换深色/浅色模式">
+            <span class="theme-icon">🌙</span>
+        </button>
+        <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false" onclick="var l=document.getElementById('nav-links');var b=this;var o=l.classList.toggle('show');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);">
         <span></span><span></span><span></span>
     </button>
+    </div>
 </nav>
 
 <main class="container">
@@ -259,5 +266,28 @@
         </div>
     </div>
 </footer>
+<script>
+(function() {
+    function getTheme() {
+        var s = localStorage.getItem('fa_theme');
+        if (s) return s;
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    function applyTheme(t) {
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem('fa_theme', t);
+        var icon = document.querySelector('#theme-toggle .theme-icon');
+        if (icon) icon.textContent = t === 'dark' ? '☀️' : '🌙';
+    }
+    applyTheme(getTheme());
+    var btn = document.getElementById('theme-toggle');
+    if (btn) {
+        btn.onclick = function() {
+            var cur = document.documentElement.getAttribute('data-theme') || 'light';
+            applyTheme(cur === 'dark' ? 'light' : 'dark');
+        };
+    }
+})();
+</script>
 </body>
 </html>

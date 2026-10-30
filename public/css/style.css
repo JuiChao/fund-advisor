@@ -9844,3 +9844,738 @@ tbody.spotlight-active tr:hover {
     }
 }
 
+/* ===== 奖项级高定全站视觉与交互中枢 (Awwwards / Webby / FWA Caliber Sweep) ===== */
+
+/* 1. MPT 有效前沿与资产配置卡片高定体系 */
+.frontier-interactive-panel {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+.frontier-chart-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.04) 0%, transparent 70%),
+        linear-gradient(to right, var(--border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
+    border: 1px solid var(--border);
+    padding: 12px;
+    box-sizing: border-box;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+[data-theme="dark"] .frontier-chart-container {
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(129, 140, 248, 0.08) 0%, transparent 70%),
+        linear-gradient(to right, rgba(129, 140, 248, 0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(129, 140, 248, 0.07) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
+    box-shadow: inset 0 2px 14px rgba(0, 0, 0, 0.5);
+}
+.frontier-inspector-card {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 1.15rem 1.35rem;
+    margin-top: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+.frontier-inspector-card:hover {
+    border-color: var(--accent2);
+}
+.frontier-range-slider {
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #10b981 0%, #6366f1 100%);
+    outline: none;
+    cursor: pointer;
+    accent-color: var(--accent);
+    transition: filter 0.2s;
+}
+.frontier-range-slider:hover {
+    filter: brightness(1.1);
+}
+.frontier-kpi-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s var(--spring-easing), border-color 0.2s;
+}
+.frontier-kpi-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent2);
+}
+.f-kpi-val {
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.2;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+.f-split-bar {
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.15), 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* 策略卡片与分类面板 */
+.pf-card {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.35s var(--spring-easing), box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+}
+.pf-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(99, 102, 241, 0.35);
+}
+.pf-card[data-category="quant"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-sheen);
+}
+.pf-strat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+}
+.pf-strat-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--txt);
+    letter-spacing: -0.015em;
+    margin: 0;
+}
+.pf-weight-pill {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 3px 9px;
+    border-radius: 9999px;
+}
+.pf-tabs {
+    display: inline-flex;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+    gap: 4px;
+    margin-bottom: 1rem;
+}
+.pf-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--txt2);
+    font-size: 0.825rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    touch-action: manipulation;
+}
+.pf-tab:hover {
+    color: var(--txt);
+    background: rgba(99, 102, 241, 0.08);
+}
+.pf-tab:active {
+    transform: scale(0.96);
+}
+.pf-tab.on {
+    background: var(--surface);
+    color: var(--accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border2);
+}
+[data-theme="dark"] .pf-tab.on {
+    background: var(--surface);
+    color: #fff;
+    border-color: rgba(129, 140, 248, 0.35);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* 2. 模拟器高精度微步进调节器 (Precision Steppers) */
+.input-stepper-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    padding: 2px 6px;
+}
+.input-stepper-btn {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--txt2);
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s var(--spring-easing);
+    touch-action: manipulation;
+    padding: 0;
+}
+.input-stepper-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    transform: scale(1.12);
+}
+.input-stepper-btn:active {
+    transform: scale(0.9);
+}
+
+/* 标的定投权重分配卡片微步进器 */
+.sim-weight-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 0.85rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.sim-weight-row:hover {
+    border-color: var(--border2);
+    box-shadow: var(--shadow-sm);
+}
+.sim-weight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    margin-bottom: 0.4rem;
+}
+.sim-weight-name {
+    color: var(--txt);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 220px;
+}
+.sim-weight-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.sim-stepper-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--txt2);
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    padding: 0;
+}
+.sim-stepper-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.sim-stepper-btn:active {
+    transform: scale(0.9);
+}
+.sim-weight-val {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent2);
+    min-width: 85px;
+    text-align: right;
+}
+
+/* 3. 基金全景排名表头吸顶、首列固定与阴影分离 */
+#rank-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+#rank-table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: var(--th-bg);
+}
+#rank-table th:first-child,
+#rank-table tbody tr:not(.fund-detail-row) td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 8;
+    background: var(--surface);
+    transition: box-shadow 0.25s ease, background-color 0.2s ease;
+}
+#rank-table.is-scrolled-x th:first-child,
+#rank-table.is-scrolled-x tbody tr:not(.fund-detail-row) td:first-child {
+    box-shadow: 4px 0 12px -2px rgba(0, 0, 0, 0.08);
+}
+[data-theme="dark"] #rank-table.is-scrolled-x th:first-child,
+[data-theme="dark"] #rank-table.is-scrolled-x tbody tr:not(.fund-detail-row) td:first-child {
+    box-shadow: 4px 0 18px -2px rgba(0, 0, 0, 0.55);
+}
+#rank-table th:first-child {
+    z-index: 20;
+    background: var(--th-bg);
+}
+
+/* 首列吸附时的行背景与悬停连贯性适配 (Seamless Sticky Row Highlight Parity) */
+#rank-table tbody tr:hover td:first-child {
+    background: var(--table-hover-bg, rgba(99, 102, 241, 0.07)) !important;
+}
+#rank-table tbody tr.rank-row-gold td:first-child {
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.16) 0%, var(--surface) 100%) !important;
+    border-left: 3.5px solid #f59e0b;
+}
+#rank-table tbody tr.rank-row-silver td:first-child {
+    background: linear-gradient(90deg, rgba(148, 163, 184, 0.16) 0%, var(--surface) 100%) !important;
+    border-left: 3.5px solid #94a3b8;
+}
+#rank-table tbody tr.rank-row-bronze td:first-child {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.14) 0%, var(--surface) 100%) !important;
+    border-left: 3.5px solid #d97706;
+}
+#rank-table tbody tr.wr td:first-child {
+    background: rgba(239, 68, 68, 0.08) !important;
+}
+#rank-table tbody tr.rank-row-gold:hover td:first-child {
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.24) 0%, rgba(99, 102, 241, 0.08) 100%) !important;
+}
+#rank-table tbody tr.rank-row-silver:hover td:first-child {
+    background: linear-gradient(90deg, rgba(148, 163, 184, 0.24) 0%, rgba(99, 102, 241, 0.08) 100%) !important;
+}
+#rank-table tbody tr.rank-row-bronze:hover td:first-child {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.20) 0%, rgba(99, 102, 241, 0.08) 100%) !important;
+}
+#rank-table tbody tr.wr:hover td:first-child {
+    background: rgba(239, 68, 68, 0.12) !important;
+}
+
+/* 4. 深度科普、投资指南与投研文章专区增强 (Articles & Guide Polish) */
+.article-container {
+    max-width: 840px;
+    margin: 1.5rem auto 3rem;
+}
+.article-content {
+    color: var(--txt2);
+    line-height: 1.8;
+    font-size: 0.98rem;
+    letter-spacing: -0.01em;
+}
+.article-content h2 {
+    color: var(--txt);
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-top: 2.5rem;
+    margin-bottom: 1.15rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.65rem;
+    letter-spacing: -0.02em;
+}
+.article-content h3 {
+    color: var(--txt);
+    font-size: 1.12rem;
+    font-weight: 750;
+    margin-top: 1.85rem;
+    margin-bottom: 0.85rem;
+}
+.article-content p {
+    margin-bottom: 1.15rem;
+}
+.article-content ul, .article-content ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.6rem;
+}
+.article-content li {
+    margin-bottom: 0.55rem;
+}
+
+/* 暗色模式下投研文章表格表头完全适配修复 */
+[data-theme="dark"] .article-content table th {
+    background: linear-gradient(180deg, #182236, #0f1523) !important;
+    color: var(--accent2) !important;
+    border-bottom: 2px solid var(--border2) !important;
+}
+[data-theme="dark"] .article-content table td {
+    color: var(--txt) !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+[data-theme="dark"] .article-content table tr:hover td {
+    background: rgba(99, 102, 241, 0.08) !important;
+}
+
+/* 引用块与提示框系统 */
+.quote-block, blockquote {
+    background: rgba(99, 102, 241, 0.06);
+    border-left: 4px solid var(--accent);
+    padding: 1.15rem 1.5rem;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 1.75rem 0;
+    color: var(--txt);
+    font-size: 0.925rem;
+    line-height: 1.65;
+    position: relative;
+    box-shadow: 0 2px 8px -2px rgba(99, 102, 241, 0.05);
+}
+[data-theme="dark"] .quote-block,
+[data-theme="dark"] blockquote {
+    background: rgba(99, 102, 241, 0.12);
+    box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.4);
+}
+.callout-box, .quant-callout {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-sm);
+    margin: 1.25rem 0;
+    font-size: 0.85rem;
+    line-height: 1.65;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    position: relative;
+}
+.callout-tip, .callout-info {
+    border-left: 4px solid var(--accent);
+    background: rgba(99, 102, 241, 0.06);
+    color: var(--txt);
+}
+.callout-warn {
+    border-left: 4px solid var(--warn);
+    background: var(--warn-bg);
+    color: var(--txt);
+}
+.callout-success {
+    border-left: 4px solid var(--ok);
+    background: var(--ok-bg);
+    color: var(--txt);
+}
+
+/* 学术引用文献专区规范化样式 */
+.article-references {
+    margin-top: 2.5rem;
+    padding: 1.5rem 1.75rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent2) !important;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+}
+.article-references h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--txt);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.article-references ol {
+    margin-bottom: 0;
+    padding-left: 1.35rem;
+    font-size: 0.86rem;
+    color: var(--txt2);
+    line-height: 1.75;
+}
+.article-references li {
+    margin-bottom: 0.65rem;
+}
+.article-references li:last-child {
+    margin-bottom: 0;
+}
+.article-references em {
+    color: var(--txt);
+    font-style: italic;
+}
+
+/* 5. 关于我们与投研方法论专区样式 (About Page Methodology Hierarchy) */
+.methodology-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+}
+.methodology-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem 1.4rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s var(--spring-easing), border-color 0.2s, box-shadow 0.25s;
+    position: relative;
+}
+.methodology-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent2);
+    box-shadow: var(--shadow);
+}
+.methodology-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+.methodology-card h4 {
+    margin: 0.25rem 0 0.5rem;
+    font-size: 0.98rem;
+    font-weight: 750;
+    color: var(--txt);
+}
+.methodology-card p {
+    font-size: 0.85rem;
+    color: var(--txt2);
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+.citation-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.35rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.contact-card {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.75rem;
+    margin: 1.75rem 0;
+    box-shadow: var(--shadow);
+}
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.contact-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1.15rem;
+}
+
+/* 6. 奖项级高定 CSS 微提示与触觉回弹 (Micro-Tooltips & Tactile Feedback) */
+[data-tooltip] {
+    position: relative;
+    cursor: help;
+}
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px) scale(0.96);
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.35;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: opacity 0.2s var(--ease-smooth), transform 0.2s var(--ease-smooth);
+    z-index: 1000;
+}
+[data-tooltip]::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    border: 5px solid transparent;
+    border-top-color: rgba(15, 23, 42, 0.94);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s var(--ease-smooth), transform 0.2s var(--ease-smooth);
+    z-index: 1000;
+}
+[data-tooltip]:hover::after,
+[data-tooltip]:hover::before {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+}
+
+/* 微提示朝向与边缘对齐修正 (Tooltip Directions & Edge Alignment) */
+[data-tooltip-pos="bottom"]::after {
+    bottom: auto;
+    top: calc(100% + 8px);
+    transform: translateX(-50%) translateY(-4px) scale(0.96);
+}
+[data-tooltip-pos="bottom"]::before {
+    bottom: auto;
+    top: calc(100% + 2px);
+    transform: translateX(-50%) translateY(-4px);
+    border-top-color: transparent;
+    border-bottom-color: rgba(15, 23, 42, 0.94);
+}
+[data-tooltip-pos="bottom"]:hover::after,
+[data-tooltip-pos="bottom"]:hover::before {
+    transform: translateX(-50%) translateY(0) scale(1);
+}
+
+[data-tooltip-align="left"]::after {
+    left: 0;
+    transform: translateY(4px) scale(0.96);
+}
+[data-tooltip-align="left"]::before {
+    left: 14px;
+    transform: translateY(4px);
+}
+[data-tooltip-align="left"]:hover::after,
+[data-tooltip-align="left"]:hover::before {
+    transform: translateY(0) scale(1);
+}
+[data-tooltip-pos="bottom"][data-tooltip-align="left"]::after {
+    transform: translateY(-4px) scale(0.96);
+}
+[data-tooltip-pos="bottom"][data-tooltip-align="left"]::before {
+    transform: translateY(-4px);
+}
+[data-tooltip-pos="bottom"][data-tooltip-align="left"]:hover::after,
+[data-tooltip-pos="bottom"][data-tooltip-align="left"]:hover::before {
+    transform: translateY(0) scale(1);
+}
+
+[data-tooltip-align="right"]::after {
+    left: auto;
+    right: 0;
+    transform: translateY(4px) scale(0.96);
+}
+[data-tooltip-align="right"]::before {
+    left: auto;
+    right: 14px;
+    transform: translateY(4px);
+}
+[data-tooltip-align="right"]:hover::after,
+[data-tooltip-align="right"]:hover::before {
+    transform: translateY(0) scale(1);
+}
+[data-tooltip-pos="bottom"][data-tooltip-align="right"]::after {
+    transform: translateY(-4px) scale(0.96);
+}
+[data-tooltip-pos="bottom"][data-tooltip-align="right"]::before {
+    transform: translateY(-4px);
+}
+[data-tooltip-pos="bottom"][data-tooltip-align="right"]:hover::after,
+[data-tooltip-pos="bottom"][data-tooltip-align="right"]:hover::before {
+    transform: translateY(0) scale(1);
+}
+
+/* 触摸设备禁用 hover 提示避免轻触粘滞 */
+@media (hover: none) {
+    [data-tooltip]::after,
+    [data-tooltip]::before {
+        display: none !important;
+    }
+}
+
+/* 7. 全站高定模块移动端自适应响应式体系 (Responsive Viewport Parity) */
+@media (max-width: 768px) {
+    .frontier-chart-container {
+        height: 310px;
+    }
+    .frontier-interactive-panel {
+        padding: 1rem;
+    }
+    .pf-tabs {
+        width: 100%;
+        display: flex;
+    }
+    .pf-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 0.5rem 0.6rem;
+    }
+    .pf-tab-sub {
+        display: none;
+    }
+    .methodology-grid {
+        grid-template-columns: 1fr;
+    }
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 480px) {
+    .frontier-chart-container {
+        height: 260px;
+    }
+    .frontier-interactive-panel {
+        padding: 0.75rem;
+    }
+    .frontier-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+    .pf-card {
+        padding: 1rem 0.85rem;
+    }
+    .input-stepper-wrap {
+        padding: 1px 4px;
+        gap: 4px;
+    }
+    .input-stepper-btn {
+        width: 22px;
+        height: 22px;
+        font-size: 0.85rem;
+    }
+}
+
