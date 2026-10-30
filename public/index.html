@@ -160,7 +160,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261009_v7">
+<link rel="stylesheet" href="css/style.css?v=20261030_v1">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -209,6 +209,7 @@
 <div id="page-home" class="fade-in">
     <!-- 现代化 Fintech 科技风 Hero Banner -->
     <div class="hero-banner">
+        <canvas id="hero-vector-canvas" class="hero-vector-canvas" aria-hidden="true"></canvas>
         <div class="hero-badge-wrap">
             <span class="hero-pill">⚡ 2026 美股量化投研中枢</span>
             <span class="hero-pill" style="background:rgba(99,102,241,0.12);color:var(--accent2);border-color:rgba(99,102,241,0.3)">💎 MPT 马克维茨有效前沿</span>
@@ -2045,6 +2046,7 @@
                 <span>快捷操作：</span>
                 <span class="footer-kbd">/</span> 或 <span class="footer-kbd">Ctrl+K</span> 搜基
                 <span class="footer-kbd">D</span> 切换主题
+                <span class="footer-kbd" id="footer-btn-hud" style="cursor:pointer" title="点击查看快捷键速查">?</span> 帮助
             </div>
         </div>
 
@@ -2115,6 +2117,7 @@
     <!-- 📋 全景表格导出前基金勾选弹窗 -->
     <div class="fund-select-modal-backdrop" id="rank-select-modal" style="display:none">
         <div class="fund-select-dialog">
+            <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="fund-select-header">
                 <div class="fund-select-title-group">
                     <div class="fund-select-title">
@@ -2175,6 +2178,7 @@
     <!-- 📋 公告看板导出前基金勾选弹窗 -->
     <div class="fund-select-modal-backdrop" id="quota-select-modal" style="display:none">
         <div class="fund-select-dialog">
+            <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="fund-select-header">
                 <div class="fund-select-title-group">
                     <div class="fund-select-title">
@@ -2233,6 +2237,7 @@
     <!-- 📷 图片导出预览弹窗 -->
     <div class="poster-modal-backdrop" id="poster-modal-backdrop" style="display:none">
         <div class="poster-modal-dialog">
+            <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="poster-modal-header">
                 <div class="poster-modal-title">
                     <span class="poster-modal-icon">📷</span>
@@ -2262,6 +2267,71 @@
         </div>
     </div>
 
+    <!-- ⌨️ 全局键盘快捷键指令 HUD 弹窗 (Raycast / Linear 风格) -->
+    <div class="fund-select-modal-backdrop" id="shortcut-hud-modal" style="display:none" role="dialog" aria-label="键盘快捷键速查">
+        <div class="fund-select-dialog shortcut-hud-dialog">
+            <div class="modal-drag-handle" aria-hidden="true"></div>
+            <div class="fund-select-header">
+                <div class="fund-select-title-group">
+                    <div class="fund-select-title">
+                        <span class="modal-icon">⌨️</span>
+                        <strong>键盘快捷键速查 · Keyboard Shortcuts</strong>
+                    </div>
+                    <div class="fund-select-sub">终端级量化操作流，指尖掌控全站</div>
+                </div>
+                <button type="button" class="fund-select-close" id="btn-hud-close" title="关闭 (Esc)">✕</button>
+            </div>
+            <div class="shortcut-hud-body">
+                <div class="shortcut-group">
+                    <div class="shortcut-group-title">全局功能 · Global</div>
+                    <div class="shortcut-row">
+                        <span class="shortcut-label">搜基 / 搜索代码与名称</span>
+                        <div class="shortcut-keys"><kbd>/</kbd> 或 <kbd>Ctrl</kbd> + <kbd>K</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span class="shortcut-label">切换深浅色主题</span>
+                        <div class="shortcut-keys"><kbd>D</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span class="shortcut-label">打开此快捷键帮助</span>
+                        <div class="shortcut-keys"><kbd>?</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span class="shortcut-label">关闭当前弹窗 / 抽屉</span>
+                        <div class="shortcut-keys"><kbd>Esc</kbd></div>
+                    </div>
+                </div>
+                <div class="shortcut-group">
+                    <div class="shortcut-group-title">快捷导航 · Navigation</div>
+                    <div class="shortcut-row">
+                        <span class="shortcut-label">跳转至：首页概览</span>
+                        <div class="shortcut-keys"><kbd>1</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span class="shortcut-label">跳转至：选基排名</span>
+                        <div class="shortcut-keys"><kbd>2</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span class="shortcut-label">跳转至：定投方案</span>
+                        <div class="shortcut-keys"><kbd>3</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span class="shortcut-label">跳转至：模拟器</span>
+                        <div class="shortcut-keys"><kbd>4</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span class="shortcut-label">跳转至：投研指南</span>
+                        <div class="shortcut-keys"><kbd>5</kbd></div>
+                    </div>
+                </div>
+            </div>
+            <div class="shortcut-hud-footer">
+                <span>提示：在任意非输入框区域直接敲击对应按键即可触发</span>
+                <button type="button" class="btn-rks-confirm" id="btn-hud-ok" style="padding:0.4rem 1rem">明白 (Got it)</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 全局快捷悬浮岛 (返回顶部 / 快捷搜基) -->
     <aside class="floating-quick-bar" id="floating-quick-bar" aria-label="快捷工具栏" style="display:none">
         <button type="button" class="floating-btn floating-btn-search" id="floating-btn-search" title="快捷搜基 (按 / 或 Ctrl+K)" aria-label="快捷搜基">
@@ -2275,7 +2345,7 @@
     </aside>
 
     <script defer src="js/html2canvas.min.js"></script>
-    <script src="js/app.js?v=20261009_v6"></script>
+    <script src="js/app.js?v=20261030_v1"></script>
 <noscript>
     <div style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:14px 20px;margin:2rem auto;max-width:1100px;border-radius:10px;text-align:center;font-size:0.92rem;line-height:1.6;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
         ⚠️ <strong>提示</strong>：您当前浏览器的 JavaScript 已禁用。您仍可正常查阅首页标杆基金透视表、全景档案库及投资百科研究长文；如需使用蒙特卡洛定投回测、资产配置优化器及交互式动态筛选工具，请开启浏览器的 JavaScript 支持。

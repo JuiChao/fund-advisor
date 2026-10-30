@@ -9597,6 +9597,232 @@ a:focus-visible, button:focus-visible {
     border-radius: var(--radius-xs);
 }
 
+
+/* ===== 奖项级高定细节扩展 (Awwwards / Webby Caliber Extensions) ===== */
+
+/* 1. Hero 矢量张量波动背景 Canvas */
+.hero-banner {
+    position: relative;
+    overflow: hidden;
+}
+.hero-vector-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.65;
+    border-radius: inherit;
+}
+[data-theme="dark"] .hero-vector-canvas {
+    opacity: 0.88;
+}
+
+/* 2. 标杆标题流光动效 (Liquid Text Shimmer) */
+@keyframes textShimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.hero-title span {
+    background: linear-gradient(135deg, #4f46e5 0%, #a855f7 35%, #06b6d4 70%, #4f46e5 100%);
+    background-size: 250% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: textShimmer 8s linear infinite;
+}
+
+/* 3. 鼠标聚光灯高定发光边框 (Linear / Vercel Tier Spotlight Border) */
+.hero-banner,
+.quant-frontier-card,
+.journey-card,
+.sim-kpi-card,
+.stat,
+.ticker-box,
+.card {
+    position: relative;
+}
+.hero-banner::before,
+.quant-frontier-card::before,
+.journey-card::before,
+.sim-kpi-card::before,
+.stat::before,
+.ticker-box::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(460px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(99, 102, 241, 0.28), transparent 45%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+[data-theme="dark"] .hero-banner::before,
+[data-theme="dark"] .quant-frontier-card::before,
+[data-theme="dark"] .journey-card::before,
+[data-theme="dark"] .sim-kpi-card::before,
+[data-theme="dark"] .stat::before,
+[data-theme="dark"] .ticker-box::before {
+    background: radial-gradient(460px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(129, 140, 248, 0.45), transparent 45%);
+}
+.hero-banner:hover::before,
+.quant-frontier-card:hover::before,
+.journey-card:hover::before,
+.sim-kpi-card:hover::before,
+.stat:hover::before,
+.ticker-box:hover::before {
+    opacity: 1;
+}
+
+/* 4. 移动端原生底抽屉 (Native Mobile Bottom Sheet) */
+.modal-drag-handle {
+    display: none;
+    width: 44px;
+    height: 5px;
+    background: var(--border2);
+    border-radius: 999px;
+    margin: 0.75rem auto 0.25rem;
+}
+@media (max-width: 768px) {
+    .fund-select-modal-backdrop,
+    .poster-modal-backdrop {
+        align-items: flex-end !important;
+        padding: 0 !important;
+    }
+    .fund-select-dialog,
+    .poster-modal-dialog {
+        max-width: 100% !important;
+        width: 100% !important;
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        max-height: 88dvh !important;
+        transform: translateY(0);
+        box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.4);
+    }
+    .modal-drag-handle {
+        display: block;
+    }
+    @starting-style {
+        .fund-select-dialog,
+        .poster-modal-dialog {
+            transform: translateY(100%);
+        }
+    }
+}
+
+/* 5. 全局键盘快捷键 HUD 弹窗 (Raycast Style Command HUD) */
+.shortcut-hud-dialog {
+    max-width: 540px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border2);
+}
+.shortcut-hud-body {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+.shortcut-group-title {
+    font-size: 0.74rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--txt3);
+    margin-bottom: 0.65rem;
+}
+.shortcut-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.85rem;
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    margin-bottom: 0.35rem;
+    border: 1px solid var(--border);
+    transition: background 0.2s, border-color 0.2s;
+}
+.shortcut-row:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-hover);
+}
+.shortcut-label {
+    font-size: 0.85rem;
+    color: var(--txt);
+    font-weight: 550;
+}
+.shortcut-keys {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: var(--txt3);
+}
+.shortcut-keys kbd, .footer-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 7px;
+    font-size: 0.74rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--txt);
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-bottom: 2px solid var(--border2);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.shortcut-hud-footer {
+    padding: 0.85rem 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.74rem;
+    color: var(--txt3);
+    background: var(--surface2);
+}
+
+/* 6. 表格行聚焦与边缘滚动指示 (Table Row Spotlight & Scroll Fade) */
+tbody.spotlight-active tr {
+    transition: opacity 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+tbody.spotlight-active tr:not(:hover) {
+    opacity: 0.72;
+}
+tbody.spotlight-active tr:hover {
+    opacity: 1;
+    background-color: var(--surface-hover) !important;
+    position: relative;
+    z-index: 2;
+}
+
+/* 7. 代码一键复制与微触感反馈 (Kinetic Copy Feedback) */
+.btn-copy-code-action.copy-success-pulse,
+.btn-rks-copy.copy-success-pulse {
+    animation: copyPulse 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    border-color: var(--ok) !important;
+    color: var(--ok) !important;
+    background: var(--ok-bg) !important;
+}
+@keyframes copyPulse {
+    0% { transform: scale(0.92); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+
 /* ===== Accessibility & prefers-reduced-motion (Modern Web Standard) ===== */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

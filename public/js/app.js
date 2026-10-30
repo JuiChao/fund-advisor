@@ -238,10 +238,41 @@ const App = (() => {
     // ===== 默认主题 Chart.js 配置 =====
     Chart.defaults.color = '#475569';
     Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.08)';
-    Chart.defaults.font.family = "'Inter',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif";
+    Chart.defaults.font.family = "'JetBrains Mono', 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif";
+    Chart.defaults.font.weight = 500;
+    if (Chart.defaults.plugins && Chart.defaults.plugins.tooltip) {
+        Chart.defaults.plugins.tooltip.padding = 10;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.boxPadding = 4;
+    }
     Chart.defaults.font.size = 11;
 
     // ===== 工具函数 =====
+    
+    // ===== 数字平滑计数递增器 (Odometer Counter Animation) =====
+    function animateOdometer(el, targetValue, duration = 1100, decimals = 0, prefix = '', suffix = '') {
+        if (!el) return;
+        const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (isReducedMotion) {
+            el.textContent = `${prefix}${targetValue.toFixed(decimals)}${suffix}`;
+            return;
+        }
+        const startTime = performance.now();
+        function step(currentTime) {
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            // easeOutCubic
+            const easeProgress = 1 - Math.pow(1 - progress, 3);
+            const current = targetValue * easeProgress;
+            el.textContent = `${prefix}${current.toFixed(decimals)}${suffix}`;
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                el.textContent = `${prefix}${targetValue.toFixed(decimals)}${suffix}`;
+            }
+        }
+        requestAnimationFrame(step);
+    }
+
     function fmt(v) { return v == null ? '-' : (v * 100).toFixed(2) + '%'; }
     function money(v) {
         if (v == null) return '-';
@@ -520,13 +551,13 @@ const App = (() => {
             `;
         }
 
-        // 同步顶部实时量化行情指标条 (Hero Quant Ticker)
+        // 同步顶部实时量化行情指标条 (Hero Quant Ticker，带平滑计数递增)
         const tkPool = document.getElementById('tk-pool-count');
-        if (tkPool) tkPool.textContent = `${FUND_DATA.length} 只`;
+        if (tkPool) animateOdometer(tkPool, FUND_DATA.length, 1000, 0, '', ' 只');
         const tkAvail = document.getElementById('tk-avail-count');
         if (tkAvail) tkAvail.textContent = `${availAgency.length} 代销 / ${availDirect.length} 直销`;
         const tkMinFee = document.getElementById('tk-min-fee');
-        if (tkMinFee) tkMinFee.textContent = `${(minFee * 100).toFixed(2)}%`;
+        if (tkMinFee) animateOdometer(tkMinFee, minFee * 100, 1200, 2, '', '%');
 
         // 费率分布图
         function feeChart(id, list) {
@@ -6003,15 +6034,17 @@ const App = (() => {
                     // 即时行内触觉反馈动效
                     copyBtn.classList.add('copied');
                     const origHtml = copyBtn.innerHTML;
-                    if (copyBtn.classList.contains('trc-copy-btn') || copyBtn.classList.contains('btn-copy-code') || copyBtn.classList.contains('btn-copy-code-action')) {
+                    copyBtn.classList.add('copy-success-pulse');
+                    if (copyBtn.classList.contains('btn-copy-code-action')) {
+                        copyBtn.innerHTML = `✓ 已复制代码 (${code})`;
+                    } else {
                         copyBtn.innerHTML = '✓';
                     }
                     setTimeout(() => {
                         copyBtn.classList.remove('copied');
-                        if (copyBtn.innerHTML === '✓') {
-                            copyBtn.innerHTML = origHtml;
-                        }
-                    }, 1200);
+                        copyBtn.classList.remove('copy-success-pulse');
+                        copyBtn.innerHTML = origHtml;
+                    }, 1500);
 
                     if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(code).then(() => {
@@ -6032,7 +6065,171 @@ const App = (() => {
             }
         });
 
-        // 全局键盘快捷键 (/ 或 Ctrl+K 搜基, D 切换深浅主题)
+        // ===== Hero 量化多资产波动 Canvas 视觉引擎 =====
+        function initHeroVectorCanvas() {
+            const canvas = document.getElementById('hero-vector-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            let animId = null;
+            let width = 0;
+            let height = 0;
+            let step = 0;
+            let isVisible = true;
+
+            const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                width = rect.width;
+                height = rect.height;
+                canvas.width = Math.max(300, Math.floor(width * dpr));
+                canvas.height = Math.max(150, Math.floor(height * dpr));
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.scale(dpr, dpr);
+            }
+
+            if (window.ResizeObserver) {
+                const ro = new ResizeObserver(() => resize());
+                ro.observe(canvas.parentElement || canvas);
+            } else {
+                window.addEventListener('resize', resize, { passive: true });
+            }
+            resize();
+
+            if (window.IntersectionObserver) {
+                const io = new IntersectionObserver(entries => {
+                    isVisible = entries[0].isIntersecting;
+                    if (isVisible && !animId && !isReducedMotion) {
+                        animId = requestAnimationFrame(render);
+                    } else if (!isVisible && animId) {
+                        cancelAnimationFrame(animId);
+                        animId = null;
+                    }
+                });
+                io.observe(canvas);
+            }
+
+            function render() {
+                if (!isVisible) {
+                    animId = null;
+                    return;
+                }
+                step += 0.014;
+                ctx.clearRect(0, 0, width, height);
+
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                
+                // 3 条平滑起伏的正弦随机漫步波浪 (模拟量化组合多标的动态收益率波动轨迹)
+                const waves = [
+                    { amp: 20, freq: 0.0035, speed: 0.9, phase: 0, color: isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(79, 70, 229, 0.14)', yOffset: height * 0.45 },
+                    { amp: 26, freq: 0.0028, speed: 1.1, phase: 2.1, color: isDark ? 'rgba(168, 85, 247, 0.20)' : 'rgba(124, 58, 237, 0.11)', yOffset: height * 0.55 },
+                    { amp: 16, freq: 0.0042, speed: 0.7, phase: 4.2, color: isDark ? 'rgba(6, 182, 212, 0.22)' : 'rgba(8, 145, 178, 0.10)', yOffset: height * 0.65 }
+                ];
+
+                for (let i = 0; i < waves.length; i++) {
+                    const w = waves[i];
+                    ctx.beginPath();
+                    ctx.moveTo(0, height);
+                    for (let x = 0; x <= width; x += 6) {
+                        const y = w.yOffset + Math.sin(x * w.freq + step * w.speed + w.phase) * w.amp + Math.cos(x * 0.0012 + step * 0.4) * (w.amp * 0.35);
+                        ctx.lineTo(x, y);
+                    }
+                    ctx.lineTo(width, height);
+                    ctx.closePath();
+                    ctx.fillStyle = w.color;
+                    ctx.fill();
+                }
+
+                if (!isReducedMotion) {
+                    animId = requestAnimationFrame(render);
+                }
+            }
+
+            if (!isReducedMotion) {
+                animId = requestAnimationFrame(render);
+            }
+        }
+        initHeroVectorCanvas();
+
+        // ===== 奖项级鼠标聚光灯高定控制器 (Spotlight Controller) =====
+        let mouseRaf = null;
+        document.addEventListener('mousemove', e => {
+            if (mouseRaf) return;
+            mouseRaf = requestAnimationFrame(() => {
+                mouseRaf = null;
+                const cards = document.querySelectorAll('.hero-banner, .quant-frontier-card, .journey-card, .sim-kpi-card, .stat, .ticker-box');
+                for (let i = 0; i < cards.length; i++) {
+                    const rect = cards[i].getBoundingClientRect();
+                    if (e.clientX >= rect.left - 100 && e.clientX <= rect.right + 100 &&
+                        e.clientY >= rect.top - 100 && e.clientY <= rect.bottom + 100) {
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        cards[i].style.setProperty('--mouse-x', `${x}px`);
+                        cards[i].style.setProperty('--mouse-y', `${y}px`);
+                    }
+                }
+            });
+        }, { passive: true });
+
+        // ===== 表格行聚焦高亮聚焦器 (Table Row Spotlight Focus) =====
+        const rankTableEl = document.getElementById('rank-table');
+        if (rankTableEl) {
+            const tb = rankTableEl.querySelector('tbody');
+            if (tb) {
+                tb.addEventListener('mouseenter', () => tb.classList.add('spotlight-active'));
+                tb.addEventListener('mouseleave', () => tb.classList.remove('spotlight-active'));
+            }
+        }
+
+        // ===== 快捷键速查 HUD 控制器 =====
+        const hudModal = document.getElementById('shortcut-hud-modal');
+        const hudCloseBtn = document.getElementById('btn-hud-close');
+        const hudOkBtn = document.getElementById('btn-hud-ok');
+        const footerHudBtn = document.getElementById('footer-btn-hud');
+
+        function openShortcutHud() {
+            if (hudModal) {
+                hudModal.style.display = 'flex';
+            }
+        }
+        function closeShortcutHud() {
+            if (hudModal) {
+                hudModal.style.display = 'none';
+            }
+        }
+        function toggleShortcutHud() {
+            if (hudModal) {
+                if (hudModal.style.display === 'none' || !hudModal.style.display) {
+                    openShortcutHud();
+                } else {
+                    closeShortcutHud();
+                }
+            }
+        }
+        if (hudCloseBtn) hudCloseBtn.addEventListener('click', closeShortcutHud);
+        if (hudOkBtn) hudOkBtn.addEventListener('click', closeShortcutHud);
+        if (footerHudBtn) footerHudBtn.addEventListener('click', openShortcutHud);
+        if (hudModal) {
+            hudModal.addEventListener('click', e => {
+                if (e.target === hudModal) closeShortcutHud();
+            });
+        }
+
+        function closeAllModals() {
+            closeShortcutHud();
+            const rks = document.getElementById('rank-select-modal');
+            if (rks) rks.style.display = 'none';
+            const qks = document.getElementById('quota-select-modal');
+            if (qks) qks.style.display = 'none';
+            const poster = document.getElementById('poster-modal-backdrop');
+            if (poster) poster.style.display = 'none';
+            closeMobileNav();
+        }
+
+        // 全局键盘快捷键 (/ 搜基, D 切换主题, ? 呼出HUD, 1-5 快速切页, Esc 关闭弹窗)
         document.addEventListener('keydown', e => {
             const target = e.target;
             const tag = target ? target.tagName.toLowerCase() : '';
@@ -6041,6 +6238,26 @@ const App = (() => {
                 if (e.key === 'd' || e.key === 'D') {
                     e.preventDefault();
                     toggleTheme();
+                } else if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+                    e.preventDefault();
+                    toggleShortcutHud();
+                } else if (e.key === '1') {
+                    e.preventDefault();
+                    location.hash = '#home';
+                } else if (e.key === '2') {
+                    e.preventDefault();
+                    location.hash = '#ranking';
+                } else if (e.key === '3') {
+                    e.preventDefault();
+                    location.hash = '#portfolio';
+                } else if (e.key === '4') {
+                    e.preventDefault();
+                    location.hash = '#simulator';
+                } else if (e.key === '5') {
+                    e.preventDefault();
+                    location.hash = '#guide';
+                } else if (e.key === 'Escape') {
+                    closeAllModals();
                 } else if (e.key === '/' || ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K'))) {
                     e.preventDefault();
                     if (location.hash !== '#ranking') {
@@ -6073,7 +6290,7 @@ const App = (() => {
             }, { passive: true });
         }
 
-        // 美股与境内公开市场时钟指示器
+        // 美股与境内公开市场时钟指示器 (含开收盘秒级实时倒计时)
         function updateMarketStatusIndicator() {
             const el = document.getElementById('footer-us-market-status');
             if (!el) return;
@@ -6081,24 +6298,50 @@ const App = (() => {
                 const now = new Date();
                 const nyTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
                 const day = nyTime.getDay();
-                const totalMins = nyTime.getHours() * 60 + nyTime.getMinutes();
+                const hours = nyTime.getHours();
+                const mins = nyTime.getMinutes();
+                const secs = nyTime.getSeconds();
+                const totalSecs = (hours * 3600) + (mins * 60) + secs;
                 const isWeekday = day >= 1 && day <= 5;
 
-                if (isWeekday && totalMins >= 570 && totalMins < 960) {
-                    el.innerHTML = '<span style="color:var(--ok)">● 美股开盘交易中</span>';
-                } else if (isWeekday && totalMins >= 240 && totalMins < 570) {
-                    el.innerHTML = '<span style="color:var(--warn)">◑ 美股盘前交易时段</span>';
-                } else if (isWeekday && totalMins >= 960 && totalMins < 1200) {
-                    el.innerHTML = '<span style="color:var(--warn)">◐ 美股盘后交易时段</span>';
+                const openSecs = 9 * 3600 + 30 * 60; // 34200 (09:30)
+                const closeSecs = 16 * 3600;          // 57600 (16:00)
+
+                function fmtSecs(secDiff) {
+                    if (secDiff < 0) secDiff = 0;
+                    const h = Math.floor(secDiff / 3600);
+                    const m = Math.floor((secDiff % 3600) / 60);
+                    const s = Math.floor(secDiff % 60);
+                    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                }
+
+                if (isWeekday && totalSecs >= openSecs && totalSecs < closeSecs) {
+                    const remaining = closeSecs - totalSecs;
+                    el.innerHTML = `<span style="color:var(--ok)">● 美股开盘交易中 (距收盘 ${fmtSecs(remaining)})</span>`;
+                } else if (isWeekday && totalSecs >= 14400 && totalSecs < openSecs) {
+                    const remaining = openSecs - totalSecs;
+                    el.innerHTML = `<span style="color:var(--warn)">◑ 美股盘前时段 (距开盘 ${fmtSecs(remaining)})</span>`;
+                } else if (isWeekday && totalSecs >= closeSecs && totalSecs < 72000) {
+                    el.innerHTML = `<span style="color:var(--warn)">◐ 美股盘后交易时段</span>`;
                 } else {
-                    el.innerHTML = '<span style="color:var(--txt3)">○ 已休市 (等待开盘)</span>';
+                    let nextOpenDiff = 0;
+                    if (isWeekday && totalSecs < 14400) {
+                        nextOpenDiff = openSecs - totalSecs;
+                    } else {
+                        let daysToAdd = 1;
+                        if (day === 5) daysToAdd = 3;
+                        else if (day === 6) daysToAdd = 2;
+                        else if (day === 0) daysToAdd = 1;
+                        nextOpenDiff = (86400 - totalSecs) + ((daysToAdd - 1) * 86400) + openSecs;
+                    }
+                    el.innerHTML = `<span style="color:var(--txt3)">○ 已休市 (距开盘 ${fmtSecs(nextOpenDiff)})</span>`;
                 }
             } catch (e) {
                 el.textContent = '监测正常';
             }
         }
         updateMarketStatusIndicator();
-        setInterval(updateMarketStatusIndicator, 60000);
+        setInterval(updateMarketStatusIndicator, 1000);
 
         // 全局便捷悬浮岛滚动监听与交互
         const floatBar = document.getElementById('floating-quick-bar');
