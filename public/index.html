@@ -213,11 +213,11 @@
     <div class="hero-banner">
         <canvas id="hero-vector-canvas" class="hero-vector-canvas" aria-hidden="true"></canvas>
         <div class="hero-badge-wrap">
-            <span class="hero-pill hero-pill-live"><span class="brand-pulse-dot"></span> LIVE QUANT RADAR // 2026 EDITION</span>
-            <span class="hero-pill" style="background:rgba(99,102,241,0.12);color:var(--accent2);border-color:rgba(99,102,241,0.3)">💎 MPT 马克维茨有效前沿</span>
-            <span class="hero-pill" style="background:rgba(239,68,68,0.1);color:var(--err);border-color:rgba(239,68,68,0.25)">🌪️ 黑天鹅压力测试</span>
-            <span class="hero-pill" style="background:rgba(16,185,129,0.1);color:var(--ok);border-color:rgba(16,185,129,0.25)">📈 估值自适应动态定投</span>
-            <span class="hero-pill" style="background:rgba(8,145,178,0.1);color:var(--cyan);border-color:rgba(8,145,178,0.25)">🚀 3D 张量通算引擎</span>
+            <span class="hero-pill hero-pill-live"><span class="brand-pulse-dot ok"></span> LIVE QUANT RADAR // 2026 EDITION</span>
+            <span class="hero-pill hero-pill-metallic">💎 MPT 马克维茨有效前沿</span>
+            <span class="hero-pill hero-pill-metallic" style="color:var(--err)">🌪️ 黑天鹅压力测试</span>
+            <span class="hero-pill hero-pill-metallic" style="color:var(--ok)">📈 估值自适应动态双轨</span>
+            <span class="hero-pill hero-pill-metallic" style="color:var(--cyan)">🚀 3D 张量通算引擎</span>
         </div>
         <h1 class="hero-title">用专业量化金融工程 · <br><span class="hero-title-gradient">重新定义普通人的美股定投</span></h1>
         <p class="hero-desc">
@@ -246,38 +246,99 @@
         <div class="hero-quant-ticker" id="hero-quant-ticker">
             <div class="ticker-header-bar" aria-hidden="true">
                 <div class="ticker-header-left">
-                    <span class="brand-pulse-dot"></span>
+                    <span class="brand-pulse-dot ok"></span>
                     <span class="ticker-sys-title">SYSTEM TELEMETRY DECK // QDII REALTIME QUANT STREAM</span>
+                    <span class="ticker-market-badge" id="ticker-market-badge"><span class="ticker-dot"></span> <span id="ticker-market-status">美股状态读取中...</span></span>
                 </div>
                 <div class="ticker-header-right">
-                    <span class="ticker-tag">LATENCY: 8ms</span>
-                    <span class="ticker-tag" style="color:var(--ok)">STATUS: NOMINAL</span>
+                    <span class="ticker-tag" id="ticker-latency-tag"><span class="ticker-ping-gauge"></span> LATENCY: 8ms</span>
+                    <span class="ticker-tag ticker-node-tag">NODE: HKG-EDGE-01</span>
+                    <span class="ticker-tag" style="color:var(--ok)">STATUS: NOMINAL 100%</span>
                 </div>
             </div>
             <div class="ticker-box" data-pod="pool">
                 <div class="tk-label"><span class="tk-dot"></span>标的池监控</div>
                 <div class="tk-val" id="tk-pool-count">60 只</div>
                 <div class="tk-sub">纳指 44 · 标普 16 (全份额)</div>
+                <div class="tk-sparkline-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 100 24" class="tk-sparkline-svg" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="tk-grad-pool" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.35"/>
+                                <stop offset="100%" stop-color="#6366f1" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M0,20 Q20,16 40,18 T80,8 T100,4 L100,24 L0,24 Z" fill="url(#tk-grad-pool)"/>
+                        <path d="M0,20 Q20,16 40,18 T80,8 T100,4" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="100" cy="4" r="2.5" fill="#6366f1"/>
+                    </svg>
+                </div>
             </div>
             <div class="ticker-box" data-pod="channel">
                 <div class="tk-label"><span class="tk-dot"></span>可购通道覆盖</div>
                 <div class="tk-val" id="tk-avail-count">23 代销 / 25 直销</div>
                 <div class="tk-sub">每日自动穿透限额公告</div>
+                <div class="tk-sparkline-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 100 24" class="tk-sparkline-svg" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="tk-grad-channel" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#10b981" stop-opacity="0.35"/>
+                                <stop offset="100%" stop-color="#10b981" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M0,22 Q25,18 50,14 T85,7 T100,5 L100,24 L0,24 Z" fill="url(#tk-grad-channel)"/>
+                        <path d="M0,22 Q25,18 50,14 T85,7 T100,5" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="100" cy="5" r="2.5" fill="#10b981"/>
+                    </svg>
+                </div>
             </div>
             <div class="ticker-box" data-pod="fee">
                 <div class="tk-label"><span class="tk-dot"></span>最优综合年费</div>
                 <div class="tk-val" id="tk-min-fee" style="color:var(--ok)">0.60%</div>
-                <div class="tk-sub">管理+托管+销售费</div>
+                <div class="tk-sub">管理+托管+销售费 (省52%磨损)</div>
+                <div class="tk-sparkline-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 100 24" class="tk-sparkline-svg" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="tk-grad-fee" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#059669" stop-opacity="0.35"/>
+                                <stop offset="100%" stop-color="#059669" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M0,4 Q30,6 60,14 T100,20 L100,24 L0,24 Z" fill="url(#tk-grad-fee)"/>
+                        <path d="M0,4 Q30,6 60,14 T100,20" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="100" cy="20" r="2.5" fill="#059669"/>
+                    </svg>
+                </div>
             </div>
             <div class="ticker-box" data-pod="valuation">
                 <div class="tk-label"><span class="tk-dot"></span>美股宏观估值中枢</div>
                 <div class="tk-val" style="color:#d97706">纳指 PE 31.8 · 标普 PE 26.4</div>
                 <div class="tk-sub">历史百分位 ~65% (合理偏高)</div>
+                <div class="tk-sparkline-wrap" aria-hidden="true">
+                    <div class="tk-gauge-bar">
+                        <div class="tk-gauge-track">
+                            <div class="tk-gauge-fill" style="width:65%"></div>
+                            <span class="tk-gauge-needle" style="left:65%"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="ticker-box" data-pod="perf">
                 <div class="tk-label"><span class="tk-dot"></span>高维通算能力</div>
                 <div class="tk-val" style="color:var(--accent2)">5,000 条 / 秒级</div>
                 <div class="tk-sub">Web Worker 向量化蒙特卡洛</div>
+                <div class="tk-sparkline-wrap" aria-hidden="true">
+                    <div class="tk-spectrum-bars">
+                        <span class="spec-bar s1"></span>
+                        <span class="spec-bar s2"></span>
+                        <span class="spec-bar s3"></span>
+                        <span class="spec-bar s4"></span>
+                        <span class="spec-bar s5"></span>
+                        <span class="spec-bar s6"></span>
+                        <span class="spec-bar s7"></span>
+                        <span class="spec-bar s8"></span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1306,22 +1367,26 @@
                 <span class="dot-yellow"></span>
                 <span class="dot-green"></span>
             </div>
-            <div class="terminal-title"><span class="brand-pulse-dot"></span> QUANT MATRIX // 60 标的全景质量排序终端</div>
-            <div class="terminal-status"><span class="terminal-tag">LIVE SORTING</span> <span>6维量化加权算法</span></div>
+            <div class="terminal-title"><span class="brand-pulse-dot ok"></span> QUANT MATRIX // 60 标的全景质量排序终端</div>
+            <div class="terminal-status"><span class="terminal-tag">LIVE SORTING</span> <span class="terminal-tag terminal-tag-sub">6维量化加权算法</span> <span class="terminal-tag terminal-tag-node">SPEED: 4ms</span></div>
         </div>
         <table id="rank-table">
             <thead>
                 <tr>
-                    <th># · 代码</th>
-                    <th>基金名称</th>
-                    <th>综合费率</th>
-                    <th>代销限购</th>
-                    <th>直销限购</th>
-                    <th>近3年收益</th>
+                    <th data-key="rank"># · 代码 <span class="arr">⇅</span></th>
+                    <th data-key="name">基金名称 <span class="arr">⇅</span></th>
+                    <th data-key="fee">综合费率 <span class="arr">⇅</span></th>
+                    <th data-key="purchase_fee">申购费 <span class="arr">⇅</span></th>
+                    <th data-key="tracking_error">跟踪误差 / IR <span class="arr">⇅</span></th>
+                    <th data-key="scale">规模 <span class="arr">⇅</span></th>
+                    <th data-key="return_3yr">近3年 <span class="arr">⇅</span></th>
+                    <th data-key="morningstar">晨星 <span class="arr">⇅</span></th>
+                    <th data-key="limit_status">限购(代/直) <span class="arr">⇅</span></th>
+                    <th data-key="score">评分 <span class="arr">⇅</span></th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <tr class="rank-row-gold" data-code="000834">
                     <td>
                         <div class="tbl-rank-code-cell">
                             <div class="trc-badge-wrap"><span class="tbl-rank-badge rank-gold">🥇 1</span></div>
@@ -1332,13 +1397,22 @@
                             </div>
                         </div>
                     </td>
-                    <td><div class="tbl-name-cell"><span class="badge-share badge-a">A类</span><a href="/fund/000834" class="fund-name-link">大成纳斯达克100ETF联接A</a></div></td>
-                    <td>1.00%/年</td>
-                    <td>限10元/日</td>
-                    <td>限100元/日</td>
-                    <td style="color:var(--ok)">+79.24%</td>
+                    <td><div class="tbl-name-cell"><span class="badge-share badge-a">A类</span><a href="/fund/000834" class="fund-name-link" data-code="000834">大成纳斯达克100ETF联接A</a><span class="tbl-row-expand-arrow">▾</span></div></td>
+                    <td><div class="tbl-fee-cell"><span class="fee-tooltip-trigger" style="color:var(--txt)">1.00%</span></div></td>
+                    <td><span style="color:var(--ok);font-weight:600">0.00%</span></td>
+                    <td><div class="tbl-te-cell"><span class="tbl-te-val">0.10%</span><div class="tbl-te-sub"><span style="color:var(--ok);margin-right:6px">IR <strong>1.82</strong></span><span style="color:var(--up);font-weight:600">TD +0.8%</span></div></div></td>
+                    <td><div class="tbl-scale-cell"><span class="tbl-scale-val">49.6亿</span><div class="tbl-scale-bar-track" title="最新资产规模: 49.6亿"><div class="tbl-scale-bar-fill" style="width:41%"></div></div></div></td>
+                    <td>
+                        <div class="tbl-return-cell">
+                            <span class="tbl-return-val" style="color:var(--ok)">+79.24%</span>
+                            <div class="tbl-return-spark-track" title="近3年累计收益表现条"><div class="tbl-return-spark-fill spark-pos" style="width:79%"></div></div>
+                        </div>
+                    </td>
+                    <td><span class="tbl-stars-wrap" style="color:var(--warn)">★★★</span></td>
+                    <td><div class="tbl-limit-cell"><div class="tbl-limit-row"><span class="tbl-limit-lbl">代销</span><span class="pill py pill-tight"><span class="status-pulse-dot warn"></span> 限10元/日</span></div><div class="tbl-limit-row"><span class="tbl-limit-lbl">直销</span><span class="pill py pill-tight"><span class="status-pulse-dot warn"></span> 限100元/日</span></div></div></td>
+                    <td><div class="tbl-score-cell"><div class="tbl-score-num-wrap"><strong class="tbl-score-val">96.8</strong><span class="tbl-score-sub">分</span></div><div class="tbl-score-meter-bar" title="量化六维加权得分: 96.8 / 100"><div class="tbl-score-meter-fill" style="width:97%"></div></div></div></td>
                 </tr>
-                <tr>
+                <tr class="rank-row-silver" data-code="040046">
                     <td>
                         <div class="tbl-rank-code-cell">
                             <div class="trc-badge-wrap"><span class="tbl-rank-badge rank-silver">🥈 2</span></div>
@@ -1349,13 +1423,22 @@
                             </div>
                         </div>
                     </td>
-                    <td><div class="tbl-name-cell"><span class="badge-share badge-a">A类</span><a href="/fund/040046" class="fund-name-link">华安纳斯达克100联接A</a></div></td>
-                    <td>0.80%/年</td>
-                    <td>限1000元/日</td>
-                    <td>开放申购</td>
-                    <td style="color:var(--ok)">+78.10%</td>
+                    <td><div class="tbl-name-cell"><span class="badge-share badge-a">A类</span><a href="/fund/040046" class="fund-name-link" data-code="040046">华安纳斯达克100联接A</a><span class="tbl-row-expand-arrow">▾</span></div></td>
+                    <td><div class="tbl-fee-cell"><span class="fee-tooltip-trigger" style="color:#34d399;font-weight:700">0.80%</span><span class="badge-low-fee">极低</span></div></td>
+                    <td><span style="color:var(--ok);font-weight:600">0.00%</span></td>
+                    <td><div class="tbl-te-cell"><span class="tbl-te-val">0.10%</span><div class="tbl-te-sub"><span style="color:var(--txt3);margin-right:6px">IR <strong>-0.04</strong></span><span style="color:var(--up);font-weight:600">TD +0.5%</span></div></div></td>
+                    <td><div class="tbl-scale-cell"><span class="tbl-scale-val">63.4亿</span><div class="tbl-scale-bar-track" title="最新资产规模: 63.4亿"><div class="tbl-scale-bar-fill" style="width:53%"></div></div></div></td>
+                    <td>
+                        <div class="tbl-return-cell">
+                            <span class="tbl-return-val" style="color:var(--ok)">+78.10%</span>
+                            <div class="tbl-return-spark-track" title="近3年累计收益表现条"><div class="tbl-return-spark-fill spark-pos" style="width:78%"></div></div>
+                        </div>
+                    </td>
+                    <td><span class="tbl-stars-wrap" style="color:var(--warn)">★★★</span></td>
+                    <td><div class="tbl-limit-cell"><div class="tbl-limit-row"><span class="tbl-limit-lbl">代销</span><span class="pill py pill-tight"><span class="status-pulse-dot warn"></span> 限1000元/日</span></div><div class="tbl-limit-row"><span class="tbl-limit-lbl">直销</span><span class="pill pg pill-relaxed"><span class="status-pulse-dot ok"></span> 开放申购</span></div></div></td>
+                    <td><div class="tbl-score-cell"><div class="tbl-score-num-wrap"><strong class="tbl-score-val">95.4</strong><span class="tbl-score-sub">分</span></div><div class="tbl-score-meter-bar" title="量化六维加权得分: 95.4 / 100"><div class="tbl-score-meter-fill" style="width:95%"></div></div></div></td>
                 </tr>
-                <tr>
+                <tr class="rank-row-bronze" data-code="050025">
                     <td>
                         <div class="tbl-rank-code-cell">
                             <div class="trc-badge-wrap"><span class="tbl-rank-badge rank-bronze">🥉 3</span></div>
@@ -1366,11 +1449,20 @@
                             </div>
                         </div>
                     </td>
-                    <td><div class="tbl-name-cell"><span class="badge-share badge-a">A类</span><a href="/fund/050025" class="fund-name-link">博时标普500ETF联接A</a></div></td>
-                    <td>0.80%/年</td>
-                    <td>限500元/日</td>
-                    <td>开放申购</td>
-                    <td style="color:var(--ok)">+56.40%</td>
+                    <td><div class="tbl-name-cell"><span class="badge-share badge-a">A类</span><a href="/fund/050025" class="fund-name-link" data-code="050025">博时标普500ETF联接A</a><span class="tbl-row-expand-arrow">▾</span></div></td>
+                    <td><div class="tbl-fee-cell"><span class="fee-tooltip-trigger" style="color:#34d399;font-weight:700">0.80%</span><span class="badge-low-fee">极低</span></div></td>
+                    <td><span style="color:var(--ok);font-weight:600">0.00%</span></td>
+                    <td><div class="tbl-te-cell"><span class="tbl-te-val">0.12%</span><div class="tbl-te-sub"><span style="color:var(--txt3);margin-right:6px">IR <strong>0.11</strong></span><span style="color:var(--up);font-weight:600">TD +0.3%</span></div></div></td>
+                    <td><div class="tbl-scale-cell"><span class="tbl-scale-val">63.5亿</span><div class="tbl-scale-bar-track" title="最新资产规模: 63.5亿"><div class="tbl-scale-bar-fill" style="width:53%"></div></div></div></td>
+                    <td>
+                        <div class="tbl-return-cell">
+                            <span class="tbl-return-val" style="color:var(--ok)">+56.40%</span>
+                            <div class="tbl-return-spark-track" title="近3年累计收益表现条"><div class="tbl-return-spark-fill spark-pos" style="width:56%"></div></div>
+                        </div>
+                    </td>
+                    <td><span class="tbl-stars-wrap" style="color:var(--warn)">★★</span></td>
+                    <td><div class="tbl-limit-cell"><div class="tbl-limit-row"><span class="tbl-limit-lbl">代销</span><span class="pill py pill-tight"><span class="status-pulse-dot warn"></span> 限500元/日</span></div><div class="tbl-limit-row"><span class="tbl-limit-lbl">直销</span><span class="pill pg pill-relaxed"><span class="status-pulse-dot ok"></span> 开放申购</span></div></div></td>
+                    <td><div class="tbl-score-cell"><div class="tbl-score-num-wrap"><strong class="tbl-score-val">93.2</strong><span class="tbl-score-sub">分</span></div><div class="tbl-score-meter-bar" title="量化六维加权得分: 93.2 / 100"><div class="tbl-score-meter-fill" style="width:93%"></div></div></div></td>
                 </tr>
             </tbody>
         </table>

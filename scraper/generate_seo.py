@@ -141,8 +141,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <span class="dot-yellow"></span>
                 <span class="dot-green"></span>
             </div>
-            <div class="terminal-title"><span class="brand-pulse-dot"></span> QUANT SECURITY ANALYSIS // {fund_code}</div>
-            <div class="terminal-status"><span class="terminal-tag">{index_type}</span> <span>{share_class}类份额</span></div>
+            <div class="terminal-title"><span class="brand-pulse-dot ok"></span> QUANT SECURITY ANALYSIS // {fund_code}</div>
+            <div class="terminal-status"><span class="terminal-tag">{index_type}</span> <span class="terminal-tag terminal-tag-sub">{share_class}类份额</span></div>
         </div>
         <h1 style="font-size:1.5rem;margin-bottom:0.5rem"><span class="badge-share badge-{share_class_lower}">{share_class}类</span> {fund_name} (<span style="color:var(--txt2)">{fund_code}</span>)</h1>
         <p style="color:var(--txt2);margin-bottom:1.5rem">{full_name} | {manager_company} | 基金经理: {fund_manager} | 成立日期: {inception_date}</p>

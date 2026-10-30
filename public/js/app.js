@@ -315,10 +315,10 @@ const App = (() => {
     function stars(n) { return (!n || n === 0) ? '-' : '★'.repeat(n); }
     function pill(s) {
         if (!s) return '<span class="pill pb">未知</span>';
-        if (s.includes('未开通')) return '<span class="pill" style="background:rgba(148,163,184,0.12);color:var(--txt3);border:1px solid rgba(148,163,184,0.3)">' + s + '</span>';
-        if (s.includes('暂停')) return '<span class="pill pr">' + s + '</span>';
-        if (s.includes('限')) return '<span class="pill py">' + s + '</span>';
-        return '<span class="pill pg">' + s + '</span>';
+        if (s.includes('未开通')) return '<span class="pill pill-muted"><span class="status-pulse-dot muted"></span>' + s + '</span>';
+        if (s.includes('暂停')) return '<span class="pill pr pill-paused"><span class="status-pulse-dot err"></span>' + s + '</span>';
+        if (s.includes('限')) return '<span class="pill py pill-tight"><span class="status-pulse-dot warn"></span>' + s + '</span>';
+        return '<span class="pill pg pill-relaxed"><span class="status-pulse-dot ok"></span>' + s + '</span>';
     }
     function feeC(f) {
         if (f <= 0.006) return 'color:#34d399;font-weight:700';
@@ -859,10 +859,19 @@ const App = (() => {
             }
             return `<div class="tbl-te-cell"><span class="tbl-te-val">${teStr}</span>${sub ? '<div class="tbl-te-sub">' + sub + '</div>' : ''}</div>`;
         } },
-        { key: 'scale', label: '规模', render: r => r.scale ? r.scale.toFixed(1) + '亿' : '-' },
+        { key: 'scale', label: '规模', render: r => {
+            if (!r.scale) return '-';
+            const scVal = r.scale.toFixed(1) + '亿';
+            const pct = Math.min(100, Math.max(8, (r.scale / 120) * 100));
+            return `<div class="tbl-scale-cell"><span class="tbl-scale-val">${scVal}</span><div class="tbl-scale-bar-track" title="最新资产规模: ${scVal}"><div class="tbl-scale-bar-fill" style="width:${pct}%"></div></div></div>`;
+        } },
         { key: 'return_3yr', label: '近3年', render: r => { 
             const v = r.return_3yr; 
-            if (v != null) return '<span style="color:var(--ok)">' + fmt(v) + '</span>';
+            if (v != null) {
+                const retColor = v >= 0 ? 'var(--ok)' : 'var(--err)';
+                const retWidth = Math.min(100, Math.max(10, Math.abs(v) / 1.0 * 100));
+                return `<div class="tbl-return-cell"><span class="tbl-return-val" style="color:${retColor}">${fmt(v)}</span><div class="tbl-return-spark-track" title="近3年累计收益表现条"><div class="tbl-return-spark-fill ${v>=0?'spark-pos':'spark-neg'}" style="width:${retWidth}%"></div></div></div>`;
+            }
             if (r.return_since != null && r.inception_date) {
                 const inc = new Date(r.inception_date);
                 const now = new Date();
@@ -870,17 +879,19 @@ const App = (() => {
                 const y = Math.floor(dm/12);
                 const m = dm % 12;
                 const sp = y > 0 ? (m > 0 ? `${y}年${m}个月` : `${y}年`) : `${m}个月`;
-                return `<span style="color:var(--ok)">${fmt(r.return_since)} <span style="font-size:0.8em;color:var(--desc)">(${sp})*</span></span>`;
+                const retColor = r.return_since >= 0 ? 'var(--ok)' : 'var(--err)';
+                const retWidth = Math.min(100, Math.max(10, Math.abs(r.return_since) / 1.0 * 100));
+                return `<div class="tbl-return-cell"><span class="tbl-return-val" style="color:${retColor}">${fmt(r.return_since)} <span style="font-size:0.75em;color:var(--txt3)">(${sp})*</span></span><div class="tbl-return-spark-track" title="成立以来累计收益: ${fmt(r.return_since)} (${sp})"><div class="tbl-return-spark-fill ${r.return_since>=0?'spark-pos':'spark-neg'}" style="width:${retWidth}%;opacity:0.85"></div></div></div>`;
             }
             return '-'; 
         } },
-        { key: 'morningstar', label: '晨星', render: r => { const n = r.morningstar; return n > 0 ? '<span style="color:var(--warn)">' + '★'.repeat(n) + '</span>' : '-'; } },
+        { key: 'morningstar', label: '晨星', render: r => { const n = r.morningstar; return n > 0 ? '<span class="tbl-stars-wrap" style="color:var(--warn)">' + '★'.repeat(n) + '</span>' : '-'; } },
         { key: 'limit_status', label: '限购(代/直)', render: r => {
             const agencyPill = pill(r.limit_status);
             const directPill = r.direct_limit_status ? pill(r.direct_limit_status) : '<span class="tbl-limit-na">—</span>';
             let shareHtml = '';
             if (r.quota_sharing === 'SHARED') {
-                shareHtml = `<span class="badge-shared" title="${r.quota_shared_desc || '多类份额合并计算单日限额'}">🔗 共享额度</span>`;
+                shareHtml = `<span class="badge-shared" title="${r.quota_shared_desc || '多类份额合并计算单日限额'}"><span class="brand-pulse-dot" style="width:5px;height:5px;background:var(--accent2);margin-right:2px"></span> 🔗 共享额度</span>`;
             } else if (r.quota_sharing === 'INDEPENDENT') {
                 shareHtml = `<span class="badge-indep" title="${r.quota_shared_desc || '各份额独立计算限额'}">独立额度</span>`;
             } else {
@@ -888,7 +899,11 @@ const App = (() => {
             }
             return `<div class="tbl-limit-cell"><div class="tbl-limit-row"><span class="tbl-limit-lbl">代销</span>${agencyPill}</div><div class="tbl-limit-row"><span class="tbl-limit-lbl">直销</span>${directPill}</div><div class="tbl-limit-row tbl-limit-share">${shareHtml}</div></div>`;
         } },
-        { key: 'score', label: '评分', render: r => `<div class="tbl-score-cell"><strong class="tbl-score-val">${r.score}</strong></div>` },
+        { key: 'score', label: '评分', render: r => {
+            const sc = r.score != null ? r.score : 0;
+            const pct = Math.max(8, Math.min(100, sc));
+            return `<div class="tbl-score-cell"><div class="tbl-score-num-wrap"><strong class="tbl-score-val">${r.score ?? '-'}</strong><span class="tbl-score-sub">分</span></div><div class="tbl-score-meter-bar" title="量化六维加权得分: ${r.score ?? '-'} / 100"><div class="tbl-score-meter-fill" style="width:${pct}%"></div></div></div>`;
+        } },
     ];
 
     function scoreFund(f, medianTE) {
@@ -6151,7 +6166,7 @@ const App = (() => {
             }
         });
 
-        // ===== Hero 量化多资产波动 Canvas 视觉引擎 (Award Tier Dynamic Wave & Particle Nodes) =====
+        // ===== Hero 量化多资产波动 Canvas 视觉引擎 (Award Tier Constellation Matrix & Dynamic Wave Tensors) =====
         function initHeroVectorCanvas() {
             const canvas = document.getElementById('hero-vector-canvas');
             if (!canvas) return;
@@ -6169,6 +6184,24 @@ const App = (() => {
             let mouseTargetY = -999;
 
             const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // Quantum Constellation Particles
+            const PARTICLE_COUNT = 36;
+            const particles = [];
+            function initParticles() {
+                particles.length = 0;
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    particles.push({
+                        x: Math.random() * (width || 800),
+                        y: Math.random() * (height || 400),
+                        vx: (Math.random() - 0.5) * 0.45,
+                        vy: (Math.random() - 0.5) * 0.35,
+                        r: 1.4 + Math.random() * 1.6,
+                        baseAlpha: 0.25 + Math.random() * 0.45,
+                        pulse: Math.random() * Math.PI * 2
+                    });
+                }
+            }
 
             const heroBanner = canvas.closest('.hero-banner');
             if (heroBanner) {
@@ -6192,6 +6225,14 @@ const App = (() => {
                 canvas.height = Math.max(150, Math.floor(height * dpr));
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.scale(dpr, dpr);
+                if (particles.length === 0) {
+                    initParticles();
+                } else {
+                    for (let i = 0; i < particles.length; i++) {
+                        if (particles[i].x > width) particles[i].x = Math.random() * width;
+                        if (particles[i].y > height) particles[i].y = Math.random() * height;
+                    }
+                }
             }
 
             if (window.ResizeObserver) {
@@ -6205,7 +6246,7 @@ const App = (() => {
             if (window.IntersectionObserver) {
                 const io = new IntersectionObserver(entries => {
                     isVisible = entries[0].isIntersecting;
-                    if (isVisible && !animId && !isReducedMotion) {
+                    if (isVisible && !animId && !isReducedMotion && !document.hidden) {
                         animId = requestAnimationFrame(render);
                     } else if (!isVisible && animId) {
                         cancelAnimationFrame(animId);
@@ -6215,32 +6256,111 @@ const App = (() => {
                 io.observe(canvas);
             }
 
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    if (animId) {
+                        cancelAnimationFrame(animId);
+                        animId = null;
+                    }
+                } else if (isVisible && !animId && !isReducedMotion) {
+                    animId = requestAnimationFrame(render);
+                }
+            });
+
             function render() {
-                if (!isVisible) {
+                if (!isVisible || document.hidden) {
                     animId = null;
                     return;
                 }
                 step += 0.016;
+                if (step > 6283) step = 0;
                 ctx.clearRect(0, 0, width, height);
 
                 // Smooth mouse interpolation
                 if (mouseTargetX > 0) {
-                    mouseX += (mouseTargetX - mouseX) * 0.1;
-                    mouseY += (mouseTargetY - mouseY) * 0.1;
+                    mouseX += (mouseTargetX - mouseX) * 0.12;
+                    mouseY += (mouseTargetY - mouseY) * 0.12;
                 } else {
                     mouseX = -999;
                     mouseY = -999;
                 }
 
                 const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-                
-                // 3 条平滑起伏的正弦随机漫步金融波浪
+
+                // Layer 1: Perspective Horizon Grid Lines (Subtle Cyber Grid)
+                const gridY = height * 0.72;
+                const gridLines = 7;
+                ctx.beginPath();
+                for (let g = 0; g < gridLines; g++) {
+                    const py = gridY + (height - gridY) * Math.pow(g / (gridLines - 1), 1.6);
+                    ctx.moveTo(0, py);
+                    ctx.lineTo(width, py);
+                }
+                ctx.strokeStyle = isDark ? 'rgba(99, 102, 241, 0.06)' : 'rgba(79, 70, 229, 0.03)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Layer 2: Quantum Constellation Particle Mesh
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    // Bounce on borders
+                    if (p.x < 0) { p.x = 0; p.vx *= -1; }
+                    else if (p.x > width) { p.x = width; p.vx *= -1; }
+                    if (p.y < 0) { p.y = 0; p.vy *= -1; }
+                    else if (p.y > height) { p.y = height; p.vy *= -1; }
+
+                    // Mouse gentle repulsion
+                    if (mouseX > 0) {
+                        const mdx = p.x - mouseX;
+                        const mdy = p.y - mouseY;
+                        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+                        if (mdist < 140 && mdist > 1) {
+                            const force = (1 - mdist / 140) * 1.2;
+                            p.x += (mdx / mdist) * force;
+                            p.y += (mdy / mdist) * force;
+                        }
+                    }
+
+                    // Render particle node
+                    p.pulse += 0.02;
+                    const pulseAlpha = p.baseAlpha + Math.sin(p.pulse) * 0.15;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = isDark
+                        ? `rgba(165, 180, 252, ${pulseAlpha})`
+                        : `rgba(99, 102, 241, ${pulseAlpha * 0.8})`;
+                    ctx.fill();
+
+                    // Filament connections
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 105) {
+                            const connAlpha = (1 - dist / 105) * (isDark ? 0.22 : 0.12);
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = isDark
+                                ? `rgba(129, 140, 248, ${connAlpha})`
+                                : `rgba(79, 70, 229, ${connAlpha})`;
+                            ctx.lineWidth = 0.85;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                // Layer 3: 3 Dynamic Financial Sine Wave Tensor Ribbons
                 const waves = [
                     { 
                         amp: 24, freq: 0.0032, speed: 0.85, phase: 0, 
                         stroke: isDark ? 'rgba(99, 102, 241, 0.75)' : 'rgba(79, 70, 229, 0.45)',
                         fillGrad: [
-                            [0, isDark ? 'rgba(99, 102, 241, 0.28)' : 'rgba(79, 70, 229, 0.12)'],
+                            [0, isDark ? 'rgba(99, 102, 241, 0.26)' : 'rgba(79, 70, 229, 0.10)'],
                             [1, isDark ? 'rgba(99, 102, 241, 0.0)' : 'rgba(79, 70, 229, 0.0)']
                         ],
                         yOffset: height * 0.48,
@@ -6250,7 +6370,7 @@ const App = (() => {
                         amp: 30, freq: 0.0025, speed: 1.05, phase: 2.1, 
                         stroke: isDark ? 'rgba(168, 85, 247, 0.65)' : 'rgba(124, 58, 237, 0.35)',
                         fillGrad: [
-                            [0, isDark ? 'rgba(168, 85, 247, 0.22)' : 'rgba(124, 58, 237, 0.08)'],
+                            [0, isDark ? 'rgba(168, 85, 247, 0.20)' : 'rgba(124, 58, 237, 0.07)'],
                             [1, isDark ? 'rgba(168, 85, 247, 0.0)' : 'rgba(124, 58, 237, 0.0)']
                         ],
                         yOffset: height * 0.58,
@@ -6260,7 +6380,7 @@ const App = (() => {
                         amp: 18, freq: 0.0040, speed: 0.7, phase: 4.2, 
                         stroke: isDark ? 'rgba(6, 182, 212, 0.75)' : 'rgba(8, 145, 178, 0.40)',
                         fillGrad: [
-                            [0, isDark ? 'rgba(6, 182, 212, 0.24)' : 'rgba(8, 145, 178, 0.08)'],
+                            [0, isDark ? 'rgba(6, 182, 212, 0.22)' : 'rgba(8, 145, 178, 0.07)'],
                             [1, isDark ? 'rgba(6, 182, 212, 0.0)' : 'rgba(8, 145, 178, 0.0)']
                         ],
                         yOffset: height * 0.68,
@@ -6280,7 +6400,7 @@ const App = (() => {
                             const dx = x - mouseX;
                             const dist = Math.abs(dx);
                             if (dist < 180) {
-                                const factor = (1 - dist / 180) * 16;
+                                const factor = (1 - dist / 180) * 18;
                                 y += Math.sin((dx / 180) * Math.PI) * factor;
                             }
                         }
@@ -6342,9 +6462,188 @@ const App = (() => {
 
             if (!isReducedMotion) {
                 animId = requestAnimationFrame(render);
+            } else {
+                render(); // Render one crisp beauty frame for reduced motion
             }
         }
         initHeroVectorCanvas();
+
+        // ===== 平台实时行情中枢状态与网络遥测 (Live US Market Telemetry & Ping Gauge with Precise DST Timezone) =====
+        function initLiveMarketTelemetry() {
+            const statusEl = document.getElementById('ticker-market-status');
+            const badgeEl = document.getElementById('ticker-market-badge');
+            const pingEl = document.getElementById('ticker-latency-tag');
+            if (!statusEl && !pingEl) return;
+
+            function updateMarketStatus() {
+                if (!statusEl || !badgeEl) return;
+                
+                try {
+                    const now = new Date();
+                    // Accurately compute US Eastern local time (America/New_York) handling EST / EDT transitions
+                    const formatter = new Intl.DateTimeFormat('en-US', {
+                        timeZone: 'America/New_York',
+                        weekday: 'short',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: false
+                    });
+                    const parts = formatter.formatToParts(now);
+                    let weekday = '';
+                    let hour = 0;
+                    let minute = 0;
+                    for (const p of parts) {
+                        if (p.type === 'weekday') weekday = p.value;
+                        if (p.type === 'hour') hour = parseInt(p.value, 10);
+                        if (p.type === 'minute') minute = parseInt(p.value, 10);
+                    }
+                    if (hour === 24) hour = 0;
+                    const isWeekend = (weekday === 'Sat' || weekday === 'Sun');
+                    const totalMin = hour * 60 + minute;
+
+                    badgeEl.classList.remove('market-open', 'market-pre', 'market-post', 'market-closed');
+
+                    if (isWeekend) {
+                        statusEl.textContent = '美股周末休市 (CLOSED)';
+                        badgeEl.classList.add('market-closed');
+                    } else if (totalMin >= 9 * 60 + 30 && totalMin < 16 * 60) {
+                        statusEl.textContent = '美股实时开盘中 (REGULAR SESSION)';
+                        badgeEl.classList.add('market-open');
+                    } else if (totalMin >= 4 * 60 && totalMin < 9 * 60 + 30) {
+                        statusEl.textContent = '美股盘前交易中 (PRE-MARKET)';
+                        badgeEl.classList.add('market-pre');
+                    } else if (totalMin >= 16 * 60 && totalMin < 20 * 60) {
+                        statusEl.textContent = '美股盘后交易中 (AFTER-HOURS)';
+                        badgeEl.classList.add('market-post');
+                    } else {
+                        statusEl.textContent = '美股休市中 (MARKET CLOSED)';
+                        badgeEl.classList.add('market-closed');
+                    }
+                } catch (err) {
+                    statusEl.textContent = '美股实时监控中 (LIVE)';
+                    badgeEl.classList.add('market-open');
+                }
+            }
+
+            function updatePingJitter() {
+                if (!pingEl) return;
+                const basePing = 8;
+                const jitter = Math.floor(Math.random() * 5); // 0 to 4ms
+                const currentPing = basePing + jitter;
+                pingEl.innerHTML = `<span class="ticker-ping-gauge"></span> LATENCY: ${currentPing}ms`;
+            }
+
+            updateMarketStatus();
+            updatePingJitter();
+            setInterval(updateMarketStatus, 60000);
+            setInterval(updatePingJitter, 3500);
+        }
+        initLiveMarketTelemetry();
+
+        // ===== 触觉级 3D 悬浮微倾斜与磁吸按钮引擎 (Tactile 3D Card Tilt & Magnetic Buttons) =====
+        function initTactile3DAndMagneticButtons() {
+            const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const hasFinePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            if (!hasFinePointer || isReducedMotion) return;
+
+            // 1. Delegated 3D Perspective Tilt on Interactive Cards (Supports dynamically generated cards)
+            let activeTiltCard = null;
+            const tiltSelector = '.journey-card, .quant-engine-card, .ticker-box, .sim-kpi-card, .home-quota-radar-card, .home-benchmark-card, .algo-card, .article-card, .contact-card';
+
+            function resetTiltCard(card) {
+                if (!card) return;
+                card.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0) scale3d(1, 1, 1)';
+                setTimeout(() => {
+                    if (card !== activeTiltCard) card.style.transition = '';
+                }, 450);
+            }
+
+            document.addEventListener('mousemove', e => {
+                const card = e.target.closest(tiltSelector);
+                if (activeTiltCard && activeTiltCard !== card) {
+                    resetTiltCard(activeTiltCard);
+                    activeTiltCard = null;
+                }
+                if (!card) return;
+                activeTiltCard = card;
+
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                const tiltX = -y * 7;
+                const tiltY = x * 7;
+                card.style.transition = 'transform 0.08s ease-out';
+                card.style.transform = `perspective(1000px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) translateY(-3px) scale3d(1.012, 1.012, 1.012)`;
+            }, { passive: true });
+
+            document.addEventListener('mouseleave', () => {
+                if (activeTiltCard) {
+                    resetTiltCard(activeTiltCard);
+                    activeTiltCard = null;
+                }
+            }, { passive: true });
+
+            window.addEventListener('blur', () => {
+                if (activeTiltCard) {
+                    resetTiltCard(activeTiltCard);
+                    activeTiltCard = null;
+                }
+            }, { passive: true });
+
+            // 2. Delegated Magnetic Buttons with Liquid Specular Highlight Trail
+            let activeBtn = null;
+            const magneticSelector = '.hero-btn-primary, .hero-btn-secondary, .hero-btn-ghost, .nav-cta-btn';
+
+            function resetBtn(btn) {
+                if (!btn) return;
+                btn.style.transition = 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+                btn.style.transform = 'translate(0px, 0px)';
+                setTimeout(() => {
+                    if (btn !== activeBtn) btn.style.transition = '';
+                }, 350);
+            }
+
+            document.addEventListener('mousemove', e => {
+                const btn = e.target.closest(magneticSelector);
+                if (activeBtn && activeBtn !== btn) {
+                    resetBtn(activeBtn);
+                    activeBtn = null;
+                }
+                if (!btn) return;
+                activeBtn = btn;
+
+                const rect = btn.getBoundingClientRect();
+                const mx = e.clientX - rect.left;
+                const my = e.clientY - rect.top;
+                btn.style.setProperty('--btn-mx', `${mx}px`);
+                btn.style.setProperty('--btn-my', `${my}px`);
+
+                const cx = rect.width / 2;
+                const cy = rect.height / 2;
+                const dx = mx - cx;
+                const dy = my - cy;
+                const pullX = dx * 0.16;
+                const pullY = dy * 0.16;
+                btn.style.transition = 'transform 0.08s ease-out';
+                btn.style.transform = `translate(${pullX.toFixed(1)}px, ${pullY.toFixed(1)}px)`;
+            }, { passive: true });
+
+            document.addEventListener('mouseleave', () => {
+                if (activeBtn) {
+                    resetBtn(activeBtn);
+                    activeBtn = null;
+                }
+            }, { passive: true });
+
+            window.addEventListener('blur', () => {
+                if (activeBtn) {
+                    resetBtn(activeBtn);
+                    activeBtn = null;
+                }
+            }, { passive: true });
+        }
+        initTactile3DAndMagneticButtons();
 
         // ===== 奖项级鼠标聚光灯高定控制器 (Spotlight Controller - Comprehensive Universal Scope) =====
         let mouseRaf = null;

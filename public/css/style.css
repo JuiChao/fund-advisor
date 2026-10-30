@@ -1418,20 +1418,180 @@ tr:hover .tbl-row-expand-arrow {
     white-space: nowrap;
 }
 
-/* 评分单元格 */
+/* 评分单元格 (量化计分仪表盘) */
 .tbl-score-cell {
-    display: inline-flex;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 3px;
+    min-width: 66px;
+}
+.tbl-score-num-wrap {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
 }
 .tbl-score-val {
     font-size: 0.95rem;
-    font-weight: 800;
+    font-weight: 850;
+    font-family: var(--font-mono);
     color: var(--accent2);
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: rgba(99, 102, 241, 0.08);
-    border: 1px solid rgba(99, 102, 241, 0.18);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+.tbl-score-sub {
+    font-size: 0.65rem;
+    color: var(--txt3);
+    font-weight: 600;
+}
+.tbl-score-meter-bar {
+    width: 58px;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+.tbl-score-meter-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #6366f1 0%, #06b6d4 100%);
+    box-shadow: 0 0 6px rgba(99, 102, 241, 0.45);
+    transition: width 0.35s ease;
+}
+
+/* 累计收益单元格 (收益率走势微条) */
+.tbl-return-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 76px;
+}
+.tbl-return-val {
+    font-family: var(--font-mono);
+    font-weight: 750;
+    font-size: 0.86rem;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+}
+.tbl-return-spark-track {
+    width: 62px;
+    height: 3.5px;
+    background: var(--surface2);
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+.tbl-return-spark-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.35s ease;
+}
+.tbl-return-spark-fill.spark-pos {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.45), #10b981);
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.45);
+}
+.tbl-return-spark-fill.spark-neg {
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.45), #ef4444);
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.45);
+}
+
+/* 规模单元格 (资产规模容量条) */
+.tbl-scale-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 62px;
+}
+.tbl-scale-val {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--txt);
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+}
+.tbl-scale-bar-track {
+    width: 52px;
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+.tbl-scale-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    transition: width 0.35s ease;
+}
+
+/* 状态霓虹微脉冲圆点 (Cyber Status Neon Pulse Indicator) */
+.status-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    margin-right: 3px;
+    position: relative;
+    vertical-align: middle;
+}
+.status-pulse-dot.ok {
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: statusPulseOk 2.2s infinite;
+}
+.status-pulse-dot.warn {
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+    animation: statusPulseWarn 1.8s infinite;
+}
+.status-pulse-dot.err {
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+    animation: statusPulseErr 1.4s infinite;
+}
+.status-pulse-dot.muted {
+    background: #94a3b8;
+}
+@keyframes statusPulseOk {
+    0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px #10b981; }
+    50% { opacity: 0.45; transform: scale(0.85); box-shadow: 0 0 3px #10b981; }
+}
+@keyframes statusPulseWarn {
+    0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px #f59e0b; }
+    50% { opacity: 0.45; transform: scale(0.85); box-shadow: 0 0 3px #f59e0b; }
+}
+@keyframes statusPulseErr {
+    0%, 100% { opacity: 1; transform: scale(1.05); box-shadow: 0 0 10px #ef4444; }
+    50% { opacity: 0.35; transform: scale(0.8); box-shadow: 0 0 2px #ef4444; }
+}
+
+.pill-relaxed {
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: var(--ok) !important;
+}
+.pill-tight {
+    border-color: rgba(245, 158, 11, 0.4) !important;
+    background: rgba(245, 158, 11, 0.12) !important;
+    color: var(--warn) !important;
+}
+.pill-paused {
+    border-color: rgba(239, 68, 68, 0.4) !important;
+    background: rgba(239, 68, 68, 0.12) !important;
+    color: var(--err) !important;
+}
+.pill-muted {
+    border-color: rgba(148, 163, 184, 0.3) !important;
+    background: rgba(148, 163, 184, 0.1) !important;
+    color: var(--txt3) !important;
 }
 
 /* 限购(代/直)单元格（3行紧凑轴对称布局） */
@@ -4862,6 +5022,34 @@ input[type=range]::-moz-range-thumb:hover {
     border-style: dashed;
 }
 
+/* 暗色模式下移动端卡片高透微晶与贵金属流光 (Award-Tier Dark Glassmorphism for Mobile Cards) */
+[data-theme="dark"] .fund-mobile-card {
+    background: rgba(10, 14, 26, 0.78);
+    border-color: rgba(129, 140, 248, 0.18);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px) saturate(190%);
+    -webkit-backdrop-filter: blur(24px) saturate(190%);
+}
+[data-theme="dark"] .fund-mobile-card:hover {
+    border-color: rgba(129, 140, 248, 0.5);
+    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.75), 0 0 20px rgba(99, 102, 241, 0.18);
+}
+[data-theme="dark"] .fund-mobile-card.top-card.rank-1 {
+    background: linear-gradient(180deg, rgba(16, 22, 38, 0.92) 0%, rgba(245, 158, 11, 0.09) 100%);
+    border-color: rgba(245, 158, 11, 0.45);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.65), 0 0 18px rgba(245, 158, 11, 0.14);
+}
+[data-theme="dark"] .fund-mobile-card.top-card.rank-2 {
+    background: linear-gradient(180deg, rgba(16, 22, 38, 0.92) 0%, rgba(148, 163, 184, 0.09) 100%);
+    border-color: rgba(148, 163, 184, 0.45);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.65), 0 0 18px rgba(148, 163, 184, 0.14);
+}
+[data-theme="dark"] .fund-mobile-card.top-card.rank-3 {
+    background: linear-gradient(180deg, rgba(16, 22, 38, 0.92) 0%, rgba(217, 119, 6, 0.09) 100%);
+    border-color: rgba(217, 119, 6, 0.45);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.65), 0 0 18px rgba(217, 119, 6, 0.14);
+}
+
 /* 卡片头部 */
 .fmc-header {
     display: flex;
@@ -7762,6 +7950,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     border-radius: 4px;
     font-weight: 800;
     letter-spacing: 0.06em;
+}
+.terminal-tag-sub {
+    background: rgba(99, 102, 241, 0.12) !important;
+    color: var(--accent2) !important;
+    border-color: rgba(99, 102, 241, 0.3) !important;
+}
+.terminal-tag-node {
+    background: var(--surface2) !important;
+    color: var(--txt3) !important;
+    border-color: var(--border2) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.65rem !important;
 }
 
 #funds-directory .card {
@@ -11088,5 +11288,277 @@ tbody.spotlight-active tr:hover {
         height: 22px;
         font-size: 0.85rem;
     }
+}
+
+/* ===== 8. 奖项级高定量化视觉先锋系统 (Award Tier Bold Visual & Cyber-Quant Engineering) ===== */
+
+/* (1) 赛博金属高定胶囊徽章 (Futuristic Metallic Cyber Pills) */
+.hero-pill-metallic {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(99, 102, 241, 0.14) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35), 0 4px 14px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: transform 0.35s var(--spring-easing), border-color 0.25s, box-shadow 0.25s, background 0.25s;
+}
+[data-theme="dark"] .hero-pill-metallic {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(129, 140, 248, 0.2) 100%);
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 0 16px -3px rgba(99, 102, 241, 0.38);
+}
+.hero-pill-metallic:hover {
+    transform: translateY(-2px) scale(1.03);
+    border-color: var(--accent2);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), 0 0 24px rgba(99, 102, 241, 0.55);
+}
+
+/* (2) 实时行情遥测 HUD 状态指示与微光纤网络 (Market Session Badge & Network Ping) */
+.ticker-market-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 9px;
+    border-radius: var(--radius-full);
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-left: 8px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    transition: all 0.25s var(--ease-smooth);
+    letter-spacing: 0.02em;
+}
+.ticker-market-badge.market-open {
+    color: var(--ok);
+    background: var(--ok-bg);
+    border-color: var(--ok-border);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+}
+.ticker-market-badge.market-pre,
+.ticker-market-badge.market-post {
+    color: var(--warn);
+    background: var(--warn-bg);
+    border-color: var(--warn-border);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+}
+.ticker-market-badge.market-closed {
+    color: var(--txt3);
+    background: var(--surface2);
+    border-color: var(--border);
+}
+.ticker-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
+    flex-shrink: 0;
+}
+.ticker-market-badge.market-open .ticker-dot {
+    animation: statusPulseOk 2s infinite;
+}
+.ticker-market-badge.market-pre .ticker-dot,
+.ticker-market-badge.market-post .ticker-dot {
+    animation: statusPulseWarn 2s infinite;
+}
+.ticker-node-tag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    color: var(--txt3);
+    border-color: var(--border2);
+}
+.ticker-ping-gauge {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 8px var(--ok);
+    margin-right: 4px;
+    vertical-align: middle;
+    animation: pingFlicker 1.8s infinite;
+}
+@keyframes pingFlicker {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.85); }
+}
+
+/* (3) 遥测仓微型量化走势条 & 光谱通算柱 (Telemetry Pod Micro-Sparklines & Gauges) */
+.tk-sparkline-wrap {
+    margin-top: 8px;
+    width: 100%;
+    height: 22px;
+    position: relative;
+    overflow: hidden;
+}
+.tk-sparkline-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+}
+.tk-gauge-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 999px;
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    position: relative;
+}
+.tk-gauge-track {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 999px;
+    overflow: hidden;
+}
+.tk-gauge-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #10b981 0%, #f59e0b 65%, #ef4444 100%);
+}
+.tk-gauge-needle {
+    position: absolute;
+    top: -4px;
+    width: 3px;
+    height: 14px;
+    background: #ffffff;
+    box-shadow: 0 0 6px #ffffff, 0 0 10px var(--warn);
+    transform: translateX(-50%);
+    border-radius: 1.5px;
+    z-index: 2;
+}
+.tk-spectrum-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 18px;
+    margin-top: 4px;
+}
+.spec-bar {
+    flex: 1;
+    background: linear-gradient(180deg, var(--accent3), var(--accent));
+    border-radius: 2px;
+    animation: specPulse 1.2s ease-in-out infinite alternate;
+}
+.spec-bar.s1 { height: 35%; animation-delay: 0.1s; }
+.spec-bar.s2 { height: 75%; animation-delay: 0.3s; }
+.spec-bar.s3 { height: 95%; animation-delay: 0.5s; }
+.spec-bar.s4 { height: 60%; animation-delay: 0.2s; }
+.spec-bar.s5 { height: 85%; animation-delay: 0.4s; }
+.spec-bar.s6 { height: 40%; animation-delay: 0.15s; }
+.spec-bar.s7 { height: 75%; animation-delay: 0.35s; }
+.spec-bar.s8 { height: 90%; animation-delay: 0.25s; }
+@keyframes specPulse {
+    0% { transform: scaleY(0.4); opacity: 0.5; }
+    100% { transform: scaleY(1); opacity: 1; }
+}
+
+/* (4) 触觉级 3D 悬浮微倾斜架构 (Tactile 3D Perspective Card Physics) */
+.journey-card,
+.quant-engine-card,
+.ticker-box,
+.sim-kpi-card,
+.home-quota-radar-card,
+.home-benchmark-card,
+.algo-card,
+.article-card,
+.contact-card {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.35s var(--ease-smooth), box-shadow 0.3s ease, border-color 0.25s ease;
+}
+
+/* (5) 磁吸高引力按钮与流体聚光光轨 (Magnetic Buttons & Liquid Specular Trail) */
+.hero-btn-primary,
+.hero-btn-secondary,
+.hero-btn-ghost,
+.nav-cta-btn {
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+    transition: transform 0.25s var(--ease-smooth), box-shadow 0.25s ease, background 0.25s ease;
+}
+.hero-btn-primary::after,
+.hero-btn-secondary::after,
+.nav-cta-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(110px circle at var(--btn-mx, -999px) var(--btn-my, -999px), rgba(255, 255, 255, 0.32), transparent 70%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 2;
+}
+.hero-btn-primary:hover::after,
+.hero-btn-secondary:hover::after,
+.nav-cta-btn:hover::after {
+    opacity: 1;
+}
+
+/* (6) 超高折射率玻璃拟态升级 (Hyper-Tactile Glassmorphism Refraction) */
+.card,
+.hero-banner,
+.quant-engine-card,
+.journey-card,
+.hero-quant-ticker,
+.table-wrap {
+    backdrop-filter: blur(36px) saturate(220%) contrast(105%);
+    -webkit-backdrop-filter: blur(36px) saturate(220%) contrast(105%);
+}
+[data-theme="dark"] .hero-quant-ticker {
+    background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, rgba(10, 14, 26, 0.88) 100%);
+    box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 0 1px rgba(129, 140, 248, 0.18);
+}
+[data-theme="dark"] .table-wrap {
+    background: rgba(10, 14, 26, 0.85);
+    border: 1px solid var(--border2);
+    box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* (7) 华尔街量化交易席位表格光束激光悬浮 (Table Row Laser Highlight) */
+#rank-table tbody tr {
+    transition: background-color 0.2s ease, transform 0.2s var(--ease-smooth), box-shadow 0.2s ease;
+}
+#rank-table tbody tr:hover {
+    background-color: var(--surface-hover);
+    box-shadow: inset 3px 0 0 var(--accent2), 0 4px 16px rgba(99, 102, 241, 0.1);
+}
+[data-theme="dark"] #rank-table tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.12);
+    box-shadow: inset 3px 0 0 var(--accent2), 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* (8) 分段控制器弹簧滑块高定质感 (Segmented Controls Sliding Pills) */
+.seg-control {
+    position: relative;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    padding: 3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+.seg-btn {
+    position: relative;
+    z-index: 1;
+    border-radius: var(--radius-full);
+    transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s var(--ease-smooth), box-shadow 0.2s ease;
+}
+.seg-btn.on {
+    background: var(--surface);
+    color: var(--txt);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+[data-theme="dark"] .seg-btn.on {
+    background: rgba(99, 102, 241, 0.25);
+    color: #ffffff;
+    box-shadow: 0 2px 12px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(129, 140, 248, 0.45);
 }
 
