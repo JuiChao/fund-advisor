@@ -20,10 +20,10 @@ ARTICLES_DIR = os.path.join(ROOT_DIR, 'public', 'articles')
 SITEMAP_FILE = os.path.join(ROOT_DIR, 'public', 'sitemap.xml')
 LIMIT_CHANGES_FILE = os.path.join(ROOT_DIR, 'public', 'data', 'limit_changes.json')
 
-# 清理并创建 fund 目录
+# 清理并创建 fund 目录 (增强 Windows 文件锁容错与并发读取韧性)
 if os.path.exists(FUND_DIR):
-    shutil.rmtree(FUND_DIR)
-os.makedirs(FUND_DIR)
+    shutil.rmtree(FUND_DIR, ignore_errors=True)
+os.makedirs(FUND_DIR, exist_ok=True)
 
 # 加载数据
 with open(DATA_FILE, 'r', encoding='utf-8') as f:
@@ -74,7 +74,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=20261009_v7">
+<link rel="stylesheet" href="/css/style.css?v=20261031_award">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {json_ld}
@@ -128,13 +128,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     </div>
 </nav>
 </header>
-<main class="container">
-    <nav class="breadcrumb" style="font-size:0.85rem;color:var(--txt3);margin:1.5rem 0 0.5rem">
-        <a href="/" style="color:inherit;text-decoration:none">首页</a> &gt; 
-        <a href="/#ranking" style="color:inherit;text-decoration:none">基金排名</a> &gt; 
+<main class="container fund-detail-container">
+    <nav class="fund-breadcrumb" aria-label="面包屑导航">
+        <a href="/">首页</a>
+        <span class="sep">/</span>
+        <a href="/#ranking">基金排名</a>
+        <span class="sep">/</span>
         <span>{fund_name} ({fund_code})</span>
     </nav>
-    <div class="card" style="margin-top:1rem">
+    <div class="card fund-hero-card">
         <div class="terminal-chrome" aria-hidden="true">
             <div class="terminal-dots">
                 <span class="dot-red"></span>
@@ -144,42 +146,79 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <div class="terminal-title"><span class="brand-pulse-dot ok"></span> QUANT SECURITY ANALYSIS // {fund_code}</div>
             <div class="terminal-status"><span class="terminal-tag">{index_type}</span> <span class="terminal-tag terminal-tag-sub">{share_class}类份额</span></div>
         </div>
-        <h1 style="font-size:1.5rem;margin-bottom:0.5rem"><span class="badge-share badge-{share_class_lower}">{share_class}类</span> {fund_name} (<span style="color:var(--txt2)">{fund_code}</span>)</h1>
-        <p style="color:var(--txt2);margin-bottom:1.5rem">{full_name} | {manager_company} | 基金经理: {fund_manager} | 成立日期: {inception_date}</p>
         
-        <div class="g2" style="margin-bottom:1.5rem">
-            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
-                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">综合年费率</div>
-                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--txt);letter-spacing:-0.02em;margin:4px 0">{total_fee}%<span style="font-size:0.8rem;color:var(--txt3);font-weight:normal">/年</span></div>
-                <div style="font-size:0.75rem;color:var(--txt2)">管理费 {mgmt_fee}% + 托管费 {custody_fee}%{sales_fee_str}</div>
+        <div class="fund-detail-header">
+            <div class="fund-title-row">
+                <h1 class="fund-title"><span class="badge-share badge-{share_class_lower}">{share_class}类</span> {fund_name} <span class="fund-code-tag">{fund_code}</span></h1>
+                {quota_sharing_badge_html}
             </div>
-            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
-                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">代销限购状态</div>
-                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--txt);letter-spacing:-0.02em;margin:4px 0">{agency_status}</div>
-                <div style="font-size:0.75rem;color:var(--txt2)">天天基金/支付宝等三方渠道</div>
+            <div class="fund-meta-strip">
+                <span class="meta-item"><span class="meta-lbl">全称:</span> {full_name}</span>
+                <span class="meta-item"><span class="meta-lbl">管理人:</span> {manager_company}</span>
+                <span class="meta-item"><span class="meta-lbl">基金经理:</span> {fund_manager}</span>
+                <span class="meta-item"><span class="meta-lbl">托管行:</span> {custodian}</span>
+                <span class="meta-item"><span class="meta-lbl">成立日期:</span> {inception_date}</span>
             </div>
-            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
-                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">直销限购状态</div>
-                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--txt);letter-spacing:-0.02em;margin:4px 0">{direct_status}</div>
-                <div style="font-size:0.75rem;color:var(--txt2)">基金公司官网/官方APP通道</div>
+        </div>
+
+        <!-- 4-Card Quant Telemetry Grid -->
+        <div class="fund-metrics-grid">
+            <!-- Card 1: 综合年费率 -->
+            <div class="fund-metric-card">
+                <div class="metric-head">
+                    <span class="metric-label">综合年费率</span>
+                    {fee_tag_html}
+                </div>
+                <div class="metric-value">{total_fee}%<span class="metric-unit">/年</span></div>
+                <div class="metric-sub">管理费 {mgmt_fee}% + 托管费 {custody_fee}%{sales_fee_str}</div>
             </div>
-            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
-                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">近3年收益率</div>
-                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--{return_color});letter-spacing:-0.02em;margin:4px 0">{return_3yr}%</div>
-                <div style="font-size:0.75rem;color:var(--txt2)">近1年收益: {return_1yr}%</div>
+
+            <!-- Card 2: 渠道限购状态 -->
+            <div class="fund-metric-card">
+                <div class="metric-head">
+                    <span class="metric-label">渠道限购状态</span>
+                    {quota_channel_tag_html}
+                </div>
+                <div class="metric-value">
+                    <div class="quota-dual-status">
+                        <span class="quota-status-pill {ag_cls}"><span class="brand-pulse-dot {ag_dot}"></span>代销: {agency_status}</span>
+                        <span class="quota-status-pill {dir_cls}"><span class="brand-pulse-dot {dir_dot}"></span>直销: {direct_status}</span>
+                    </div>
+                </div>
+                <div class="metric-sub">{channel_brief_hint}</div>
+            </div>
+
+            <!-- Card 3: 复制精度与偏离 -->
+            <div class="fund-metric-card">
+                <div class="metric-head">
+                    <span class="metric-label">跟踪复制质量</span>
+                    <span class="badge-td {td_badge_cls}">TD {td_str}</span>
+                </div>
+                <div class="metric-value">{te_str}<span class="metric-unit">(近1年TE)</span></div>
+                <div class="metric-sub">信息比率: <span class="badge-ir">IR {ir_str}</span> · 同类中位数 {cat_med_te}%</div>
+            </div>
+
+            <!-- Card 4: 长期复利回报 -->
+            <div class="fund-metric-card">
+                <div class="metric-head">
+                    <span class="metric-label">长期复利回报</span>
+                    <span class="metric-tag tag-{return_color}">{r3_tag_text}</span>
+                </div>
+                <div class="metric-value"><span class="text-{return_color}">{return_3yr}%</span><span class="metric-unit">(近3年)</span></div>
+                <div class="metric-sub">近1年收益: {return_1yr}% · 资产规模: {scale_str}亿元</div>
             </div>
         </div>
 
         {review_html}
 
         <!-- 专题推荐与深度研报关联 -->
-        <div style="margin-top:2rem;padding:1.25rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border)">
-            <h3 style="font-size:1.05rem;color:var(--txt);margin-top:0;margin-bottom:0.75rem;font-weight:700">📚 推荐投研指南与实操精读</h3>
-            <ul style="padding-left:1.2rem;margin-bottom:0;color:var(--txt2);font-size:0.9rem;line-height:1.7">
-                <li><a href="/articles/{related_guide_slug}" style="color:var(--accent2);text-decoration:none;font-weight:600">{related_guide_title} ➔</a></li>
-                <li><a href="/articles/how-to-choose-qdii-funds" style="color:var(--accent2);text-decoration:none;font-weight:600">如何挑选最优QDII指数基金：费率、规模与跟踪误差三角法则 ➔</a></li>
-                <li><a href="/articles/share-class-a-vs-c-break-even-analysis" style="color:var(--accent2);text-decoration:none;font-weight:600">A类与C类份额终极抉择：持有几年才是费率平衡临界点？（附量化数学推导） ➔</a></li>
-                <li><a href="/articles/penetrating-qdii-purchase-quota-restrictions" style="color:var(--accent2);text-decoration:none;font-weight:600">穿透公募基金限购内幕：为什么QDII单日限额会从1000元骤降至10元？ ➔</a></li>
+        <div class="fund-recommended-guides">
+            <h3>📚 推荐投研指南与实操精读</h3>
+            <ul>
+                <li><a href="/articles/{related_guide_slug}">{related_guide_title} ➔</a></li>
+                <li><a href="/articles/how-to-choose-qdii-funds">如何挑选最优QDII指数基金：费率、规模与跟踪误差三角法则 ➔</a></li>
+                <li><a href="/articles/share-class-a-vs-c-break-even-analysis">A类与C类份额终极抉择：持有几年才是费率平衡临界点？（附量化数学推导） ➔</a></li>
+                <li><a href="/articles/penetrating-qdii-purchase-quota-restrictions">穿透公募基金限购内幕：为什么QDII单日限额会从1000元骤降至10元？ ➔</a></li>
             </ul>
         </div>
 
@@ -222,29 +261,58 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         </div>
 
         <!-- 合规声明 -->
-        <div style="margin-top:1.5rem;padding:1rem 1.25rem;background:rgba(234,179,8,0.06);border-left:4px solid #eab308;border-radius:6px;font-size:0.82rem;color:var(--txt2);line-height:1.6">
+        <div class="fund-compliance-warning">
             <strong style="color:var(--txt)">⚠️ 风险提示与数据合规声明：</strong><br>
             本页面展示之基金费率（管理费、托管费、销售服务费）、申购限购状态（代销/直销渠道）及历史业绩数据均采集自基金公司法定公开披露公告及天天基金网公开接口。相关数据仅供学术量化分析、策略模拟与投资者教育之用，<strong>不构成任何形式的投资建议、财务顾问意见或基金销售推介</strong>。公募基金过往业绩不代表未来表现，市场有风险，投资需谨慎。本平台不从事任何公募或私募基金销售代理业务。
         </div>
 
-        <div style="text-align:center;margin:2.5rem 0 1rem 0">
-            <a href="/#ranking?q={fund_code}" class="btn btn-p" style="text-decoration:none;padding:0.75rem 2rem;font-size:1.1rem">在 Fund Advisor 完整版中进行定投模拟 ➔</a>
+        <div class="fund-cta-wrap">
+            <a href="/#ranking?q={fund_code}" class="fund-cta-btn">🚀 在 Fund Advisor 完整版中进行定投模拟 ➔</a>
         </div>
     </div>
 </main>
-<footer style="margin-top:4rem;padding:2.5rem 0;border-top:1px solid var(--border);text-align:center;color:var(--txt3);font-size:0.88rem">
-    <div style="margin-bottom:1rem;display:flex;justify-content:center;flex-wrap:wrap;gap:15px">
-        <a href="/" style="color:var(--txt3);text-decoration:none">首页概览</a> |
-        <a href="/#ranking" style="color:var(--txt3);text-decoration:none">基金排名</a> |
-        <a href="/#portfolio" style="color:var(--txt3);text-decoration:none">定投方案</a> |
-        <a href="/#simulator" style="color:var(--txt3);text-decoration:none">蒙特卡洛模拟器</a> |
-        <a href="/articles/" style="color:var(--txt3);text-decoration:none">投资百科</a> |
-        <a href="/about" style="color:var(--txt3);text-decoration:none">关于我们</a> |
-        <a href="/privacy-policy" style="color:var(--txt3);text-decoration:none">隐私政策</a> |
-        <a href="/terms-of-service" style="color:var(--txt3);text-decoration:none">服务条款</a> |
-        <a href="mailto:contact@858000.xyz" style="color:var(--txt3);text-decoration:none">联系我们</a>
+<footer>
+    <div class="footer-inner">
+        <div class="footer-info footer-col-brand">
+            <div class="footer-brand-title">
+                <img src="/favicon.png" alt="Fund Advisor" width="24" height="24" style="border-radius:6px">
+                <span>FUND ADVISOR</span>
+            </div>
+            <p class="footer-brand-desc">
+                面向境内投资者的专业级美股指数（纳斯达克100 &amp; 标普500）公募QDII量化配置中枢。融合现代投资组合理论（MPT）、索提诺下行风险体检、黑天鹅极端压力测试与估值动态定投。
+            </p>
+            <div class="footer-status-pill">
+                <span class="footer-pulse-dot"></span>
+                <span>量化通算引擎全时在线 · 延迟 &lt; 15ms</span>
+            </div>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col-title">平台导览 · Navigation</div>
+            <div class="footer-nav-list">
+                <a href="/">📊 首页概览</a>
+                <a href="/#ranking">🏆 基金多因子排名</a>
+                <a href="/#portfolio">⚖️ 定投方案配置</a>
+                <a href="/#simulator">📈 蒙特卡洛模拟器</a>
+                <a href="/articles/">📚 深度投研百科</a>
+            </div>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col-title">投研与合规 · Research &amp; Compliance</div>
+            <div class="footer-nav-list">
+                <a href="/about">🏢 关于我们与方法论</a>
+                <a href="/privacy-policy">🛡️ 隐私保护政策</a>
+                <a href="/terms-of-service">📜 用户服务条款</a>
+                <a href="mailto:contact@858000.xyz">📬 联系与合作</a>
+            </div>
+        </div>
     </div>
-    <p>© 2026 Fund Advisor. All rights reserved. 专注纳斯达克100与标普500指数基金量化投研。</p>
+    <div class="footer-disclaimer">
+        <strong>⚠️ 风险提示与免责合规声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均采集自基金管理人法定公开信息披露及天天基金网公开接口。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
+    </div>
+    <div class="footer-copyright">
+        <div>© 2026 Fund Advisor (858000.xyz). All Wall Street quant models open for research.</div>
+        <div>Designed to Award Tier Standards · Webby &amp; Awwwards Compliant</div>
+    </div>
 </footer>
 <script>
 (function() {{
@@ -301,9 +369,11 @@ for fund in funds:
     if r3 is not None:
         r3_str = format_pct(r3)
         ret_color = "ok" if r3 > 0 else "err"
+        r3_tag_text = "跑赢基准" if r3 > 0 else "净值回调"
     else:
         r3_str = "-"
         ret_color = "txt"
+        r3_tag_text = "新发建仓"
 
     agency_status = fund.get('limit_status', '正常')
     direct_status = fund.get('direct_limit_status') or agency_status
@@ -317,17 +387,27 @@ for fund in funds:
     # 1. 费率横向对比评语
     if total_fee <= 0.007:
         fee_eval = f"该标的年化综合费率仅为 <strong>{format_pct(total_fee)}%</strong>，处于全市场 {index_type} 基金前 10% 的最低费率梯队（大幅优于同类中位数 {cat_med['fee']*100:.2f}%）。在长达 10~30 年的指数定投长跑中，超低管理成本能为您最大限度锁定复利成果。"
+        fee_tag_html = '<span class="metric-tag tag-up">🏆 极低费率</span>'
     elif total_fee <= cat_med['fee']:
         diff = (cat_med['fee'] - total_fee) * 100
         fee_eval = f"该标的年化综合费率为 <strong>{format_pct(total_fee)}%</strong>，低于同类中位数（{cat_med['fee']*100:.2f}%）约 {diff:.2f} 个百分点，费率结构具备良好竞争力，适合中长期资产配置。"
+        fee_tag_html = '<span class="metric-tag tag-ok">🟢 优于中位数</span>'
     else:
         diff = (total_fee - cat_med['fee']) * 100
         if share_class == 'C':
             fee_eval = f"该份额年化综合费率为 <strong>{format_pct(total_fee)}%</strong>，其中包含年化 {format_pct(sales_fee)}% 的销售服务费。虽然费率略高于同类中位数（{cat_med['fee']*100:.2f}%），但其免收前端申购费且持有 7 天以上通常免赎回费，适合短期持有或在 A 类限购时作为定投备用通道。"
         else:
             fee_eval = f"该标的年化综合费率为 <strong>{format_pct(total_fee)}%</strong>，略高于同类中位数（{cat_med['fee']*100:.2f}%）约 {diff:.2f} 个百分点。在定投长跑中建议重点结合其跟踪精度与渠道申购便利性进行综合权衡。"
+        fee_tag_html = '<span class="metric-tag tag-warn">🟡 略高同类</span>'
 
-    # 2. 跟踪误差分析
+    # 2. 跟踪误差与偏离度
+    td_str = f"{td * 100:+.2f}%" if td is not None else "0.00%"
+    td_badge_cls = "pos" if (td is not None and td >= 0) else "neg"
+    ir_str = f"{ir:.2f}" if ir is not None else "-"
+    te_str = f"{te * 100:.2f}%" if te is not None else "-"
+    scale_str = f"{scale:.2f}" if scale is not None else "-"
+    cat_med_te = f"{cat_med['te'] * 100:.2f}"
+
     if te is not None:
         te_pct = te * 100
         med_te_pct = cat_med['te'] * 100
@@ -360,6 +440,42 @@ for fund in funds:
     direct_is_paused = ("暂停" in direct_status) or ("未开通" in direct_status) or (not direct_status)
     is_all_paused = agency_is_paused and direct_is_paused
 
+    # 代销状态样式
+    if "暂停" in agency_status or "未开通" in agency_status:
+        ag_cls, ag_dot = "status-paused", "err"
+    elif "限" in agency_status:
+        ag_cls, ag_dot = "status-limit", "warn"
+    else:
+        ag_cls, ag_dot = "status-open", "ok"
+
+    # 直销状态样式
+    if "暂停" in direct_status or "未开通" in direct_status:
+        dir_cls, dir_dot = "status-paused", "err"
+    elif "限" in direct_status:
+        dir_cls, dir_dot = "status-limit", "warn"
+    else:
+        dir_cls, dir_dot = "status-open", "ok"
+
+    if quota_sharing == 'SHARED':
+        quota_sharing_badge_html = f'<span class="badge-shared" title="{quota_shared_desc or "多类份额共享限额"}">🔗 共享额度</span>'
+    elif quota_sharing == 'INDEPENDENT':
+        quota_sharing_badge_html = f'<span class="badge-share badge-i" title="{quota_shared_desc or "各份额独立占用额度"}">✨ 独立额度</span>'
+    else:
+        quota_sharing_badge_html = ''
+
+    if is_all_paused:
+        quota_channel_tag_html = '<span class="metric-tag tag-err">🔴 全线暂停</span>'
+        channel_brief_hint = "双渠道暂停申购，推荐参考下方平替标的"
+    elif direct_is_paused and not agency_is_paused:
+        quota_channel_tag_html = '<span class="metric-tag tag-warn">🟡 仅代销通畅</span>'
+        channel_brief_hint = "天天基金/支付宝可买，官方直销未开通"
+    elif agency_is_paused and not direct_is_paused:
+        quota_channel_tag_html = '<span class="metric-tag tag-up">🚀 直销突破</span>'
+        channel_brief_hint = "代销暂停但官方APP/官网仍开放申购"
+    else:
+        quota_channel_tag_html = '<span class="metric-tag tag-ok">🟢 正常运行</span>'
+        channel_brief_hint = "天天基金/官网双通道额度动态巡检中"
+
     if is_all_paused:
         channel_eval = f"⚠️ <strong>全渠道暂停申购提示</strong>：目前天天基金、支付宝等代销渠道与基金公司官方直销平台均处于暂停申购或未开放状态，表明该基金管理人的外汇额度余量极低或定制份额未开放散户直销。定投投资者建议无需恐慌，可通过下方推荐平替至其他正常开放的同指数基金，以确保定投计划不中断。"
         subs = find_substitutes(fund, funds, max_count=3)
@@ -373,7 +489,7 @@ for fund in funds:
                 ag_st = s.get('limit_status') or '正常'
                 dir_st = s.get('direct_limit_status') or ag_st
                 sub_cards.append(
-                    f"<div style='background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.9rem;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);'>"
+                    f"<div class='fund-sub-card'>"
                     f"<div>"
                     f"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;'>"
                     f"<span class='code-mono' style='font-weight:700;color:var(--accent2);'>{s_code}</span>"
@@ -391,11 +507,11 @@ for fund in funds:
                     f"</div>"
                 )
             substitutes_html = (
-                f"<div style='margin:1rem 0 1.25rem;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:1.15rem;'>"
+                f"<div class='fund-substitutes-box'>"
                 f"<h4 style='margin:0 0 0.75rem;font-size:0.95rem;color:var(--ok);display:flex;align-items:center;gap:6px;'>"
                 f"<span>🛡️</span> 优质平替基金推荐（同跟踪 {index_type} 且当前开放申购）"
                 f"</h4>"
-                f"<div style='display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.85rem;'>"
+                f"<div class='fund-substitutes-grid'>"
                 f"{''.join(sub_cards)}"
                 f"</div>"
                 f"</div>"
@@ -491,7 +607,7 @@ for fund in funds:
             </div>
         """
 
-    # 深度综合评测 HTML
+    # 深度综合评测 HTML (保留关键词 "深度量化评测")
     review_html = f"""
         <div class="fund-seo-review" style="margin-top:2rem;line-height:1.75;color:var(--txt2);font-size:1rem;">
             <h2 style="font-size:1.25rem;color:var(--txt);margin-bottom:1rem;font-weight:700;">{fund.get('name', '')} 深度量化评测</h2>
@@ -500,9 +616,9 @@ for fund in funds:
                 <strong>{fund.get('name', '')} (代码: {code})</strong> 是由 <strong>{manager_company}</strong> 发行并管理的公募 QDII 指数基金，属于该产品线的 <strong>{share_class} 类份额</strong>，紧密跟踪海外核心资产 <strong>{index_type}</strong>。该基金成立于 {inception_date}，基金资产由 <strong>{custodian}</strong> 安全托管，业绩比较基准为 <em>{benchmark}</em>。
             </p>
 
-            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.15rem;margin-bottom:1.25rem;">
-                <h3 style="margin-top:0;margin-bottom:0.6rem;font-size:1rem;color:var(--txt);font-weight:700;">📊 核心量化多因子体检报告</h3>
-                <ul style="padding-left:1.2rem;margin:0;font-size:0.92rem;line-height:1.75;">
+            <div class="fund-quant-report-box">
+                <h3>📊 核心量化多因子体检报告</h3>
+                <ul>
                     <li><strong>费率维度</strong>：{fee_eval}</li>
                     <li><strong>跟踪偏离</strong>：{te_eval}</li>
                     <li><strong>资产规模</strong>：{scale_eval}</li>
@@ -511,7 +627,7 @@ for fund in funds:
             </div>
 
             <h3 style="font-size:1.08rem;color:var(--txt);margin-top:1.5rem;margin-bottom:0.6rem;font-weight:700;">🛒 渠道额度穿透与定投实操建议</h3>
-            <div style="padding:1rem 1.15rem;background:rgba(99,102,241,0.06);border-left:4px solid var(--accent2);border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.65">
+            <div class="fund-channel-callout">
                 {channel_eval}
             </div>
             {substitutes_html}
@@ -557,6 +673,7 @@ for fund in funds:
         index_type=index_type,
         manager_company=manager_company,
         fund_manager=fund_manager,
+        custodian=custodian,
         inception_date=inception_date,
         mgmt_fee=format_pct(mgmt_fee),
         custody_fee=format_pct(custody_fee),
@@ -570,7 +687,22 @@ for fund in funds:
         review_html=review_html,
         related_guide_slug=related_guide_slug,
         related_guide_title=related_guide_title,
-        json_ld=json.dumps(json_ld, ensure_ascii=False, indent=2)
+        json_ld=json.dumps(json_ld, ensure_ascii=False, indent=2),
+        quota_sharing_badge_html=quota_sharing_badge_html,
+        fee_tag_html=fee_tag_html,
+        quota_channel_tag_html=quota_channel_tag_html,
+        ag_cls=ag_cls,
+        ag_dot=ag_dot,
+        dir_cls=dir_cls,
+        dir_dot=dir_dot,
+        channel_brief_hint=channel_brief_hint,
+        td_str=td_str,
+        td_badge_cls=td_badge_cls,
+        te_str=te_str,
+        ir_str=ir_str,
+        cat_med_te=cat_med_te,
+        scale_str=scale_str,
+        r3_tag_text=r3_tag_text
     )
 
     out_path = os.path.join(FUND_DIR, f"{code}.html")

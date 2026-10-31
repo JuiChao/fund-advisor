@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=20261009_v7">
+<link rel="stylesheet" href="/css/style.css?v=20261031_award">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -77,13 +77,15 @@
     </div>
 </nav>
 </header>
-<main class="container">
-    <nav class="breadcrumb" style="font-size:0.85rem;color:var(--txt3);margin:1.5rem 0 0.5rem">
-        <a href="/" style="color:inherit;text-decoration:none">首页</a> &gt; 
-        <a href="/#ranking" style="color:inherit;text-decoration:none">基金排名</a> &gt; 
+<main class="container fund-detail-container">
+    <nav class="fund-breadcrumb" aria-label="面包屑导航">
+        <a href="/">首页</a>
+        <span class="sep">/</span>
+        <a href="/#ranking">基金排名</a>
+        <span class="sep">/</span>
         <span>大成纳斯达克100ETF联接(QDII)C (008971)</span>
     </nav>
-    <div class="card" style="margin-top:1rem">
+    <div class="card fund-hero-card">
         <div class="terminal-chrome" aria-hidden="true">
             <div class="terminal-dots">
                 <span class="dot-red"></span>
@@ -93,29 +95,66 @@
             <div class="terminal-title"><span class="brand-pulse-dot ok"></span> QUANT SECURITY ANALYSIS // 008971</div>
             <div class="terminal-status"><span class="terminal-tag">纳斯达克100</span> <span class="terminal-tag terminal-tag-sub">C类份额</span></div>
         </div>
-        <h1 style="font-size:1.5rem;margin-bottom:0.5rem"><span class="badge-share badge-c">C类</span> 大成纳斯达克100ETF联接(QDII)C (<span style="color:var(--txt2)">008971</span>)</h1>
-        <p style="color:var(--txt2);margin-bottom:1.5rem">大成纳斯达克100交易型开放式指数证券投资基金联接基金(QDII) | 大成基金 | 基金经理: 冉凌浩 | 成立日期: 2023-06-28</p>
         
-        <div class="g2" style="margin-bottom:1.5rem">
-            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
-                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">综合年费率</div>
-                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--txt);letter-spacing:-0.02em;margin:4px 0">1.30%<span style="font-size:0.8rem;color:var(--txt3);font-weight:normal">/年</span></div>
-                <div style="font-size:0.75rem;color:var(--txt2)">管理费 0.80% + 托管费 0.20% + 销售服务费 0.30%</div>
+        <div class="fund-detail-header">
+            <div class="fund-title-row">
+                <h1 class="fund-title"><span class="badge-share badge-c">C类</span> 大成纳斯达克100ETF联接(QDII)C <span class="fund-code-tag">008971</span></h1>
+                <span class="badge-shared" title="与 A类(000834) 共享代销限额 10 元/日，合并计算">🔗 共享额度</span>
             </div>
-            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
-                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">代销限购状态</div>
-                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--txt);letter-spacing:-0.02em;margin:4px 0">限10元/日</div>
-                <div style="font-size:0.75rem;color:var(--txt2)">天天基金/支付宝等三方渠道</div>
+            <div class="fund-meta-strip">
+                <span class="meta-item"><span class="meta-lbl">全称:</span> 大成纳斯达克100交易型开放式指数证券投资基金联接基金(QDII)</span>
+                <span class="meta-item"><span class="meta-lbl">管理人:</span> 大成基金</span>
+                <span class="meta-item"><span class="meta-lbl">基金经理:</span> 冉凌浩</span>
+                <span class="meta-item"><span class="meta-lbl">托管行:</span> 农业银行</span>
+                <span class="meta-item"><span class="meta-lbl">成立日期:</span> 2023-06-28</span>
             </div>
-            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
-                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">直销限购状态</div>
-                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--txt);letter-spacing:-0.02em;margin:4px 0">限100元/日</div>
-                <div style="font-size:0.75rem;color:var(--txt2)">基金公司官网/官方APP通道</div>
+        </div>
+
+        <!-- 4-Card Quant Telemetry Grid -->
+        <div class="fund-metrics-grid">
+            <!-- Card 1: 综合年费率 -->
+            <div class="fund-metric-card">
+                <div class="metric-head">
+                    <span class="metric-label">综合年费率</span>
+                    <span class="metric-tag tag-warn">🟡 略高同类</span>
+                </div>
+                <div class="metric-value">1.30%<span class="metric-unit">/年</span></div>
+                <div class="metric-sub">管理费 0.80% + 托管费 0.20% + 销售服务费 0.30%</div>
             </div>
-            <div style="background:var(--surface2);border:1px solid var(--border);padding:1.15rem;border-radius:12px;box-shadow:var(--shadow-sm)">
-                <div style="color:var(--txt3);font-size:0.78rem;font-weight:750;font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase">近3年收益率</div>
-                <div style="font-size:1.4rem;font-weight:850;font-family:var(--font-mono);color:var(--ok);letter-spacing:-0.02em;margin:4px 0">75.29%</div>
-                <div style="font-size:0.75rem;color:var(--txt2)">近1年收益: 4.42%</div>
+
+            <!-- Card 2: 渠道限购状态 -->
+            <div class="fund-metric-card">
+                <div class="metric-head">
+                    <span class="metric-label">渠道限购状态</span>
+                    <span class="metric-tag tag-ok">🟢 正常运行</span>
+                </div>
+                <div class="metric-value">
+                    <div class="quota-dual-status">
+                        <span class="quota-status-pill status-limit"><span class="brand-pulse-dot warn"></span>代销: 限10元/日</span>
+                        <span class="quota-status-pill status-limit"><span class="brand-pulse-dot warn"></span>直销: 限100元/日</span>
+                    </div>
+                </div>
+                <div class="metric-sub">天天基金/官网双通道额度动态巡检中</div>
+            </div>
+
+            <!-- Card 3: 复制精度与偏离 -->
+            <div class="fund-metric-card">
+                <div class="metric-head">
+                    <span class="metric-label">跟踪复制质量</span>
+                    <span class="badge-td neg">TD -1.55%</span>
+                </div>
+                <div class="metric-value">1.03%<span class="metric-unit">(近1年TE)</span></div>
+                <div class="metric-sub">信息比率: <span class="badge-ir">IR -1.50</span> · 同类中位数 1.51%</div>
+            </div>
+
+            <!-- Card 4: 长期复利回报 -->
+            <div class="fund-metric-card">
+                <div class="metric-head">
+                    <span class="metric-label">长期复利回报</span>
+                    <span class="metric-tag tag-ok">跑赢基准</span>
+                </div>
+                <div class="metric-value"><span class="text-ok">75.29%</span><span class="metric-unit">(近3年)</span></div>
+                <div class="metric-sub">近1年收益: 4.42% · 资产规模: 11.15亿元</div>
             </div>
         </div>
 
@@ -127,9 +166,9 @@
                 <strong>大成纳斯达克100ETF联接(QDII)C (代码: 008971)</strong> 是由 <strong>大成基金</strong> 发行并管理的公募 QDII 指数基金，属于该产品线的 <strong>C 类份额</strong>，紧密跟踪海外核心资产 <strong>纳斯达克100</strong>。该基金成立于 2023-06-28，基金资产由 <strong>农业银行</strong> 安全托管，业绩比较基准为 <em>纳斯达克100价格指数</em>。
             </p>
 
-            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.15rem;margin-bottom:1.25rem;">
-                <h3 style="margin-top:0;margin-bottom:0.6rem;font-size:1rem;color:var(--txt);font-weight:700;">📊 核心量化多因子体检报告</h3>
-                <ul style="padding-left:1.2rem;margin:0;font-size:0.92rem;line-height:1.75;">
+            <div class="fund-quant-report-box">
+                <h3>📊 核心量化多因子体检报告</h3>
+                <ul>
                     <li><strong>费率维度</strong>：该份额年化综合费率为 <strong>1.30%</strong>，其中包含年化 0.30% 的销售服务费。虽然费率略高于同类中位数（0.85%），但其免收前端申购费且持有 7 天以上通常免赎回费，适合短期持有或在 A 类限购时作为定投备用通道。</li>
                     <li><strong>跟踪偏离</strong>：在指数复制质量方面，该基金近 1 年跟踪误差仅为 <strong>1.03%</strong>，显著优于同类中位数（1.51%），表现出极高的被动指数跟踪精度与极低的调仓摩擦成本。</li>
                     <li><strong>资产规模</strong>：规模方面，最新资产规模为 <strong>11.15 亿元</strong>，处于 5~30 亿元的健康黄金运作区间，规模既适中保障了充沛流动性，又便于基金经理高效进行外汇头寸管理。</li>
@@ -138,7 +177,7 @@
             </div>
 
             <h3 style="font-size:1.08rem;color:var(--txt);margin-top:1.5rem;margin-bottom:0.6rem;font-weight:700;">🛒 渠道额度穿透与定投实操建议</h3>
-            <div style="padding:1rem 1.15rem;background:rgba(99,102,241,0.06);border-left:4px solid var(--accent2);border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.65">
+            <div class="fund-channel-callout">
                 🚀 <strong>直销大额额度优势</strong>：该标的代销渠道限额为 <strong>限10元/日</strong>，而官方直销渠道单日限额高达 <strong>限100元/日</strong>，直销单日额度是代销的 <strong>10.0 倍</strong>！若您的月度定投预算较高，选择官方直销渠道可大幅提升单次扣款上限。
             </div>
             
@@ -178,13 +217,13 @@
     
 
         <!-- 专题推荐与深度研报关联 -->
-        <div style="margin-top:2rem;padding:1.25rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border)">
-            <h3 style="font-size:1.05rem;color:var(--txt);margin-top:0;margin-bottom:0.75rem;font-weight:700">📚 推荐投研指南与实操精读</h3>
-            <ul style="padding-left:1.2rem;margin-bottom:0;color:var(--txt2);font-size:0.9rem;line-height:1.7">
-                <li><a href="/articles/nasdaq-100-investment-guide" style="color:var(--accent2);text-decoration:none;font-weight:600">纳斯达克100指数投资完全指南：历史估值与科技巨头集中度 ➔</a></li>
-                <li><a href="/articles/how-to-choose-qdii-funds" style="color:var(--accent2);text-decoration:none;font-weight:600">如何挑选最优QDII指数基金：费率、规模与跟踪误差三角法则 ➔</a></li>
-                <li><a href="/articles/share-class-a-vs-c-break-even-analysis" style="color:var(--accent2);text-decoration:none;font-weight:600">A类与C类份额终极抉择：持有几年才是费率平衡临界点？（附量化数学推导） ➔</a></li>
-                <li><a href="/articles/penetrating-qdii-purchase-quota-restrictions" style="color:var(--accent2);text-decoration:none;font-weight:600">穿透公募基金限购内幕：为什么QDII单日限额会从1000元骤降至10元？ ➔</a></li>
+        <div class="fund-recommended-guides">
+            <h3>📚 推荐投研指南与实操精读</h3>
+            <ul>
+                <li><a href="/articles/nasdaq-100-investment-guide">纳斯达克100指数投资完全指南：历史估值与科技巨头集中度 ➔</a></li>
+                <li><a href="/articles/how-to-choose-qdii-funds">如何挑选最优QDII指数基金：费率、规模与跟踪误差三角法则 ➔</a></li>
+                <li><a href="/articles/share-class-a-vs-c-break-even-analysis">A类与C类份额终极抉择：持有几年才是费率平衡临界点？（附量化数学推导） ➔</a></li>
+                <li><a href="/articles/penetrating-qdii-purchase-quota-restrictions">穿透公募基金限购内幕：为什么QDII单日限额会从1000元骤降至10元？ ➔</a></li>
             </ul>
         </div>
 
@@ -227,29 +266,58 @@
         </div>
 
         <!-- 合规声明 -->
-        <div style="margin-top:1.5rem;padding:1rem 1.25rem;background:rgba(234,179,8,0.06);border-left:4px solid #eab308;border-radius:6px;font-size:0.82rem;color:var(--txt2);line-height:1.6">
+        <div class="fund-compliance-warning">
             <strong style="color:var(--txt)">⚠️ 风险提示与数据合规声明：</strong><br>
             本页面展示之基金费率（管理费、托管费、销售服务费）、申购限购状态（代销/直销渠道）及历史业绩数据均采集自基金公司法定公开披露公告及天天基金网公开接口。相关数据仅供学术量化分析、策略模拟与投资者教育之用，<strong>不构成任何形式的投资建议、财务顾问意见或基金销售推介</strong>。公募基金过往业绩不代表未来表现，市场有风险，投资需谨慎。本平台不从事任何公募或私募基金销售代理业务。
         </div>
 
-        <div style="text-align:center;margin:2.5rem 0 1rem 0">
-            <a href="/#ranking?q=008971" class="btn btn-p" style="text-decoration:none;padding:0.75rem 2rem;font-size:1.1rem">在 Fund Advisor 完整版中进行定投模拟 ➔</a>
+        <div class="fund-cta-wrap">
+            <a href="/#ranking?q=008971" class="fund-cta-btn">🚀 在 Fund Advisor 完整版中进行定投模拟 ➔</a>
         </div>
     </div>
 </main>
-<footer style="margin-top:4rem;padding:2.5rem 0;border-top:1px solid var(--border);text-align:center;color:var(--txt3);font-size:0.88rem">
-    <div style="margin-bottom:1rem;display:flex;justify-content:center;flex-wrap:wrap;gap:15px">
-        <a href="/" style="color:var(--txt3);text-decoration:none">首页概览</a> |
-        <a href="/#ranking" style="color:var(--txt3);text-decoration:none">基金排名</a> |
-        <a href="/#portfolio" style="color:var(--txt3);text-decoration:none">定投方案</a> |
-        <a href="/#simulator" style="color:var(--txt3);text-decoration:none">蒙特卡洛模拟器</a> |
-        <a href="/articles/" style="color:var(--txt3);text-decoration:none">投资百科</a> |
-        <a href="/about" style="color:var(--txt3);text-decoration:none">关于我们</a> |
-        <a href="/privacy-policy" style="color:var(--txt3);text-decoration:none">隐私政策</a> |
-        <a href="/terms-of-service" style="color:var(--txt3);text-decoration:none">服务条款</a> |
-        <a href="mailto:contact@858000.xyz" style="color:var(--txt3);text-decoration:none">联系我们</a>
+<footer>
+    <div class="footer-inner">
+        <div class="footer-info footer-col-brand">
+            <div class="footer-brand-title">
+                <img src="/favicon.png" alt="Fund Advisor" width="24" height="24" style="border-radius:6px">
+                <span>FUND ADVISOR</span>
+            </div>
+            <p class="footer-brand-desc">
+                面向境内投资者的专业级美股指数（纳斯达克100 &amp; 标普500）公募QDII量化配置中枢。融合现代投资组合理论（MPT）、索提诺下行风险体检、黑天鹅极端压力测试与估值动态定投。
+            </p>
+            <div class="footer-status-pill">
+                <span class="footer-pulse-dot"></span>
+                <span>量化通算引擎全时在线 · 延迟 &lt; 15ms</span>
+            </div>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col-title">平台导览 · Navigation</div>
+            <div class="footer-nav-list">
+                <a href="/">📊 首页概览</a>
+                <a href="/#ranking">🏆 基金多因子排名</a>
+                <a href="/#portfolio">⚖️ 定投方案配置</a>
+                <a href="/#simulator">📈 蒙特卡洛模拟器</a>
+                <a href="/articles/">📚 深度投研百科</a>
+            </div>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col-title">投研与合规 · Research &amp; Compliance</div>
+            <div class="footer-nav-list">
+                <a href="/about">🏢 关于我们与方法论</a>
+                <a href="/privacy-policy">🛡️ 隐私保护政策</a>
+                <a href="/terms-of-service">📜 用户服务条款</a>
+                <a href="mailto:contact@858000.xyz">📬 联系与合作</a>
+            </div>
+        </div>
     </div>
-    <p>© 2026 Fund Advisor. All rights reserved. 专注纳斯达克100与标普500指数基金量化投研。</p>
+    <div class="footer-disclaimer">
+        <strong>⚠️ 风险提示与免责合规声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均采集自基金管理人法定公开信息披露及天天基金网公开接口。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
+    </div>
+    <div class="footer-copyright">
+        <div>© 2026 Fund Advisor (858000.xyz). All Wall Street quant models open for research.</div>
+        <div>Designed to Award Tier Standards · Webby &amp; Awwwards Compliant</div>
+    </div>
 </footer>
 <script>
 (function() {

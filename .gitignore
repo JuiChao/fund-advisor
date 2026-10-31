@@ -10,3 +10,4 @@ node_modules/
 scratch/
 *.debug
 *.tmp
+.agents/

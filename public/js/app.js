@@ -373,6 +373,15 @@ const App = (() => {
         }).join('');
     }
 
+    function updateSliderGlowTrack(slider) {
+        if (!slider) return;
+        const min = Number(slider.min) || 0;
+        const max = Number(slider.max) || 100;
+        const val = Number(slider.value) || 0;
+        const pct = Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100));
+        slider.style.setProperty('--slider-pct', `${pct.toFixed(1)}%`);
+    }
+
     function syncSliderBadges() {
         const sm = document.getElementById('sim-m');
         const sy = document.getElementById('sim-y');
@@ -384,12 +393,14 @@ const App = (() => {
             if (el) el.textContent = v;
             const b = document.getElementById('sim-mv-badge');
             if (b) b.textContent = v + ' / 月';
+            updateSliderGlowTrack(sm);
         }
         if (sy) {
             const el = document.getElementById('sim-yv');
             if (el) el.textContent = sy.value + '年';
             const b = document.getElementById('sim-yv-badge');
             if (b) b.textContent = sy.value + ' 年';
+            updateSliderGlowTrack(sy);
         }
         if (pm) {
             const v = fmtMoney(pm.value);
@@ -397,12 +408,14 @@ const App = (() => {
             if (el) el.textContent = v;
             const b = document.getElementById('pf-mv-badge');
             if (b) b.textContent = v + ' / 月';
+            updateSliderGlowTrack(pm);
         }
         if (py) {
             const el = document.getElementById('pf-yv');
             if (el) el.textContent = py.value + '年';
             const b = document.getElementById('pf-yv-badge');
             if (b) b.textContent = py.value + ' 年';
+            updateSliderGlowTrack(py);
         }
     }
 
@@ -468,7 +481,7 @@ const App = (() => {
             applyRankView(currentRankView);
             if (queryParams.section === 'quota') {
                 setTimeout(() => {
-                    const el = document.getElementById('quota-bulletin-section');
+                    const el = document.getElementById('quota-bulletin-section') || document.getElementById('quota-bulletin-container');
                     if (el) {
                         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         el.classList.add('highlight-glow');
@@ -1142,6 +1155,7 @@ const App = (() => {
                             va = a[key];
                             vb = b[key];
                         }
+                        if (va == null && vb == null) return 0;
                         if (va == null) va = Infinity; if (vb == null) vb = Infinity;
                         return dir * (typeof va === 'string' ? va.localeCompare(vb) : va - vb);
                     });
@@ -1242,7 +1256,7 @@ const App = (() => {
 
     // ===== 每日限购动态监控与风控公告看板渲染 (Quota Intelligence Bulletin) =====
     function renderQuotaBulletin() {
-        const container = document.getElementById('quota-bulletin-container');
+        const container = document.getElementById('quota-bulletin-container') || document.getElementById('quota-bulletin-section');
         if (!container) return;
 
         const data = LIMIT_CHANGES_DATA;
@@ -3545,10 +3559,34 @@ const App = (() => {
         const codes = Array.from(msSelected);
         if (!codes.length) { alert('请至少选择一只基金'); return; }
         const btn = document.getElementById('btn-sim');
-        btn.disabled = true; btn.textContent = '模拟中…';
+        btn.disabled = true;
+        btn.innerHTML = '<span class="sim-spinner-dot"></span> 5,000次随机漫步并行推演中...';
+
+        // 即时渲染计算等待状态舱
+        const resultContainer = document.getElementById('sim-result');
+        if (resultContainer) {
+            resultContainer.innerHTML = `
+                <div class="sim-computing-deck fade-in">
+                    <div class="sim-computing-header">
+                        <span class="sim-computing-badge"><span class="computing-dot"></span> WEB WORKER PARALLEL ENGINE</span>
+                        <span class="sim-computing-timer">5,000 路径 · 240 步长 · 协方差收缩</span>
+                    </div>
+                    <div class="sim-computing-title">🎲 正在执行几何布朗运动随机漫步与超额 Alpha 计算...</div>
+                    <div class="sim-progress-track">
+                        <div class="sim-progress-bar-shimmer"></div>
+                    </div>
+                    <div class="sim-computing-steps">
+                        <span class="c-step active">1. 协方差收缩</span>
+                        <span class="c-step active">2. Box-Muller 正态抽样</span>
+                        <span class="c-step active">3. 费率与分红扣减</span>
+                        <span class="c-step active">4. 财富分位排序</span>
+                    </div>
+                </div>
+            `;
+        }
 
         // 异步以防止UI阻塞
-        await new Promise(r => setTimeout(r, 50));
+        await new Promise(r => setTimeout(r, 60));
 
         try {
             const monthlyEl = document.getElementById('sim-m');
@@ -3559,7 +3597,7 @@ const App = (() => {
 
             if (!funds.length) {
                 document.getElementById('sim-result').innerHTML = '<p style="color:var(--err);text-align:center;padding:2rem">未找到选中的基金</p>';
-                btn.disabled = false; btn.textContent = '运行模拟';
+                btn.disabled = false; btn.textContent = '🚀 运行蒙特卡洛模拟推演';
                 return;
             }
 
@@ -3700,8 +3738,8 @@ const App = (() => {
                         <div class="dual-kpi-card" style="border-color:rgba(16,185,129,0.3);background:linear-gradient(180deg, var(--surface2) 0%, rgba(16,185,129,0.06) 100%)">
                             <div class="dk-label">中位数财富终值</div>
                             <div class="dk-vals">
-                                <span class="dk-val-smart">${money(smart.medianFinal)}</span>
-                                <span class="dk-val-std">${money(std.medianFinal)}</span>
+                                <span class="dk-val-smart" id="sim-dk-smart-median">${money(smart.medianFinal)}</span>
+                                <span class="dk-val-std" id="sim-dk-std-median">${money(std.medianFinal)}</span>
                             </div>
                             <div class="dk-diff" style="color:var(--ok)">+${money(alpha.wealthGain)} (+${alpha.wealthGainPct}%)</div>
                         </div>
@@ -3709,8 +3747,8 @@ const App = (() => {
                         <div class="dual-kpi-card" style="border-color:rgba(99,102,241,0.3);background:linear-gradient(180deg, var(--surface2) 0%, rgba(99,102,241,0.06) 100%)">
                             <div class="dk-label">年化复合收益率 (CAGR)</div>
                             <div class="dk-vals">
-                                <span class="dk-val-smart" style="color:var(--accent2)">${smart.annualReturn}%</span>
-                                <span class="dk-val-std">${std.annualReturn}%</span>
+                                <span class="dk-val-smart" id="sim-dk-smart-cagr" style="color:var(--accent2)">${smart.annualReturn}%</span>
+                                <span class="dk-val-std" id="sim-dk-std-cagr">${std.annualReturn}%</span>
                             </div>
                             <div class="dk-diff" style="color:var(--accent2)">Alpha 提升 +${alpha.cagrGain}%</div>
                         </div>
@@ -3746,6 +3784,16 @@ const App = (() => {
                         ${dualPercentileRowsHtml}
                     </div>
                 `;
+
+                // 触发平滑数字递增动画
+                const elDkSmartMed = document.getElementById('sim-dk-smart-median');
+                const elDkStdMed = document.getElementById('sim-dk-std-median');
+                const elDkSmartCagr = document.getElementById('sim-dk-smart-cagr');
+                const elDkStdCagr = document.getElementById('sim-dk-std-cagr');
+                if (elDkSmartMed) animateOdometer(elDkSmartMed, +(smart.medianFinal / 10000).toFixed(1), 1100, 1, '¥', '万');
+                if (elDkStdMed) animateOdometer(elDkStdMed, +(std.medianFinal / 10000).toFixed(1), 900, 1, '¥', '万');
+                if (elDkSmartCagr) animateOdometer(elDkSmartCagr, +smart.annualReturn, 1100, 2, '', '%');
+                if (elDkStdCagr) animateOdometer(elDkStdCagr, +std.annualReturn, 900, 2, '', '%');
 
                 if (chartPool.sim) chartPool.sim.destroy();
                 chartPool.sim = new Chart(document.getElementById('ch-sim'), {
@@ -3784,7 +3832,7 @@ const App = (() => {
                         }
                     }
                 });
-                btn.disabled = false; btn.textContent = '运行模拟';
+                btn.disabled = false; btn.textContent = '🚀 运行蒙特卡洛模拟推演';
                 return;
             }
 
@@ -3867,17 +3915,17 @@ const App = (() => {
                 <div class="sim-kpi-grid">
                     <div class="sim-kpi-card">
                         <div class="sim-kpi-label">累计本金投入</div>
-                        <div class="sim-kpi-value">${money(invested)}</div>
+                        <div class="sim-kpi-value" id="sim-kpi-invested">${money(invested)}</div>
                         <div class="sim-kpi-sub">¥${monthly}/月 × ${years}年</div>
                     </div>
                     <div class="sim-kpi-card" style="border-color:rgba(16,185,129,0.3);background:linear-gradient(180deg, var(--surface2) 0%, rgba(16,185,129,0.06) 100%)">
                         <div class="sim-kpi-label">中位数终值预期</div>
-                        <div class="sim-kpi-value" style="color:var(--ok)">${money(medianVal)}</div>
+                        <div class="sim-kpi-value" id="sim-kpi-median" style="color:var(--ok)">${money(medianVal)}</div>
                         <div class="sim-kpi-sub" style="color:var(--ok);font-weight:600">收益 +${money(profit)} (${profitMultiple})</div>
                     </div>
                     <div class="sim-kpi-card" style="border-color:rgba(99,102,241,0.3);background:linear-gradient(180deg, var(--surface2) 0%, rgba(99,102,241,0.06) 100%)">
                         <div class="sim-kpi-label">年化复合收益 (CAGR)</div>
-                        <div class="sim-kpi-value" style="color:var(--accent2)">${result.annualReturn}%</div>
+                        <div class="sim-kpi-value" id="sim-kpi-cagr" style="color:var(--accent2)">${result.annualReturn}%</div>
                         <div class="sim-kpi-sub">平滑复利中位数</div>
                     </div>
                 </div>
@@ -3885,6 +3933,14 @@ const App = (() => {
                 <div class="sim-percentile-list">
                     ${pListHtml}
                 </div>`;
+
+            // 触发平滑数字递增动画
+            const elInvested = document.getElementById('sim-kpi-invested');
+            const elMedian = document.getElementById('sim-kpi-median');
+            const elCagr = document.getElementById('sim-kpi-cagr');
+            if (elInvested) animateOdometer(elInvested, +(invested / 10000).toFixed(1), 900, 1, '¥', '万');
+            if (elMedian) animateOdometer(elMedian, +(medianVal / 10000).toFixed(1), 1100, 1, '¥', '万');
+            if (elCagr) animateOdometer(elCagr, +result.annualReturn, 1000, 2, '', '%');
 
             if (chartPool.sim) chartPool.sim.destroy();
             chartPool.sim = new Chart(document.getElementById('ch-sim'), {
@@ -3911,7 +3967,7 @@ const App = (() => {
         } catch (e) {
             document.getElementById('sim-result').innerHTML = `<p style="color:var(--err);text-align:center;padding:2rem">模拟失败: ${e.message}</p>`;
         }
-        btn.disabled = false; btn.textContent = '运行模拟';
+        btn.disabled = false; btn.textContent = '🚀 运行蒙特卡洛模拟推演';
     }
 
     // ===== 定投方案 =====
@@ -4106,7 +4162,7 @@ const App = (() => {
             note = `🎯 <strong>最优风险收益比 (夏普 ${sharpe})：</strong>基于 Ledoit-Wolf 收缩协方差优化，在控制波动率的同时最大化超额收益。`;
         } else if (s.key === 'balanced') {
             statusTag = `<span class="tag" style="background:rgba(239,68,68,0.12);color:#dc2626;font-weight:700">⚠️ 风险非对称 (纳指占 ${nqRiskPct}%)</span>`;
-            note = `⚠️ <strong>风险非对称警示：</strong>虽然资金按 50/50 均分，但因纳指波动大，纳指实际承担了 <strong>${nqRiskPct}%</strong> 的组合风险。`;
+            note = `⚠️ <strong>风险非对称警示：</strong>虽然资金按 50/50 均分，但因纳指波动大，纳指实际承担了 <strong>${nqRiskPct}%</strong> 的组合风险 (高出资金权重 +${nqRiskPct - nqCapitalPct}%)。`;
         } else if (s.key === 'growth') {
             statusTag = `<span class="tag" style="background:rgba(59,130,246,0.15);color:#2563eb;font-weight:700">🚀 弹性进攻型 (纳指占 ${nqRiskPct}%)</span>`;
             note = `🚀 <strong>进取型进攻敞口：</strong>大幅超配纳斯达克100，纳指贡献了 <strong>${nqRiskPct}%</strong> 的波动风险，获取充沛牛市弹性。`;
@@ -4120,7 +4176,7 @@ const App = (() => {
             <div class="pf-card-head">
                 <div class="pf-card-title">
                     <span style="font-size:0.95rem">⚖️</span>
-                    <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">资金配置 vs 波动风险贡献</span>
+                    <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">资金配置 vs 波动风险贡献 (方差分解)</span>
                     ${statusTag}
                 </div>
             </div>
@@ -4129,22 +4185,22 @@ const App = (() => {
                 <div class="pf-bar-group">
                     <div class="pf-bar-label">
                         <span>资金权重 (Capital Weight)</span>
-                        <span>纳指 ${nqCapitalPct}% / 标普 ${spCapitalPct}%</span>
+                        <span style="font-variant-numeric:tabular-nums">纳指 ${nqCapitalPct}% / 标普 ${spCapitalPct}%</span>
                     </div>
                     <div class="pf-bar-track">
-                        <div class="pf-bar-seg" style="width:${nqCapitalPct}%;background:#3b82f6" title="纳指资金占比 ${nqCapitalPct}%"></div>
-                        <div class="pf-bar-seg" style="width:${spCapitalPct}%;background:#10b981" title="标普资金占比 ${spCapitalPct}%"></div>
+                        <div class="pf-bar-seg" style="width:${nqCapitalPct}%;background:linear-gradient(90deg, #3b82f6, #4f46e5)" title="纳指资金占比 ${nqCapitalPct}%">${nqCapitalPct > 10 ? nqCapitalPct + '%' : ''}</div>
+                        <div class="pf-bar-seg" style="width:${spCapitalPct}%;background:linear-gradient(90deg, #10b981, #059669)" title="标普资金占比 ${spCapitalPct}%">${spCapitalPct > 10 ? spCapitalPct + '%' : ''}</div>
                     </div>
                 </div>
 
                 <div class="pf-bar-group">
                     <div class="pf-bar-label">
                         <span>波动风险贡献 (Risk Contribution)</span>
-                        <span style="font-weight:${s.key === 'risk_parity' ? '700;color:var(--ok)' : '600'}">纳指 ${nqRiskPct}% / 标普 ${spRiskPct}%</span>
+                        <span style="font-variant-numeric:tabular-nums;font-weight:${s.key === 'risk_parity' ? '700;color:var(--ok)' : '600'}">纳指 ${nqRiskPct}% / 标普 ${spRiskPct}%</span>
                     </div>
                     <div class="pf-bar-track">
-                        <div class="pf-bar-seg" style="width:${nqRiskPct}%;background:linear-gradient(90deg, #3b82f6, #6366f1)" title="纳指风险贡献 ${nqRiskPct}%"></div>
-                        <div class="pf-bar-seg" style="width:${spRiskPct}%;background:linear-gradient(90deg, #10b981, #059669)" title="标普风险贡献 ${spRiskPct}%"></div>
+                        <div class="pf-bar-seg" style="width:${nqRiskPct}%;background:linear-gradient(90deg, #f43f5e, #e11d48)" title="纳指风险贡献 ${nqRiskPct}%">${nqRiskPct > 10 ? nqRiskPct + '%' : ''}</div>
+                        <div class="pf-bar-seg" style="width:${spRiskPct}%;background:linear-gradient(90deg, #0ea5e9, #0284c7)" title="标普风险贡献 ${spRiskPct}%">${spRiskPct > 10 ? spRiskPct + '%' : ''}</div>
                     </div>
                 </div>
             </div>
@@ -4543,8 +4599,11 @@ const App = (() => {
             }
 
             const slider = document.getElementById('frontier-range-slider');
-            if (slider && Number(slider.value) !== pt.w_nq_pct) {
-                slider.value = pt.w_nq_pct;
+            if (slider) {
+                if (Number(slider.value) !== pt.w_nq_pct) {
+                    slider.value = pt.w_nq_pct;
+                }
+                updateSliderGlowTrack(slider);
             }
 
             const curLabel = document.getElementById('f-slider-current');
@@ -4631,6 +4690,7 @@ const App = (() => {
             slider.oninput = (e) => {
                 const w = Number(e.target.value) / 100;
                 updateHUD(w);
+                updateSliderGlowTrack(e.target);
                 // 同步更新预设按钮状态
                 const presetBtns = document.querySelectorAll('.frontier-preset-btn');
                 presetBtns.forEach(btn => btn.classList.remove('on'));
@@ -4706,6 +4766,7 @@ const App = (() => {
             id: 'gfc',
             name: '2008 全球次贷金融海啸',
             period: '2007.10 - 2009.12 (共 27 个月)',
+            threatTag: '<span class="tag" style="background:rgba(239,68,68,0.15);color:var(--err);font-weight:700">🔴 系统性流动性冰封</span>',
             bgDesc: '美国次贷危机演变为百年一遇的全球流动性冰封与信用崩塌，雷曼兄弟倒闭，标普500单月暴跌近17%，整体最大回撤超 -52%。但在定投纪律加持下，投资者在低谷贪婪收集极廉价筹码，2009年迎来暴力修复。',
             ndxDrop: '-50.5%',
             spxDrop: '-52.6%',
@@ -4723,6 +4784,7 @@ const App = (() => {
             id: 'covid',
             name: '2020 新冠疫情极速熔断',
             period: '2020.01 - 2020.12 (共 12 个月)',
+            threatTag: '<span class="tag" style="background:rgba(139,92,246,0.15);color:#7c3aed;font-weight:700">🟣 极速暴跌与 V 型强反转</span>',
             bgDesc: '新冠病毒全球大流行引爆史诗级流动性危机，美股10天内遭遇 4 次熔断。然而随着美联储无限QE与零利率救市，全球科技巨头业绩逆势暴增，纳斯达克开启人类金融史上最迅猛的 V 型超级大反转。',
             ndxDrop: '-28.0%',
             spxDrop: '-33.9%',
@@ -4739,6 +4801,7 @@ const App = (() => {
             id: 'dotcom',
             name: '2000 互联网泡沫破裂',
             period: '2000.03 - 2002.10 (共 32 个月)',
+            threatTag: '<span class="tag" style="background:rgba(244,63,94,0.15);color:#e11d48;font-weight:700">⚫ 32个月漫长估值出清</span>',
             bgDesc: '人类科技史估值泡沫巅峰破裂，纳斯达克100指数累计暴跌超过 -82%，历时近3年才见底。这是科技股历史上最残酷的漫长熊市考验，也是资产多元配置（纳指+标普）价值凸显的终极试金石。',
             ndxDrop: '-82.9%',
             spxDrop: '-47.4%',
@@ -4756,6 +4819,7 @@ const App = (() => {
             id: 'ratehike',
             name: '2022 激进加息高通胀熊市',
             period: '2022.01 - 2022.12 (共 12 个月)',
+            threatTag: '<span class="tag" style="background:rgba(59,130,246,0.15);color:#2563eb;font-weight:700">🔵 暴力紧缩估值挤泡沫</span>',
             bgDesc: '美联储遭遇40年来最严重通胀失控，以史无前例的连续4次75bp暴力加息打压需求。高估值成长股首当其冲，纳指全年深跌 -33%，标普跌近 -19%，是检验估值挤泡沫与逆周期布局韧性的最近期样本。',
             ndxDrop: '-32.4%',
             spxDrop: '-18.1%',
@@ -4783,7 +4847,14 @@ const App = (() => {
         // 1. 更新背景档案与关键 KPI
         const descEl = document.getElementById('stress-profile-desc');
         if (descEl) {
-            descEl.innerHTML = `<strong style="color:var(--txt);font-size:0.875rem">${sc.name}</strong> <span style="color:var(--accent2);margin-left:6px;font-size:0.75rem">${sc.period}</span><br>${sc.bgDesc}`;
+            descEl.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                    <strong style="color:var(--txt);font-size:0.95rem">${sc.name}</strong>
+                    <span style="color:var(--accent2);font-size:0.75rem">${sc.period}</span>
+                    ${sc.threatTag || ''}
+                </div>
+                <div>${sc.bgDesc}</div>
+            `;
         }
         const kpiEl = document.getElementById('stress-profile-kpis');
         if (kpiEl) {
@@ -4884,8 +4955,8 @@ const App = (() => {
                 const retColor = r.finalReturnPct >= 0 ? 'var(--ok)' : 'var(--err)';
                 const retPrefix = r.finalReturnPct > 0 ? '+' : '';
                 const recHtml = r.recMonths != null
-                    ? `<span style="color:var(--ok);font-weight:600">谷底后 ${r.recMonths} 个月</span>`
-                    : `<span style="color:var(--txt3)">周期内未回本</span>`;
+                    ? `<span class="stress-rec-badge status-recovered">✅ 谷底后 ${r.recMonths} 个月回本</span>`
+                    : `<span class="stress-rec-badge status-unrecovered">⏳ 周期内未回本</span>`;
 
                 return `
                     <tr style="${r.isBenchmark ? 'background:rgba(100,116,139,0.03);' : ''}">
@@ -6950,11 +7021,13 @@ const App = (() => {
             const b = document.getElementById('sim-mv-badge');
             if (b) b.textContent = val + ' / 月';
             updateWeightDisplays();
+            updateSliderGlowTrack(e.target);
         });
         document.getElementById('sim-y').addEventListener('input', e => {
             document.getElementById('sim-yv').textContent = e.target.value + '年';
             const b = document.getElementById('sim-yv-badge');
             if (b) b.textContent = e.target.value + ' 年';
+            updateSliderGlowTrack(e.target);
         });
         document.getElementById('pf-m').addEventListener('input', e => {
             const val = fmtMoney(e.target.value);
@@ -6964,11 +7037,13 @@ const App = (() => {
             const stressBudgetEl = document.getElementById('stress-budget-note');
             if (stressBudgetEl) stressBudgetEl.textContent = `当前推演预算: ${val} / 月`;
             renderStressTest(_activeStressScenario, +e.target.value, _dynamicParams);
+            updateSliderGlowTrack(e.target);
         });
         document.getElementById('pf-y').addEventListener('input', e => {
             document.getElementById('pf-yv').textContent = e.target.value + '年';
             const b = document.getElementById('pf-yv-badge');
             if (b) b.textContent = e.target.value + ' 年';
+            updateSliderGlowTrack(e.target);
         });
         document.getElementById('btn-sim').addEventListener('click', runSimulation);
         initSmartDCAToggle();
