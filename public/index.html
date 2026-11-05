@@ -158,15 +158,25 @@
 }
 </script>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.loli.net">
+<link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+<link rel="preload" href="js/chart.umd.min.js" as="script">
+<link rel="stylesheet" href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" onerror="this.onerror=null;this.href='https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap'">
+<noscript>
+<link rel="stylesheet" href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap">
+</noscript>
 <link rel="stylesheet" href="/css/style.css?v=20261031_award">
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="manifest" href="manifest.json">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<!-- Google AdSense -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
+<!-- Google AdSense (非阻塞延迟载入，杜绝国内节点因网络拦截导致的页面加载挂起) -->
+<script>
+window.addEventListener('load', function() {
+  var s = document.createElement('script');
+  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142';
+  s.async = true;
+  s.crossOrigin = 'anonymous';
+  document.head.appendChild(s);
+});
+</script>
 </head>
 <body>
 <div id="scroll-progress" aria-hidden="true"></div>
@@ -2539,6 +2549,9 @@
         </button>
     </aside>
 
+    <!-- Chart.js 本地化加载（国内直连与海外均秒级加载，杜绝外部 CDN 阻塞与超时） -->
+    <script src="js/chart.umd.min.js"></script>
+    <script>window.Chart || document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"><\/script>')</script>
     <script defer src="js/html2canvas.min.js"></script>
     <script src="js/app.js?v=20261030_v1"></script>
 <noscript>

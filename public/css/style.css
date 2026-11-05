@@ -2,7 +2,7 @@
 :root, [data-theme="light"] {
     /* Typographic Hierarchy & Precision Font Stacks */
     --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    --font-display: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+    --font-display: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
 
     /* Fluid Typographic Tokens (1.25 Major Third to 1.333 Perfect Fourth Scales) */

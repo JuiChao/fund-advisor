@@ -1551,7 +1551,7 @@ const App = (() => {
             script.onerror = () => {
                 // CDN 备用兜底
                 const cdn = document.createElement('script');
-                cdn.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+                cdn.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
                 cdn.onload = () => resolve(window.html2canvas);
                 cdn.onerror = () => reject(new Error('无法加载截图引擎，请检查网络连接'));
                 document.head.appendChild(cdn);
