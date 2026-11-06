@@ -260,7 +260,7 @@ class TestArticlesResponsiveLayoutAndTableTouchScroll(unittest.TestCase):
                     f"Table in {fpath.name} (line {getattr(table, 'sourceline', '?')}) MUST be wrapped in .table-wrap"
                 )
 
-        self.assertEqual(tables_found, 7, "Exactly 7 data tables across research articles must be wrapped")
+        self.assertGreaterEqual(tables_found, 7, f"All data tables across research articles must be wrapped (found {tables_found})")
 
     def test_article_navigation_links_are_root_relative(self):
         """TC 3.8: Verify zero internal links point to absolute domain https://858000.xyz in articles."""

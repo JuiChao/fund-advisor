@@ -3,4 +3,10 @@ Allow: /
 Allow: /data/
 Allow: /api/
 
+User-agent: Mediapartners-Google
+Allow: /
+
+User-agent: Google-Display-Ads-Bot
+Allow: /
+
 Sitemap: https://858000.xyz/sitemap.xml

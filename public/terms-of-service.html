@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <meta name="theme-color" content="#4f46e5">
+<meta name="google-adsense-account" content="ca-pub-8921283801578142">
 <title>服务条款 (Terms of Service) - Fund Advisor</title>
 <meta name="description" content="Fund Advisor 服务条款与免责声明：明确平台量化投研工具与数据的学术探讨性质，规范用户行为与知识产权合规边界。">
 <link rel="canonical" href="https://858000.xyz/terms-of-service">
@@ -15,16 +16,9 @@
 <noscript>
 <link rel="stylesheet" href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap">
 </noscript>
-<link rel="stylesheet" href="/css/style.css?v=20261009_v7">
-<script>
-window.addEventListener('load', function() {
-  var s = document.createElement('script');
-  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142';
-  s.async = true;
-  s.crossOrigin = 'anonymous';
-  document.head.appendChild(s);
-});
-</script>
+<link rel="stylesheet" href="/css/style.css?v=20261031_award">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
+<script>(function(){var t=localStorage.getItem('fa_theme')||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
 <header>
@@ -43,14 +37,19 @@ window.addEventListener('load', function() {
         <a href="/articles/">投资百科</a>
         <a href="/about">关于我们</a>
     </div>
-    <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false" onclick="var l=document.getElementById('nav-links');var b=this;var o=l.classList.toggle('show');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);">
-        <span></span><span></span><span></span>
-    </button>
+    <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="切换主题" title="切换深色/浅色模式">
+            <span class="theme-icon">🌙</span>
+        </button>
+        <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false" onclick="var l=document.getElementById('nav-links');var b=this;var o=l.classList.toggle('show');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
 </nav>
 </header>
 <main class="container" style="max-width:800px;margin-top:3rem;line-height:1.7;color:var(--txt2);">
     <h1 style="font-size:2rem;color:var(--txt);margin-bottom:2rem;">服务条款 (Terms of Service)</h1>
-    <p style="margin-bottom:1rem;">最后更新时间：2026年10月29日</p>
+    <p style="margin-bottom:1rem;">最后更新时间：2026年11月6日</p>
     
     <h2 style="font-size:1.5rem;color:var(--txt);margin:1.5rem 0 1rem;">1. 接受条款</h2>
     <p style="margin-bottom:1rem;">
@@ -105,6 +104,37 @@ window.addEventListener('load', function() {
             <a href="mailto:contact@858000.xyz">联系我们</a>
         </div>
     </div>
+    <div class="footer-disclaimer">
+        <strong>⚠️ 风险提示与免责合规声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均采集自基金管理人法定公开信息披露及天天基金网公开接口。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
+    </div>
+    <div class="footer-copyright">
+        <div>© 2026 Fund Advisor (858000.xyz). All Wall Street quant models open for research.</div>
+        <div>Designed to Award Tier Standards · Webby &amp; Awwwards Compliant</div>
+    </div>
 </footer>
+
+<script>
+(function() {
+    function getTheme() {
+        var s = localStorage.getItem('fa_theme');
+        if (s) return s;
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    function applyTheme(t) {
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem('fa_theme', t);
+        var icon = document.querySelector('#theme-toggle .theme-icon');
+        if (icon) icon.textContent = t === 'dark' ? '☀️' : '🌙';
+    }
+    applyTheme(getTheme());
+    var btn = document.getElementById('theme-toggle');
+    if (btn) {
+        btn.onclick = function() {
+            var cur = document.documentElement.getAttribute('data-theme') || 'light';
+            applyTheme(cur === 'dark' ? 'light' : 'dark');
+        };
+    }
+})();
+</script>
 </body>
 </html>

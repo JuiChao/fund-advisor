@@ -194,27 +194,18 @@ class TestCacheBustingQuerySynchronization(unittest.TestCase):
                          f"Subpages failing canonical cache-busting token (?v={self.CANONICAL_AWARD_TOKEN}): {mismatched[:5]}")
 
     def test_detect_index_cache_busting_desync_line_164(self):
-        """TC 5.12: Verify public/index.html line 164 is synchronized with canonical award cache token."""
+        """TC 5.12: Verify public/index.html stylesheet link is synchronized with canonical award cache token."""
         with open(INDEX_HTML, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+            soup = BeautifulSoup(f.read(), "html.parser")
 
-        # Locate style.css link in index.html
-        found_line = None
-        found_content = ""
-        for idx, line in enumerate(lines):
-            if "rel=\"stylesheet\"" in line and "style.css" in line:
-                found_line = idx + 1
-                found_content = line.strip()
-                break
-
-        self.assertIsNotNone(found_line, "public/index.html must contain a stylesheet link to style.css")
-        # Line 164 is the known location
-        self.assertEqual(found_line, 164, f"Expected stylesheet link on line 164, found on line {found_line}")
+        link = soup.find("link", rel=lambda r: r and "stylesheet" in r, href=lambda h: h and "style.css" in h)
+        self.assertIsNotNone(link, "public/index.html must contain a stylesheet link to style.css")
+        href = link.get("href", "")
         # Verify synchronized token and leading root slash
-        self.assertIn(f"v={self.CANONICAL_AWARD_TOKEN}", found_content,
-                      f"Line 164 must be synchronized with award token v={self.CANONICAL_AWARD_TOKEN}")
-        self.assertIn('href="/css/style.css', found_content,
-                      "Line 164 must use leading root slash /css/style.css")
+        self.assertIn(f"v={self.CANONICAL_AWARD_TOKEN}", href,
+                      f"style.css link must be synchronized with award token v={self.CANONICAL_AWARD_TOKEN}")
+        self.assertTrue(href.startswith("/css/style.css"),
+                        "style.css link must use leading root slash /css/style.css")
 
     def test_legal_pages_cache_busting_queries(self):
         """TC 5.13: Document terms-of-service and privacy-policy cache-busting queries."""

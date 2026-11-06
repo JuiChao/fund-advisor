@@ -78,15 +78,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <link rel="stylesheet" href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap">
 </noscript>
 <link rel="stylesheet" href="/css/style.css?v=20261031_award">
-<script>
-window.addEventListener('load', function() {{
-  var s = document.createElement('script');
-  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142';
-  s.async = true;
-  s.crossOrigin = 'anonymous';
-  document.head.appendChild(s);
-}});
-</script>
+<meta name="google-adsense-account" content="ca-pub-8921283801578142">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {json_ld}
 </script>
