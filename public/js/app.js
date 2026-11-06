@@ -6611,6 +6611,513 @@ const App = (() => {
         }
         initLiveMarketTelemetry();
 
+        // ===== 纳指100与标普500实时行情及黑天鹅情况核心控制器 (Hero Indices & Black Swan Stream) =====
+        function initHeroIndicesStream() {
+            const deckEl = document.getElementById('hero-indices-deck');
+            if (!deckEl) return;
+
+            const lastPrices = { NDX: null, INX: null };
+            let pollingTimer = null;
+            let countdownInterval = null;
+            let isPollingActive = false;
+
+            // 1. 美东时间精密提取与假日判定 (America/New_York Time & US Market Holidays)
+            function getNYParts() {
+                try {
+                    const formatter = new Intl.DateTimeFormat('en-US', {
+                        timeZone: 'America/New_York',
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        weekday: 'short',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        second: 'numeric',
+                        hour12: false
+                    });
+                    const parts = formatter.formatToParts(new Date());
+                    let year = 2026, month = 1, day = 1, weekday = 'Mon', hour = 0, minute = 0, second = 0;
+                    for (const p of parts) {
+                        if (p.type === 'year') year = parseInt(p.value, 10);
+                        if (p.type === 'month') month = parseInt(p.value, 10);
+                        if (p.type === 'day') day = parseInt(p.value, 10);
+                        if (p.type === 'weekday') weekday = p.value;
+                        if (p.type === 'hour') hour = parseInt(p.value, 10);
+                        if (p.type === 'minute') minute = parseInt(p.value, 10);
+                        if (p.type === 'second') second = parseInt(p.value, 10);
+                    }
+                    if (hour === 24) hour = 0;
+                    const totalSecs = hour * 3600 + minute * 60 + second;
+                    return { year, month, day, weekday, hour, minute, second, totalSecs };
+                } catch (e) {
+                    const now = new Date();
+                    return {
+                        year: now.getFullYear(),
+                        month: now.getMonth() + 1,
+                        day: now.getDate(),
+                        weekday: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][now.getDay()],
+                        hour: now.getHours(),
+                        minute: now.getMinutes(),
+                        second: now.getSeconds(),
+                        totalSecs: now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()
+                    };
+                }
+            }
+
+            function getUSMarketHoliday(ny) {
+                const { year, month, day, weekday } = ny;
+                const isNth = (n, w) => weekday === w && (day - 7 * (n - 1) > 0 && day - 7 * (n - 1) <= 7);
+                const isLast = (w) => weekday === w && (day + 7 > new Date(year, month, 0).getDate());
+                const isObs = (m, d) => (month === m && day === d && weekday !== 'Sat' && weekday !== 'Sun')
+                    || (month === m && day === d + 1 && weekday === 'Mon')
+                    || (month === m && day === d - 1 && weekday === 'Fri');
+
+                if (isObs(1, 1)) return '元旦节休市';
+                if (month === 1 && isNth(3, 'Mon')) return '马丁·路德·金纪念日休市';
+                if (month === 2 && isNth(3, 'Mon')) return '华盛顿诞辰/总统日休市';
+                if (month === 5 && isLast('Mon')) return '阵亡将士纪念日休市';
+                if (isObs(6, 19)) return '六月节国家独立日休市';
+                if (isObs(7, 4)) return '独立日休市';
+                if (month === 9 && isNth(1, 'Mon')) return '劳动节休市';
+                if (month === 11 && isNth(4, 'Thu')) return '感恩节休市';
+                if (isObs(12, 25)) return '圣诞节休市';
+                return null;
+            }
+
+            // 2. 时段与频率计算及开盘倒计时秒数
+            function getSessionInfo() {
+                const ny = getNYParts();
+                const { weekday, totalSecs } = ny;
+                const isWeekend = (weekday === 'Sat' || weekday === 'Sun');
+                const holiday = getUSMarketHoliday(ny);
+
+                const preOpenSecs = 4 * 3600;        // 04:00 盘前
+                const regOpenSecs = 9 * 3600 + 1800; // 09:30 盘中
+                const regCloseSecs = 16 * 3600;      // 16:00 闭市
+                const postCloseSecs = 20 * 3600;     // 20:00 盘后结束
+
+                // 计算距下一个交易日 09:30 开盘的剩余秒数
+                function calcNextOpenSeconds() {
+                    if (isWeekend) {
+                        const daysToAdd = (weekday === 'Sat') ? 2 : 1;
+                        return (86400 - totalSecs) + ((daysToAdd - 1) * 86400) + regOpenSecs;
+                    }
+                    if (holiday) {
+                        return (86400 - totalSecs) + regOpenSecs;
+                    }
+                    if (totalSecs < regOpenSecs) {
+                        return regOpenSecs - totalSecs;
+                    }
+                    const daysToAdd = (weekday === 'Fri') ? 3 : 1;
+                    return (86400 - totalSecs) + ((daysToAdd - 1) * 86400) + regOpenSecs;
+                }
+
+                const nextOpenSecs = calcNextOpenSeconds();
+
+                if (isWeekend) {
+                    return { status: 'CLOSED', interval: 0, label: '周末休市', isTrading: false, nextOpenSecs };
+                }
+                if (holiday) {
+                    return { status: 'CLOSED', interval: 0, label: holiday, isTrading: false, nextOpenSecs };
+                }
+                if (totalSecs >= regOpenSecs && totalSecs < regCloseSecs) {
+                    return { status: 'REGULAR', interval: 30000, label: '盘中实时', isTrading: true, nextOpenSecs: 0 };
+                }
+                if (totalSecs >= preOpenSecs && totalSecs < regOpenSecs) {
+                    return { status: 'PRE-MARKET', interval: 60000, label: '盘前交易', isTrading: false, nextOpenSecs };
+                }
+                if (totalSecs >= regCloseSecs && totalSecs < postCloseSecs) {
+                    return { status: 'AFTER-HOURS', interval: 60000, label: '盘后交易', isTrading: false, nextOpenSecs };
+                }
+                return { status: 'CLOSED', interval: 0, label: '闭市维护', isTrading: false, nextOpenSecs };
+            }
+
+            function formatCountdown(secDiff) {
+                if (!secDiff || secDiff < 0) secDiff = 0;
+                const h = Math.floor(secDiff / 3600);
+                const m = Math.floor((secDiff % 3600) / 60);
+                const s = Math.floor(secDiff % 60);
+                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            }
+
+            function updateClosedCountdownUI(session) {
+                const countdownStr = formatCountdown(session.nextOpenSecs);
+                const lagNdx = document.getElementById('ndx-lag-text');
+                const lagInx = document.getElementById('inx-lag-text');
+                const marketStatusEl = document.getElementById('ticker-market-status');
+
+                const prefix = session.label ? `${session.label} · ` : '';
+                const text = `QDII 净值 T+1 确认 · ${prefix}距美股开盘倒计时 ${countdownStr}`;
+
+                if (lagNdx) lagNdx.textContent = text;
+                if (lagInx) lagInx.textContent = text;
+                if (marketStatusEl) {
+                    marketStatusEl.textContent = `美股${prefix}距开盘 ${countdownStr}`;
+                }
+            }
+
+            // 3. 客户端原生解析腾讯接口字符串（用于容灾直连）
+            function parseClientTencentText(text) {
+                if (!text || typeof text !== 'string') return null;
+                const rawMap = {};
+                const lines = text.split(';');
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
+                    const match = trimmed.match(/v_us([A-Za-z0-9_]+)="([^"]*)"/);
+                    if (!match) continue;
+                    const symbol = match[1];
+                    const parts = match[2].split('~');
+                    if (parts.length < 35) continue;
+                    rawMap[symbol] = {
+                        symbol,
+                        code: parts[2] || symbol,
+                        name: parts[1] || symbol,
+                        price: parseFloat(parts[3]) || 0,
+                        prev_close: parseFloat(parts[4]) || 0,
+                        open: parseFloat(parts[5]) || 0,
+                        volume: parseInt(parts[6], 10) || 0,
+                        datetime: parts[30] || '',
+                        change: parseFloat(parts[31]) || 0,
+                        change_pct: parseFloat(parts[32]) || 0,
+                        high: parseFloat(parts[33]) || 0,
+                        low: parseFloat(parts[34]) || 0,
+                        extended_price: (parts[67] && !isNaN(parseFloat(parts[67]))) ? parseFloat(parts[67]) : null
+                    };
+                }
+                const ndx = rawMap['NDX'];
+                const inx = rawMap['INX'];
+                const qqq = rawMap['QQQ'];
+                const spy = rawMap['SPY'];
+                if (!ndx || !inx) return null;
+
+                function calcRange(p, l, h) {
+                    if (h <= l) return 50;
+                    if (p <= l) return 0;
+                    if (p >= h) return 100;
+                    return Math.max(0, Math.min(100, Math.round(((p - l) / (h - l)) * 100)));
+                }
+
+                return {
+                    success: true,
+                    timestamp: Date.now(),
+                    indices: {
+                        NDX: {
+                            symbol: '^NDX',
+                            name: '纳斯达克100',
+                            code: ndx.code || '.NDX',
+                            etf_symbol: 'QQQ',
+                            price: ndx.price,
+                            change: ndx.change,
+                            change_pct: ndx.change_pct,
+                            open: ndx.open,
+                            high: ndx.high,
+                            low: ndx.low,
+                            prev_close: ndx.prev_close,
+                            range_pct: calcRange(ndx.price, ndx.low, ndx.high),
+                            extended_price: ndx.extended_price,
+                            etf_price: qqq ? qqq.price : null,
+                            etf_change: qqq ? qqq.change : null,
+                            etf_change_pct: qqq ? qqq.change_pct : null,
+                            datetime: ndx.datetime
+                        },
+                        INX: {
+                            symbol: '^GSPC',
+                            name: '标普500',
+                            code: inx.code || '.INX',
+                            etf_symbol: 'SPY',
+                            price: inx.price,
+                            change: inx.change,
+                            change_pct: inx.change_pct,
+                            open: inx.open,
+                            high: inx.high,
+                            low: inx.low,
+                            prev_close: inx.prev_close,
+                            range_pct: calcRange(inx.price, inx.low, inx.high),
+                            extended_price: inx.extended_price,
+                            etf_price: spy ? spy.price : null,
+                            etf_change: spy ? spy.change : null,
+                            etf_change_pct: spy ? spy.change_pct : null,
+                            datetime: inx.datetime
+                        }
+                    },
+                    raw: rawMap
+                };
+            }
+
+            // 4. 多级容灾拉取管道
+            async function fetchIndicesData() {
+                // Tier 1: 边缘网关 /api/indices
+                try {
+                    const resp = await fetch('/api/indices', { cache: 'no-cache' });
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data && data.indices && data.indices.NDX && data.indices.INX) {
+                            return data;
+                        }
+                    }
+                } catch (e) {
+                    // Fallthrough
+                }
+
+                // Tier 2: 降级直连腾讯公开行情接口
+                try {
+                    const resp = await fetch('https://qt.gtimg.cn/q=usNDX,usINX,usQQQ,usSPY', { mode: 'cors' });
+                    if (resp.ok) {
+                        const buffer = await resp.arrayBuffer();
+                        let text = '';
+                        try {
+                            text = new TextDecoder('gbk').decode(buffer);
+                        } catch (err) {
+                            text = new TextDecoder('utf-8').decode(buffer);
+                        }
+                        const parsed = parseClientTencentText(text);
+                        if (parsed) return parsed;
+                    }
+                } catch (e) {
+                    // Fallthrough
+                }
+
+                // Tier 3: 静态底表 /data/indices_fallback.json
+                try {
+                    const resp = await fetch('/data/indices_fallback.json');
+                    if (resp.ok) {
+                        const fallbackJson = await resp.json();
+                        if (fallbackJson && fallbackJson.indices) {
+                            return fallbackJson;
+                        }
+                    }
+                } catch (e) {
+                    // Fallthrough
+                }
+
+                // Tier 4: 终极内存兜底 (极端双断网与底表不可达终极防线)
+                return {
+                    success: true,
+                    timestamp: Date.now(),
+                    fallback: true,
+                    market_status: 'CLOSED',
+                    indices: {
+                        NDX: { symbol: '^NDX', name: '纳斯达克100', code: '.NDX', etf_symbol: 'QQQ', price: 26958.76, change: 328.95, change_pct: 1.24, open: 27045.26, high: 27099.09, low: 26952.60, prev_close: 26629.81, range_pct: 4, extended_price: 26958.76, etf_price: 655.74, etf_change: 8.69, etf_change_pct: 1.34, datetime: '2026-11-06 16:00:00' },
+                        INX: { symbol: '^GSPC', name: '标普500', code: '.INX', etf_symbol: 'SPY', price: 7374.71, change: 20.98, change_pct: 0.29, open: 7377.65, high: 7389.04, low: 7369.55, prev_close: 7353.73, range_pct: 26, extended_price: 7374.71, etf_price: 735.21, etf_change: 2.21, etf_change_pct: 0.30, datetime: '2026-11-06 16:00:00' }
+                    }
+                };
+            }
+
+            // 5. 渲染单只指数卡片
+            function renderIndexCard(key, item, session, isFallback = false) {
+                const prefix = key.toLowerCase();
+                const priceEl = document.getElementById(`${prefix}-price`);
+                const badgeEl = document.getElementById(`${prefix}-badge`);
+                const diffEl = document.getElementById(`${prefix}-diff`);
+                const etfEl = document.getElementById(`${prefix}-etf-val`);
+                const lowEl = document.getElementById(`${prefix}-low`);
+                const highEl = document.getElementById(`${prefix}-high`);
+                const rangePctEl = document.getElementById(`${prefix}-range-pct`);
+                const rangeTrackEl = document.getElementById(`${prefix}-range-bar`);
+                const rangeFillEl = document.getElementById(`${prefix}-range-fill`);
+                const rangeMarkerEl = document.getElementById(`${prefix}-range-marker`);
+                const extWrapEl = document.getElementById(`${prefix}-ext-wrap`);
+                const extPriceEl = document.getElementById(`${prefix}-ext-price`);
+                const extLblEl = document.getElementById(`${prefix}-ext-lbl`);
+
+                if (!priceEl || !item) return;
+
+                const curPrice = item.price;
+                const prevClose = item.prev_close;
+                const change = item.change;
+                const changePct = item.change_pct;
+                const oldPrice = lastPrices[key];
+
+                // 价格闪烁微动动画 (彻底杜绝从0归零闪烁)
+                if (oldPrice !== null && oldPrice !== undefined && oldPrice !== curPrice) {
+                    priceEl.classList.remove('price-flash-up', 'price-flash-down');
+                    void priceEl.offsetWidth;
+                    const flashClass = curPrice > oldPrice ? 'price-flash-up' : 'price-flash-down';
+                    priceEl.classList.add(flashClass);
+                    setTimeout(() => priceEl.classList.remove(flashClass), 1000);
+                }
+                lastPrices[key] = curPrice;
+
+                // 格式化主点位
+                priceEl.textContent = curPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                // 涨跌 Badge 与绝对点位
+                const sign = change > 0 ? '+' : '';
+                const pctSign = changePct > 0 ? '+' : '';
+                const isUp = changePct > 0;
+                const isDown = changePct < 0;
+
+                if (badgeEl) {
+                    badgeEl.className = 'index-badge ' + (isUp ? 'badge-up' : isDown ? 'badge-down' : 'badge-flat');
+                    badgeEl.textContent = `${pctSign}${changePct.toFixed(2)}%`;
+                }
+
+                if (diffEl) {
+                    const fallbackBadge = isFallback ? ' · 离线底表' : '';
+                    diffEl.textContent = `${sign}${change.toFixed(2)} 点 · 昨收 ${prevClose.toFixed(2)}${fallbackBadge}`;
+                    diffEl.style.color = isUp ? 'var(--up)' : isDown ? 'var(--down)' : 'var(--txt3)';
+                }
+
+                // 跟踪 ETF 实时价
+                if (etfEl && item.etf_price !== null && item.etf_price !== undefined) {
+                    const etfSign = (item.etf_change_pct || 0) > 0 ? '+' : '';
+                    etfEl.textContent = `$${item.etf_price.toFixed(2)} (${etfSign}${(item.etf_change_pct || 0).toFixed(2)}%)`;
+                }
+
+                // 日内极值区间条 (Range Bar)
+                const low = item.low || (curPrice * 0.99);
+                const high = item.high || (curPrice * 1.01);
+                let rangePct = 50;
+                if (high > low) {
+                    if (curPrice <= low) rangePct = 0;
+                    else if (curPrice >= high) rangePct = 100;
+                    else rangePct = Math.max(0, Math.min(100, Math.round(((curPrice - low) / (high - low)) * 100)));
+                }
+
+                if (lowEl) lowEl.textContent = `最低 ${low.toFixed(2)}`;
+                if (highEl) highEl.textContent = `最高 ${high.toFixed(2)}`;
+                if (rangePctEl) rangePctEl.textContent = `日内位置 ${rangePct}%`;
+                if (rangeTrackEl) rangeTrackEl.setAttribute('aria-valuenow', rangePct);
+                if (rangeFillEl) rangeFillEl.style.width = `${rangePct}%`;
+                if (rangeMarkerEl) rangeMarkerEl.style.left = `${rangePct}%`;
+
+                // 盘前 / 盘后标记 (仅在非盘中常规时段激活，绝不在盘中显示盘后)
+                if (extWrapEl && extPriceEl) {
+                    if (session.status !== 'REGULAR' && (session.status === 'PRE-MARKET' || session.status === 'AFTER-HOURS' || (item.extended_price && Math.abs(item.extended_price - curPrice) > 0.001))) {
+                        extWrapEl.style.display = 'inline-flex';
+                        if (extLblEl) extLblEl.textContent = session.status === 'PRE-MARKET' ? '盘前' : '盘后';
+                        extPriceEl.textContent = (item.extended_price || curPrice).toFixed(2);
+                    } else {
+                        extWrapEl.style.display = 'none';
+                    }
+                }
+            }
+
+            // 6. 黑天鹅与熔断预警逻辑
+            function evaluateBlackSwan(data) {
+                const bannerEl = document.getElementById('black-swan-banner');
+                const badgeEl = document.getElementById('swan-badge');
+                const headlineEl = document.getElementById('swan-headline');
+                const descEl = document.getElementById('swan-desc');
+                const iconEl = document.getElementById('swan-icon');
+                if (!bannerEl || !data || !data.indices) return;
+
+                const ndxDrop = Number.isFinite(data.indices.NDX?.change_pct) ? data.indices.NDX.change_pct : 0;
+                const inxDrop = Number.isFinite(data.indices.INX?.change_pct) ? data.indices.INX.change_pct : 0;
+                const minDrop = Math.min(ndxDrop, inxDrop);
+
+                // 触发条件：任一核心指数跌幅超 -3.0%
+                if (minDrop <= -3.0) {
+                    bannerEl.style.display = 'flex';
+
+                    // 熔断级别：标普500单日跌幅达 -7% 触发美股全市场一级熔断
+                    if (inxDrop <= -7.0) {
+                        bannerEl.className = 'black-swan-banner swan-extreme';
+                        if (iconEl) iconEl.textContent = '⛔';
+                        if (badgeEl) badgeEl.textContent = '美股一级熔断警报';
+                        if (headlineEl) headlineEl.textContent = `标普500触发 -7% 全市场熔断停牌阈值 (当前 ${inxDrop.toFixed(2)}%)`;
+                        if (descEl) descEl.textContent = '标普500单日重挫超 7%，美股触发全市场15分钟熔断停牌。历史数据显示极端流动性冲击往往形成中长期重大黄金击球区，请使用量化测算工具制定分批加码策略。';
+                    } else if (minDrop <= -5.0) {
+                        // 跌幅超 -5%：极端罕见巨幅重挫
+                        bannerEl.className = 'black-swan-banner swan-extreme';
+                        if (iconEl) iconEl.textContent = '🚨';
+                        if (badgeEl) badgeEl.textContent = '罕见巨幅重挫预警 (超 -5%)';
+                        if (headlineEl) headlineEl.textContent = `美股核心大盘出现罕见暴跌 (最大跌幅 ${minDrop.toFixed(2)}%)`;
+                        if (descEl) descEl.textContent = '监测到海外核心大盘单日下挫超 5.0%，此等跌幅在过去十年出现概率不足 0.5%。QDII 存在 T+1 净值确认延迟，恐慌性踩踏极易踏空后续超跌反弹；建议依托马科维茨有效前沿开展逢低加码测算。';
+                    } else {
+                        // 跌幅 -3% 至 -5%：常规黑天鹅/显著深度回调
+                        bannerEl.className = 'black-swan-banner';
+                        if (iconEl) iconEl.textContent = '⚠️';
+                        if (badgeEl) badgeEl.textContent = '极端重挫预警';
+                        if (headlineEl) headlineEl.textContent = `美股核心大盘出现剧烈异动 (最大跌幅 ${minDrop.toFixed(2)}%)`;
+                        if (descEl) descEl.textContent = '监测到海外大盘突发剧烈下挫。QDII 存在 T+1 净值确认时滞，恐慌抛售通常酿成最大亏损；历史量化回测表明，标普/纳指日跌幅超 3% 时，分批逢低加码胜率显著提升。';
+                    }
+                } else {
+                    bannerEl.style.display = 'none';
+                    bannerEl.className = 'black-swan-banner';
+                }
+            }
+
+            // 7. 刷新主循环
+            async function refreshIndices() {
+                const session = getSessionInfo();
+                const data = await fetchIndicesData();
+                if (data && data.indices) {
+                    const isFallback = Boolean(data.fallback);
+                    if (data.indices.NDX) renderIndexCard('NDX', data.indices.NDX, session, isFallback);
+                    if (data.indices.INX) renderIndexCard('INX', data.indices.INX, session, isFallback);
+                    evaluateBlackSwan(data);
+                }
+
+                scheduleNextPoll(session);
+            }
+
+            // 8. 智能防挂机与时段自适应调度器 (闭市/周末停止轮询转为开盘倒计时)
+            function clearAllTimers() {
+                if (pollingTimer) {
+                    clearTimeout(pollingTimer);
+                    pollingTimer = null;
+                }
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+            }
+
+            function scheduleNextPoll(session) {
+                clearAllTimers();
+
+                if (document.visibilityState === 'hidden') {
+                    isPollingActive = false;
+                    return;
+                }
+
+                if (session.status === 'CLOSED') {
+                    // 闭市/周末停止网络轮询，转为秒级开盘倒计时
+                    isPollingActive = false;
+                    updateClosedCountdownUI(session);
+
+                    countdownInterval = setInterval(() => {
+                        if (document.visibilityState === 'hidden') {
+                            clearAllTimers();
+                            return;
+                        }
+                        const currentSession = getSessionInfo();
+                        if (currentSession.status !== 'CLOSED') {
+                            // 市场已进入盘前或开盘时段，停止倒计时并立即发起行情刷新
+                            clearAllTimers();
+                            refreshIndices();
+                        } else {
+                            updateClosedCountdownUI(currentSession);
+                        }
+                    }, 1000);
+                    return;
+                }
+
+                // 盘中 30s，盘前盘后 60s
+                const delay = session.status === 'REGULAR' ? 30000 : 60000;
+                isPollingActive = true;
+                pollingTimer = setTimeout(() => {
+                    refreshIndices();
+                }, delay);
+            }
+
+            // 9. 监听后台切换（防挂机与即时唤醒）
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    refreshIndices();
+                } else {
+                    clearAllTimers();
+                    isPollingActive = false;
+                }
+            });
+
+            // 10. 首次启动
+            refreshIndices();
+        }
+        initHeroIndicesStream();
+
         // ===== 触觉级 3D 悬浮微倾斜与磁吸按钮引擎 (Tactile 3D Card Tilt & Magnetic Buttons) =====
         function initTactile3DAndMagneticButtons() {
             const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -6619,7 +7126,7 @@ const App = (() => {
 
             // 1. Delegated 3D Perspective Tilt on Interactive Cards (Supports dynamically generated cards)
             let activeTiltCard = null;
-            const tiltSelector = '.journey-card, .quant-engine-card, .ticker-box, .sim-kpi-card, .home-quota-radar-card, .home-benchmark-card, .algo-card, .article-card, .contact-card';
+            const tiltSelector = '.journey-card, .quant-engine-card, .ticker-box, .sim-kpi-card, .home-quota-radar-card, .home-benchmark-card, .algo-card, .article-card, .contact-card, .index-card';
 
             function resetTiltCard(card) {
                 if (!card) return;

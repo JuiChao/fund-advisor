@@ -260,6 +260,126 @@
                         <span class="ticker-tag ticker-status-tag" style="color:var(--ok)">STATUS: NOMINAL 100%</span>
                     </div>
                 </div>
+
+                <!-- 全宽双核心指数行情看板 & 黑天鹅极端预警模块 -->
+                <div class="hero-indices-deck" id="hero-indices-deck" role="region" aria-label="美股核心大盘指数行情与黑天鹅预警">
+                    <!-- 黑天鹅极端重挫预警横幅 (默认隐藏，跌幅超 -3% 或 -5% 自动激活) -->
+                    <div class="black-swan-banner" id="black-swan-banner" style="display:none;" role="alert" aria-live="assertive">
+                        <div class="swan-icon-col">
+                            <span class="swan-pulse-ring" aria-hidden="true"></span>
+                            <span class="swan-icon" id="swan-icon" aria-hidden="true">⚠️</span>
+                        </div>
+                        <div class="swan-content">
+                            <div class="swan-title-row">
+                                <span class="swan-badge" id="swan-badge">极端重挫预警</span>
+                                <span class="swan-headline" id="swan-headline">美股核心大盘出现剧烈异动</span>
+                            </div>
+                            <div class="swan-desc" id="swan-desc">
+                                监测到海外大盘突发剧烈下挫。QDII 存在 T+1 净值确认时滞，恐慌抛售通常酿成最大亏损；历史量化回测表明，标普/纳指日跌幅超 3% 时，分批逢低加码胜率显著提升。
+                            </div>
+                        </div>
+                        <div class="swan-action">
+                            <a href="#portfolio" class="swan-cta-btn" id="swan-cta-btn">
+                                <span>🎯 逢低加码测算</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 双核心大盘行情卡片网格 -->
+                    <div class="indices-grid">
+                        <!-- 纳斯达克 100 卡片 -->
+                        <div class="index-card" id="card-index-ndx" data-symbol="NDX">
+                            <div class="index-card-head">
+                                <div class="index-title-group">
+                                    <div class="index-title-row">
+                                        <span class="index-name">纳斯达克 100</span>
+                                        <span class="index-code">^NDX · QQQ</span>
+                                    </div>
+                                    <span class="index-sub">科技与高成长核心资产</span>
+                                </div>
+                                <div class="index-etf-tag">
+                                    <span class="etf-live-label">QQQ 实时</span>
+                                    <span class="etf-price-val" id="ndx-etf-val">--</span>
+                                </div>
+                            </div>
+                            <div class="index-card-body">
+                                <div class="index-price-row">
+                                    <span class="index-price" id="ndx-price">--</span>
+                                    <span class="index-badge" id="ndx-badge">--</span>
+                                </div>
+                                <div class="index-meta-row">
+                                    <span class="index-diff" id="ndx-diff">--</span>
+                                    <span class="index-ext-tag" id="ndx-ext-wrap" style="display:none;"><span class="ext-label" id="ndx-ext-lbl">盘后</span> <span id="ndx-ext-price">--</span></span>
+                                </div>
+                            </div>
+                            <!-- 日内极值区间条 (Range Bar) -->
+                            <div class="index-range-bar-wrap">
+                                <div class="range-labels">
+                                    <span class="range-min" id="ndx-low">最低 --</span>
+                                    <span class="range-cur" id="ndx-range-pct">日内位置 --%</span>
+                                    <span class="range-max" id="ndx-high">最高 --</span>
+                                </div>
+                                <div class="range-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" id="ndx-range-bar">
+                                    <div class="range-fill" id="ndx-range-fill" style="width: 50%;"></div>
+                                    <span class="range-marker" id="ndx-range-marker" style="left: 50%;"></span>
+                                </div>
+                            </div>
+                            <div class="index-card-foot">
+                                <span class="nav-lag-tip">
+                                    <span class="nav-lag-dot" aria-hidden="true"></span>
+                                    <span id="ndx-lag-text">QDII 净值 T+1 确认 · 今日美股收盘对应明晚境内净值</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 标普 500 卡片 -->
+                        <div class="index-card" id="card-index-inx" data-symbol="INX">
+                            <div class="index-card-head">
+                                <div class="index-title-group">
+                                    <div class="index-title-row">
+                                        <span class="index-name">标普 500</span>
+                                        <span class="index-code">^GSPC · SPY</span>
+                                    </div>
+                                    <span class="index-sub">全美核心蓝筹基石资产</span>
+                                </div>
+                                <div class="index-etf-tag">
+                                    <span class="etf-live-label">SPY 实时</span>
+                                    <span class="etf-price-val" id="inx-etf-val">--</span>
+                                </div>
+                            </div>
+                            <div class="index-card-body">
+                                <div class="index-price-row">
+                                    <span class="index-price" id="inx-price">--</span>
+                                    <span class="index-badge" id="inx-badge">--</span>
+                                </div>
+                                <div class="index-meta-row">
+                                    <span class="index-diff" id="inx-diff">--</span>
+                                    <span class="index-ext-tag" id="inx-ext-wrap" style="display:none;"><span class="ext-label" id="inx-ext-lbl">盘后</span> <span id="inx-ext-price">--</span></span>
+                                </div>
+                            </div>
+                            <!-- 日内极值区间条 (Range Bar) -->
+                            <div class="index-range-bar-wrap">
+                                <div class="range-labels">
+                                    <span class="range-min" id="inx-low">最低 --</span>
+                                    <span class="range-cur" id="inx-range-pct">日内位置 --%</span>
+                                    <span class="range-max" id="inx-high">最高 --</span>
+                                </div>
+                                <div class="range-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" id="inx-range-bar">
+                                    <div class="range-fill" id="inx-range-fill" style="width: 50%;"></div>
+                                    <span class="range-marker" id="inx-range-marker" style="left: 50%;"></span>
+                                </div>
+                            </div>
+                            <div class="index-card-foot">
+                                <span class="nav-lag-tip">
+                                    <span class="nav-lag-dot" aria-hidden="true"></span>
+                                    <span id="inx-lag-text">QDII 净值 T+1 确认 · 今日美股收盘对应明晚境内净值</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             <div class="ticker-box" data-pod="pool">
                 <div class="tk-label"><span class="tk-dot"></span>标的池监控</div>
                 <div class="tk-val" id="tk-pool-count">60 只</div>
