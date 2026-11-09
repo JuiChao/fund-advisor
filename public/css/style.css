@@ -1,8 +1,8 @@
 /* ===== Design System - 奖项级高定量化投研视觉系统 (Awwwards/Webby Tier) ===== */
 :root, [data-theme="light"] {
     /* Typographic Hierarchy & Precision Font Stacks */
-    --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    --font-display: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
 
     /* Fluid Typographic Tokens (1.25 Major Third to 1.333 Perfect Fourth Scales) */
@@ -8397,7 +8397,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .downside-kpi-box .vl {
     font-size: 1.05rem;
     font-weight: 700;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
     line-height: 1.25;
 }
@@ -8469,7 +8469,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .sim-downside-item .vl {
     font-size: 1.15rem;
     font-weight: 700;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
     line-height: 1.25;
 }
@@ -8595,7 +8595,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .stress-kpi-pill .vl {
     font-size: 0.95rem;
     font-weight: 700;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
 }
 
@@ -8864,7 +8864,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     display: flex;
     align-items: baseline;
     gap: 6px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
 }
 .dual-kpi-card .dk-val-smart {
@@ -9072,7 +9072,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .pf-legend-pct {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
     font-weight: 700;
     color: var(--txt2);
@@ -9112,7 +9112,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .pf-donut-metric-item .vl {
     font-size: 0.825rem;
     font-weight: 700;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
 }
 
@@ -9160,7 +9160,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     width: 68px;
     white-space: nowrap;
     text-align: center;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
 }
 
@@ -9316,7 +9316,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .pf-sim-summary-item .vl {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
 }
 
@@ -9412,7 +9412,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .pf-risk-kpi-box .vl {
     font-size: 1.05rem;
     font-weight: 700;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
     line-height: 1.25;
 }

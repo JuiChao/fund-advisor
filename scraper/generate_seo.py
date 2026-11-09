@@ -71,11 +71,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, {share_class}类份额, 费率, 限购, 收益率, 定投, Fund Advisor">
 <link rel="canonical" href="https://858000.xyz/fund/{fund_code}">
 <link rel="icon" type="image/png" href="/favicon.png">
+<link rel="dns-prefetch" href="https://fonts.loli.net">
+<link rel="dns-prefetch" href="https://gstatic.loli.net">
 <link rel="preconnect" href="https://fonts.loli.net">
 <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-<link rel="stylesheet" href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" onerror="this.onerror=null;this.href='https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap'">
+<link rel="stylesheet" href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" media="print" onload="this.media='all'">
 <noscript>
-<link rel="stylesheet" href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap">
 </noscript>
 <link rel="stylesheet" href="/css/style.css?v=20261031_award">
 <meta name="google-adsense-account" content="ca-pub-8921283801578142">

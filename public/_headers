@@ -1,0 +1,29 @@
+# Cloudflare Pages Custom Headers for Global & Mainland China Speed Acceleration
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Static Versioned CSS & JS: Immutable 1-year browser cache
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Favicon & Static Assets
+/favicon.png
+  Cache-Control: public, max-age=2592000
+
+/manifest.json
+  Cache-Control: public, max-age=86400
+
+# Dynamic Data JSON: 10m client cache, 30m edge cache, background SWR
+/data/*
+  Cache-Control: public, max-age=600, s-maxage=1800, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+
+# Edge API
+/api/*
+  Access-Control-Allow-Origin: *

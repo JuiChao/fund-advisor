@@ -5472,7 +5472,9 @@ const App = (() => {
         if (_dynamicParamsFetched) return _dynamicParams;
         _dynamicParamsFetched = true;
         try {
-            const resp = await fetch('data/simulations.json?v=' + Date.now());
+            // 10分钟时间窗口：允许客户端与边缘CDN高效命中缓存，避免每次回源产生跨国高延迟
+            const dataVer = Math.floor(Date.now() / 600000);
+            const resp = await fetch('data/simulations.json?v=' + dataVer);
             const data = await resp.json();
             _simulationsData = data;
             _dynamicParams = data.params || null;
@@ -6170,7 +6172,8 @@ const App = (() => {
     async function init() {
         initTheme();
         try {
-            const t = Date.now();
+            // 10分钟时间窗口：允许客户端与Cloudflare边缘CDN高效命中缓存，大幅降低跨国请求往返时延
+            const t = Math.floor(Date.now() / 600000);
             const [fundsResp, algoResp, limitResp] = await Promise.all([
                 fetch('data/funds.json?v=' + t),
                 fetch('data/algorithm.json?v=' + t),
@@ -6849,7 +6852,10 @@ const App = (() => {
             async function fetchIndicesData() {
                 // Tier 1: 边缘网关 /api/indices
                 try {
-                    const resp = await fetch('/api/indices', { cache: 'no-cache' });
+                    const c1 = new AbortController();
+                    const to1 = setTimeout(() => c1.abort(), 3500);
+                    const resp = await fetch('/api/indices', { signal: c1.signal });
+                    clearTimeout(to1);
                     if (resp.ok) {
                         const data = await resp.json();
                         if (data && data.indices && data.indices.NDX && data.indices.INX) {
@@ -6862,7 +6868,10 @@ const App = (() => {
 
                 // Tier 2: 降级直连腾讯公开行情接口
                 try {
-                    const resp = await fetch('https://qt.gtimg.cn/q=usNDX,usINX,usQQQ,usSPY', { mode: 'cors' });
+                    const c2 = new AbortController();
+                    const to2 = setTimeout(() => c2.abort(), 3500);
+                    const resp = await fetch('https://qt.gtimg.cn/q=usNDX,usINX,usQQQ,usSPY', { mode: 'cors', signal: c2.signal });
+                    clearTimeout(to2);
                     if (resp.ok) {
                         const buffer = await resp.arrayBuffer();
                         let text = '';
