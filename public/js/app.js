@@ -11,23 +11,26 @@ const App = (() => {
 
     // ===== 主题管理 (Dark / Light Theme) =====
     function getPreferredTheme() {
-        const saved = localStorage.getItem('fa_theme');
+        let saved = null;
+        try { saved = localStorage.getItem('fa_theme'); } catch (e) {}
         if (saved) return saved;
         return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
     }
 
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('fa_theme', theme);
+        try { localStorage.setItem('fa_theme', theme); } catch (e) {}
         const iconEl = document.querySelector('#theme-toggle .theme-icon');
         if (iconEl) iconEl.textContent = theme === 'dark' ? '☀️' : '🌙';
 
-        if (theme === 'dark') {
-            Chart.defaults.color = '#cbd5e1';
-            Chart.defaults.borderColor = 'rgba(129, 140, 248, 0.15)';
-        } else {
-            Chart.defaults.color = '#475569';
-            Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.08)';
+        if (typeof Chart !== 'undefined') {
+            if (theme === 'dark') {
+                Chart.defaults.color = '#cbd5e1';
+                Chart.defaults.borderColor = 'rgba(129, 140, 248, 0.15)';
+            } else {
+                Chart.defaults.color = '#475569';
+                Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.08)';
+            }
         }
 
         if (chartPool.frontier && chartPool.frontier.options?.scales) {
@@ -269,16 +272,18 @@ const App = (() => {
     }
 
     // ===== 默认主题 Chart.js 配置 =====
-    Chart.defaults.color = '#475569';
-    Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.08)';
-    Chart.defaults.font.family = "'JetBrains Mono', 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif";
-    Chart.defaults.font.weight = 500;
-    if (Chart.defaults.plugins && Chart.defaults.plugins.tooltip) {
-        Chart.defaults.plugins.tooltip.padding = 10;
-        Chart.defaults.plugins.tooltip.cornerRadius = 8;
-        Chart.defaults.plugins.tooltip.boxPadding = 4;
+    if (typeof Chart !== 'undefined') {
+        Chart.defaults.color = '#475569';
+        Chart.defaults.borderColor = 'rgba(99, 102, 241, 0.08)';
+        Chart.defaults.font.family = "'JetBrains Mono', 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif";
+        Chart.defaults.font.weight = 500;
+        if (Chart.defaults.plugins && Chart.defaults.plugins.tooltip) {
+            Chart.defaults.plugins.tooltip.padding = 10;
+            Chart.defaults.plugins.tooltip.cornerRadius = 8;
+            Chart.defaults.plugins.tooltip.boxPadding = 4;
+        }
+        Chart.defaults.font.size = 11;
     }
-    Chart.defaults.font.size = 11;
 
     // ===== 工具函数 =====
     
@@ -444,13 +449,43 @@ const App = (() => {
     }
 
     function switchPage(page) {
+        if (!page || typeof page !== 'string') page = 'home';
+        page = page.trim().replace(/^[#/]+/, '');
+        if (!page) page = 'home';
+
         let pName = page;
         let queryParams = {};
         if (page.includes('?')) {
             const parts = page.split('?');
-            pName = parts[0];
+            pName = parts[0].replace(/^[#/]+/, '');
             const sp = new URLSearchParams(parts[1]);
             sp.forEach((v, k) => queryParams[k] = v);
+        }
+
+        if (pName.startsWith('page-')) {
+            pName = pName.replace('page-', '');
+        }
+
+        let target = document.getElementById('page-' + pName);
+        let scrollToEl = null;
+
+        // 若未直接匹配到 page-${pName} 对应页面容器，判定是否为页面内的锚点元素（如 #seo-faq, #funds-directory, #quant-frontier-card 等）
+        if (!target) {
+            const anchorEl = document.getElementById(pName);
+            if (anchorEl) {
+                scrollToEl = anchorEl;
+                const parentPage = anchorEl.closest('[id^="page-"]');
+                if (parentPage) {
+                    target = parentPage;
+                    pName = parentPage.id.replace('page-', '');
+                } else {
+                    target = document.getElementById('page-home');
+                    pName = 'home';
+                }
+            } else {
+                target = document.getElementById('page-home');
+                pName = 'home';
+            }
         }
 
         document.querySelectorAll('#nav-links a').forEach(x => {
@@ -461,13 +496,32 @@ const App = (() => {
             if (x.dataset.page === pName) x.classList.add('on');
             else x.classList.remove('on');
         });
-        document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display = 'none');
-        const target = document.getElementById('page-' + pName);
-        if (!target) return;
-        target.style.display = '';
-        target.classList.remove('fade-in');
-        void target.offsetWidth;
-        target.classList.add('fade-in');
+
+        // 仅在已安全确定目标页存在时切换显示，永不导致所有页面全被隐藏造成白屏
+        if (!target) {
+            target = document.getElementById('page-home') || document.querySelector('[id^="page-"]');
+        }
+        if (target) {
+            document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display = 'none');
+            target.style.display = '';
+            target.classList.remove('fade-in');
+            void target.offsetWidth;
+            target.classList.add('fade-in');
+        }
+
+        if (scrollToEl) {
+            setTimeout(() => {
+                if (scrollToEl.id === 'quant-frontier-card') {
+                    const body = document.getElementById('quant-frontier-body');
+                    const arrow = document.getElementById('quant-frontier-arrow');
+                    if (body && body.style.display === 'none') {
+                        body.style.display = 'block';
+                        if (arrow) arrow.style.transform = 'rotate(180deg)';
+                    }
+                }
+                scrollToEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
         
         updateTDK(pName);
         
@@ -565,7 +619,13 @@ const App = (() => {
         }
 
         // 首次加载
-        const initHash = window.location.hash.replace('#', '') || 'home';
+        let initHash = window.location.hash.replace('#', '') || 'home';
+        if (initHash === 'home' && window.location.search) {
+            const urlSp = new URLSearchParams(window.location.search);
+            if (urlSp.get('q')) {
+                initHash = 'ranking?' + window.location.search.replace(/^\?/, '');
+            }
+        }
         switchPage(initHash);
     }
 
@@ -607,6 +667,15 @@ const App = (() => {
 
         // 费率分布图
         function feeChart(id, list) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (typeof Chart === 'undefined') {
+                const p = el.parentElement;
+                if (p) {
+                    p.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--txt3);font-size:0.85rem">图表组件加载中或不可用</div>';
+                }
+                return;
+            }
             const data = list.map(f => ({
                 code: f.code,
                 name: f.name,
@@ -614,7 +683,7 @@ const App = (() => {
                 status: f.limit_status || ''
             })).sort((a, b) => a.fee - b.fee);
             if (chartPool[id]) chartPool[id].destroy();
-            chartPool[id] = new Chart(document.getElementById(id), {
+            chartPool[id] = new Chart(el, {
                 type: 'bar',
                 data: {
                     labels: data.map(d => d.code),
@@ -1561,7 +1630,10 @@ const App = (() => {
     }
 
     // 全局导出图片风格偏好（默认深色，持久化于 localStorage）
-    let currentExportTheme = localStorage.getItem('fa_export_theme') || 'dark';
+    let currentExportTheme = 'dark';
+    try {
+        currentExportTheme = localStorage.getItem('fa_export_theme') || 'dark';
+    } catch (e) {}
     let activePosterBlobUrl = null;
     let posterThemeCache = {};
 
@@ -3796,42 +3868,44 @@ const App = (() => {
                 if (elDkStdCagr) animateOdometer(elDkStdCagr, +std.annualReturn, 900, 2, '', '%');
 
                 if (chartPool.sim) chartPool.sim.destroy();
-                chartPool.sim = new Chart(document.getElementById('ch-sim'), {
-                    type: 'bar',
-                    data: {
-                        labels: ['5% 悲观', '25% 偏弱', '50% 中位', '75% 顺风', '95% 乐观'],
-                        datasets: [
-                            {
-                                label: '普通固定定投 (万元)',
-                                data: [std.p5/10000, std.p25/10000, std.medianFinal/10000, std.p75/10000, std.p95/10000],
-                                backgroundColor: '#94a3b8',
-                                borderRadius: 5,
-                                borderSkipped: false
-                            },
-                            {
-                                label: '⚡ 智能估值定投 (Alpha)',
-                                data: [smart.p5/10000, smart.p25/10000, smart.medianFinal/10000, smart.p75/10000, smart.p95/10000],
-                                backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#10b981', '#06b6d4'],
-                                borderRadius: 5,
-                                borderSkipped: false
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top',
-                                labels: { font: { size: 11 }, boxWidth: 14 }
-                            }
+                if (typeof Chart !== 'undefined') {
+                    chartPool.sim = new Chart(document.getElementById('ch-sim'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['5% 悲观', '25% 偏弱', '50% 中位', '75% 顺风', '95% 乐观'],
+                            datasets: [
+                                {
+                                    label: '普通固定定投 (万元)',
+                                    data: [std.p5/10000, std.p25/10000, std.medianFinal/10000, std.p75/10000, std.p95/10000],
+                                    backgroundColor: '#94a3b8',
+                                    borderRadius: 5,
+                                    borderSkipped: false
+                                },
+                                {
+                                    label: '⚡ 智能估值定投 (Alpha)',
+                                    data: [smart.p5/10000, smart.p25/10000, smart.medianFinal/10000, smart.p75/10000, smart.p95/10000],
+                                    backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#10b981', '#06b6d4'],
+                                    borderRadius: 5,
+                                    borderSkipped: false
+                                }
+                            ]
                         },
-                        scales: {
-                            x: { grid: { display: false } },
-                            y: { title: { display: true, text: '万元' }, grid: { color: 'rgba(99, 102, 241, 0.08)' } }
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                    labels: { font: { size: 11 }, boxWidth: 14 }
+                                }
+                            },
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: { title: { display: true, text: '万元' }, grid: { color: 'rgba(99, 102, 241, 0.08)' } }
+                            }
                         }
-                    }
-                });
+                    });
+                }
                 btn.disabled = false; btn.textContent = '🚀 运行蒙特卡洛模拟推演';
                 return;
             }
@@ -3943,27 +4017,29 @@ const App = (() => {
             if (elCagr) animateOdometer(elCagr, +result.annualReturn, 1000, 2, '', '%');
 
             if (chartPool.sim) chartPool.sim.destroy();
-            chartPool.sim = new Chart(document.getElementById('ch-sim'), {
-                type: 'bar',
-                data: {
-                    labels: ['5% 悲观', '25%', '中位数', '75%', '95% 乐观'],
-                    datasets: [{
-                        label: '终值 (万元)',
-                        data: [result.p5/10000, result.p25/10000, result.medianFinal/10000, result.p75/10000, result.p95/10000],
-                        backgroundColor: ['#f87171','#fbbf24','#6366f1','#34d399','#22d3ee'],
-                        borderRadius: 6,
-                        borderSkipped: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false } },
-                        y: { title: { display: true, text: '万元' }, grid: { color: 'rgba(99, 102, 241, 0.08)' } }
+            if (typeof Chart !== 'undefined') {
+                chartPool.sim = new Chart(document.getElementById('ch-sim'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['5% 悲观', '25%', '中位数', '75%', '95% 乐观'],
+                        datasets: [{
+                            label: '终值 (万元)',
+                            data: [result.p5/10000, result.p25/10000, result.medianFinal/10000, result.p75/10000, result.p95/10000],
+                            backgroundColor: ['#f87171','#fbbf24','#6366f1','#34d399','#22d3ee'],
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false } },
+                            y: { title: { display: true, text: '万元' }, grid: { color: 'rgba(99, 102, 241, 0.08)' } }
+                        }
                     }
-                }
-            });
+                });
+            }
         } catch (e) {
             document.getElementById('sim-result').innerHTML = `<p style="color:var(--err);text-align:center;padding:2rem">模拟失败: ${e.message}</p>`;
         }
@@ -4393,6 +4469,8 @@ const App = (() => {
             chartPool.frontier.destroy();
             chartPool.frontier = null;
         }
+
+        if (typeof Chart === 'undefined') return;
 
         // 创建 Chart.js 散点与折线图
         chartPool.frontier = new Chart(canvas, {
@@ -4991,6 +5069,8 @@ const App = (() => {
             chartPool.stress = null;
         }
 
+        if (typeof Chart === 'undefined') return;
+
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         const gridColor = isDark ? 'rgba(129, 140, 248, 0.12)' : 'rgba(99, 102, 241, 0.08)';
         const tickColor = isDark ? '#94a3b8' : '#64748b';
@@ -5398,57 +5478,59 @@ const App = (() => {
             });
 
             // 画饼图
-            strategies.forEach(s => {
-                ['ideal', 'practical'].forEach(vk => {
-                    const cid = `ch-${s.key}-${vk}`;
-                    const el = document.getElementById(cid);
-                    const allocs = s[vk]?.allocations || [];
-                    if (!el || !allocs.length) return;
-                    pfCharts[cid] = new Chart(el, {
-                        type: 'doughnut',
-                        data: {
-                            labels: allocs.map(a => (a.name || '').replace(/[（(]QDII[）)]/gi, '').trim()),
-                            datasets: [{
-                                data: allocs.map(a => a.monthly),
-                                backgroundColor: pieColors,
-                                borderWidth: 0,
-                                hoverOffset: 8,
-                                borderRadius: 6,
-                                spacing: 3
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            cutout: '58%',
-                            layout: { padding: 4 },
-                            plugins: { 
-                                legend: { 
-                                    display: false 
-                                },
-                                tooltip: {
-                                    backgroundColor: 'rgba(15, 23, 42, 0.92)',
-                                    titleFont: { size: 12, family: 'system-ui, -apple-system, sans-serif', weight: 'normal' },
-                                    bodyFont: { size: 12, family: 'system-ui, -apple-system, sans-serif', weight: 'bold' },
-                                    padding: 10,
-                                    cornerRadius: 6,
-                                    boxPadding: 4,
-                                    displayColors: true,
-                                    usePointStyle: true,
-                                    callbacks: {
-                                        label: function(ctx) {
-                                            const val = ctx.raw || 0;
-                                            const alloc = allocs[ctx.dataIndex];
-                                            const pct = alloc ? (alloc.actual_weight * 100).toFixed(0) : Math.round((val / (allocs.reduce((sum, x) => sum + x.monthly, 0) || 1)) * 100);
-                                            return ` ${alloc?.name || ctx.label}: ${val}元/月 (${pct}%)`;
+            if (typeof Chart !== 'undefined') {
+                strategies.forEach(s => {
+                    ['ideal', 'practical'].forEach(vk => {
+                        const cid = `ch-${s.key}-${vk}`;
+                        const el = document.getElementById(cid);
+                        const allocs = s[vk]?.allocations || [];
+                        if (!el || !allocs.length) return;
+                        pfCharts[cid] = new Chart(el, {
+                            type: 'doughnut',
+                            data: {
+                                labels: allocs.map(a => (a.name || '').replace(/[（(]QDII[）)]/gi, '').trim()),
+                                datasets: [{
+                                    data: allocs.map(a => a.monthly),
+                                    backgroundColor: pieColors,
+                                    borderWidth: 0,
+                                    hoverOffset: 8,
+                                    borderRadius: 6,
+                                    spacing: 3
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                cutout: '58%',
+                                layout: { padding: 4 },
+                                plugins: { 
+                                    legend: { 
+                                        display: false 
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(15, 23, 42, 0.92)',
+                                        titleFont: { size: 12, family: 'system-ui, -apple-system, sans-serif', weight: 'normal' },
+                                        bodyFont: { size: 12, family: 'system-ui, -apple-system, sans-serif', weight: 'bold' },
+                                        padding: 10,
+                                        cornerRadius: 6,
+                                        boxPadding: 4,
+                                        displayColors: true,
+                                        usePointStyle: true,
+                                        callbacks: {
+                                            label: function(ctx) {
+                                                const val = ctx.raw || 0;
+                                                const alloc = allocs[ctx.dataIndex];
+                                                const pct = alloc ? (alloc.actual_weight * 100).toFixed(0) : Math.round((val / (allocs.reduce((sum, x) => sum + x.monthly, 0) || 1)) * 100);
+                                                return ` ${alloc?.name || ctx.label}: ${val}元/月 (${pct}%)`;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
+                        });
                     });
                 });
-            });
+            }
         } catch (e) {
             document.getElementById('pf-container').innerHTML = `<p style="color:var(--err);text-align:center;padding:2rem">计算失败: ${e.message}</p>`;
             document.getElementById('pf-container').classList.remove('ld');
@@ -6170,8 +6252,8 @@ const App = (() => {
 
     // ===== 初始化 =====
     async function init() {
-        initTheme();
         try {
+            initTheme();
             // 10分钟时间窗口：允许客户端与Cloudflare边缘CDN高效命中缓存，大幅降低跨国请求往返时延
             const t = Math.floor(Date.now() / 600000);
             const [fundsResp, algoResp, limitResp] = await Promise.all([

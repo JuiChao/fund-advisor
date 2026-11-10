@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://858000.xyz/og-image.jpg">
 <link rel="canonical" href="https://858000.xyz/articles/tracking-error-and-fund-scale">
 <title>指数基金跟踪误差与规模陷阱：为什么太小有清盘风险，太大会钝化？ | Fund Advisor</title>
-<script>(function(){var t=localStorage.getItem('fa_theme')||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var t='light';try{t=localStorage.getItem('fa_theme');}catch(e){}if(!t){try{t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}catch(e){}}document.documentElement.setAttribute('data-theme',t||'light');})();</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -293,13 +293,16 @@
 <script>
 (function() {
     function getTheme() {
-        var s = localStorage.getItem('fa_theme');
+        var s = null;
+        try { s = localStorage.getItem('fa_theme'); } catch (e) {}
         if (s) return s;
-        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        try {
+            return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        } catch (e) { return 'light'; }
     }
     function applyTheme(t) {
         document.documentElement.setAttribute('data-theme', t);
-        localStorage.setItem('fa_theme', t);
+        try { localStorage.setItem('fa_theme', t); } catch (e) {}
         var icon = document.querySelector('#theme-toggle .theme-icon');
         if (icon) icon.textContent = t === 'dark' ? '☀️' : '🌙';
     }

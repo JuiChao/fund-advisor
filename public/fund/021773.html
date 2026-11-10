@@ -40,12 +40,11 @@
   "@type": "BreadcrumbList",
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://858000.xyz/" },
-    { "@type": "ListItem", "position": 2, "name": "基金排名", "item": "https://858000.xyz/#ranking" },
-    { "@type": "ListItem", "position": 3, "name": "汇添富纳斯达克100ETF发起式联接(QDII)人民币E", "item": "https://858000.xyz/fund/021773" }
+    { "@type": "ListItem", "position": 2, "name": "汇添富纳斯达克100ETF发起式联接(QDII)人民币E", "item": "https://858000.xyz/fund/021773" }
   ]
 }
 </script>
-<script>(function(){var t=localStorage.getItem('fa_theme')||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var t='light';try{t=localStorage.getItem('fa_theme');}catch(e){}if(!t){try{t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}catch(e){}}document.documentElement.setAttribute('data-theme',t||'light');})();</script>
 </head>
 <body>
 <div id="scroll-progress" aria-hidden="true"></div>
@@ -328,13 +327,16 @@
 <script>
 (function() {
     function getTheme() {
-        var s = localStorage.getItem('fa_theme');
+        var s = null;
+        try { s = localStorage.getItem('fa_theme'); } catch (e) {}
         if (s) return s;
-        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        try {
+            return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        } catch (e) { return 'light'; }
     }
     function applyTheme(t) {
         document.documentElement.setAttribute('data-theme', t);
-        localStorage.setItem('fa_theme', t);
+        try { localStorage.setItem('fa_theme', t); } catch (e) {}
         var icon = document.querySelector('#theme-toggle .theme-icon');
         if (icon) icon.textContent = t === 'dark' ? '☀️' : '🌙';
     }
