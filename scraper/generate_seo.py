@@ -123,7 +123,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <a href="/about">关于我们</a>
     </div>
     <div class="nav-actions">
-        <a href="/#portfolio" class="nav-cta-btn" title="立即开启量化资产配置">🚀 定投方案</a>
+        <a href="/#portfolio" class="nav-cta-btn" title="立即开启量化资产配置">定投方案</a>
         <button class="theme-toggle" id="theme-toggle" aria-label="切换主题" title="切换深色/浅色模式">
             <span class="theme-icon">🌙</span>
         </button>
@@ -218,7 +218,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         <!-- 专题推荐与深度研报关联 -->
         <div class="fund-recommended-guides">
-            <h3>📚 推荐投研指南与实操精读</h3>
+            <h3>推荐投研指南与实操精读</h3>
             <ul>
                 <li><a href="/articles/{related_guide_slug}">{related_guide_title} ➔</a></li>
                 <li><a href="/articles/how-to-choose-qdii-funds">如何挑选最优QDII指数基金：费率、规模与跟踪误差三角法则 ➔</a></li>
@@ -244,35 +244,35 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <div class="eeat-divider"></div>
             <div class="eeat-details-grid">
                 <div class="eeat-item">
-                    <span class="eeat-lbl">🔍 同业复核</span>
+                    <span class="eeat-lbl">同业复核</span>
                     <span class="eeat-val">定量风控与合规模型多重校验</span>
                 </div>
                 <div class="eeat-item">
-                    <span class="eeat-lbl">📅 动态更新</span>
+                    <span class="eeat-lbl">动态更新</span>
                     <span class="eeat-val">每日自动同步公募披露与限额公告</span>
                 </div>
                 <div class="eeat-item">
-                    <span class="eeat-lbl">📚 理论基石</span>
+                    <span class="eeat-lbl">理论基石</span>
                     <span class="eeat-val">现代投资组合理论 (MPT) · 跟踪偏离度检验</span>
                 </div>
                 <div class="eeat-item">
-                    <span class="eeat-lbl">🛡️ 独立原则</span>
+                    <span class="eeat-lbl">独立原则</span>
                     <span class="eeat-val">无商业佣金输送 · 算法与数据完全透明</span>
                 </div>
             </div>
             <div class="eeat-disclaimer">
-                <strong>⚠️ 免责合规声明：</strong>本页面所载分析仅供量化研究与个人理财科普之用，不构成任何形式的投资建议或基金销售推介。<a href="/about" style="color:var(--accent2);text-decoration:none;margin-left:6px;font-weight:600">查阅关于我们与完整投研方法论 ➔</a>
+                <strong>免责合规声明：</strong>本页面所载分析仅供量化研究与个人理财科普之用，不构成任何形式的投资建议或基金销售推介。<a href="/about" style="color:var(--accent2);text-decoration:none;margin-left:6px;font-weight:600">查阅关于我们与完整投研方法论 ➔</a>
             </div>
         </div>
 
         <!-- 合规声明 -->
         <div class="fund-compliance-warning">
-            <strong style="color:var(--txt)">⚠️ 风险提示与数据合规声明：</strong><br>
+            <strong style="color:var(--txt)">风险提示与数据合规声明：</strong><br>
             本页面展示之基金费率（管理费、托管费、销售服务费）、申购限购状态（代销/直销渠道）及历史业绩数据均采集自基金公司法定公开披露公告及天天基金网公开接口。相关数据仅供学术量化分析、策略模拟与投资者教育之用，<strong>不构成任何形式的投资建议、财务顾问意见或基金销售推介</strong>。公募基金过往业绩不代表未来表现，市场有风险，投资需谨慎。本平台不从事任何公募或私募基金销售代理业务。
         </div>
 
         <div class="fund-cta-wrap">
-            <a href="/#ranking?q={fund_code}" class="fund-cta-btn">🚀 在 Fund Advisor 完整版中进行定投模拟 ➔</a>
+            <a href="/#ranking?q={fund_code}" class="fund-cta-btn">在 Fund Advisor 完整版中进行定投模拟 ➔</a>
         </div>
     </div>
 </main>
@@ -294,25 +294,25 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="footer-links">
             <div class="footer-col-title">平台导览 · Navigation</div>
             <div class="footer-nav-list">
-                <a href="/">📊 首页概览</a>
-                <a href="/#ranking">🏆 基金多因子排名</a>
-                <a href="/#portfolio">⚖️ 定投方案配置</a>
-                <a href="/#simulator">📈 蒙特卡洛模拟器</a>
-                <a href="/articles/">📚 深度投研百科</a>
+                <a href="/">首页概览</a>
+                <a href="/#ranking">基金多因子排名</a>
+                <a href="/#portfolio">定投方案配置</a>
+                <a href="/#simulator">蒙特卡洛模拟器</a>
+                <a href="/articles/">深度投研百科</a>
             </div>
         </div>
         <div class="footer-links">
             <div class="footer-col-title">投研与合规 · Research &amp; Compliance</div>
             <div class="footer-nav-list">
-                <a href="/about">🏢 关于我们与方法论</a>
-                <a href="/privacy-policy">🛡️ 隐私保护政策</a>
-                <a href="/terms-of-service">📜 用户服务条款</a>
-                <a href="mailto:contact@858000.xyz">📬 联系与合作</a>
+                <a href="/about">关于我们与方法论</a>
+                <a href="/privacy-policy">隐私保护政策</a>
+                <a href="/terms-of-service">用户服务条款</a>
+                <a href="mailto:contact@858000.xyz">联系与合作</a>
             </div>
         </div>
     </div>
     <div class="footer-disclaimer">
-        <strong>⚠️ 风险提示与免责合规声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均采集自基金管理人法定公开信息披露及天天基金网公开接口。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
+        <strong>风险提示与免责声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均采集自基金管理人法定公开信息披露及天天基金网公开接口。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
     </div>
     <div class="footer-copyright">
         <div>© 2026 Fund Advisor (858000.xyz). All Wall Street quant models open for research.</div>
@@ -395,18 +395,18 @@ for fund in funds:
     # 1. 费率横向对比评语
     if total_fee <= 0.007:
         fee_eval = f"该标的年化综合费率仅为 <strong>{format_pct(total_fee)}%</strong>，处于全市场 {index_type} 基金前 10% 的最低费率梯队（大幅优于同类中位数 {cat_med['fee']*100:.2f}%）。在长达 10~30 年的指数定投长跑中，超低管理成本能为您最大限度锁定复利成果。"
-        fee_tag_html = '<span class="metric-tag tag-up">🏆 极低费率</span>'
+        fee_tag_html = '<span class="metric-tag tag-up">极低费率</span>'
     elif total_fee <= cat_med['fee']:
         diff = (cat_med['fee'] - total_fee) * 100
         fee_eval = f"该标的年化综合费率为 <strong>{format_pct(total_fee)}%</strong>，低于同类中位数（{cat_med['fee']*100:.2f}%）约 {diff:.2f} 个百分点，费率结构具备良好竞争力，适合中长期资产配置。"
-        fee_tag_html = '<span class="metric-tag tag-ok">🟢 优于中位数</span>'
+        fee_tag_html = '<span class="metric-tag tag-ok">优于中位数</span>'
     else:
         diff = (total_fee - cat_med['fee']) * 100
         if share_class == 'C':
             fee_eval = f"该份额年化综合费率为 <strong>{format_pct(total_fee)}%</strong>，其中包含年化 {format_pct(sales_fee)}% 的销售服务费。虽然费率略高于同类中位数（{cat_med['fee']*100:.2f}%），但其免收前端申购费且持有 7 天以上通常免赎回费，适合短期持有或在 A 类限购时作为定投备用通道。"
         else:
             fee_eval = f"该标的年化综合费率为 <strong>{format_pct(total_fee)}%</strong>，略高于同类中位数（{cat_med['fee']*100:.2f}%）约 {diff:.2f} 个百分点。在定投长跑中建议重点结合其跟踪精度与渠道申购便利性进行综合权衡。"
-        fee_tag_html = '<span class="metric-tag tag-warn">🟡 略高同类</span>'
+        fee_tag_html = '<span class="metric-tag tag-warn">略高同类</span>'
 
     # 2. 跟踪误差与偏离度
     td_str = f"{td * 100:+.2f}%" if td is not None else "0.00%"
@@ -472,20 +472,20 @@ for fund in funds:
         quota_sharing_badge_html = ''
 
     if is_all_paused:
-        quota_channel_tag_html = '<span class="metric-tag tag-err">🔴 全线暂停</span>'
+        quota_channel_tag_html = '<span class="metric-tag tag-err">全线暂停</span>'
         channel_brief_hint = "双渠道暂停申购，推荐参考下方平替标的"
     elif direct_is_paused and not agency_is_paused:
-        quota_channel_tag_html = '<span class="metric-tag tag-warn">🟡 仅代销通畅</span>'
+        quota_channel_tag_html = '<span class="metric-tag tag-warn">仅代销通畅</span>'
         channel_brief_hint = "天天基金/支付宝可买，官方直销未开通"
     elif agency_is_paused and not direct_is_paused:
-        quota_channel_tag_html = '<span class="metric-tag tag-up">🚀 直销突破</span>'
+        quota_channel_tag_html = '<span class="metric-tag tag-up">直销通畅</span>'
         channel_brief_hint = "代销暂停但官方APP/官网仍开放申购"
     else:
-        quota_channel_tag_html = '<span class="metric-tag tag-ok">🟢 正常运行</span>'
+        quota_channel_tag_html = '<span class="metric-tag tag-ok">正常运行</span>'
         channel_brief_hint = "天天基金/官网双通道额度动态巡检中"
 
     if is_all_paused:
-        channel_eval = f"⚠️ <strong>全渠道暂停申购提示</strong>：目前天天基金、支付宝等代销渠道与基金公司官方直销平台均处于暂停申购或未开放状态，表明该基金管理人的外汇额度余量极低或定制份额未开放散户直销。定投投资者建议无需恐慌，可通过下方推荐平替至其他正常开放的同指数基金，以确保定投计划不中断。"
+        channel_eval = f"<strong>全渠道暂停申购提示</strong>：目前天天基金、支付宝等代销渠道与基金公司官方直销平台均处于暂停申购或未开放状态，表明该基金管理人的外汇额度余量极低或定制份额未开放散户直销。定投投资者建议无需恐慌，可通过下方推荐平替至其他正常开放的同指数基金，以确保定投计划不中断。"
         subs = find_substitutes(fund, funds, max_count=3)
         if subs:
             sub_cards = []
@@ -517,7 +517,7 @@ for fund in funds:
             substitutes_html = (
                 f"<div class='fund-substitutes-box'>"
                 f"<h4 style='margin:0 0 0.75rem;font-size:0.95rem;color:var(--ok);display:flex;align-items:center;gap:6px;'>"
-                f"<span>🛡️</span> 优质平替基金推荐（同跟踪 {index_type} 且当前开放申购）"
+                f"优质平替基金推荐（同跟踪 {index_type} 且当前开放申购）"
                 f"</h4>"
                 f"<div class='fund-substitutes-grid'>"
                 f"{''.join(sub_cards)}"
@@ -525,19 +525,19 @@ for fund in funds:
                 f"</div>"
             )
     elif agency_is_paused and not direct_is_paused:
-        channel_eval = f"💡 <strong>直销渠道突破策略</strong>：虽然天天基金/支付宝等三方代销渠道已暂停申购，但基金公司官网或官方 APP <strong>直销渠道仍处于可买状态（{direct_status}）</strong>！对于希望持续定投该基金的投资者，强烈建议开通基金公司官方直销账户，即可规避代销渠道暂停的阻碍。"
+        channel_eval = f"<strong>直销渠道可购说明</strong>：虽然天天基金/支付宝等三方代销渠道已暂停申购，但基金公司官网或官方 APP <strong>直销渠道仍处于可买状态（{direct_status}）</strong>！对于希望持续定投该基金的投资者，强烈建议开通基金公司官方直销账户，即可规避代销渠道暂停的阻碍。"
     elif "限" in agency_status and direct_daily_limit is not None and daily_limit is not None and daily_limit > 0 and direct_daily_limit > daily_limit:
         multiplier = direct_daily_limit / daily_limit
-        channel_eval = f"🚀 <strong>直销大额额度优势</strong>：该标的代销渠道限额为 <strong>{agency_status}</strong>，而官方直销渠道单日限额高达 <strong>{direct_status}</strong>，直销单日额度是代销的 <strong>{multiplier:.1f} 倍</strong>！若您的月度定投预算较高，选择官方直销渠道可大幅提升单次扣款上限。"
+        channel_eval = f"<strong>直销额度优势</strong>：该标的代销渠道限额为 <strong>{agency_status}</strong>，而官方直销渠道单日限额高达 <strong>{direct_status}</strong>，直销单日额度是代销的 <strong>{multiplier:.1f} 倍</strong>！若您的月度定投预算较高，选择官方直销渠道可大幅提升单次扣款上限。"
     else:
         channel_eval = f"目前该标的代销状态为“{agency_status}”，直销状态为“{direct_status}”。额度状态受国家外汇管理局外汇额度分配动态调控，建议定投前每日查阅本看板最新动态。"
 
     # 5. 共享额度提示
     quota_rule_eval = ""
     if quota_sharing == 'INDEPENDENT':
-        quota_rule_eval = f"🔗 <strong>份额独立限额优势</strong>：{quota_shared_desc}。这意味着若您同日申购了满额的 A 类份额，仍可继续申购该基金的 C 类份额，各份额独立占用额度，非常适合用于拼单打满月定投预算。"
+        quota_rule_eval = f"<strong>份额独立限额优势</strong>：{quota_shared_desc}。这意味着若您同日申购了满额的 A 类份额，仍可继续申购该基金的 C 类份额，各份额独立占用额度，非常适合用于拼单打满月定投预算。"
     elif quota_sharing == 'SHARED':
-        quota_rule_eval = f"⚠️ <strong>跨份额合并限额预警</strong>：{quota_shared_desc}。基金公司按同一投资者身份证在全市场合并计算限额。若您当天已申购满 A 类份额，请勿在同日重复申购 C 类份额，否则超额部分将被系统自动退款。"
+        quota_rule_eval = f"<strong>跨份额合并限额预警</strong>：{quota_shared_desc}。基金公司按同一投资者身份证在全市场合并计算限额。若您当天已申购满 A 类份额，请勿在同日重复申购 C 类份额，否则超额部分将被系统自动退款。"
 
     # 6. 份额选择建议
     if share_class == 'A':
@@ -574,7 +574,7 @@ for fund in funds:
             )
         siblings_html = f"""
             <div style="margin-top:1.75rem">
-                <h3 style="font-size:1.1rem;color:var(--txt);margin-bottom:0.75rem;font-weight:700">🏛️ 同门跨份额对比矩阵 ({fund.get('family_name', '同系列基金')})</h3>
+                <h3 style="font-size:1.1rem;color:var(--txt);margin-bottom:0.75rem;font-weight:700">同门跨份额对比矩阵 ({fund.get('family_name', '同系列基金')})</h3>
                 <div class="dir-table-wrap">
                     <table class="tbl dir-table" style="font-size:0.85rem">
                         <thead>
@@ -625,7 +625,7 @@ for fund in funds:
             </p>
 
             <div class="fund-quant-report-box">
-                <h3>📊 核心量化多因子体检报告</h3>
+                <h3>核心量化多因子体检报告</h3>
                 <ul>
                     <li><strong>费率维度</strong>：{fee_eval}</li>
                     <li><strong>跟踪偏离</strong>：{te_eval}</li>

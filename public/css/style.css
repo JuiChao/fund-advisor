@@ -53,21 +53,21 @@
     --surface: #ffffff;
     --surface2: #f4f7fc;
     --surface-hover: #ebf1fa;
-    --border: rgba(99, 102, 241, 0.10);
-    --border2: rgba(99, 102, 241, 0.20);
-    --border-hover: rgba(99, 102, 241, 0.40);
-    --border-light: rgba(99, 102, 241, 0.06);
+    --border: rgba(15, 23, 42, 0.08);
+    --border2: rgba(15, 23, 42, 0.14);
+    --border-hover: rgba(15, 23, 42, 0.28);
+    --border-light: rgba(15, 23, 42, 0.04);
     --txt: #080d1a;
     --txt2: #3e4d65;
     --txt3: #5e718d;
     
     /* Brand & Accent Scale */
-    --accent: #4f46e5;
-    --accent2: #6366f1;
-    --accent3: #818cf8;
+    --accent: #2563eb;
+    --accent2: #3b82f6;
+    --accent3: #60a5fa;
     --accent-glow: rgba(79, 70, 229, 0.25);
-    --accent-g: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    --accent-g2: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+    --accent-g: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    --accent-g2: linear-gradient(135deg, #2563eb 0%, #0284c7 100%);
     --accent-sheen: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%);
 
     /* Quant Tracking & Directional Delta Tokens (Financial Standard) */
@@ -121,10 +121,10 @@
     --engine-dynamic-glow: rgba(245, 158, 11, 0.26);
 
     /* Radii & Layered Elevation */
-    --radius-xs: 6px;
-    --radius-sm: 10px;
-    --radius: 16px;
-    --radius-lg: 24px;
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius: 8px;
+    --radius-lg: 12px;
     --radius-full: 9999px;
 
     --card: #ffffff;
@@ -175,22 +175,22 @@
 
 [data-theme="dark"] {
     /* Dark Theme (Deep Obsidian & Celestial Indigo Space - Award Tier) */
-    --bg: #04060a;
-    --bg2: #080c16;
-    --surface: #0a0e1a;
-    --surface2: #10172a;
-    --surface-hover: #162038;
-    --border: rgba(129, 140, 248, 0.16);
-    --border2: rgba(129, 140, 248, 0.28);
-    --border-hover: rgba(129, 140, 248, 0.55);
-    --border-light: rgba(129, 140, 248, 0.10);
+    --bg: #090d16;
+    --bg2: #0d1322;
+    --surface: #0f172a;
+    --surface2: #162038;
+    --surface-hover: #1e293b;
+    --border: rgba(255, 255, 255, 0.08);
+    --border2: rgba(255, 255, 255, 0.14);
+    --border-hover: rgba(255, 255, 255, 0.26);
+    --border-light: rgba(255, 255, 255, 0.05);
     --txt: #f8fafc;
     --txt2: #cbd5e1;
     --txt3: #94a3b8;
 
-    --accent: #6366f1;
-    --accent2: #818cf8;
-    --accent3: #a5b4fc;
+    --accent: #3b82f6;
+    --accent2: #60a5fa;
+    --accent3: #93c5fd;
     --accent-glow: rgba(99, 102, 241, 0.45);
     --accent-g: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     --accent-g2: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
@@ -346,29 +346,9 @@ body {
 }
 
 /* ===== Ambient Background Lighting Mesh ===== */
-.ambient-glow-mesh {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.9;
-}
-.ambient-glow {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(100px);
-    opacity: 0.22;
-    will-change: transform;
-    pointer-events: none;
-}
-[data-theme="dark"] .ambient-glow {
-    opacity: 0.32;
-    filter: blur(110px);
-}
+.ambient-glow-mesh { display: none !important; }
+.ambient-glow { display: none !important; }
+[data-theme="dark"] .ambient-glow { display: none !important; }
 .ambient-glow-1 {
     width: 540px;
     height: 540px;
@@ -708,18 +688,7 @@ header {
     background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.16) 0%, rgba(10, 14, 26, 0.95) 75%), var(--surface);
     box-shadow: 0 32px 72px -16px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(129, 140, 248, 0.22);
 }
-.hero-banner::before {
-    content: '';
-    position: absolute;
-    top: -90px;
-    right: -90px;
-    width: 380px;
-    height: 380px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.28) 0%, rgba(168, 85, 247, 0.12) 50%, transparent 70%);
-    border-radius: 50%;
-    filter: blur(70px);
-    pointer-events: none;
-}
+.hero-banner::before { display: none !important; }
 .hero-badge-wrap {
     display: flex;
     align-items: center;
@@ -11382,10 +11351,7 @@ tbody.spotlight-active tr:hover {
     #scroll-progress {
         display: none !important;
     }
-    .ambient-glow {
-        animation: none !important;
-        opacity: 0.1 !important;
-    }
+    .ambient-glow { display: none !important; }
     .brand-pulse-dot, .footer-pulse-dot {
         animation: none !important;
         opacity: 1 !important;

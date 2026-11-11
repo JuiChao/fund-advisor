@@ -87,7 +87,7 @@ const App = (() => {
         const current = document.documentElement.getAttribute('data-theme') || 'light';
         const next = current === 'dark' ? 'light' : 'dark';
         applyTheme(next);
-        showToast(next === 'dark' ? '🌙 已切换至暗夜科技模式' : '☀️ 已切换至清新明亮模式', 'info', 'theme');
+        showToast(next === 'dark' ? '已切换至深色模式' : '已切换至浅色模式', 'info', 'theme');
     }
 
     function initTheme() {
@@ -899,9 +899,9 @@ const App = (() => {
     const rankCols = [
         { key: 'rank', label: '# · 代码', render: r => {
             let rankBadge;
-            if (r.rank === 1) rankBadge = '<span class="tbl-rank-badge rank-gold" title="综合排名第1">🥇 1</span>';
-            else if (r.rank === 2) rankBadge = '<span class="tbl-rank-badge rank-silver" title="综合排名第2">🥈 2</span>';
-            else if (r.rank === 3) rankBadge = '<span class="tbl-rank-badge rank-bronze" title="综合排名第3">🥉 3</span>';
+            if (r.rank === 1) rankBadge = '<span class="tbl-rank-badge rank-gold" title="综合排名第1">01</span>';
+            else if (r.rank === 2) rankBadge = '<span class="tbl-rank-badge rank-silver" title="综合排名第2">02</span>';
+            else if (r.rank === 3) rankBadge = '<span class="tbl-rank-badge rank-bronze" title="综合排名第3">03</span>';
             else rankBadge = `<span class="tbl-rank-badge">#${r.rank}</span>`;
 
             return `<div class="tbl-rank-code-cell"><div class="trc-badge-wrap" title="点击展开详情看板">${rankBadge}</div><div class="trc-code-wrap"><span class="code-mono trc-code-btn" data-code="${r.code}" title="点击复制基金代码">${r.code}</span></div><div class="trc-actions-wrap"><button type="button" class="trc-copy-btn" data-code="${r.code}" title="复制基金代码">📋</button><a href="/fund/${r.code}" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div></div>`;
@@ -1432,11 +1432,11 @@ const App = (() => {
             tbody.innerHTML = displayHistory.map(item => {
                 let typeBadge = '';
                 if (item.change_type === 'RELAXED') {
-                    typeBadge = `<span class="badge-qtype badge-relaxed">🟢 ${item.change_type_label}</span>`;
+                    typeBadge = `<span class="badge-qtype badge-relaxed">${item.change_type_label}</span>`;
                 } else if (item.change_type === 'TIGHTENED') {
-                    typeBadge = `<span class="badge-qtype badge-tightened">🔴 ${item.change_type_label}</span>`;
+                    typeBadge = `<span class="badge-qtype badge-tightened">${item.change_type_label}</span>`;
                 } else {
-                    typeBadge = `<span class="badge-qtype badge-div">🔵 ${item.change_type_label}</span>`;
+                    typeBadge = `<span class="badge-qtype badge-div">${item.change_type_label}</span>`;
                 }
 
                 const idxBadge = `<span class="badge-idx ${item.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${item.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`;
@@ -1509,11 +1509,11 @@ const App = (() => {
             cardContainer.innerHTML = displayHistory.map(item => {
                 let typeBadge = '';
                 if (item.change_type === 'RELAXED') {
-                    typeBadge = `<span class="badge-qtype badge-relaxed">🟢 ${item.change_type_label}</span>`;
+                    typeBadge = `<span class="badge-qtype badge-relaxed">${item.change_type_label}</span>`;
                 } else if (item.change_type === 'TIGHTENED') {
-                    typeBadge = `<span class="badge-qtype badge-tightened">🔴 ${item.change_type_label}</span>`;
+                    typeBadge = `<span class="badge-qtype badge-tightened">${item.change_type_label}</span>`;
                 } else {
-                    typeBadge = `<span class="badge-qtype badge-div">🔵 ${item.change_type_label}</span>`;
+                    typeBadge = `<span class="badge-qtype badge-div">${item.change_type_label}</span>`;
                 }
 
                 const idxBadge = `<span class="badge-idx ${item.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${item.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`;
@@ -1779,7 +1779,7 @@ const App = (() => {
                 if (navigator.clipboard && window.ClipboardItem && curBlob) {
                     try {
                         await navigator.clipboard.write([new ClipboardItem({ 'image/png': curBlob })]);
-                        showToast('✅ 图片已复制到剪贴板！可直接粘贴发布', 'success');
+                        showToast('图片已复制到剪贴板', 'success');
                     } catch (e) {
                         showToast('浏览器限制直接复制，请点击“保存图片”', 'info');
                     }
@@ -1812,7 +1812,7 @@ const App = (() => {
             document.addEventListener('keydown', escHandler);
         }
 
-        showToast(successToast || '🎉 图片已生成，可直接保存或复制！', 'success');
+        showToast(successToast || '图片已生成', 'success');
     }
 
     // ===== 公告看板导出前：变动标的勾选弹窗控制器 =====
@@ -1880,13 +1880,13 @@ const App = (() => {
                 const shareClass = (item.share_class || 'A').toLowerCase();
                 const changeType = (item.change_type || 'TIGHTENED').toUpperCase();
 
-                let changeLabel = '🔴 限购收紧';
+                let changeLabel = '限购收紧';
                 let pillClass = 'pill-tightened';
                 if (changeType === 'RELAXED') {
-                    changeLabel = '🟢 放宽恢复';
+                    changeLabel = '放宽恢复';
                     pillClass = 'pill-relaxed';
                 } else if (changeType === 'CHANNEL_DIV') {
-                    changeLabel = '🔵 渠道分化';
+                    changeLabel = '渠道分化';
                     pillClass = 'pill-div';
                 }
 
@@ -2131,13 +2131,13 @@ const App = (() => {
                     const shareClass = (item.share_class || 'A').toLowerCase();
                     const changeType = (item.change_type || 'TIGHTENED').toUpperCase();
 
-                    let changeLabel = '🔴 限购收紧';
+                    let changeLabel = '限购收紧';
                     let pillClass = 'pill-tightened';
                     if (changeType === 'RELAXED') {
-                        changeLabel = '🟢 放宽恢复';
+                        changeLabel = '放宽恢复';
                         pillClass = 'pill-relaxed';
                     } else if (changeType === 'CHANNEL_DIV') {
-                        changeLabel = '🔵 渠道分化';
+                        changeLabel = '渠道分化';
                         pillClass = 'pill-div';
                     }
 
@@ -2254,7 +2254,7 @@ const App = (() => {
                     try { localStorage.setItem('fa_export_theme', newTheme); } catch (e) {}
                     await exportQuotaBulletinPoster(itemsToExport, null, newTheme);
                 },
-                successToast: '🎉 公告看板图片已生成，可直接保存或复制！'
+                successToast: '公告看板图片已生成'
             });
 
         } catch (err) {
@@ -2736,9 +2736,9 @@ const App = (() => {
             const renderRow = (r, rankNum) => {
                 let rankBadge;
                 let rowCls = '';
-                if (rankNum === 1) { rankBadge = '<span class="rkp-rank-badge rank-gold">🥇 1</span>'; rowCls = 'row-gold'; }
-                else if (rankNum === 2) { rankBadge = '<span class="rkp-rank-badge rank-silver">🥈 2</span>'; rowCls = 'row-silver'; }
-                else if (rankNum === 3) { rankBadge = '<span class="rkp-rank-badge rank-bronze">🥉 3</span>'; rowCls = 'row-bronze'; }
+                if (rankNum === 1) { rankBadge = '<span class="rkp-rank-badge rank-gold">01</span>'; rowCls = 'row-gold'; }
+                else if (rankNum === 2) { rankBadge = '<span class="rkp-rank-badge rank-silver">02</span>'; rowCls = 'row-silver'; }
+                else if (rankNum === 3) { rankBadge = '<span class="rkp-rank-badge rank-bronze">03</span>'; rowCls = 'row-bronze'; }
                 else { rankBadge = `<span class="rkp-rank-badge">#${rankNum}</span>`; }
 
                 // 类别信息已在上方横幅醒目展示，标的列仅保留份额徽标与基金名称，彻底释放横向空间
@@ -2992,11 +2992,11 @@ const App = (() => {
             // 排名奖章
             let rankBadgeHtml;
             if (r.rank === 1) {
-                rankBadgeHtml = `<span class="fmc-rank rank-gold" title="综合评分冠军">🥇 1</span>`;
+                rankBadgeHtml = `<span class="fmc-rank rank-gold" title="综合评分冠军">01</span>`;
             } else if (r.rank === 2) {
-                rankBadgeHtml = `<span class="fmc-rank rank-silver" title="综合评分亚军">🥈 2</span>`;
+                rankBadgeHtml = `<span class="fmc-rank rank-silver" title="综合评分亚军">02</span>`;
             } else if (r.rank === 3) {
-                rankBadgeHtml = `<span class="fmc-rank rank-bronze" title="综合评分季军">🥉 3</span>`;
+                rankBadgeHtml = `<span class="fmc-rank rank-bronze" title="综合评分季军">03</span>`;
             } else {
                 rankBadgeHtml = `<span class="fmc-rank">#${r.rank}</span>`;
             }
@@ -4856,7 +4856,7 @@ const App = (() => {
             ],
             nq: [0.048, -0.069, -0.004, -0.086, -0.048, 0.012, 0.057, 0.046, -0.073, 0.014, 0.018, -0.119, -0.168, -0.109, 0.035, -0.058, -0.046, 0.109, 0.123, 0.052, 0.034, 0.081, 0.018, 0.046, -0.012, 0.049, 0.056],
             sp: [0.015, -0.044, -0.009, -0.061, -0.035, -0.006, 0.048, 0.011, -0.086, -0.010, 0.012, -0.091, -0.169, -0.075, 0.008, -0.086, -0.110, 0.085, 0.094, 0.053, 0.000, 0.074, 0.034, 0.036, -0.020, 0.057, 0.018],
-            takeaway: '🌊 <strong>压力测试启示：</strong>在次贷危机最黑暗的 2009 年初，一次性买入投资者账面深度腰斩（-52%），而定投策略的最大账面浮亏仅约 <strong>-29% ~ -32%</strong>。更关键的是：定投仅用 <strong>6~7 个月</strong> 便从谷底彻底抹平浮亏重回盈利，而一次性买入耗时近 4 年才解套！'
+            takeaway: '<strong>2008 次贷危机情景分析：</strong>在次贷危机最黑暗的 2009 年初，一次性买入投资者账面深度腰斩（-52%），而定投策略的最大账面浮亏仅约 <strong>-29% ~ -32%</strong>。更关键的是：定投仅用 <strong>6~7 个月</strong> 便从谷底彻底抹平浮亏重回盈利，而一次性买入耗时近 4 年才解套！'
         },
         covid: {
             id: 'covid',
@@ -4873,7 +4873,7 @@ const App = (() => {
             ],
             nq: [0.030, -0.064, -0.076, 0.154, 0.067, 0.063, 0.073, 0.111, -0.057, -0.032, 0.110, 0.051],
             sp: [-0.002, -0.084, -0.125, 0.127, 0.045, 0.018, 0.055, 0.070, -0.039, -0.028, 0.108, 0.037],
-            takeaway: '🦠 <strong>压力测试启示：</strong>极速暴跌（Flash Crash）是定投的最佳盟友。在 2020 年 3 月熔断中，定投浮亏仅约 <strong>-9%</strong>，随后 4 月即刻凭借反弹完成回本，全年收益率高达 <strong>+22% ~ +27%</strong>。任何在恐慌中暂停定投的人都错失了整轮复利主升浪。'
+            takeaway: '<strong>2020 极速熔断情景分析：</strong>极速暴跌（Flash Crash）是定投的最佳盟友。在 2020 年 3 月熔断中，定投浮亏仅约 <strong>-9%</strong>，随后 4 月即刻凭借反弹完成回本，全年收益率高达 <strong>+22% ~ +27%</strong>。任何在恐慌中暂停定投的人都错失了整轮复利主升浪。'
         },
         dotcom: {
             id: 'dotcom',
@@ -4891,7 +4891,7 @@ const App = (() => {
             ],
             nq: [0.042, -0.136, -0.119, 0.166, -0.056, 0.118, -0.127, -0.083, -0.229, -0.036, 0.122, -0.224, -0.146, 0.145, -0.014, -0.033, -0.058, -0.109, -0.169, 0.155, 0.151, -0.005, -0.028, -0.124, 0.068, -0.165, -0.062, -0.128, -0.088, 0.014, -0.135, 0.131],
             sp: [0.097, -0.031, -0.022, 0.024, -0.016, 0.061, -0.054, -0.005, -0.080, 0.004, 0.035, -0.092, -0.064, 0.077, 0.005, -0.025, -0.011, -0.064, -0.082, 0.018, 0.075, 0.008, -0.016, -0.021, 0.037, -0.061, -0.009, -0.072, -0.079, 0.005, -0.110, 0.086],
-            takeaway: '⚡ <strong>压力测试启示：</strong>在纳指纯单边下跌 -82% 的世纪崩盘中，纯纳指单边定投最大浮亏达 -48.7%；而采用【稳健型 30/70】或【风险平价 38/62】方案，最大浮亏被大幅压缩至 <strong>-27% ~ -32%</strong>，且跌幅远低于标普单边一次性下跌，展现了跨行业因子分散与风险平价配置的保命防御力！'
+            takeaway: '<strong>2000 互联网泡沫情景分析：</strong>在纳指纯单边下跌 -82% 的世纪崩盘中，纯纳指单边定投最大浮亏达 -48.7%；而采用【稳健型 30/70】或【风险平价 38/62】方案，最大浮亏被大幅压缩至 <strong>-27% ~ -32%</strong>，且跌幅远低于标普单边一次性下跌，展现了跨行业因子分散与风险平价配置的保命防御力！'
         },
         ratehike: {
             id: 'ratehike',
@@ -4908,7 +4908,7 @@ const App = (() => {
             ],
             nq: [-0.085, -0.046, 0.042, -0.134, -0.016, -0.090, 0.126, -0.052, -0.106, 0.040, 0.055, -0.090],
             sp: [-0.053, -0.031, 0.036, -0.088, 0.000, -0.084, 0.091, -0.042, -0.093, 0.080, 0.054, -0.059],
-            takeaway: '📈 <strong>压力测试启示：</strong>2022 年加息熊市中，虽然全年单边收跌，但定投策略由于分批平摊买入成本，年终账面浮亏仅 <strong>-9% ~ -13%</strong>，相比直接买入纳指 -33% 的亏损大幅减少。紧接着 2023 年纳指录得 +54% 暴涨，2022 年坚持定投积累的低成本份额全部转化为超额利润。'
+            takeaway: '<strong>2022 加息熊市情景分析：</strong>2022 年加息熊市中，虽然全年单边收跌，但定投策略由于分批平摊买入成本，年终账面浮亏仅 <strong>-9% ~ -13%</strong>，相比直接买入纳指 -33% 的亏损大幅减少。紧接着 2023 年纳指录得 +54% 暴涨，2022 年坚持定投积累的低成本份额全部转化为超额利润。'
         }
     };
 
@@ -4962,11 +4962,11 @@ const App = (() => {
         const msWeight = (dynParams?.max_sharpe_w_nq != null) ? dynParams.max_sharpe_w_nq : 0.60;
 
         const stratList = [
-            { id: 'rp', name: '💎 风险平价', w_nq: rpWeight, color: '#f59e0b', badge: '<span class="tag" style="background:rgba(245,158,11,0.12);color:#d97706;font-weight:600">💎 平滑抗震</span>' },
-            { id: 'ms', name: '⚖️ 最优夏普', w_nq: msWeight, color: '#8b5cf6', badge: '<span class="tag" style="background:rgba(139,92,246,0.12);color:#7c3aed;font-weight:600">⚖️ 效率兼顾</span>' },
-            { id: 'mod', name: '🛡️ 稳健型', w_nq: 0.30, color: '#10b981', badge: '<span class="tag" style="background:rgba(16,185,129,0.12);color:var(--ok);font-weight:600">🛡️ 极佳防守</span>' },
-            { id: 'bal', name: '🔄 平衡型', w_nq: 0.50, color: '#0ea5e9', badge: '<span class="tag" style="background:rgba(14,165,233,0.12);color:#0284c7;font-weight:600">🔄 均衡抗跌</span>' },
-            { id: 'agg', name: '🚀 进取型', w_nq: 0.70, color: '#6366f1', badge: '<span class="tag" style="background:rgba(99,102,241,0.12);color:var(--accent2);font-weight:600">🚀 弹性进攻</span>' },
+            { id: 'rp', name: '风险平价 [ERC]', w_nq: rpWeight, color: '#f59e0b', badge: '<span class="tag" style="background:rgba(245,158,11,0.12);color:#d97706;font-weight:600">💎 平滑抗震</span>' },
+            { id: 'ms', name: '最大夏普 [Max Sharpe]', w_nq: msWeight, color: '#8b5cf6', badge: '<span class="tag" style="background:rgba(139,92,246,0.12);color:#7c3aed;font-weight:600">⚖️ 效率兼顾</span>' },
+            { id: 'mod', name: '稳健配置 [30:70]', w_nq: 0.30, color: '#10b981', badge: '<span class="tag" style="background:rgba(16,185,129,0.12);color:var(--ok);font-weight:600">🛡️ 极佳防守</span>' },
+            { id: 'bal', name: '经典平衡 [50:50]', w_nq: 0.50, color: '#0ea5e9', badge: '<span class="tag" style="background:rgba(14,165,233,0.12);color:#0284c7;font-weight:600">🔄 均衡抗跌</span>' },
+            { id: 'agg', name: '成长进取 [70:30]', w_nq: 0.70, color: '#6366f1', badge: '<span class="tag" style="background:rgba(99,102,241,0.12);color:var(--accent2);font-weight:600">🚀 弹性进攻</span>' },
             { id: 'b_nq', name: '100% 纳指基准', w_nq: 1.00, color: '#ec4899', isBenchmark: true, badge: '<span class="tag" style="background:rgba(239,68,68,0.12);color:var(--err);font-weight:600">🔥 极端进攻</span>' },
             { id: 'b_sp', name: '100% 标普基准', w_nq: 0.00, color: '#14b8a6', isBenchmark: true, badge: '<span class="tag" style="background:rgba(20,184,166,0.12);color:#0d9488;font-weight:600">🏛️ 传统基准</span>' },
         ];
@@ -7787,7 +7787,7 @@ const App = (() => {
 
                     <!-- 限购状态 -->
                     <div>
-                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">🛑 限购与额度规则</div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">限购与额度规则</div>
                         <div style="margin-bottom:0.25rem;display:flex;align-items:center;gap:6px"><strong style="color:var(--txt3)">代销限购：</strong>${pill(f.limit_status)}</div>
                         <div style="margin-bottom:0.25rem;display:flex;align-items:center;gap:6px"><strong style="color:var(--txt3)">直销限购：</strong>${f.direct_limit_status ? pill(f.direct_limit_status) : '<span style="color:var(--txt3)">—</span>'}</div>
                         <div style="margin-top:0.4rem;font-size:0.75rem;padding:4px 6px;border-radius:4px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);color:var(--txt2)">
@@ -7797,7 +7797,7 @@ const App = (() => {
 
                     <!-- 量化多因子评估 -->
                     <div>
-                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">📊 量化多因子评估</div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">量化多因子评估</div>
                         <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">跟踪偏离度(TD/1年)：</strong><span style="font-weight:700;color:${(f.tracking_difference||0)>=0?'var(--up)':'var(--down)'}">${f.tracking_difference != null ? ((f.tracking_difference>=0?'+':'')+(f.tracking_difference*100).toFixed(2)+'%') : '-'}</span></div>
                         <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">信息比率(IR)：</strong><span style="font-weight:700;color:${(f.information_ratio||0)>=0?'var(--ok)':'var(--txt2)'}">${f.information_ratio != null ? f.information_ratio.toFixed(2) : '-'}</span> <span style="font-size:0.7rem;color:var(--txt3);">(超额/风险)</span></div>
                         <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">年化跟踪误差(TE)：</strong>${f.tracking_error ? (f.tracking_error*100).toFixed(2)+'%' : '-'}</div>
@@ -7807,13 +7807,13 @@ const App = (() => {
                 ${f.benchmark ? `<div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border); font-size:0.8rem; color:var(--txt3);"><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
                 <div class="fund-detail-actions">
                     <a href="/fund/${f.code}" target="_blank" class="btn-fund-page-action" title="在新标签页中打开这只基金的独立评测专页">
-                        📄 打开独立评测专页 ↗
+                        打开评测专页 ↗
                     </a>
                     <button type="button" class="btn-copy-code-action" data-code="${f.code}">
-                        📋 复制基金代码 (${f.code})
+                        复制基金代码 (${f.code})
                     </button>
                     <button type="button" class="btn-simulate-action btn-sim-single" data-code="${f.code}">
-                        🚀 将此基金带入模拟器测试 ➔
+                        带入模拟器测试 ➔
                     </button>
                 </div>
             </td>`;
