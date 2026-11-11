@@ -125,7 +125,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <div class="nav-actions">
         <a href="/#portfolio" class="nav-cta-btn" title="立即开启量化资产配置">定投方案</a>
         <button class="theme-toggle" id="theme-toggle" aria-label="切换主题" title="切换深色/浅色模式">
-            <span class="theme-icon">🌙</span>
+            <span class="theme-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
         </button>
         <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false" onclick="var l=document.getElementById('nav-links');var b=this;var o=l.classList.toggle('show');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);">
             <span></span><span></span><span></span>
@@ -230,7 +230,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <!-- ===== E-E-A-T 投研团队与专业审阅声明 ===== -->
         <div class="eeat-author-card">
             <div class="eeat-header">
-                <div class="eeat-avatar">📊</div>
+                <div class="eeat-avatar">FA</div>
                 <div class="eeat-meta">
                     <div class="eeat-author-name">
                         <strong>Fund Advisor 量化投研团队</strong>
@@ -333,7 +333,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         document.documentElement.setAttribute('data-theme', t);
         try {{ localStorage.setItem('fa_theme', t); }} catch (e) {{}}
         var icon = document.querySelector('#theme-toggle .theme-icon');
-        if (icon) icon.textContent = t === 'dark' ? '☀️' : '🌙';
+        if (icon) icon.innerHTML = t === 'dark' ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>' : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
     }}
     applyTheme(getTheme());
     var btn = document.getElementById('theme-toggle');
@@ -465,9 +465,9 @@ for fund in funds:
         dir_cls, dir_dot = "status-open", "ok"
 
     if quota_sharing == 'SHARED':
-        quota_sharing_badge_html = f'<span class="badge-shared" title="{quota_shared_desc or "多类份额共享限额"}">🔗 共享额度</span>'
+        quota_sharing_badge_html = f'<span class="badge-shared" title="{quota_shared_desc or "多类份额共享限额"}">共享额度</span>'
     elif quota_sharing == 'INDEPENDENT':
-        quota_sharing_badge_html = f'<span class="badge-share badge-i" title="{quota_shared_desc or "各份额独立占用额度"}">✨ 独立额度</span>'
+        quota_sharing_badge_html = f'<span class="badge-share badge-i" title="{quota_shared_desc or "各份额独立占用额度"}">独立额度</span>'
     else:
         quota_sharing_badge_html = ''
 
@@ -608,7 +608,7 @@ for fund in funds:
             )
         quota_history_html = f"""
             <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.15rem;margin-top:1.5rem;">
-                <h3 style="font-size:1.05rem;color:var(--txt);margin-top:0;margin-bottom:0.6rem;font-weight:700;">📢 申购限购调整历史与渠道动态</h3>
+                <h3 style="font-size:1.05rem;color:var(--txt);margin-top:0;margin-bottom:0.6rem;font-weight:700;">申购限购调整历史与渠道动态</h3>
                 <ul style="padding-left:1.2rem;margin-bottom:0;color:var(--txt2);font-size:0.88rem;line-height:1.5;">
                     {''.join(history_items)}
                 </ul>
@@ -634,7 +634,7 @@ for fund in funds:
                 </ul>
             </div>
 
-            <h3 style="font-size:1.08rem;color:var(--txt);margin-top:1.5rem;margin-bottom:0.6rem;font-weight:700;">🛒 渠道额度穿透与定投实操建议</h3>
+            <h3 style="font-size:1.08rem;color:var(--txt);margin-top:1.5rem;margin-bottom:0.6rem;font-weight:700;">渠道额度穿透与定投实操建议</h3>
             <div class="fund-channel-callout">
                 {channel_eval}
             </div>

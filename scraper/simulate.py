@@ -595,7 +595,7 @@ def build_strategy(strat_def, funds, budget, dynamic_params=None):
     has_stacked = any(a.get('is_stacked') for a in practical if a.get('monthly', 0) > 0)
     practical_note = '排除暂停基金，遵守每日限购限额。'
     if has_stacked:
-        practical_note = '💡 算法已自动启动【多份额额度叠加策略】，成功为您打破单日限购封锁，打满 100% 预算！'
+        practical_note = '算法已自动启动【多份额额度叠加策略】，打破单日限购封锁，打满 100% 预算。'
 
     ideal_risk = get_variant_risk_analysis(ideal, p)
     practical_risk = get_variant_risk_analysis(practical, p)

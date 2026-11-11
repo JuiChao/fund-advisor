@@ -21,7 +21,7 @@ const App = (() => {
         document.documentElement.setAttribute('data-theme', theme);
         try { localStorage.setItem('fa_theme', theme); } catch (e) {}
         const iconEl = document.querySelector('#theme-toggle .theme-icon');
-        if (iconEl) iconEl.textContent = theme === 'dark' ? '☀️' : '🌙';
+        if (iconEl) iconEl.innerHTML = theme === 'dark' ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>' : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
 
         if (typeof Chart !== 'undefined') {
             if (theme === 'dark') {
@@ -111,7 +111,7 @@ const App = (() => {
         }
         const toast = document.createElement('div');
         toast.className = `toast toast-${type} ${cat === 'theme' ? 'toast-theme' : ''}`;
-        const icon = type === 'success' ? '✅' : '💡';
+        const icon = type === 'success' ? '✓' : 'ℹ';
         toast.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
         container.appendChild(toast);
         setTimeout(() => {
@@ -771,7 +771,7 @@ const App = (() => {
                     <div class="card" style="margin-bottom:0;padding:1.25rem;display:flex;flex-direction:column;border:${isQuant ? '1px solid rgba(99,102,241,0.3)' : '1px solid var(--border)'};background:${isQuant ? 'linear-gradient(180deg, var(--surface) 0%, var(--surface2) 100%)' : 'var(--surface)'}">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
                             <span style="font-weight:750;font-size:0.95rem;color:var(--txt)">${s.icon || ''} ${s.name}</span>
-                            <span class="tag" style="${isQuant ? 'background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;' : 'background:var(--surface2);color:var(--txt3);'}font-size:0.68rem;margin:0">${isQuant ? '💎 量化' : '经典'}</span>
+                            <span class="tag" style="${isQuant ? 'background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;' : 'background:var(--surface2);color:var(--txt3);'}font-size:0.68rem;margin:0">${isQuant ? '[量化]' : '经典'}</span>
                         </div>
                         <div style="font-size:0.75rem;color:var(--txt2);margin-bottom:0.75rem;flex:1;line-height:1.5">${s.description || ''}</div>
                         <div style="background:var(--surface2);border-radius:8px;padding:0.6rem 0.8rem;margin-bottom:0.85rem;display:flex;justify-content:space-between;align-items:center">
@@ -786,7 +786,7 @@ const App = (() => {
                         </div>
                         <div style="display:flex;gap:0.5rem">
                             <a href="#portfolio" class="btn-jump-strat btn-jump-strat-home" style="flex:1;text-align:center;padding:0.45rem 0.5rem;font-size:0.75rem;text-decoration:none" data-strategy="${s.key}" data-category="${s.category || 'traditional'}">查看配置 ▸</a>
-                            <button class="btn-simulate-action btn-sim-from-home" data-strategy="${s.key}" style="flex:1;padding:0.45rem 0.5rem;font-size:0.75rem;justify-content:center" title="带入模拟器推演">推演 🚀</button>
+                            <button class="btn-simulate-action btn-sim-from-home" data-strategy="${s.key}" style="flex:1;padding:0.45rem 0.5rem;font-size:0.75rem;justify-content:center" title="带入模拟器推演">推演</button>
                         </div>
                     </div>
                     `;
@@ -794,7 +794,7 @@ const App = (() => {
             </div>
 
             <details style="margin-top:0.5rem">
-                <summary style="font-size:0.82rem;font-weight:600;color:var(--txt2);cursor:pointer;padding:0.5rem 0;user-select:none">📋 查看全方案数据对比表 (包含理论最优与实际可买)</summary>
+                <summary style="font-size:0.82rem;font-weight:600;color:var(--txt2);cursor:pointer;padding:0.5rem 0;user-select:none">查看全方案数据对比表 (包含理论最优与实际可买)</summary>
                 <div class="table-wrap" style="margin-top:0.5rem">
                     <table>
                         <thead>
@@ -807,7 +807,7 @@ const App = (() => {
                                     const sim = v?.simulation || {};
                                     const label = vk === 'ideal' ? '理论最优' : '实际可买';
                                     const typeBadge = s.category === 'quant'
-                                        ? `<span class="pill" style="background:rgba(99,102,241,0.15);color:#818cf8;font-weight:600">💎 ${s.tag || '量化'}</span>`
+                                        ? `<span class="pill" style="background:rgba(99,102,241,0.15);color:#818cf8;font-weight:600">[${s.tag || '量化'}]</span>`
                                         : `<span class="pill" style="background:var(--surface2);color:var(--txt3)">${s.tag || '经典'}</span>`;
                                     return `<tr>
                                         <td style="font-weight:600;color:var(--accent2)">${s.icon || ''} ${s.name}</td>
@@ -827,7 +827,7 @@ const App = (() => {
             document.getElementById('home-strategies').innerHTML = html;
             document.getElementById('home-strategies').classList.remove('ld');
 
-            // 绑定首页卡片“推演 🚀”按钮
+            // 绑定首页卡片“推演”按钮
             document.querySelectorAll('.btn-sim-from-home').forEach(btn => {
                 btn.onclick = (e) => {
                     e.preventDefault();
@@ -904,7 +904,7 @@ const App = (() => {
             else if (r.rank === 3) rankBadge = '<span class="tbl-rank-badge rank-bronze" title="综合排名第3">03</span>';
             else rankBadge = `<span class="tbl-rank-badge">#${r.rank}</span>`;
 
-            return `<div class="tbl-rank-code-cell"><div class="trc-badge-wrap" title="点击展开详情看板">${rankBadge}</div><div class="trc-code-wrap"><span class="code-mono trc-code-btn" data-code="${r.code}" title="点击复制基金代码">${r.code}</span></div><div class="trc-actions-wrap"><button type="button" class="trc-copy-btn" data-code="${r.code}" title="复制基金代码">📋</button><a href="/fund/${r.code}" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div></div>`;
+            return `<div class="tbl-rank-code-cell"><div class="trc-badge-wrap" title="点击展开详情看板">${rankBadge}</div><div class="trc-code-wrap"><span class="code-mono trc-code-btn" data-code="${r.code}" title="点击复制基金代码">${r.code}</span></div><div class="trc-actions-wrap"><button type="button" class="trc-copy-btn" data-code="${r.code}" title="复制基金代码"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button><a href="/fund/${r.code}" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div></div>`;
         } },
         { key: 'name', label: '名称', render: r => {
             const curType = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
@@ -973,7 +973,7 @@ const App = (() => {
             const directPill = r.direct_limit_status ? pill(r.direct_limit_status) : '<span class="tbl-limit-na">—</span>';
             let shareHtml = '';
             if (r.quota_sharing === 'SHARED') {
-                shareHtml = `<span class="badge-shared" title="${r.quota_shared_desc || '多类份额合并计算单日限额'}"><span class="brand-pulse-dot" style="width:5px;height:5px;background:var(--accent2);margin-right:2px"></span> 🔗 共享额度</span>`;
+                shareHtml = `<span class="badge-shared" title="${r.quota_shared_desc || '多类份额合并计算单日限额'}"><span class="brand-pulse-dot" style="width:5px;height:5px;background:var(--accent2);margin-right:2px"></span> 共享额度</span>`;
             } else if (r.quota_sharing === 'INDEPENDENT') {
                 shareHtml = `<span class="badge-indep" title="${r.quota_shared_desc || '各份额独立计算限额'}">独立额度</span>`;
             } else {
@@ -1182,10 +1182,10 @@ const App = (() => {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="${rankCols.length}" style="text-align:center;padding:3rem 1rem;color:var(--txt3)">
-                            <div style="font-size:2rem;margin-bottom:0.5rem">🔍</div>
+                            <div style="margin-bottom:0.5rem;color:var(--txt3)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
                             <div style="font-size:0.95rem;font-weight:600;color:var(--txt2);margin-bottom:0.35rem">未找到符合条件的基金标的</div>
                             <div style="font-size:0.8rem;color:var(--txt3);margin-bottom:1rem">请尝试调整份额类别、渠道状态或搜索关键词</div>
-                            <button type="button" class="btn-empty-reset" style="padding:0.4rem 1rem;font-size:0.8rem;border-radius:6px;background:var(--accent-g);color:#fff;border:none;cursor:pointer;font-weight:600">🔄 恢复默认筛选</button>
+                            <button type="button" class="btn-empty-reset" style="padding:0.4rem 1rem;font-size:0.8rem;border-radius:6px;background:var(--accent-g);color:#fff;border:none;cursor:pointer;font-weight:600">恢复默认筛选</button>
                         </td>
                     </tr>
                 `;
@@ -1378,13 +1378,13 @@ const App = (() => {
             const previewItems = (hasToday ? todayChanges : displayHistory).slice(0, 3);
             tickersEl.innerHTML = previewItems.map(item => {
                 let badgeClass = 'chip-tightened';
-                let icon = '🔴';
+                let icon = '<span class="brand-pulse-dot err"></span>';
                 if (item.change_type === 'RELAXED') {
                     badgeClass = 'chip-relaxed';
-                    icon = '🟢';
+                    icon = '<span class="brand-pulse-dot ok"></span>';
                 } else if (item.change_type === 'CHANNEL_DIV') {
                     badgeClass = 'chip-div';
-                    icon = '🔵';
+                    icon = '<span class="brand-pulse-dot blue"></span>';
                 }
                 const shortName = getStandardFundShortName(item);
                 const effDate = item.effective_date || item.date || '';
@@ -1444,7 +1444,7 @@ const App = (() => {
                     <div class="q-fund-cell">
                         <div class="q-fund-meta">
                             <div class="q-fund-badges">${idxBadge}${shareBadge(item.share_class)}</div>
-                            <div class="q-fund-code"><span class="code-mono">${item.code}</span><button type="button" class="btn-copy-code" data-code="${item.code}" title="复制基金代码">📋</button></div>
+                            <div class="q-fund-code"><span class="code-mono">${item.code}</span><button type="button" class="btn-copy-code" data-code="${item.code}" title="复制基金代码"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button></div>
                         </div>
                         <div class="q-fund-name-wrap">
                             <a href="/fund/${item.code}" class="q-fund-name" target="_blank" title="${item.name}">${item.name}</a>
@@ -1465,7 +1465,7 @@ const App = (() => {
                             <span class="q-diff-arrow">➔</span>
                             <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
                         </div>
-                        ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">📄 官方公告 ↗</a>` : ''}
+                        ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">官方公告 ↗</a>` : ''}
                     </div>
                 `;
 
@@ -1486,7 +1486,7 @@ const App = (() => {
                 const isDiffDate = effDate && pubDate && effDate !== pubDate;
                 const dateCellHtml = `
                     <div class="q-date-cell-wrap">
-                        <span class="q-date-pill q-eff-pill" title="实际生效起始日期: ${effDate}">📅 生效: <strong>${effDate}</strong></span>
+                        <span class="q-date-pill q-eff-pill" title="实际生效起始日期: ${effDate}">生效: <strong>${effDate}</strong></span>
                         ${isDiffDate ? `<span class="q-pub-hint" title="公告发布送出日期: ${pubDate}">(${pubDate}发布)</span>` : ''}
                     </div>
                 `;
@@ -1520,7 +1520,7 @@ const App = (() => {
 
                 const subsHtml = item.substitutes && item.substitutes.length ? `
                     <div class="qmc-subs">
-                        <span class="qmc-subs-lbl">💡 智能平替标的：</span>
+                        <span class="qmc-subs-lbl">智能平替标的：</span>
                         <div class="qmc-subs-chips">
                             ${item.substitutes.map(s => `
                                 <button type="button" class="btn-quota-sub" data-code="${s.code}" title="${s.name}">
@@ -1541,7 +1541,7 @@ const App = (() => {
                     <div class="quota-mobile-card q-card-${(item.change_type || '').toLowerCase()}">
                         <div class="qmc-header">
                             <div class="qmc-date-wrap">
-                                <span class="q-date-pill q-eff-pill" title="实际生效起始日期: ${effDate}">📅 生效: <strong>${effDate}</strong></span>
+                                <span class="q-date-pill q-eff-pill" title="实际生效起始日期: ${effDate}">生效: <strong>${effDate}</strong></span>
                                 ${isDiffDate ? `<span class="qmc-pub-hint" title="公告发布送出日期: ${pubDate}">(${pubDate}发布)</span>` : ''}
                             </div>
                             ${typeBadge}
@@ -1564,7 +1564,7 @@ const App = (() => {
                         </div>
                         ${item.announcement_url ? `
                         <div class="qmc-ann-row">
-                            <a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">📄 查看官方公告原件 ↗</a>
+                            <a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">查看官方公告原件 ↗</a>
                         </div>` : ''}
                         ${subsHtml}
                     </div>
@@ -1762,11 +1762,11 @@ const App = (() => {
 
                     // 2. 否则异步生成
                     if (onThemeChange) {
-                        btn.textContent = '⏳ ...';
+                        btn.textContent = '...';
                         try {
                             await onThemeChange(newTheme);
                         } finally {
-                            btn.textContent = newTheme === 'light' ? '☀️ 浅色' : '🌙 深色';
+                            btn.textContent = newTheme === 'light' ? '浅色' : '深色';
                         }
                     }
                 };
@@ -1905,7 +1905,7 @@ const App = (() => {
                         <span class="rks-code">${item.code}</span>
                         <span class="rks-name" title="${item.name}">${item.name}</span>
                         <div class="rks-meta">
-                            <span class="rks-eff-pill" style="font-size:11.5px;color:#f59e0b;font-weight:700;margin-right:8px">📅 生效: <strong>${effDate}</strong>${isDiffDate ? ` <span style="font-size:10.5px;color:var(--txt3);font-weight:normal">(${pubDate}发布)</span>` : ''}</span>
+                            <span class="rks-eff-pill" style="font-size:11.5px;color:#f59e0b;font-weight:700;margin-right:8px">生效: <strong>${effDate}</strong>${isDiffDate ? ` <span style="font-size:10.5px;color:var(--txt3);font-weight:normal">(${pubDate}发布)</span>` : ''}</span>
                             <span style="font-size:11px;color:var(--txt3)">${agencyTxt} · ${directTxt}</span>
                         </div>
                     </label>
@@ -2061,7 +2061,7 @@ const App = (() => {
                 }
                 const selectedItems = displayHistory.filter(h => selectedCodes.has(h.code));
                 closeSelectModal();
-                showToast('⏳ 正在渲染高清图片，请稍候...', 'info');
+                showToast('正在渲染高清图片，请稍候...', 'info');
                 exportQuotaBulletinPoster(selectedItems, triggerBtn, currentExportTheme);
             };
         }
@@ -2099,7 +2099,7 @@ const App = (() => {
         const originalText = triggerBtn ? triggerBtn.innerHTML : '';
         if (triggerBtn) {
             triggerBtn.disabled = true;
-            triggerBtn.innerHTML = '<span>⏳ 正在生成...</span>';
+            triggerBtn.innerHTML = '<span>正在生成...</span>';
             // 全局新发起导出时，清空上一次会话缓存
             Object.values(posterThemeCache).forEach(item => {
                 if (item.blobUrl) URL.revokeObjectURL(item.blobUrl);
@@ -2119,7 +2119,7 @@ const App = (() => {
             if (itemsToExport.length === 0) {
                 cardsHtml = `
                     <div class="dbp-card" style="text-align:center;padding:36px 20px;border-left:none;">
-                        <div style="font-size:36px;margin-bottom:12px">🛡️</div>
+                        <div style="font-size:18px;font-weight:700;color:var(--accent2);margin-bottom:12px">[STATUS OK]</div>
                         <div style="font-size:18px;font-weight:700;color:${isLight ? '#0f172a' : '#f8fafc'};margin-bottom:6px">全市场额度平稳运行</div>
                         <div style="font-size:14px;color:${isLight ? '#64748b' : '#94a3b8'}">今日无新增限购收紧或暂停申购变动</div>
                     </div>
@@ -2158,7 +2158,7 @@ const App = (() => {
                                     <span class="dbp-fund-name">${item.name}</span>
                                 </div>
                                 <div class="dbp-top-right-group">
-                                    <span class="dbp-eff-pill"><span class="dbp-eff-icon">📅</span> 生效: <strong>${effDate}</strong></span>
+                                    <span class="dbp-eff-pill">生效: <strong>${effDate}</strong></span>
                                     <div class="dbp-change-pill ${pillClass}">
                                         ${changeLabel}
                                     </div>
@@ -2183,7 +2183,7 @@ const App = (() => {
                                     </div>
                                 </div>
                             </div>
-                            ${item.notice_title ? `<div class="dbp-card-notice">📑 公告：《${item.notice_title}》</div>` : ''}
+                            ${item.notice_title ? `<div class="dbp-card-notice">公告：《${item.notice_title}》</div>` : ''}
                         </div>
                     `;
                 }).join('');
@@ -2193,26 +2193,26 @@ const App = (() => {
                 <div class="douyin-poster-export ${isLight ? 'theme-light' : ''}" id="dbp-render-target">
                     <div class="dbp-header">
                         <div class="dbp-top-tag">
-                            <span>📢</span>
+                            
                             <span>美股 QDII 额度动态监控速报</span>
-                            <span class="dbp-tag-date">📅 ${todayStr}</span>
+                            <span class="dbp-tag-date">${todayStr}</span>
                         </div>
                         <h1 class="dbp-title">QDII 基金限购变动看板</h1>
                         <p class="dbp-sub">每日自动巡检全市场60只QDII基金 · 代销与直销申购额度异动追踪</p>
                         
                         <div class="dbp-stats-bar">
                             <div class="dbp-stat-chip chip-tightened">
-                                <span>🔴</span>
+                                <span class="brand-pulse-dot err"></span>
                                 <span>限购收紧/暂停</span>
                                 <strong>${tightenedCount}</strong>
                             </div>
                             <div class="dbp-stat-chip chip-relaxed">
-                                <span>🟢</span>
+                                <span class="brand-pulse-dot ok"></span>
                                 <span>放宽/恢复申购</span>
                                 <strong>${relaxedCount}</strong>
                             </div>
                             <div class="dbp-stat-chip chip-monitored">
-                                <span>🛡️</span>
+                                <span class="brand-pulse-dot neutral"></span>
                                 <span>选入展示</span>
                                 <strong>${itemsToExport.length} / ${displayHistory.length} 只</strong>
                             </div>
@@ -2225,7 +2225,7 @@ const App = (() => {
 
                     <div class="dbp-footer">
                         <div class="dbp-footer-brand">
-                            <span class="dbp-brand-name">📊 Fund Advisor</span>
+                            <span class="dbp-brand-name">Fund Advisor</span>
                             <span class="dbp-brand-tag">美股指数基金智能投资分析器</span>
                         </div>
                         <div class="dbp-footer-meta">
@@ -2247,7 +2247,7 @@ const App = (() => {
                 blob,
                 downloadFilename: `QDII限购变动速递_${isLight ? '浅色_' : ''}${todayStr}.png`,
                 titleText: '公告看板图片预览',
-                tagText: `${itemsToExport.length}只变动 · ${isLight ? '☀️ 浅色清新' : '🌙 深色商务'}`,
+                tagText: `${itemsToExport.length}只变动 · ${isLight ? '浅色' : '深色'}`,
                 currentTheme: exportTheme,
                 onThemeChange: async (newTheme) => {
                     currentExportTheme = newTheme;
@@ -2318,7 +2318,7 @@ const App = (() => {
         const quotaFundsCount = rankData.filter(isFundWithQuota).length;
         if (quotaNumEl) quotaNumEl.textContent = quotaFundsCount;
         if (btnQuota) {
-            btnQuota.innerHTML = `🟢 有额度 (${quotaFundsCount})`;
+            btnQuota.innerHTML = `有额度 (${quotaFundsCount})`;
         }
 
         // 默认全选当前展示的集合 (全部美股QDII时按 纳指在上、标普在下 排列)
@@ -2346,13 +2346,13 @@ const App = (() => {
             const directOk = Boolean(r.direct_limit_status && !r.direct_limit_status.includes('暂停') && !r.direct_limit_status.includes('未开通'));
 
             if (agencyOk && directOk) {
-                return `<span class="rks-quota-badge quota-both" title="代销: ${r.limit_status} · 直销: ${r.direct_limit_status}">🟢 代销/直销有额度</span>`;
+                return `<span class="rks-quota-badge quota-both" title="代销: ${r.limit_status} · 直销: ${r.direct_limit_status}">代销/直销有额度</span>`;
             } else if (agencyOk) {
-                return `<span class="rks-quota-badge quota-agency" title="代销: ${r.limit_status}">🟢 代销:${r.limit_status}</span>`;
+                return `<span class="rks-quota-badge quota-agency" title="代销: ${r.limit_status}">代销:${r.limit_status}</span>`;
             } else if (directOk) {
-                return `<span class="rks-quota-badge quota-direct" title="代销暂停 · 直销: ${r.direct_limit_status}">🟡 直销:${r.direct_limit_status}</span>`;
+                return `<span class="rks-quota-badge quota-direct" title="代销暂停 · 直销: ${r.direct_limit_status}">直销:${r.direct_limit_status}</span>`;
             } else {
-                return `<span class="rks-quota-badge quota-paused" title="代销与直销均已暂停或未开通">🔴 暂停申购</span>`;
+                return `<span class="rks-quota-badge quota-paused" title="代销与直销均已暂停或未开通">暂停申购</span>`;
             }
         };
 
@@ -2360,7 +2360,7 @@ const App = (() => {
             const isChecked = selectedCodes.has(r.code);
             const totalFee = (r.mgmt_fee || 0) + (r.custody_fee || 0) + (r.sales_fee || 0);
             const rankNum = r.displayRank || r.rank || 1;
-            let rankBadge = rankNum === 1 ? '🥇' : (rankNum === 2 ? '🥈' : (rankNum === 3 ? '🥉' : `#${rankNum}`));
+            let rankBadge = rankNum === 1 ? '#1' : (rankNum === 2 ? '#2' : (rankNum === 3 ? '#3' : `#${rankNum}`));
             const hasQuota = isFundWithQuota(r);
             const quotaBadge = getQuotaBadgeHtml(r);
             const quotaSearchText = `${r.limit_status || ''} ${r.direct_limit_status || ''} ${hasQuota ? '有额度 可申购 可买 有申购额度' : '暂停申购 无额度'}`;
@@ -2675,7 +2675,7 @@ const App = (() => {
                     ? [...nqList.filter(r => selectedCodes.has(r.code)), ...spList.filter(r => selectedCodes.has(r.code))]
                     : rankData.filter(r => selectedCodes.has(r.code));
                 closeSelectModal();
-                showToast('⏳ 正在渲染高清图片，请稍候...', 'info');
+                showToast('正在渲染高清图片，请稍候...', 'info');
                 exportRankTablePoster(selectedFunds, triggerBtn, currentExportTheme);
             };
         }
@@ -2713,7 +2713,7 @@ const App = (() => {
         const originalText = triggerBtn ? triggerBtn.innerHTML : '';
         if (triggerBtn) {
             triggerBtn.disabled = true;
-            triggerBtn.innerHTML = '<span>⏳ 正在生成...</span>';
+            triggerBtn.innerHTML = '<span>正在生成...</span>';
             // 全局新发起导出时，清空上一次会话缓存
             Object.values(posterThemeCache).forEach(item => {
                 if (item.blobUrl) URL.revokeObjectURL(item.blobUrl);
@@ -2778,7 +2778,7 @@ const App = (() => {
                 const directPill = r.direct_limit_status ? pill(r.direct_limit_status) : '<span class="tbl-limit-na">—</span>';
                 let shareHtml = '';
                 if (r.quota_sharing === 'SHARED') {
-                    shareHtml = '<span class="badge-shared">🔗 共享额度</span>';
+                    shareHtml = '<span class="badge-shared">共享额度</span>';
                 } else if (r.quota_sharing === 'INDEPENDENT') {
                     shareHtml = '<span class="badge-indep">独立额度</span>';
                 } else {
@@ -2870,9 +2870,9 @@ const App = (() => {
                 <div class="rank-poster-export ${isLight ? 'theme-light' : ''}" id="rkp-render-target">
                     <div class="rkp-header">
                         <div class="rkp-top-tag">
-                            <span>🏆</span>
+                            
                             <span>美股 QDII 基金量化投研评分榜</span>
-                            <span class="rkp-tag-date">📅 ${todayStr}</span>
+                            <span class="rkp-tag-date">${todayStr}</span>
                         </div>
                         <h1 class="rkp-title">${titleText}</h1>
                         <p class="rkp-sub">多因子量化评分模型：综合费率 (35%) · 跟踪误差 (20%) · 基金规模 (15%) · 近3年收益 (15%) · 晨星评级 (10%) · 申购费率 (5%)</p>
@@ -2880,7 +2880,7 @@ const App = (() => {
                         <!-- 醒目标题与标的范围横幅 (取代行内重复徽标) -->
                         <div class="rkp-scope-bar">
                             <div class="rkp-scope-badge-group">
-                                <span class="rkp-scope-lbl">📌 基金类别</span>
+                                <span class="rkp-scope-lbl">基金类别</span>
                                 <span class="rkp-scope-highlight ${type === '纳斯达克100' ? 'scope-nq' : (type === '标普500' ? 'scope-sp' : 'scope-all')}">${typeLabel}</span>
                             </div>
                             <div class="rkp-scope-chips">
@@ -2916,7 +2916,7 @@ const App = (() => {
 
                     <div class="rkp-footer">
                         <div class="rkp-footer-brand">
-                            <span class="rkp-brand-name">📊 Fund Advisor</span>
+                            <span class="rkp-brand-name">Fund Advisor</span>
                             <span class="rkp-brand-tag">美股指数基金智能投资分析器 · 量化评分体系</span>
                         </div>
                         <div class="dbp-footer-meta">
@@ -2938,14 +2938,14 @@ const App = (() => {
                 blob,
                 downloadFilename: `QDII量化评分榜_${type}_${isLight ? '浅色_' : ''}${todayStr}.png`,
                 titleText: '全景对比表格图片预览',
-                tagText: `${fundsToExport.length}只标的 · ${isLight ? '☀️ 浅色清新' : '🌙 深色商务'}`,
+                tagText: `${fundsToExport.length}只标的 · ${isLight ? '浅色' : '深色'}`,
                 currentTheme: exportTheme,
                 onThemeChange: async (newTheme) => {
                     currentExportTheme = newTheme;
                     try { localStorage.setItem('fa_export_theme', newTheme); } catch (e) {}
                     await exportRankTablePoster(fundsToExport, null, newTheme);
                 },
-                successToast: '🎉 全景对比表格图片已生成，可直接保存或复制！'
+                successToast: '全景对比表格图片已生成，可直接保存或复制！'
             });
 
         } catch (err) {
@@ -2966,10 +2966,10 @@ const App = (() => {
         if (!data || data.length === 0) {
             container.innerHTML = `
                 <div class="rank-card-empty">
-                    <div style="font-size:2.2rem;margin-bottom:0.5rem">🔍</div>
+                    <div style="margin-bottom:0.5rem;color:var(--txt3)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
                     <div style="font-weight:700;color:var(--txt);margin-bottom:0.35rem">未找到符合条件的基金标的</div>
                     <div style="font-size:0.8rem;color:var(--txt3);margin-bottom:1rem">请尝试调整份额类别、渠道状态或搜索关键词</div>
-                    <button type="button" class="btn-empty-reset-card" style="padding:0.45rem 1.1rem;font-size:0.8rem;border-radius:8px;background:var(--accent-g);color:#fff;border:none;cursor:pointer;font-weight:600">🔄 恢复默认筛选</button>
+                    <button type="button" class="btn-empty-reset-card" style="padding:0.45rem 1.1rem;font-size:0.8rem;border-radius:8px;background:var(--accent-g);color:#fff;border:none;cursor:pointer;font-weight:600">恢复默认筛选</button>
                 </div>
             `;
             const btn = container.querySelector('.btn-empty-reset-card');
@@ -3040,7 +3040,7 @@ const App = (() => {
                     siblingListHtml = `
                         <div class="fmc-siblings-block">
                             <div class="fmc-siblings-title">
-                                <span>🔄 同门同标的各份额比对 (${r.family_name || '同一指数家族'})</span>
+                                <span>同门同标的各份额比对 (${r.family_name || '同一指数家族'})</span>
                                 <span class="fmc-siblings-tip">点击切换</span>
                             </div>
                             <div class="fmc-siblings-grid">
@@ -3076,7 +3076,7 @@ const App = (() => {
                         <div class="fmc-header-left">
                             ${rankBadgeHtml}
                             <span class="fmc-code">${r.code}</span>
-                            <button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码">📋</button>
+                            <button type="button" class="btn-copy-code" data-code="${r.code}" title="复制基金代码"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button>
                             ${idxTag}
                             ${shareBadge(r.share_class)}
                         </div>
@@ -3134,7 +3134,7 @@ const App = (() => {
                             </div>
                         </div>
                         ${r.quota_sharing === 'SHARED'
-                            ? `<span class="badge-shared" title="${r.quota_shared_desc || '多类份额共享限额'}">🔗 共享额度</span>`
+                            ? `<span class="badge-shared" title="${r.quota_shared_desc || '多类份额共享限额'}">共享额度</span>`
                             : (r.quota_sharing === 'INDEPENDENT'
                                 ? `<span class="badge-indep" title="独立限额">独立额度</span>`
                                 : '')}
@@ -3145,7 +3145,7 @@ const App = (() => {
                         <div class="fmc-drawer-content">
                             <!-- 费率拆解 -->
                             <div class="fmc-detail-section">
-                                <div class="fmc-sec-title">💰 费率拆解明细</div>
+                                <div class="fmc-sec-title">费率拆解明细</div>
                                 <div class="fmc-detail-kv-grid">
                                     <div><span>管理费：</span><strong>${r.mgmt_fee ? (r.mgmt_fee*100).toFixed(2)+'%/年' : '-'}</strong></div>
                                     <div><span>托管费：</span><strong>${r.custody_fee ? (r.custody_fee*100).toFixed(2)+'%/年' : '-'}</strong></div>
@@ -3156,7 +3156,7 @@ const App = (() => {
 
                             <!-- 管理团队与规模 -->
                             <div class="fmc-detail-section">
-                                <div class="fmc-sec-title">🏢 机构与基本信息</div>
+                                <div class="fmc-sec-title">机构与基本信息</div>
                                 <div class="fmc-detail-kv-grid">
                                     <div><span>基金管理人：</span><strong>${r.manager_company || '-'}</strong></div>
                                     <div><span>现任经理：</span><strong>${r.fund_manager || '-'}</strong></div>
@@ -3170,10 +3170,10 @@ const App = (() => {
                             <!-- 卡片快捷操作 -->
                             <div class="fmc-actions">
                                 <a href="/fund/${r.code}" target="_blank" class="fmc-btn-act fmc-btn-primary">
-                                    📄 打开独立深度评测专页 ↗
+                                    打开独立深度评测专页 ↗
                                 </a>
                                 <button type="button" class="fmc-btn-act btn-sim-card-single" data-code="${r.code}">
-                                    🚀 带入蒙特卡洛模拟器推演 ➔
+                                    带入蒙特卡洛模拟器推演 ➔
                                 </button>
                             </div>
                         </div>
@@ -3507,9 +3507,9 @@ const App = (() => {
                     _smartDCASensitivity = btn.dataset.sens || 'standard';
                     if (sensBadge) {
                         const sensTexts = {
-                            conservative: '🛡️ 稳健适度型 (0.8x ~ 1.2x)',
-                            standard: '⚖️ 标准平衡型 (0.6x ~ 1.5x)',
-                            aggressive: '🚀 逆向进取型 (0.5x ~ 1.8x)'
+                            conservative: '稳健适度型 (0.8x ~ 1.2x)',
+                            standard: '标准平衡型 (0.6x ~ 1.5x)',
+                            aggressive: '逆向进取型 (0.5x ~ 1.8x)'
                         };
                         sensBadge.textContent = sensTexts[_smartDCASensitivity] || btn.textContent;
                     }
@@ -3643,7 +3643,7 @@ const App = (() => {
                         <span class="sim-computing-badge"><span class="computing-dot"></span> WEB WORKER PARALLEL ENGINE</span>
                         <span class="sim-computing-timer">5,000 路径 · 240 步长 · 协方差收缩</span>
                     </div>
-                    <div class="sim-computing-title">🎲 正在执行几何布朗运动随机漫步与超额 Alpha 计算...</div>
+                    <div class="sim-computing-title">正在执行几何布朗运动随机漫步与超额 Alpha 计算...</div>
                     <div class="sim-progress-track">
                         <div class="sim-progress-bar-shimmer"></div>
                     </div>
@@ -3669,7 +3669,7 @@ const App = (() => {
 
             if (!funds.length) {
                 document.getElementById('sim-result').innerHTML = '<p style="color:var(--err);text-align:center;padding:2rem">未找到选中的基金</p>';
-                btn.disabled = false; btn.textContent = '🚀 运行蒙特卡洛模拟推演';
+                btn.disabled = false; btn.textContent = '运行蒙特卡洛模拟推演';
                 return;
             }
 
@@ -3709,9 +3709,9 @@ const App = (() => {
                 const alpha = result.alpha;
 
                 const sensNameMap = {
-                    conservative: '🛡️ 稳健适度型 (0.8x~1.2x)',
-                    standard: '⚖️ 标准平衡型 (0.6x~1.5x)',
-                    aggressive: '🚀 逆向进取型 (0.5x~1.8x)'
+                    conservative: '稳健适度型 (0.8x~1.2x)',
+                    standard: '标准平衡型 (0.6x~1.5x)',
+                    aggressive: '逆向进取型 (0.5x~1.8x)'
                 };
                 const currentSensName = sensNameMap[_smartDCASensitivity] || '标准平衡型';
 
@@ -3729,7 +3729,7 @@ const App = (() => {
                     <div class="sim-downside-ribbon" style="border-color:rgba(99,102,241,0.25)">
                         <div class="sim-downside-title">
                             <div style="display:flex;align-items:center;gap:6px">
-                                <span class="sim-downside-badge">⚡ 智能定投风控体检</span>
+                                <span class="sim-downside-badge">智能定投风控体检</span>
                                 <span style="font-size:0.8rem;font-weight:600;color:var(--txt)">价值平均法压力测试与下行护航</span>
                             </div>
                             ${sortino ? `<span style="font-size:0.75rem;color:var(--txt2)">索提诺比率: <strong style="color:var(--ok)">${sortino}</strong></span>` : ''}
@@ -3749,7 +3749,7 @@ const App = (() => {
                             </div>
                         </div>
                         <div class="sim-downside-summary">
-                            💡 <strong>智能调权红利：</strong>在 ${years} 年定投周期内，智能估值定投通过在恐慌低位大幅加买摊低每股成本，使典型最大浮亏控制在 <strong>-${lossP50}%</strong>，中位复利收益多贡献了 <strong>+${money(alpha.wealthGain)}</strong> 的超额财富 Alpha！
+                            <strong>智能调权红利：</strong>在 ${years} 年定投周期内，智能估值定投通过在恐慌低位大幅加买摊低每股成本，使典型最大浮亏控制在 <strong>-${lossP50}%</strong>，中位复利收益多贡献了 <strong>+${money(alpha.wealthGain)}</strong> 的超额财富 Alpha！
                         </div>
                     </div>`;
                 }
@@ -3786,7 +3786,7 @@ const App = (() => {
                                 <span class="bar-val" style="color:var(--txt2)">${money(pl.stdVal)}</span>
                             </div>
                             <div class="dual-bar-sub">
-                                <span class="track-tag" style="color:var(--accent2);font-weight:600">⚡ 智能估值:</span>
+                                <span class="track-tag" style="color:var(--accent2);font-weight:600">智能估值:</span>
                                 <div class="bar-outer"><div class="bar-inner" style="width:${smartPct}%;background:${pl.color}"></div></div>
                                 <span class="bar-val" style="color:var(--ok)">${money(pl.smartVal)}</span>
                             </div>
@@ -3798,7 +3798,7 @@ const App = (() => {
                     ${allocNote}
                     <div class="dual-track-header">
                         <div style="display:flex;align-items:center;gap:6px">
-                            <span style="font-size:1.1rem">⚡</span>
+                            
                             <strong style="font-size:0.875rem;color:var(--txt)">双轨蒙特卡洛模拟：普通固定定投 vs 智能估值定投</strong>
                         </div>
                         <span class="tag" style="background:rgba(99,102,241,0.12);color:var(--accent2);font-size:0.72rem;font-weight:600">
@@ -3851,7 +3851,7 @@ const App = (() => {
 
                     <div style="margin-top:1rem">
                         <div style="font-size:0.8rem;font-weight:700;color:var(--txt);margin-bottom:0.6rem;display:flex;align-items:center;gap:6px">
-                            <span>📊</span> 分位收益双轨对比明细 (成对抽样消除随机误差)
+                            分位收益双轨对比明细 (成对抽样消除随机误差)
                         </div>
                         ${dualPercentileRowsHtml}
                     </div>
@@ -3882,7 +3882,7 @@ const App = (() => {
                                     borderSkipped: false
                                 },
                                 {
-                                    label: '⚡ 智能估值定投 (Alpha)',
+                                    label: '智能估值定投 (Alpha)',
                                     data: [smart.p5/10000, smart.p25/10000, smart.medianFinal/10000, smart.p75/10000, smart.p95/10000],
                                     backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#10b981', '#06b6d4'],
                                     borderRadius: 5,
@@ -3906,7 +3906,7 @@ const App = (() => {
                         }
                     });
                 }
-                btn.disabled = false; btn.textContent = '🚀 运行蒙特卡洛模拟推演';
+                btn.disabled = false; btn.textContent = '运行蒙特卡洛模拟推演';
                 return;
             }
 
@@ -3959,7 +3959,7 @@ const App = (() => {
                 <div class="sim-downside-ribbon">
                     <div class="sim-downside-title">
                         <div style="display:flex;align-items:center;gap:6px">
-                            <span class="sim-downside-badge">🛡️ 抗跌与回撤体检</span>
+                            <span class="sim-downside-badge">抗跌与回撤体检</span>
                             <span style="font-size:0.8rem;font-weight:600;color:var(--txt)">定投压力测试与下行风控评估</span>
                         </div>
                         ${sortino ? `<span style="font-size:0.75rem;color:var(--txt2)">索提诺比率: <strong style="color:var(--ok)">${sortino}</strong> <span style="font-size:0.7rem;color:var(--txt3)">(仅惩罚下行波动)</span></span>` : ''}
@@ -3979,7 +3979,7 @@ const App = (() => {
                         </div>
                     </div>
                     <div class="sim-downside-summary">
-                        💡 <strong>压力测试结论：</strong>在 95% 置信度下，您在 ${years} 年定投期间<strong>最大账面浮亏预计不超过 ${lossP95}%</strong>，且遭遇深度回调时通常可在 <strong>${recMo} 个月内</strong>通过持续买入摊平成本修复净值。
+                        <strong>压力测试结论：</strong>在 95% 置信度下，您在 ${years} 年定投期间<strong>最大账面浮亏预计不超过 ${lossP95}%</strong>，且遭遇深度回调时通常可在 <strong>${recMo} 个月内</strong>通过持续买入摊平成本修复净值。
                     </div>
                 </div>`;
             }
@@ -4043,7 +4043,7 @@ const App = (() => {
         } catch (e) {
             document.getElementById('sim-result').innerHTML = `<p style="color:var(--err);text-align:center;padding:2rem">模拟失败: ${e.message}</p>`;
         }
-        btn.disabled = false; btn.textContent = '🚀 运行蒙特卡洛模拟推演';
+        btn.disabled = false; btn.textContent = '运行蒙特卡洛模拟推演';
     }
 
     // ===== 定投方案 =====
@@ -4070,15 +4070,15 @@ const App = (() => {
                 <div class="pf-limit-cell">
                     <div>${pill(a.limit_status)}</div>
                     ${a.direct_limit_status ? `<div>${pill(a.direct_limit_status)}</div>` : ''}
-                    ${a.quota_sharing === 'SHARED' ? `<div style="margin-top:2px"><span class="badge-shared" style="font-size:0.65rem;padding:1px 5px;border-radius:4px;background:rgba(245,158,11,0.15);color:var(--warn);border:1px solid rgba(245,158,11,0.3);white-space:nowrap;display:inline-block;cursor:help" title="${a.quota_shared_desc || '多类份额共享限额'}">🔗 共享额度</span></div>` : ''}
+                    ${a.quota_sharing === 'SHARED' ? `<div style="margin-top:2px"><span class="badge-shared" style="font-size:0.65rem;padding:1px 5px;border-radius:4px;background:rgba(245,158,11,0.15);color:var(--warn);border:1px solid rgba(245,158,11,0.3);white-space:nowrap;display:inline-block;cursor:help" title="${a.quota_shared_desc || '多类份额共享限额'}">共享额度</span></div>` : ''}
                 </div>
             </td>
         </tr>`).join('');
         let html = `<div class="table-wrap pf-table-wrap"><table class="pf-table"><thead><tr><th class="pf-col-code">代码</th><th class="pf-col-name">名称</th><th class="pf-col-fee">综合费率</th><th class="pf-col-daily">每日</th><th class="pf-col-monthly">月合计</th><th class="pf-col-weight">占比</th><th class="pf-col-limit">代销/直销</th></tr></thead><tbody>${rows}</tbody></table></div>`;
         if (hasShared) {
             html += `<div style="margin-top:0.6rem;padding:0.5rem 0.75rem;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.22);border-radius:6px;font-size:0.75rem;color:var(--txt2);line-height:1.5">
-                <span style="color:var(--warn);font-weight:600">💡 共享额度避坑提示：</span>
-                标有 <span style="color:var(--warn);font-weight:600">🔗 共享额度</span> 的基金，其 A 类与 C 类（及定制份额）由基金公司合并控制单日申购限额。若您已在其他渠道定投同门份额，切勿重复定投，以免超过合并上限导致银行扣款失败。
+                <span style="color:var(--warn);font-weight:600">共享额度避坑提示：</span>
+                标有 <span style="color:var(--warn);font-weight:600">共享额度</span> 的基金，其 A 类与 C 类（及定制份额）由基金公司合并控制单日申购限额。若您已在其他渠道定投同门份额，切勿重复定投，以免超过合并上限导致银行扣款失败。
             </div>`;
         }
         return html;
@@ -4110,7 +4110,7 @@ const App = (() => {
         <div class="pf-donut-box">
             <div class="pf-donut-header">
                 <div class="pf-donut-title-wrap">
-                    <span class="pf-donut-title">🎯 资产配置配比</span>
+                    <span class="pf-donut-title">资产配置配比</span>
                 </div>
                 <div class="pf-donut-budget-pill">月定投: <strong>${money(totalMonthly)}</strong></div>
             </div>
@@ -4155,7 +4155,7 @@ const App = (() => {
             <div class="downside-assessment-card">
                 <div class="downside-card-header">
                     <div class="downside-card-title">
-                        <span class="downside-shield-icon">🛡️</span>
+                        
                         <span style="font-weight:600;font-size:0.8rem;color:var(--txt)">定投抗跌与回撤体检表</span>
                         <span class="downside-badge">压力测试</span>
                     </div>
@@ -4184,7 +4184,7 @@ const App = (() => {
                     </div>
                 </div>
                 <div class="downside-psychology-tip">
-                    💡 <strong>心理定心丸：</strong>在 95% 置信度下，您在 ${years} 年定投长跑中遭遇的<strong>账面本金最大浮亏不超过 ${lossP95}%</strong>，远低于一次性买入（>40%）的心理崩盘风险，且通常在 <strong>${recMo} 个月内</strong>通过分批现金流摊平修复。
+                    <strong>心理定心丸：</strong>在 95% 置信度下，您在 ${years} 年定投长跑中遭遇的<strong>账面本金最大浮亏不超过 ${lossP95}%</strong>，远低于一次性买入（>40%）的心理崩盘风险，且通常在 <strong>${recMo} 个月内</strong>通过分批现金流摊平修复。
                 </div>
             </div>`;
         }
@@ -4193,7 +4193,7 @@ const App = (() => {
         <div class="pf-sim-card">
             <div class="pf-card-head">
                 <div class="pf-card-title">
-                    <span style="font-size:0.95rem">📈</span>
+                    
                     <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">长期定投复利预期 (${years}年)</span>
                 </div>
                 <div class="pf-pill-accent">
@@ -4231,27 +4231,27 @@ const App = (() => {
         let statusTag = '';
         let note = '';
         if (s.key === 'risk_parity') {
-            statusTag = '<span class="tag" style="background:rgba(16,185,129,0.15);color:#059669;font-weight:700">✅ 达成等风险贡献 (ERC)</span>';
-            note = '💡 <strong>等风险贡献 (ERC) 达成：</strong>均衡纳指与标普的边际风险贡献各约 50%，消除单一市场暴跌对净值的非对称冲击。';
+            statusTag = '<span class="tag" style="background:rgba(16,185,129,0.15);color:#059669;font-weight:700">[ERC] 达成等风险贡献</span>';
+            note = '<strong>等风险贡献 (ERC) 达成：</strong>均衡纳指与标普的边际风险贡献各约 50%，消除单一市场暴跌对净值的非对称冲击。';
         } else if (s.key === 'max_sharpe') {
-            statusTag = `<span class="tag" style="background:rgba(99,102,241,0.15);color:#4f46e5;font-weight:700">🎯 最优夏普组合 (SR ${sharpe})</span>`;
-            note = `🎯 <strong>最优风险收益比 (夏普 ${sharpe})：</strong>基于 Ledoit-Wolf 收缩协方差优化，在控制波动率的同时最大化超额收益。`;
+            statusTag = `<span class="tag" style="background:rgba(99,102,241,0.15);color:#4f46e5;font-weight:700">[MVO] 最优夏普组合 (SR ${sharpe})</span>`;
+            note = `<strong>最优风险收益比 (夏普 ${sharpe})：</strong>基于 Ledoit-Wolf 收缩协方差优化，在控制波动率的同时最大化超额收益。`;
         } else if (s.key === 'balanced') {
-            statusTag = `<span class="tag" style="background:rgba(239,68,68,0.12);color:#dc2626;font-weight:700">⚠️ 风险非对称 (纳指占 ${nqRiskPct}%)</span>`;
-            note = `⚠️ <strong>风险非对称警示：</strong>虽然资金按 50/50 均分，但因纳指波动大，纳指实际承担了 <strong>${nqRiskPct}%</strong> 的组合风险 (高出资金权重 +${nqRiskPct - nqCapitalPct}%)。`;
+            statusTag = `<span class="tag" style="background:rgba(239,68,68,0.12);color:#dc2626;font-weight:700">[ASYM] 风险非对称 (纳指占 ${nqRiskPct}%)</span>`;
+            note = `<strong>风险非对称警示：</strong>虽然资金按 50/50 均分，但因纳指波动大，纳指实际承担了 <strong>${nqRiskPct}%</strong> 的组合风险 (高出资金权重 +${nqRiskPct - nqCapitalPct}%)。`;
         } else if (s.key === 'growth') {
-            statusTag = `<span class="tag" style="background:rgba(59,130,246,0.15);color:#2563eb;font-weight:700">🚀 弹性进攻型 (纳指占 ${nqRiskPct}%)</span>`;
-            note = `🚀 <strong>进取型进攻敞口：</strong>大幅超配纳斯达克100，纳指贡献了 <strong>${nqRiskPct}%</strong> 的波动风险，获取充沛牛市弹性。`;
+            statusTag = `<span class="tag" style="background:rgba(59,130,246,0.15);color:#2563eb;font-weight:700">[AGG] 弹性进攻型 (纳指占 ${nqRiskPct}%)</span>`;
+            note = `<strong>进取型进攻敞口：</strong>大幅超配纳斯达克100，纳指贡献了 <strong>${nqRiskPct}%</strong> 的波动风险，获取充沛牛市弹性。`;
         } else if (s.key === 'conservative') {
-            statusTag = `<span class="tag" style="background:rgba(16,185,129,0.12);color:#059669;font-weight:700">🛡️ 低波防守型 (标普占 ${spRiskPct}%)</span>`;
-            note = `🛡️ <strong>低波动压舱石：</strong>标普500主导组合 <strong>${spRiskPct}%</strong> 的风险与收益，组合年化波动率低至 <strong>${vol}%</strong>。`;
+            statusTag = `<span class="tag" style="background:rgba(16,185,129,0.12);color:#059669;font-weight:700">[DEF] 低波防守型 (标普占 ${spRiskPct}%)</span>`;
+            note = `<strong>低波动压舱石：</strong>标普500主导组合 <strong>${spRiskPct}%</strong> 的风险与收益，组合年化波动率低至 <strong>${vol}%</strong>。`;
         }
 
         return `
         <div class="pf-risk-card">
             <div class="pf-card-head">
                 <div class="pf-card-title">
-                    <span style="font-size:0.95rem">⚖️</span>
+                    
                     <span style="font-weight:600;font-size:0.825rem;color:var(--txt)">资金配置 vs 波动风险贡献 (方差分解)</span>
                     ${statusTag}
                 </div>
@@ -4325,7 +4325,7 @@ const App = (() => {
         // 更新顶部量化基准参数徽标
         const badgeEl = document.getElementById('frontier-params-badge');
         if (badgeEl) {
-            badgeEl.innerHTML = `📊 基准: 纳指 μ ${(p.nasdaq_return * 100).toFixed(1)}% / σ ${(p.nasdaq_vol * 100).toFixed(1)}% · 标普 μ ${(p.sp500_return * 100).toFixed(1)}% / σ ${(p.sp500_vol * 100).toFixed(1)}% · ρ ${(p.correlation_nq_sp || 0.75).toFixed(2)} · Rf 2.5%`;
+            badgeEl.innerHTML = `基准: 纳指 μ ${(p.nasdaq_return * 100).toFixed(1)}% / σ ${(p.nasdaq_vol * 100).toFixed(1)}% · 标普 μ ${(p.sp500_return * 100).toFixed(1)}% / σ ${(p.sp500_vol * 100).toFixed(1)}% · ρ ${(p.correlation_nq_sp || 0.75).toFixed(2)} · Rf 2.5%`;
         }
 
         // 计算任意资产权重的量化前沿特征
@@ -4431,14 +4431,14 @@ const App = (() => {
 
         // 关键量化里程碑组合定义
         const milestoneDefs = [
-            { key: 'sp500_only', name: '100% 标普 500 (基石底仓)', icon: '⚓', w: 0.0, color: '#14b8a6', badge: '单一基石', desc: '纯标普500基准' },
-            { key: 'gmv', name: '全局最小方差组合 (GMV)', icon: '🛡️', w: w_gmv, color: '#10b981', badge: '全市场最低波动', desc: '全市场方差风险绝对最低点' },
-            { key: 'conservative', name: '稳健型 (30% 纳指 : 70% 标普)', icon: '🛡️', w: 0.30, color: '#0ea5e9', badge: '经典稳健', desc: '低波底仓防御' },
-            { key: 'risk_parity', name: '等风险贡献 (ERC / 风险平价)', icon: '💎', w: w_erc, color: '#8b5cf6', badge: '风险中性 50:50', desc: '消除单一资产高波动主导，两资产风险各50%' },
-            { key: 'balanced', name: '平衡型 (50% 纳指 : 50% 标普)', icon: '⚖️', w: 0.50, color: '#3b82f6', badge: '传统平分 (62%风险)', desc: '资金对半均分，但纳指主导 62% 以上方差风险' },
-            { key: 'max_sharpe', name: '最优夏普组合 (Tangency / MVO)', icon: '🎯', w: w_sharpe, color: '#f59e0b', badge: '最高夏普切线点', desc: '在给定约束下获得单位波动最高超额回报' },
-            { key: 'growth', name: '进取型 (70% 纳指 : 30% 标普)', icon: '🚀', w: 0.70, color: '#f43f5e', badge: '高贝塔进攻', desc: '高比例科技敞口，享受充沛牛市弹性' },
-            { key: 'nasdaq_only', name: '100% 纳斯达克 100 (成长引擎)', icon: '⚡', w: 1.0, color: '#6366f1', badge: '单一成长', desc: '纯纳斯达克100基准' }
+            { key: 'sp500_only', name: '100% 标普 500 (基石底仓)', icon: '[SPX]', w: 0.0, color: '#14b8a6', badge: '单一基石', desc: '纯标普500基准' },
+            { key: 'gmv', name: '全局最小方差组合 (GMV)', icon: '[GMV]', w: w_gmv, color: '#10b981', badge: '全市场最低波动', desc: '全市场方差风险绝对最低点' },
+            { key: 'conservative', name: '稳健型 (30% 纳指 : 70% 标普)', icon: '[DEF]', w: 0.30, color: '#0ea5e9', badge: '经典稳健', desc: '低波底仓防御' },
+            { key: 'risk_parity', name: '等风险贡献 (ERC / 风险平价)', icon: '[ERC]', w: w_erc, color: '#8b5cf6', badge: '风险中性 50:50', desc: '消除单一资产高波动主导，两资产风险各50%' },
+            { key: 'balanced', name: '平衡型 (50% 纳指 : 50% 标普)', icon: '[BAL]', w: 0.50, color: '#3b82f6', badge: '传统平分 (62%风险)', desc: '资金对半均分，但纳指主导 62% 以上方差风险' },
+            { key: 'max_sharpe', name: '最优夏普组合 (Tangency / MVO)', icon: '[MVO]', w: w_sharpe, color: '#f59e0b', badge: '最高夏普切线点', desc: '在给定约束下获得单位波动最高超额回报' },
+            { key: 'growth', name: '进取型 (70% 纳指 : 30% 标普)', icon: '[AGG]', w: 0.70, color: '#f43f5e', badge: '高贝塔进攻', desc: '高比例科技敞口，享受充沛牛市弹性' },
+            { key: 'nasdaq_only', name: '100% 纳斯达克 100 (成长引擎)', icon: '[NDX]', w: 1.0, color: '#6366f1', badge: '单一成长', desc: '纯纳斯达克100基准' }
         ];
 
         const milestonePoints = milestoneDefs.map(m => {
@@ -4575,8 +4575,8 @@ const App = (() => {
                             title: function(items) {
                                 if (!items.length) return '';
                                 const raw = items[0].raw;
-                                if (raw.isCal) return '📐 资本配置线 (Capital Allocation Line)';
-                                if (raw.name) return `${raw.icon || '📍'} ${raw.name}`;
+                                if (raw.isCal) return '资本配置线 (Capital Allocation Line)';
+                                if (raw.name) return `${raw.icon || '[PORT]'} ${raw.name}`;
                                 return `组合配比: 纳指 ${raw.w_nq_pct}% : 标普 ${raw.w_sp_pct}%`;
                             },
                             label: function(item) {
@@ -4596,7 +4596,7 @@ const App = (() => {
                                     `风险贡献: 纳指 ${raw.rc_nq}% : 标普 ${raw.rc_sp}%`
                                 ];
                                 if (raw.desc) {
-                                    lines.push(`💡 特征: ${raw.desc}`);
+                                    lines.push(`特征: ${raw.desc}`);
                                 }
                                 return lines;
                             }
@@ -4668,7 +4668,7 @@ const App = (() => {
                     hudBadge.style.background = matched.color;
                 }
             } else {
-                if (hudIcon) hudIcon.textContent = '🧭';
+                if (hudIcon) hudIcon.textContent = '[EXPLORE]';
                 if (hudTitle) hudTitle.textContent = `自定义探索配比 (纳指 ${pt.w_nq_pct}% : 标普 ${pt.w_sp_pct}%)`;
                 if (hudBadge) {
                     hudBadge.textContent = '自定义配置';
@@ -4704,11 +4704,11 @@ const App = (() => {
             const volRankEl = document.getElementById('f-kpi-vol-rank');
             if (volRankEl) {
                 if (Math.abs(pt.w_nq - w_gmv) < 0.02) {
-                    volRankEl.textContent = '🛡️ 全局最小方差点 (防守最强)';
+                    volRankEl.textContent = '[GMV] 全局最小方差点 (防守最强)';
                 } else if (Math.abs(pt.w_nq - w_sharpe) < 0.02) {
-                    volRankEl.textContent = '🎯 切线最高夏普比率 (最优超额)';
+                    volRankEl.textContent = '[MVO] 切线最高夏普比率 (最优超额)';
                 } else if (Math.abs(pt.rc_nq - 50) <= 2) {
-                    volRankEl.textContent = '💎 风险中性 (两资产各承担50%风险)';
+                    volRankEl.textContent = '[ERC] 风险中性 (两资产各承担50%风险)';
                 } else {
                     volRankEl.textContent = `分散化降波: 降低单一指数极端波动`;
                 }
@@ -4738,13 +4738,13 @@ const App = (() => {
             const noteEl = document.getElementById('f-bars-note');
             if (noteEl) {
                 if (Math.abs(pt.rc_nq - 50) <= 2) {
-                    noteEl.textContent = '✨ 达成绝对等风险中性 (各50%)';
+                    noteEl.textContent = '达成绝对等风险中性 (各50%)';
                     noteEl.style.color = 'var(--ok)';
                 } else if (pt.w_nq_pct === 50) {
-                    noteEl.textContent = `⚠️ 传统平分: 纳指实际承担 ${pt.rc_nq}% 方差风险`;
+                    noteEl.textContent = `传统平分: 纳指实际承担 ${pt.rc_nq}% 方差风险`;
                     noteEl.style.color = 'var(--down)';
                 } else if (pt.rc_nq > 65) {
-                    noteEl.textContent = `⚡ 纳指高贝塔主导 ${pt.rc_nq}% 风险`;
+                    noteEl.textContent = `纳指高贝塔主导 ${pt.rc_nq}% 风险`;
                     noteEl.style.color = 'var(--down)';
                 } else {
                     noteEl.textContent = `标普防守主导 ${pt.rc_sp}% 风险`;
@@ -4844,7 +4844,7 @@ const App = (() => {
             id: 'gfc',
             name: '2008 全球次贷金融海啸',
             period: '2007.10 - 2009.12 (共 27 个月)',
-            threatTag: '<span class="tag" style="background:rgba(239,68,68,0.15);color:var(--err);font-weight:700">🔴 系统性流动性冰封</span>',
+            threatTag: '<span class="tag" style="background:rgba(239,68,68,0.15);color:var(--err);font-weight:700">[流动性危机] 系统性流动性冰封</span>',
             bgDesc: '美国次贷危机演变为百年一遇的全球流动性冰封与信用崩塌，雷曼兄弟倒闭，标普500单月暴跌近17%，整体最大回撤超 -52%。但在定投纪律加持下，投资者在低谷贪婪收集极廉价筹码，2009年迎来暴力修复。',
             ndxDrop: '-50.5%',
             spxDrop: '-52.6%',
@@ -4862,7 +4862,7 @@ const App = (() => {
             id: 'covid',
             name: '2020 新冠疫情极速熔断',
             period: '2020.01 - 2020.12 (共 12 个月)',
-            threatTag: '<span class="tag" style="background:rgba(139,92,246,0.15);color:#7c3aed;font-weight:700">🟣 极速暴跌与 V 型强反转</span>',
+            threatTag: '<span class="tag" style="background:rgba(139,92,246,0.15);color:#7c3aed;font-weight:700">[熔断暴跌] 极速暴跌与 V 型强反转</span>',
             bgDesc: '新冠病毒全球大流行引爆史诗级流动性危机，美股10天内遭遇 4 次熔断。然而随着美联储无限QE与零利率救市，全球科技巨头业绩逆势暴增，纳斯达克开启人类金融史上最迅猛的 V 型超级大反转。',
             ndxDrop: '-28.0%',
             spxDrop: '-33.9%',
@@ -4879,7 +4879,7 @@ const App = (() => {
             id: 'dotcom',
             name: '2000 互联网泡沫破裂',
             period: '2000.03 - 2002.10 (共 32 个月)',
-            threatTag: '<span class="tag" style="background:rgba(244,63,94,0.15);color:#e11d48;font-weight:700">⚫ 32个月漫长估值出清</span>',
+            threatTag: '<span class="tag" style="background:rgba(244,63,94,0.15);color:#e11d48;font-weight:700">[估值出清] 32个月漫长估值出清</span>',
             bgDesc: '人类科技史估值泡沫巅峰破裂，纳斯达克100指数累计暴跌超过 -82%，历时近3年才见底。这是科技股历史上最残酷的漫长熊市考验，也是资产多元配置（纳指+标普）价值凸显的终极试金石。',
             ndxDrop: '-82.9%',
             spxDrop: '-47.4%',
@@ -4897,7 +4897,7 @@ const App = (() => {
             id: 'ratehike',
             name: '2022 激进加息高通胀熊市',
             period: '2022.01 - 2022.12 (共 12 个月)',
-            threatTag: '<span class="tag" style="background:rgba(59,130,246,0.15);color:#2563eb;font-weight:700">🔵 暴力紧缩估值挤泡沫</span>',
+            threatTag: '<span class="tag" style="background:rgba(59,130,246,0.15);color:#2563eb;font-weight:700">[加息紧缩] 暴力紧缩估值挤泡沫</span>',
             bgDesc: '美联储遭遇40年来最严重通胀失控，以史无前例的连续4次75bp暴力加息打压需求。高估值成长股首当其冲，纳指全年深跌 -33%，标普跌近 -19%，是检验估值挤泡沫与逆周期布局韧性的最近期样本。',
             ndxDrop: '-32.4%',
             spxDrop: '-18.1%',
@@ -4962,13 +4962,13 @@ const App = (() => {
         const msWeight = (dynParams?.max_sharpe_w_nq != null) ? dynParams.max_sharpe_w_nq : 0.60;
 
         const stratList = [
-            { id: 'rp', name: '风险平价 [ERC]', w_nq: rpWeight, color: '#f59e0b', badge: '<span class="tag" style="background:rgba(245,158,11,0.12);color:#d97706;font-weight:600">💎 平滑抗震</span>' },
-            { id: 'ms', name: '最大夏普 [Max Sharpe]', w_nq: msWeight, color: '#8b5cf6', badge: '<span class="tag" style="background:rgba(139,92,246,0.12);color:#7c3aed;font-weight:600">⚖️ 效率兼顾</span>' },
-            { id: 'mod', name: '稳健配置 [30:70]', w_nq: 0.30, color: '#10b981', badge: '<span class="tag" style="background:rgba(16,185,129,0.12);color:var(--ok);font-weight:600">🛡️ 极佳防守</span>' },
-            { id: 'bal', name: '经典平衡 [50:50]', w_nq: 0.50, color: '#0ea5e9', badge: '<span class="tag" style="background:rgba(14,165,233,0.12);color:#0284c7;font-weight:600">🔄 均衡抗跌</span>' },
-            { id: 'agg', name: '成长进取 [70:30]', w_nq: 0.70, color: '#6366f1', badge: '<span class="tag" style="background:rgba(99,102,241,0.12);color:var(--accent2);font-weight:600">🚀 弹性进攻</span>' },
-            { id: 'b_nq', name: '100% 纳指基准', w_nq: 1.00, color: '#ec4899', isBenchmark: true, badge: '<span class="tag" style="background:rgba(239,68,68,0.12);color:var(--err);font-weight:600">🔥 极端进攻</span>' },
-            { id: 'b_sp', name: '100% 标普基准', w_nq: 0.00, color: '#14b8a6', isBenchmark: true, badge: '<span class="tag" style="background:rgba(20,184,166,0.12);color:#0d9488;font-weight:600">🏛️ 传统基准</span>' },
+            { id: 'rp', name: '风险平价 [ERC]', w_nq: rpWeight, color: '#f59e0b', badge: '<span class="tag" style="background:rgba(245,158,11,0.12);color:#d97706;font-weight:600">[ERC] 平滑抗震</span>' },
+            { id: 'ms', name: '最大夏普 [Max Sharpe]', w_nq: msWeight, color: '#8b5cf6', badge: '<span class="tag" style="background:rgba(139,92,246,0.12);color:#7c3aed;font-weight:600">[MVO] 效率兼顾</span>' },
+            { id: 'mod', name: '稳健配置 [30:70]', w_nq: 0.30, color: '#10b981', badge: '<span class="tag" style="background:rgba(16,185,129,0.12);color:var(--ok);font-weight:600">[DEF] 极佳防守</span>' },
+            { id: 'bal', name: '经典平衡 [50:50]', w_nq: 0.50, color: '#0ea5e9', badge: '<span class="tag" style="background:rgba(14,165,233,0.12);color:#0284c7;font-weight:600">[BAL] 均衡抗跌</span>' },
+            { id: 'agg', name: '成长进取 [70:30]', w_nq: 0.70, color: '#6366f1', badge: '<span class="tag" style="background:rgba(99,102,241,0.12);color:var(--accent2);font-weight:600">[AGG] 弹性进攻</span>' },
+            { id: 'b_nq', name: '100% 纳指基准', w_nq: 1.00, color: '#ec4899', isBenchmark: true, badge: '<span class="tag" style="background:rgba(239,68,68,0.12);color:var(--err);font-weight:600">[NDX] 极端进攻</span>' },
+            { id: 'b_sp', name: '100% 标普基准', w_nq: 0.00, color: '#14b8a6', isBenchmark: true, badge: '<span class="tag" style="background:rgba(20,184,166,0.12);color:#0d9488;font-weight:600">[SPX] 传统基准</span>' },
         ];
 
         // 3. 通算各策略在当前危机中的月度定投资产曲线与指标
@@ -5033,8 +5033,8 @@ const App = (() => {
                 const retColor = r.finalReturnPct >= 0 ? 'var(--ok)' : 'var(--err)';
                 const retPrefix = r.finalReturnPct > 0 ? '+' : '';
                 const recHtml = r.recMonths != null
-                    ? `<span class="stress-rec-badge status-recovered">✅ 谷底后 ${r.recMonths} 个月回本</span>`
-                    : `<span class="stress-rec-badge status-unrecovered">⏳ 周期内未回本</span>`;
+                    ? `<span class="stress-rec-badge status-recovered">谷底后 ${r.recMonths} 个月回本</span>`
+                    : `<span class="stress-rec-badge status-unrecovered">周期内未回本</span>`;
 
                 return `
                     <tr style="${r.isBenchmark ? 'background:rgba(100,116,139,0.03);' : ''}">
@@ -5280,16 +5280,16 @@ const App = (() => {
 
                     let typeBadge = '';
                     if (s.category === 'quant') {
-                        typeBadge = `<span class="tag" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:600">💎 ${s.tag || '量化专区'}</span>`;
+                        typeBadge = `<span class="tag" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:600">[QUANT] ${s.tag || '量化'}</span>`;
                     } else {
                         typeBadge = `<span class="tag" style="background:var(--surface2);color:var(--txt2)">${s.tag || '经典传统'}</span>`;
                     }
 
                     let riskBadge = '';
                     if (s.key === 'risk_parity') {
-                        riskBadge = `<span style="color:var(--ok);font-weight:700" title="达成等风险贡献：纳指与标普风险各50%">50% : 50% ✨</span>`;
+                        riskBadge = `<span style="color:var(--ok);font-weight:700" title="达成等风险贡献：纳指与标普风险各50%">50% : 50% [ERC]</span>`;
                     } else if (s.key === 'balanced') {
-                        riskBadge = `<span style="color:var(--down);font-weight:600" title="纳指波动大导致风险显著主导">${nqRC}% : ${spRC}% ⚠️</span>`;
+                        riskBadge = `<span style="color:var(--down);font-weight:600" title="纳指波动大导致风险显著主导">${nqRC}% : ${spRC}%</span>`;
                     } else {
                         riskBadge = `<span>${nqRC}% : ${spRC}%</span>`;
                     }
@@ -5318,7 +5318,7 @@ const App = (() => {
                         <td style="font-size:0.75rem;color:var(--txt2)">${highlightLogic}</td>
                         <td style="text-align:center;white-space:nowrap">
                             <button class="btn-jump-strat" data-strategy="${s.key}" data-category="${s.category || 'traditional'}">方案 ▸</button>
-                            <button class="btn-sim-matrix" data-strategy="${s.key}" title="以此方案配置直接启动蒙特卡洛推演" style="margin-left:6px;padding:4px 8px;font-size:0.75rem;border-radius:4px;border:1px solid rgba(99,102,241,0.3);background:rgba(99,102,241,0.08);color:var(--accent2);cursor:pointer;font-weight:600;">推演 🚀</button>
+                            <button class="btn-sim-matrix" data-strategy="${s.key}" title="以此方案配置直接启动蒙特卡洛推演" style="margin-left:6px;padding:4px 8px;font-size:0.75rem;border-radius:4px;border:1px solid rgba(99,102,241,0.3);background:rgba(99,102,241,0.08);color:var(--accent2);cursor:pointer;font-weight:600;">推演</button>
                         </td>
                     </tr>`;
                 });
@@ -5378,17 +5378,17 @@ const App = (() => {
                 const practicalAllocs = s.practical?.allocations || [];
                 const cat = s.category || 'traditional';
                 const catBadge = cat === 'quant'
-                    ? `<span class="tag" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:600;margin-left:6px">💎 ${s.tag || '量化专区'}</span>`
+                    ? `<span class="tag" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:600;margin-left:6px">[QUANT] ${s.tag || '量化'}</span>`
                     : `<span class="tag" style="background:var(--surface2);color:var(--txt2);margin-left:6px">${s.tag || '经典风格'}</span>`;
 
                 html += `<div class="card pf-card" id="pf-card-${s.key}" data-category="${cat}">
                     <div class="pf-card-header">
                         <div class="pf-card-title-group">
-                            <span class="pf-strat-icon">${s.icon || '📐'}</span>
+                            <span class="pf-strat-icon">${s.icon || ''}</span>
                             <div>
                                 <h3 class="pf-strat-name">${s.name}</h3>
                                 <div class="pf-strat-badges">
-                                    <span class="tag pf-weight-pill">📈 ${Math.round((s.nq_pct||0)*100)}% 纳指 + 📊 ${Math.round((1-(s.nq_pct||0))*100)}% 标普</span>
+                                    <span class="tag pf-weight-pill">${Math.round((s.nq_pct||0)*100)}% 纳指 + ${Math.round((1-(s.nq_pct||0))*100)}% 标普</span>
                                     ${catBadge}
                                 </div>
                             </div>
@@ -5398,11 +5398,11 @@ const App = (() => {
 
                     <div class="pf-tabs" data-strategy="${s.key}">
                         <button class="pf-tab on" data-variant="ideal">
-                            <span>🎯</span> 理论最优
+                            <span>[THEORY]</span> 理论最优
                             <span class="pf-tab-sub">无申购限制</span>
                         </button>
                         <button class="pf-tab" data-variant="practical">
-                            <span>🛒</span> 实际可买
+                            <span>[REAL]</span> 实际可买
                             <span class="pf-tab-sub">穿透真实限额</span>
                         </button>
                     </div>
@@ -5418,8 +5418,8 @@ const App = (() => {
                             <div class="pf-analytics-col">${renderRiskContribution(s.ideal, s)}</div>
                         </div>
                         <div class="pf-card-footer">
-                            <span style="font-size:0.75rem;color:var(--txt3)">💡 想要自定义定投预算、年限或测试极端市场压力？</span>
-                            <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="ideal">🚀 以该理论配置启动蒙特卡洛推演 ➔</button>
+                            <span style="font-size:0.75rem;color:var(--txt3)">想要自定义定投预算、年限或测试极端市场压力？</span>
+                            <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="ideal">以该理论配置启动蒙特卡洛推演 ➔</button>
                         </div>
                     </div>
 
@@ -5434,8 +5434,8 @@ const App = (() => {
                             <div class="pf-analytics-col">${renderRiskContribution(s.practical, s)}</div>
                         </div>
                         <div class="pf-card-footer">
-                            <span style="font-size:0.75rem;color:var(--txt3)">💡 想要自定义定投预算、年限或测试极端市场压力？</span>
-                            <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="practical">🚀 以该可买配置启动蒙特卡洛推演 ➔</button>
+                            <span style="font-size:0.75rem;color:var(--txt3)">想要自定义定投预算、年限或测试极端市场压力？</span>
+                            <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="practical">以该可买配置运行蒙特卡洛推演 ➔</button>
                         </div>
                     </div>
                 </div>`;
@@ -6224,7 +6224,7 @@ const App = (() => {
             const idealAllocations = allocateIdeal(idealItems);
             const practicalAllocations = allocatePractical(practicalItems);
             const hasStacked = practicalAllocations.some(a => a.is_stacked && a.monthly > 0);
-            const practicalNote = hasStacked ? '💡 算法已自动启动【多份额额度叠加策略】，成功为您打破单日限购封锁，打满 100% 预算！' : '排除暂停基金，遵守每日限购限额。';
+            const practicalNote = hasStacked ? '算法已自动启动【多份额额度叠加策略】，打破单日限购封锁，打满 100% 预算。' : '排除暂停基金，遵守每日限购限额。';
 
             return {
                 key: s.key,
@@ -6293,9 +6293,9 @@ const App = (() => {
                     const origHtml = copyBtn.innerHTML;
                     copyBtn.classList.add('copy-success-pulse');
                     if (copyBtn.classList.contains('btn-copy-code-action')) {
-                        copyBtn.innerHTML = `✓ 已复制代码 (${code})`;
+                        copyBtn.innerHTML = `已复制 (${code})`;
                     } else {
-                        copyBtn.innerHTML = '✓';
+                        copyBtn.innerHTML = '已复制';
                     }
                     setTimeout(() => {
                         copyBtn.classList.remove('copied');
@@ -7105,21 +7105,21 @@ const App = (() => {
                     // 熔断级别：标普500单日跌幅达 -7% 触发美股全市场一级熔断
                     if (inxDrop <= -7.0) {
                         bannerEl.className = 'black-swan-banner swan-extreme';
-                        if (iconEl) iconEl.textContent = '⛔';
+                        if (iconEl) iconEl.textContent = '[暂停]';
                         if (badgeEl) badgeEl.textContent = '美股一级熔断警报';
                         if (headlineEl) headlineEl.textContent = `标普500触发 -7% 全市场熔断停牌阈值 (当前 ${inxDrop.toFixed(2)}%)`;
                         if (descEl) descEl.textContent = '标普500单日重挫超 7%，美股触发全市场15分钟熔断停牌。历史数据显示极端流动性冲击往往形成中长期重大黄金击球区，请使用量化测算工具制定分批加码策略。';
                     } else if (minDrop <= -5.0) {
                         // 跌幅超 -5%：极端罕见巨幅重挫
                         bannerEl.className = 'black-swan-banner swan-extreme';
-                        if (iconEl) iconEl.textContent = '🚨';
+                        if (iconEl) iconEl.textContent = '[限额]';
                         if (badgeEl) badgeEl.textContent = '罕见巨幅重挫预警 (超 -5%)';
                         if (headlineEl) headlineEl.textContent = `美股核心大盘出现罕见暴跌 (最大跌幅 ${minDrop.toFixed(2)}%)`;
                         if (descEl) descEl.textContent = '监测到海外核心大盘单日下挫超 5.0%，此等跌幅在过去十年出现概率不足 0.5%。QDII 存在 T+1 净值确认延迟，恐慌性踩踏极易踏空后续超跌反弹；建议依托马科维茨有效前沿开展逢低加码测算。';
                     } else {
                         // 跌幅 -3% 至 -5%：常规黑天鹅/显著深度回调
                         bannerEl.className = 'black-swan-banner';
-                        if (iconEl) iconEl.textContent = '⚠️';
+                        if (iconEl) iconEl.textContent = '[预警]';
                         if (badgeEl) badgeEl.textContent = '极端重挫预警';
                         if (headlineEl) headlineEl.textContent = `美股核心大盘出现剧烈异动 (最大跌幅 ${minDrop.toFixed(2)}%)`;
                         if (descEl) descEl.textContent = '监测到海外大盘突发剧烈下挫。QDII 存在 T+1 净值确认时滞，恐慌抛售通常酿成最大亏损；历史量化回测表明，标普/纳指日跌幅超 3% 时，分批逢低加码胜率显著提升。';
@@ -7707,8 +7707,8 @@ const App = (() => {
                     siblingHtml = `
                     <div class="sibling-box">
                         <div class="sibling-title">
-                            <span>🔄 同门同标的各份额比对看板（${f.family_name || '同一指数基金家族'}）</span>
-                            <span style="font-size:0.75rem;font-weight:normal;color:var(--txt3);margin-left:auto;">💡 可搭配不同份额合并定投以提升可买额度</span>
+                            <span>同门同标的各份额比对看板（${f.family_name || '同一指数基金家族'}）</span>
+                            <span style="font-size:0.75rem;font-weight:normal;color:var(--txt3);margin-left:auto;">可搭配不同份额合并定投以提升可买额度</span>
                         </div>
                         <div class="sibling-card-grid">
                             ${sibFunds.map(sf => {
@@ -7751,7 +7751,7 @@ const App = (() => {
                     
                     <!-- 基础信息 -->
                     <div>
-                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">📝 基础信息</div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">基础信息</div>
                         <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">份额类别：</strong>${shareBadge(f.share_class)}</div>
                         ${f.full_name ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">全称：</strong>${f.full_name}</div>` : ''}
                         ${f.family_name ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">所属家族：</strong>${f.family_name}</div>` : ''}
@@ -7761,7 +7761,7 @@ const App = (() => {
 
                     <!-- 管理团队 -->
                     <div>
-                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">👔 管理团队</div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">管理团队</div>
                         ${f.manager_company ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">基金公司：</strong>${f.manager_company}</div>` : ''}
                         ${f.fund_manager ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">基金经理：</strong>${f.fund_manager}</div>` : ''}
                         ${f.custodian ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">托管银行：</strong>${f.custodian}</div>` : ''}
@@ -7769,7 +7769,7 @@ const App = (() => {
 
                     <!-- 费率详情 -->
                     <div>
-                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">💰 费率详情</div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">费率详情</div>
                         <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">综合年费率：</strong><span style="color:var(--ok);font-weight:700">${(fee*100).toFixed(2)}%/年</span></div>
                         <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">管理费：</strong>${f.mgmt_fee ? (f.mgmt_fee*100).toFixed(2)+'%/年' : '-'}</div>
                         <div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">托管费：</strong>${f.custody_fee ? (f.custody_fee*100).toFixed(2)+'%/年' : '-'}</div>
@@ -7779,7 +7779,7 @@ const App = (() => {
 
                     <!-- 规模与时间 -->
                     <div>
-                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">📅 规模与时间</div>
+                        <div style="font-weight:700; color:var(--txt); margin-bottom:0.5rem; border-bottom:1px solid var(--border); padding-bottom:0.25rem;">规模与时间</div>
                         ${f.scale ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">基金规模：</strong>${f.scale.toFixed(2)}亿元</div>` : ''}
                         ${f.inception_date ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">成立日期：</strong>${f.inception_date}</div>` : ''}
                         ${f.dividend_info ? `<div style="margin-bottom:0.25rem"><strong style="color:var(--txt3)">分红：</strong>${f.dividend_info}</div>` : ''}

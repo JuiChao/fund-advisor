@@ -71,9 +71,9 @@
         <a href="/about" class="on">关于我们</a>
     </div>
     <div class="nav-actions">
-        <a href="/#portfolio" class="nav-cta-btn" title="立即开启量化资产配置">启动量化定投</a>
+        <a href="/#portfolio" class="nav-cta-btn" title="立即开启量化资产配置">启动量化配置</a>
         <button class="theme-toggle" id="theme-toggle" aria-label="切换主题" title="切换深色/浅色模式">
-            <span class="theme-icon">🌙</span>
+            <span class="theme-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
         </button>
         <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false" onclick="var l=document.getElementById('nav-links');var b=this;var o=l.classList.toggle('show');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);">
             <span></span><span></span><span></span>
@@ -95,10 +95,10 @@
         </div>
 
         <div class="about-hero-pills">
-            <span class="badge-pill" style="background:rgba(99,102,241,0.1);color:var(--accent2);border-color:rgba(99,102,241,0.25)">🛡️ 独立客观量化平台</span>
-            <span class="badge-pill" style="background:rgba(16,185,129,0.1);color:var(--ok);border-color:rgba(16,185,129,0.25)">📊 算法与数据源完全透明</span>
+            <span class="badge-pill" style="background:rgba(99,102,241,0.1);color:var(--accent2);border-color:rgba(99,102,241,0.25)"><span class="terminal-tag">INDEPENDENT</span> 独立客观量化平台</span>
+            <span class="badge-pill" style="background:rgba(16,185,129,0.1);color:var(--ok);border-color:rgba(16,185,129,0.25)"><span class="terminal-tag">TRANSPARENT</span> 算法与数据源完全透明</span>
             <span class="badge-pill" style="background:var(--surface2);color:var(--txt2);border-color:var(--border)">无商业利益输送</span>
-            <span class="badge-pill" style="background:rgba(8,145,178,0.1);color:var(--cyan);border-color:rgba(8,145,178,0.25)">⚡ 94项算法单元测试全绿</span>
+            <span class="badge-pill" style="background:rgba(8,145,178,0.1);color:var(--cyan);border-color:rgba(8,145,178,0.25)"><span class="terminal-tag">VERIFIED</span> 94项算法单元测试全绿</span>
         </div>
 
         <h1 class="page-title">关于 Fund Advisor</h1>
@@ -243,12 +243,12 @@
                         <span class="eeat-val">每日凌晨自动化穿透公募披露与外汇限购公告</span>
                     </div>
                     <div class="eeat-item">
-                        <span class="eeat-lbl">⚖️ 合规审计基石</span>
+                        <span class="eeat-lbl">合规审计基石</span>
                         <span class="eeat-val">严格遵循国际公募披露标准，消除个人投资者信息鸿沟</span>
                     </div>
                 </div>
                 <div class="eeat-disclaimer">
-                    <strong>⚠️ 独立性与免责披露：</strong>本委员会所有成员均签署《量化投研职业道德与利益冲突排查公约》。本平台与全市场公募基金管理人及第三方销售机构不存在任何形式的商业分成或买位合作，多因子评分与定投方案由数学模型自主生成。
+                    <strong>独立性与免责披露：</strong>本委员会所有成员均签署《量化投研职业道德与利益冲突排查公约》。本平台与全市场公募基金管理人及第三方销售机构不存在任何形式的商业分成或买位合作，多因子评分与定投方案由数学模型自主生成。
                 </div>
             </div>
 
@@ -347,7 +347,7 @@
 
             <h2>九、团队联系与技术支持</h2>
             <div class="contact-card">
-                <h3 style="margin-top:0;font-size:1.1rem;color:var(--txt)">📫 联系量化投研与工程团队</h3>
+                <h3 style="margin-top:0;font-size:1.1rem;color:var(--txt)">联系量化投研与工程团队</h3>
                 <p style="margin-bottom:0;color:var(--txt2);font-size:0.88rem">我们非常欢迎广大投资者、量化爱好者与金融从业者提出宝贵的改进建议与算法探讨：</p>
                 <div class="contact-grid">
                     <div class="contact-item">
@@ -366,7 +366,7 @@
             </div>
 
             <div class="about-bottom-cta">
-                <h3 style="margin-top:0;font-size:1.15rem;font-weight:750">🚀 体验核心量化分析工具</h3>
+                <h3 style="margin-top:0;font-size:1.15rem;font-weight:750">体验核心量化分析工具</h3>
                 <p style="color:var(--txt2);font-size:0.88rem;max-width:54ch;margin:0.5rem auto 1.25rem">将华尔街量化对冲算法转化为您的日常定投武器，即刻测算最优风险平价配置。</p>
                 <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
                     <a href="/#ranking" class="btn" style="text-decoration:none">全景选基排名</a>
@@ -436,7 +436,7 @@
         document.documentElement.setAttribute('data-theme', t);
         try { localStorage.setItem('fa_theme', t); } catch (e) {}
         var icon = document.querySelector('#theme-toggle .theme-icon');
-        if (icon) icon.textContent = t === 'dark' ? '☀️' : '🌙';
+        if (icon) icon.innerHTML = t === 'dark' ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>' : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
     }
     applyTheme(getTheme());
     var btn = document.getElementById('theme-toggle');
