@@ -1,5 +1,6 @@
 /* ===== Design System - 奖项级高定量化投研视觉系统 (Awwwards/Webby Tier) ===== */
 :root, [data-theme="light"] {
+    color-scheme: light;
     /* Typographic Hierarchy & Precision Font Stacks */
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Segoe UI', sans-serif;
     --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Segoe UI', sans-serif;
@@ -174,6 +175,7 @@
 }
 
 [data-theme="dark"] {
+    color-scheme: dark;
     /* Dark Theme (Deep Obsidian & Celestial Indigo Space - Award Tier) */
     --bg: #090d16;
     --bg2: #0d1322;
@@ -14054,4 +14056,29 @@ input[type=range]::-moz-range-thumb {
 .fund-cta-btn:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 6px 24px rgba(99, 102, 241, 0.5);
+}
+
+/* ===== Modern Web Guidance (Google Chrome) Platform Enhancements ===== */
+/* 1. Typographic Ergonomics: Balanced Headings & Pretty Paragraphs */
+h1, h2, h3, h4, h5, h6, .hero-title, .section-title, .card-title, .modal-title, .dialog-title {
+    text-wrap: balance;
+}
+p, .article-content p, .eeat-desc, .footer-brand-desc, .footer-disclaimer {
+    text-wrap: pretty;
+}
+
+/* 2. Rendering Optimization: Defer Offscreen Heavy Section Calculations */
+#ranking, #portfolio, #simulator, #knowledge {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+}
+
+/* 3. Table Horizontal Scroll Affordance Hints (Chrome Best Practice) */
+.table-wrap, .dir-table-wrap, .quota-table-wrap {
+    background:
+        linear-gradient(to right, var(--surface) 30%, transparent) left / 2rem 100% no-repeat local,
+        linear-gradient(to left, var(--surface) 30%, transparent) right / 2rem 100% no-repeat local,
+        radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.22), transparent) right / 0.75rem 100% no-repeat scroll,
+        radial-gradient(farthest-side at 0% 50%, rgba(0, 0, 0, 0.22), transparent) left / 0.75rem 100% no-repeat scroll,
+        var(--surface);
 }

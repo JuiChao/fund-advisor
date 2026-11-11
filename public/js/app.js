@@ -6698,7 +6698,10 @@ const App = (() => {
             updateMarketStatus();
             updatePingJitter();
             setInterval(updateMarketStatus, 60000);
-            setInterval(updatePingJitter, 3500);
+            setInterval(() => {
+            if (document.visibilityState === 'hidden') return;
+            updatePingJitter();
+        }, 3500);
         }
         initLiveMarketTelemetry();
 
@@ -7508,7 +7511,10 @@ const App = (() => {
             }
         }
         updateMarketStatusIndicator();
-        setInterval(updateMarketStatusIndicator, 1000);
+        setInterval(() => {
+            if (document.visibilityState === 'hidden') return;
+            updateMarketStatusIndicator();
+        }, 1000);
 
         // 全局便捷悬浮岛滚动监听与交互
         const floatBar = document.getElementById('floating-quick-bar');

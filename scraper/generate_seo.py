@@ -96,6 +96,21 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 }}
 </script>
 <script>(function(){{var t='light';try{{t=localStorage.getItem('fa_theme');}}catch(e){{}}if(!t){{try{{t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}}catch(e){{}}}}document.documentElement.setAttribute('data-theme',t||'light');}})();</script>
+<script type="speculationrules">
+{{
+  "prefetch": [
+    {{
+      "where": {{
+        "and": [
+          {{ "href_matches": "/*" }},
+          {{ "not": {{ "selector_matches": "[rel~=nofollow]" }} }}
+        ]
+      }},
+      "eagerness": "moderate"
+    }}
+  ]
+}}
+</script>
 </head>
 <body>
 <div id="scroll-progress" aria-hidden="true"></div>

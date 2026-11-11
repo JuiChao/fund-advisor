@@ -170,6 +170,26 @@
 <link rel="manifest" href="manifest.json">
 <meta name="google-adsense-account" content="ca-pub-8921283801578142">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
+<script type="speculationrules">
+{
+  "prefetch": [
+    {
+      "where": {
+        "and": [
+          { "href_matches": "/*" },
+          { "not": { "href_matches": "/fund/*" } },
+          { "not": { "selector_matches": "[rel~=nofollow]" } }
+        ]
+      },
+      "eagerness": "moderate"
+    },
+    {
+      "where": { "href_matches": "/fund/*" },
+      "eagerness": "conservative"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div id="scroll-progress" aria-hidden="true"></div>
