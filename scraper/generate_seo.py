@@ -343,6 +343,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             applyTheme(cur === 'dark' ? 'light' : 'dark');
         }};
     }}
+    document.addEventListener('click', function(e) {{
+        var l = document.getElementById('nav-links');
+        var b = document.querySelector('.nav-toggle');
+        if (!l || !l.classList.contains('show')) return;
+        if (!e.target.closest('.navbar') || e.target.closest('#nav-links a')) {{
+            l.classList.remove('show');
+            if (b) {{ b.classList.remove('open'); b.setAttribute('aria-expanded', 'false'); }}
+        }}
+    }});
 }})();
 </script>
 </body>

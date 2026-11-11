@@ -6883,6 +6883,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
     .navbar .brand { margin-right: auto; font-size: 1rem; }
     .nav-toggle { display: flex; }
+    .theme-toggle {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+    .nav-actions {
+        gap: 0.5rem;
+    }
     .navbar .links {
         position: fixed;
         top: 56px;
@@ -6967,6 +6976,43 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .ms-dropdown { max-height: 250px; }
     .seg-control { width: 100%; }
     .seg-btn { flex: 1; justify-content: center; padding: .5rem .75rem; font-size: .8125rem; }
+
+    /* 移动端滑块与触控控件人体工程学 */
+    input[type=range] {
+        padding: 10px 0;
+        touch-action: pan-y;
+    }
+    input[type=range]::-webkit-slider-thumb {
+        width: 26px;
+        height: 26px;
+    }
+    input[type=range]::-moz-range-thumb {
+        width: 26px;
+        height: 26px;
+    }
+    .btn-sim-preset {
+        font-size: 0.78rem;
+        padding: 0.45rem 0.75rem;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .ms-trigger {
+        min-height: 44px;
+    }
+    .ms-opt {
+        min-height: 44px;
+        padding: 0.65rem 0.85rem;
+    }
+    .ms-cb {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+    }
+    .ms-footer button {
+        min-height: 38px;
+    }
     
     /* 移动端排版与筛选触控优化 */
     .tab-text-full { display: none; }
@@ -7108,7 +7154,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         padding: 0.55rem 0.75rem;
         font-size: 0.8rem;
         border-radius: 8px;
-        min-height: 40px;
+        min-height: 44px;
     }
     .quota-board-drawer {
         padding: 0.95rem 0.85rem;
@@ -7292,11 +7338,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         gap: 6px;
     }
     .qmc-subs-chips .btn-quota-sub {
-        padding: 4px 8px;
-        min-height: 32px;
+        padding: 0.35rem 0.65rem;
+        min-height: 36px;
         font-size: 0.74rem;
         border-radius: 6px;
         background: var(--surface);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     /* 移动端视图控制工具条与双视图切换 */
@@ -7347,6 +7396,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         justify-content: center;
         gap: 6px;
         padding: 0.52rem 0.75rem;
+        min-height: 42px;
         font-size: 0.82rem;
         font-weight: 600;
         border-radius: 7px;
@@ -7397,6 +7447,29 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .fmc-actions {
         flex-direction: column;
     }
+    .fmc-expand-bar {
+        min-height: 44px;
+        padding: 0.65rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .fmc-btn-act {
+        min-height: 44px;
+        width: 100%;
+        justify-content: center;
+        font-size: 0.85rem;
+    }
+    .btn-copy-code {
+        width: 32px;
+        height: 32px;
+        position: relative;
+    }
+    .btn-copy-code::before {
+        content: '';
+        position: absolute;
+        inset: -6px;
+    }
     .fmc-siblings-grid {
         grid-template-columns: 1fr;
     }
@@ -7410,7 +7483,19 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
 
     /* 移动端横向滑动提示 */
-    .mobile-swipe-hint { display: block; margin: 0 0 0.5rem 0; }
+    .mobile-swipe-hint {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin: 0 0 0.55rem 0;
+        font-size: 0.75rem;
+        color: var(--txt3);
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xs);
+        padding: 0.4rem 0.75rem;
+    }
 
     /* 移动端表格固定首列(序号与代码合并列)，保证滑动时标的清晰且大幅缩减固定占用宽度 */
     #rank-table { border-collapse: separate; border-spacing: 0; }
@@ -7562,7 +7647,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
     /* 定投方案与量化前沿面移动端优化 */
     .pf-params-header { flex-direction: column; align-items: stretch; gap: 0.75rem; }
-    .btn-pf-calc { width: 100%; justify-content: center; }
+    .btn-pf-calc { width: 100%; justify-content: center; min-height: 44px; }
     .pf-filter-toolbar { flex-direction: column; align-items: stretch; gap: 0.6rem; }
     .pf-category-pills {
         width: 100%;
@@ -7575,8 +7660,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         gap: 0.4rem;
     }
     .pf-category-pills::-webkit-scrollbar { display: none; }
-    .pf-category-pills .filter-pill { flex: none; flex-shrink: 0; white-space: nowrap; font-size: 0.78rem; padding: 0.35rem 0.75rem; }
-    .btn-sim-from-strat { width: 100% !important; justify-content: center !important; padding: 0.65rem 1rem !important; min-height: 42px !important; font-size: 0.85rem !important; }
+    .pf-category-pills .filter-pill { flex: none; flex-shrink: 0; white-space: nowrap; font-size: 0.78rem; padding: 0.4rem 0.75rem; min-height: 38px; }
+    .btn-sim-from-strat { width: 100% !important; justify-content: center !important; padding: 0.65rem 1rem !important; min-height: 44px !important; font-size: 0.85rem !important; }
 
     /* 现代组合理论 (MPT) 5大定投策略全景矩阵移动端 */
     .quant-frontier-card { padding: 1rem; }
@@ -7585,15 +7670,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .quant-frontier-header p { font-size: 0.72rem; }
     .quant-matrix-table th,
     .quant-matrix-table td { padding: 0.5rem 0.6rem; font-size: 0.75rem; }
-    .btn-jump-strat, .btn-sim-matrix { padding: 0.35rem 0.55rem; font-size: 0.72rem; }
+    .btn-jump-strat, .btn-sim-matrix { padding: 0.38rem 0.65rem; font-size: 0.74rem; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; }
 
     /* 蒙特卡洛模拟器 KPI 看板在移动端紧凑排布 */
     .sim-kpi-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.5rem; }
     .sim-kpi-card { padding: 0.65rem 0.75rem; }
     .sim-kpi-value { font-size: 1.15rem; }
-    .sim-quick-presets { gap: 0.35rem; }
-    .btn-sim-preset { font-size: 0.75rem; padding: 0.3rem 0.6rem; }
-    .article-container { padding: 1.25rem; }
+    .sim-quick-presets { gap: 0.45rem; }
+    .btn-sim-preset { font-size: 0.78rem; padding: 0.42rem 0.75rem; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; }
+    .article-container { padding: 1.15rem 1rem; }
     .seo-faq { padding: 1.25rem; }
     .algo-grid { grid-template-columns: 1fr; }
     .footer-inner { flex-direction: column; gap: 1rem; }
@@ -7628,11 +7713,25 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .stat { padding: 0.75rem 0.6rem; }
     .stat .vl { font-size: 1.25rem; }
     .stat .sub { font-size: 0.68rem; }
-    .rank-index-tabs .seg-btn { font-size: 0.76rem; padding: 0.45rem 0.12rem; gap: 2px; }
+    .rank-index-tabs .seg-btn { font-size: 0.76rem; padding: 0.45rem 0.12rem; gap: 2px; min-height: 42px; }
     .rank-index-tabs .seg-icon { font-size: 0.78rem; margin-right: 1px; }
     .rank-index-tabs .seg-btn .tab-badge { font-size: 0.62rem; padding: 0 4px; }
-    .preset-chips { gap: 0.3rem; }
-    .preset-chip { font-size: 0.72rem; padding: 0.25rem 0.5rem; }
+    .preset-chips { gap: 0.45rem; }
+    .preset-chip {
+        font-size: 0.78rem;
+        padding: 0.42rem 0.75rem;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .sim-percentile-header {
+        flex-wrap: wrap;
+        gap: 2px 6px;
+    }
+    .article-takeaways-card {
+        padding: 0.95rem 0.85rem;
+    }
 }
 
 /* ===== 阶段4：量化有效前沿与策略矩阵看板 ===== */
@@ -10853,7 +10952,73 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
 }
 
+@media (max-width: 380px) {
+    .dual-percentile-row {
+        padding: 0.55rem 0.65rem;
+    }
+    .dual-bar-sub .track-tag {
+        width: 52px;
+        font-size: 0.65rem;
+    }
+    .dual-bar-sub .bar-val {
+        width: 72px;
+        font-size: 0.68rem;
+    }
+    .dual-bar-sub {
+        gap: 6px;
+    }
+    .qmc-diff-grid {
+        column-gap: 4px;
+        padding: 0.6rem 0.5rem;
+    }
+    .qmc-diff-grid .qmc-diff-lbl,
+    .qmc-diff-grid .q-diff-before,
+    .qmc-diff-grid .q-diff-after {
+        font-size: 0.7rem;
+    }
+}
+
 @media (max-width: 360px) {
+    .container {
+        padding: 0.75rem;
+    }
+    .card {
+        padding: 0.85rem 0.75rem;
+    }
+    .hero-banner {
+        padding: 1.1rem 0.75rem;
+    }
+    .navbar .brand-text {
+        font-size: 1.05rem;
+        letter-spacing: -0.02em;
+    }
+    .navbar .brand-logo {
+        width: 26px;
+        height: 26px;
+    }
+    .stat {
+        padding: 0.65rem 0.5rem;
+    }
+    .stat .vl {
+        font-size: 1.15rem;
+    }
+    .stat .lb, .stat .sub {
+        font-size: 0.65rem;
+    }
+    .sim-kpi-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.4rem;
+    }
+    .sim-kpi-card {
+        padding: 0.6rem 0.5rem;
+    }
+    .sim-kpi-value {
+        font-size: 1.05rem;
+    }
+    .preset-chip {
+        font-size: 0.74rem;
+        padding: 0.35rem 0.6rem;
+    }
     .pf-sim-card .downside-kpi-grid,
     .pf-risk-kpi-grid {
         grid-template-columns: 1fr;
@@ -10870,12 +11035,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         gap: 6px;
     }
     .fund-select-quick-actions {
-        gap: 4px;
+        gap: 6px;
         width: 100%;
+        display: flex;
+        flex-wrap: wrap;
     }
     .btn-rks-tool {
-        padding: 0.28rem 0.5rem;
-        font-size: 0.74rem;
+        padding: 0.38rem 0.7rem;
+        font-size: 0.78rem;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
     .fund-select-search-wrap {
         width: 100%;
@@ -12100,13 +12271,21 @@ tbody.spotlight-active tr:hover {
         padding: 1rem 0.85rem;
     }
     .input-stepper-wrap {
-        padding: 1px 4px;
-        gap: 4px;
+        padding: 2px 6px;
+        gap: 6px;
     }
     .input-stepper-btn {
-        width: 22px;
-        height: 22px;
-        font-size: 0.85rem;
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        min-height: 28px;
+        font-size: 0.95rem;
+        position: relative;
+    }
+    .input-stepper-btn::before {
+        content: '';
+        position: absolute;
+        inset: -8px;
     }
 }
 
@@ -13264,6 +13443,142 @@ input[type=range]::-moz-range-thumb {
     }
     .footer-links {
         gap: 0.6rem 1rem;
+    }
+    .footer-links a {
+        padding: 6px 0;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* 移动端步进调节器级联终态保障 */
+    .input-stepper-wrap {
+        padding: 2px 6px;
+        gap: 6px;
+    }
+    .input-stepper-wrap .input-stepper-btn,
+    .input-stepper-btn {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        font-size: 0.95rem;
+        position: relative;
+    }
+    .input-stepper-btn::before {
+        content: '';
+        position: absolute;
+        inset: -8px;
+    }
+
+    /* 移动端弹窗与底抽屉触控人体工程学 */
+    .fund-select-close,
+    .poster-modal-close {
+        min-width: 44px;
+        min-height: 44px;
+        width: 44px;
+        height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        padding: 0;
+        cursor: pointer;
+    }
+    .fund-select-footer {
+        padding: 0.85rem 1rem;
+    }
+    .fund-select-actions {
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    .fund-export-theme-selector {
+        width: 100%;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+    .btn-rks-cancel,
+    .btn-rks-confirm,
+    .btn-poster-copy,
+    .btn-poster-download {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1.15rem;
+        font-size: 0.88rem;
+    }
+    .fund-select-actions .btn-rks-cancel,
+    .fund-select-actions .btn-rks-confirm {
+        flex: 1 1 calc(50% - 6px);
+    }
+    .poster-modal-actions {
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 8px;
+    }
+    .poster-modal-actions .btn-poster-copy,
+    .poster-modal-actions .btn-poster-download {
+        flex: 1 1 calc(50% - 6px);
+    }
+    .btn-theme-sel {
+        min-height: 36px;
+        padding: 0.35rem 0.75rem;
+    }
+
+    /* 量化有效前沿与压力测试移动端触控 */
+    .frontier-range-slider {
+        padding: 10px 0;
+        touch-action: pan-y;
+    }
+    .frontier-range-slider::-webkit-slider-thumb {
+        width: 26px !important;
+        height: 26px !important;
+    }
+    .frontier-range-slider::-moz-range-thumb {
+        width: 26px !important;
+        height: 26px !important;
+    }
+    .frontier-preset-btn {
+        min-height: 36px;
+        padding: 0.35rem 0.65rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .frontier-toggle-label {
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+    }
+    .stress-scenario-tabs .seg-btn {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* 移动端基金卡片点击热区强化 */
+    .fmc-page-link {
+        min-height: 32px;
+        padding: 0.25rem 0.65rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    .fmc-page-link::before {
+        content: '';
+        position: absolute;
+        inset: -6px;
+    }
+    .fmc-sibling-card {
+        min-height: 44px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 }
 

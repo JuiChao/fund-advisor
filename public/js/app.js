@@ -616,6 +616,12 @@ const App = (() => {
                     closeMobileNav();
                 }
             });
+            // 点击抽屉内任意导航链接自动收起抽屉
+            navLinks.querySelectorAll('a').forEach((link) => {
+                link.addEventListener('click', () => {
+                    closeMobileNav();
+                });
+            });
         }
 
         // 首次加载

@@ -100,6 +100,46 @@ class TestViewportMathStress(unittest.TestCase):
         """Verify overscroll-behavior or touch action configurations prevent page bouncy overflow."""
         self.assertIn("-webkit-overflow-scrolling: touch", self.css, "Touch momentum scrolling must be enabled for iOS")
 
+    def test_mobile_touch_target_ergonomics(self):
+        """Verify interactive controls on mobile (<768px) meet 44px hit bounds or provide touch target expansion."""
+        # Theme toggle 44px on mobile
+        self.assertRegex(self.css, r"\.theme-toggle\s*\{[^}]*min-width\s*:\s*44px")
+        # Nav toggle 44px
+        self.assertRegex(self.css, r"\.nav-toggle\s*\{[^}]*min-width\s*:\s*44px")
+        # Stepper buttons have expanded hit target via pseudo-element and terminal override
+        self.assertIn(".input-stepper-btn::before", self.css)
+        self.assertIn("inset: -8px", self.css)
+        self.assertIn("width: 28px !important", self.css)
+        # Quota toggle button 44px on mobile
+        self.assertRegex(self.css, r"\.btn-quota-toggle\s*\{[^}]*min-height\s*:\s*44px")
+        # Fund card expand bar 44px on mobile
+        self.assertRegex(self.css, r"\.fmc-expand-bar\s*\{[^}]*min-height\s*:\s*44px")
+        # Action button 44px on mobile
+        self.assertRegex(self.css, r"\.fmc-btn-act\s*\{[^}]*min-height\s*:\s*44px")
+        # Modal and dialog close buttons 44px on mobile
+        self.assertIn(".fund-select-close", self.css)
+        self.assertIn(".poster-modal-close", self.css)
+        self.assertIn("min-width: 44px", self.css)
+        # Frontier range slider touch-action
+        self.assertIn("touch-action: pan-y", self.css)
+        # Fund mobile card page link touch target expansion
+        self.assertIn(".fmc-page-link::before", self.css)
+
+    def test_micro_viewport_320_and_360_containment(self):
+        """Verify dedicated breakpoints for 380px and 360px viewports exist to protect 320px-360px devices."""
+        self.assertIn("@media (max-width: 380px)", self.css)
+        self.assertIn("@media (max-width: 360px)", self.css)
+
+    def test_mobile_nav_drawer_dismiss_handlers(self):
+        """Verify mobile navigation dismissal handler exists across subpages and articles."""
+        about_content = (ROOT_DIR / "public" / "about.html").read_text(encoding="utf-8")
+        articles_hub = (ROOT_DIR / "public" / "articles" / "index.html").read_text(encoding="utf-8")
+        sample_article = (ROOT_DIR / "public" / "articles" / "dca-strategy-guide.html").read_text(encoding="utf-8")
+        self.assertIn("nav-links", about_content)
+        self.assertIn("closest('#nav-links a')", about_content)
+        self.assertIn("closest('#nav-links a')", articles_hub)
+        self.assertIn("closest('#nav-links a')", sample_article)
+
 
 if __name__ == "__main__":
     unittest.main()
