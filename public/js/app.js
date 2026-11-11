@@ -7111,21 +7111,21 @@ const App = (() => {
                     // 熔断级别：标普500单日跌幅达 -7% 触发美股全市场一级熔断
                     if (inxDrop <= -7.0) {
                         bannerEl.className = 'black-swan-banner swan-extreme';
-                        if (iconEl) iconEl.textContent = '[暂停]';
+                        if (iconEl) iconEl.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><rect width="3" height="8" x="8.5" y="8"/><rect width="3" height="8" x="12.5" y="8"/></svg>';
                         if (badgeEl) badgeEl.textContent = '美股一级熔断警报';
                         if (headlineEl) headlineEl.textContent = `标普500触发 -7% 全市场熔断停牌阈值 (当前 ${inxDrop.toFixed(2)}%)`;
                         if (descEl) descEl.textContent = '标普500单日重挫超 7%，美股触发全市场15分钟熔断停牌。历史数据显示极端流动性冲击往往形成中长期重大黄金击球区，请使用量化测算工具制定分批加码策略。';
                     } else if (minDrop <= -5.0) {
                         // 跌幅超 -5%：极端罕见巨幅重挫
                         bannerEl.className = 'black-swan-banner swan-extreme';
-                        if (iconEl) iconEl.textContent = '[限额]';
+                        if (iconEl) iconEl.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
                         if (badgeEl) badgeEl.textContent = '罕见巨幅重挫预警 (超 -5%)';
                         if (headlineEl) headlineEl.textContent = `美股核心大盘出现罕见暴跌 (最大跌幅 ${minDrop.toFixed(2)}%)`;
                         if (descEl) descEl.textContent = '监测到海外核心大盘单日下挫超 5.0%，此等跌幅在过去十年出现概率不足 0.5%。QDII 存在 T+1 净值确认延迟，恐慌性踩踏极易踏空后续超跌反弹；建议依托马科维茨有效前沿开展逢低加码测算。';
                     } else {
                         // 跌幅 -3% 至 -5%：常规黑天鹅/显著深度回调
                         bannerEl.className = 'black-swan-banner';
-                        if (iconEl) iconEl.textContent = '[预警]';
+                        if (iconEl) iconEl.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
                         if (badgeEl) badgeEl.textContent = '极端重挫预警';
                         if (headlineEl) headlineEl.textContent = `美股核心大盘出现剧烈异动 (最大跌幅 ${minDrop.toFixed(2)}%)`;
                         if (descEl) descEl.textContent = '监测到海外大盘突发剧烈下挫。QDII 存在 T+1 净值确认时滞，恐慌抛售通常酿成最大亏损；历史量化回测表明，标普/纳指日跌幅超 3% 时，分批逢低加码胜率显著提升。';
@@ -7133,6 +7133,7 @@ const App = (() => {
                 } else {
                     bannerEl.style.display = 'none';
                     bannerEl.className = 'black-swan-banner';
+                    if (iconEl) iconEl.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
                 }
             }
 
