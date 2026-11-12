@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
-<meta name="theme-color" content="#4f46e5">
+<meta name="theme-color" content="#090d16">
+<meta name="color-scheme" content="light dark">
 <meta name="description" content="基于蒙特卡洛模拟的指数基金定投智能分析平台，支持纳斯达克100和标普500基金量化分析。自动抓取天天基金数据，提供基金排名、收益率模拟及最佳资产配置方案。">
 <meta name="keywords" content="基金定投, 纳斯达克100, 标普500, 蒙特卡洛模拟, 指数基金, 量化分析, 基金排名, 投资分析, QDII基金, 基金费率对比, 指数基金推荐, 定投计算器">
 <meta name="author" content="Fund Advisor">
@@ -187,6 +188,18 @@
       "where": { "href_matches": "/fund/*" },
       "eagerness": "conservative"
     }
+  ],
+  "prerender": [
+    {
+      "where": {
+        "and": [
+          { "href_matches": "/*" },
+          { "not": { "href_matches": "/fund/*" } },
+          { "not": { "selector_matches": "[rel~=nofollow]" } }
+        ]
+      },
+      "eagerness": "conservative"
+    }
   ]
 }
 </script>
@@ -247,13 +260,12 @@
             专为境内投资者打造的<strong>纳斯达克100 & 标普500 QDII</strong>全生命周期量化资产配置中枢。系统深度融合<strong>马克维茨有效前沿 (MPT)</strong>、<strong>下行风险体检 (Sortino)</strong>、<strong>历史极端黑天鹅压力测试</strong>与<strong>估值动态定投双轨推演</strong>，每日自动穿透全市场公募代销与直销限额，助您消除外汇限购阻碍，定制最优复利方案。
         </p>
 
-        <!-- 现代化高引力 Hero 核心操作集群 (Hero CTA Action Cluster) -->
+        <!-- 核心量化终端操作集群 (Hero CTA Action Cluster) -->
         <div class="hero-cta-cluster">
             <a href="#ranking" class="hero-btn-primary" data-jump="ranking">
-                <span class="btn-shine"></span>
                 <span class="btn-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
                 <span>开启量化选基</span>
-                <span class="btn-arrow">➔</span>
+                <span class="btn-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
             </a>
             <a href="#portfolio" class="hero-btn-secondary" data-jump="portfolio">
                 <span class="btn-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
@@ -303,7 +315,7 @@
                         </div>
                         <div class="swan-action">
                             <a href="#portfolio" class="swan-cta-btn" id="swan-cta-btn">
-                                <span>危机加码测算 ➔</span>
+                                <span>危机加码测算</span>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                             </a>
                         </div>
@@ -471,7 +483,7 @@
                 </div>
             </div>
             <div class="ticker-box" data-pod="perf">
-                <div class="tk-label"><span class="tk-dot"></span>高维通算能力</div>
+                <div class="tk-label"><span class="tk-dot"></span>5,000次 向量化蒙特卡洛随机模拟推演</div>
                 <div class="tk-val" style="color:var(--accent2)">5,000 条 / 秒级</div>
                 <div class="tk-sub">Web Worker 向量化蒙特卡洛</div>
                 <div class="tk-sparkline-wrap" aria-hidden="true">
@@ -496,19 +508,19 @@
                 <span class="journey-step">STEP 01 · 标的雷达</span>
                 <div class="journey-title"><span>全景选基排名</span></div>
                 <div class="journey-text">60+ 只标的综合费率、跟踪偏离度 (TD)、信息比率 (IR) 与代销/直销真实额度每日实时监控。</div>
-                <div class="journey-action">探索优质标的 ➔</div>
+                <div class="journey-action">探索优质标的 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
             </a>
             <a href="#portfolio" class="journey-card" data-jump="portfolio" data-step-num="02">
                 <span class="journey-step">STEP 02 · 科学配比</span>
                 <div class="journey-title"><span>MPT 定投方案</span></div>
                 <div class="journey-text">传统资金平分 vs 风险平价 (38:62 等风险贡献)，穿透实际可买额度与 A/C 共享额度避坑。</div>
-                <div class="journey-action">匹配配置方案 ➔</div>
+                <div class="journey-action">匹配配置方案 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
             </a>
             <a href="#simulator" class="journey-card" data-jump="simulator" data-step-num="03">
                 <span class="journey-step">STEP 03 · 压力推演</span>
                 <div class="journey-title"><span>蒙特卡洛推演</span></div>
                 <div class="journey-text">5~30 年 5000 次市场随机漫步，并支持普通定投 vs 智能估值动态定投双轨并列推演。</div>
-                <div class="journey-action">启动财富推演 ➔</div>
+                <div class="journey-action">执行模拟推演 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
             </a>
         </div>
     </div>
@@ -517,9 +529,9 @@
     <section class="quant-flagship-section">
         <div class="section-header-wrap">
             <div class="section-title-group">
-                <span class="section-eyebrow">WALL STREET QUANT TOOLS · 旗舰功能直通车</span>
+                <span class="section-eyebrow">INSTITUTIONAL QUANT TOOLS · 核心功能直通车</span>
                 <h2 class="section-title">四大核心量化金融工程引擎</h2>
-                <p class="section-desc">告别单指标粗糙选基与线性复利误导，平台将华尔街对冲基金级量化投研模型转化为普通投资者的敏捷决策工具。</p>
+                <p class="section-desc">告别单指标粗糙选基与线性复利误导，平台将机构级量化资产配置与定投决策模型转化为普通投资者的敏捷决策工具。</p>
             </div>
             <div class="section-badge-pill">
                 <span class="brand-pulse-dot"></span>
@@ -562,8 +574,8 @@
                 </div>
                 <div class="engine-card-footer">
                     <a href="#portfolio?section=frontier" class="btn-engine-cta">
-                        <span>配置马克维茨有效前沿 ➔</span>
-                        <span class="cta-arrow">➔</span>
+                        <span>配置马克维茨有效前沿</span>
+                        <span class="cta-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                     </a>
                 </div>
             </div>
@@ -579,7 +591,7 @@
                     <span>下行风险与索提诺比率体检 (Sortino Ratio)</span>
                 </h3>
                 <p class="engine-desc">
-                    拒绝惩罚上涨收益的粗暴标准差！采用对冲基金级<strong>索提诺比率 (Sortino Ratio)</strong> 专项惩罚下行负波动，并在 95% 置信度极限压力边界下，全面体检定投在最恶劣行情下的本金回撤底线。
+                    采用索提诺比率 (Sortino Ratio) 针对下行负波动进行专项风险惩罚计算，并在 95% 置信度极限压力边界下，全面体检定投在最恶劣行情下的本金回撤底线。
                 </p>
                 <div class="engine-preview-box">
                     <div class="engine-preview-kpi-row">
@@ -602,8 +614,8 @@
                 </div>
                 <div class="engine-card-footer">
                     <a href="#portfolio?section=downside" class="btn-engine-cta">
-                        <span>查阅下行风险体检表 ➔</span>
-                        <span class="cta-arrow">➔</span>
+                        <span>查阅下行风险体检表</span>
+                        <span class="cta-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                     </a>
                 </div>
             </div>
@@ -612,7 +624,7 @@
             <div class="quant-engine-card engine-card-stress">
                 <div class="engine-badge-row">
                     <span class="engine-badge" style="background:rgba(239,68,68,0.15);color:var(--err);border-color:rgba(239,68,68,0.3)"><span class="terminal-tag">STRESS</span> 极端危机回放</span>
-                    <span class="engine-tag">非高斯真实序列 · 肥尾实测</span>
+                    <span class="engine-tag">非高斯真实序列 · 极端历史情景压力测试</span>
                 </div>
                 <h3 class="engine-title">
                     <span class="engine-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
@@ -642,8 +654,8 @@
                 </div>
                 <div class="engine-card-footer">
                     <a href="#portfolio?section=stress" class="btn-engine-cta">
-                        <span>运行历史压力测试 ➔</span>
-                        <span class="cta-arrow">➔</span>
+                        <span>运行历史压力测试</span>
+                        <span class="cta-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                     </a>
                 </div>
             </div>
@@ -682,8 +694,8 @@
                 </div>
                 <div class="engine-card-footer">
                     <a href="#simulator?smart=1" class="btn-engine-cta">
-                        <span>体验估值自适应双轨 ➔</span>
-                        <span class="cta-arrow">➔</span>
+                        <span>体验估值自适应双轨</span>
+                        <span class="cta-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                     </a>
                 </div>
             </div>
@@ -724,12 +736,12 @@
                             <h3 style="margin:0;font-size:1.15rem;color:var(--txt)">全市场 QDII 限购穿透雷达 & 共享额度避坑系统</h3>
                             <span class="hero-pill" style="background:rgba(16,185,129,0.12);color:var(--ok);border-color:rgba(16,185,129,0.3);font-size:0.68rem;padding:2px 8px">CDC 自动捕获</span>
                         </div>
-                        <p style="margin:4px 0 0;font-size:0.8rem;color:var(--txt2)">每日自动解析基金公司最新公告，穿透代销（天天/支付宝）与官方直销限额，首创 A/C/定制份额共享额度避坑标识</p>
+                        <p style="margin:4px 0 0;font-size:0.8rem;color:var(--txt2)">每日自动解析基金公司最新公告，穿透代销（天天/支付宝）与官方直销限额，自动标注公募基金跨份额 (A/C/定制) 合并申购限额</p>
                     </div>
                 </div>
             </div>
             <div class="home-radar-actions">
-                <a href="#ranking?section=quota" class="btn-jump-strat" style="font-size:0.82rem;padding:0.48rem 1rem">查阅实时额度快报 ➔</a>
+                <a href="#ranking?section=quota" class="btn-jump-strat" style="font-size:0.82rem;padding:0.48rem 1rem">查阅实时额度快报 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             </div>
         </div>
         <div class="home-quota-features-grid">
@@ -786,7 +798,7 @@
                 </p>
             </div>
             <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
-                <a href="#ranking" class="btn-jump-strat" style="font-size:0.82rem;padding:0.45rem 1rem">查看全市场 60 只完整排名 ➔</a>
+                <a href="#ranking" class="btn-jump-strat" style="font-size:0.82rem;padding:0.45rem 1rem">查看全市场 60 只完整排名 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             </div>
         </div>
 
@@ -812,7 +824,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="text-align:center"><span style="color:#f59e0b;font-weight:700">★★★★★</span></td>
+                            <td style="text-align:center"><span class="score-chip" style="font-family:var(--font-mono);font-weight:700;color:var(--warn);display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">5.0</span></td>
                             <td style="text-align:center"><span class="code-mono">161130</span></td>
                             <td><a href="/fund/161130" class="dir-fund-name">易方达纳斯达克100ETF联接(QDII-LOF)A</a> <span class="badge-share badge-a">A类</span></td>
                             <td style="text-align:center"><span class="dir-fund-fee fee-low">0.60%</span></td>
@@ -820,10 +832,10 @@
                             <td style="text-align:center">1.45%</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
-                            <td style="text-align:center"><a href="/fund/161130" class="btn-dir-review">量化评测 ➔</a></td>
+                            <td style="text-align:center"><a href="/fund/161130" class="btn-dir-review">量化评测 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td>
                         </tr>
                         <tr>
-                            <td style="text-align:center"><span style="color:#f59e0b;font-weight:700">★★★★★</span></td>
+                            <td style="text-align:center"><span class="score-chip" style="font-family:var(--font-mono);font-weight:700;color:var(--warn);display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">5.0</span></td>
                             <td style="text-align:center"><span class="code-mono">016055</span></td>
                             <td><a href="/fund/016055" class="dir-fund-name">博时纳斯达克100ETF发起式联接(QDII)A</a> <span class="badge-share badge-a">A类</span></td>
                             <td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td>
@@ -831,21 +843,21 @@
                             <td style="text-align:center">1.46%</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
-                            <td style="text-align:center"><a href="/fund/016055" class="btn-dir-review">量化评测 ➔</a></td>
+                            <td style="text-align:center"><a href="/fund/016055" class="btn-dir-review">量化评测 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td>
                         </tr>
                         <tr>
-                            <td style="text-align:center"><span style="color:#f59e0b;font-weight:700">★★★★★</span></td>
+                            <td style="text-align:center"><span class="score-chip" style="font-family:var(--font-mono);font-weight:700;color:var(--warn);display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">5.0</span></td>
                             <td style="text-align:center"><span class="code-mono">040046</span></td>
                             <td><a href="/fund/040046" class="dir-fund-name">华安纳斯达克100ETF联接(QDII)A</a> <span class="badge-share badge-a">A类</span></td>
                             <td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td>
                             <td style="text-align:center;color:var(--ok);font-weight:600">+75.43%</td>
-                            <td style="text-align:center;color:var(--ok);font-weight:600">0.99% (极优)</td>
+                            <td style="text-align:center;color:var(--ok);font-weight:600">0.99% (优于同类中位数)</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
-                            <td style="text-align:center"><a href="/fund/040046" class="btn-dir-review">量化评测 ➔</a></td>
+                            <td style="text-align:center"><a href="/fund/040046" class="btn-dir-review">量化评测 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td>
                         </tr>
                         <tr>
-                            <td style="text-align:center"><span style="color:#f59e0b;font-weight:700">★★★★☆</span></td>
+                            <td style="text-align:center"><span class="score-chip" style="font-family:var(--font-mono);font-weight:700;color:var(--warn);display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">4.0</span></td>
                             <td style="text-align:center"><span class="code-mono">019441</span></td>
                             <td><a href="/fund/019441" class="dir-fund-name">万家纳斯达克100指数发起式(QDII)A</a> <span class="badge-share badge-a">A类</span></td>
                             <td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td>
@@ -853,10 +865,10 @@
                             <td style="text-align:center">2.17%</td>
                             <td style="text-align:center"><span class="status-dot dot-buyable"></span> 限5元/日</td>
                             <td style="text-align:center"><span class="status-dot dot-direct"></span> 限100元/日</td>
-                            <td style="text-align:center"><a href="/fund/019441" class="btn-dir-review">量化评测 ➔</a></td>
+                            <td style="text-align:center"><a href="/fund/019441" class="btn-dir-review">量化评测 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td>
                         </tr>
                         <tr>
-                            <td style="text-align:center"><span style="color:#f59e0b;font-weight:700">★★★★★</span></td>
+                            <td style="text-align:center"><span class="score-chip" style="font-family:var(--font-mono);font-weight:700;color:var(--warn);display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">5.0</span></td>
                             <td style="text-align:center"><span class="code-mono">018043</span></td>
                             <td><a href="/fund/018043" class="dir-fund-name">天弘纳斯达克100指数发起(QDII)A</a> <span class="badge-share badge-a">A类</span></td>
                             <td style="text-align:center"><span class="dir-fund-fee fee-low">0.60% (行业最低)</span></td>
@@ -864,7 +876,7 @@
                             <td style="text-align:center">1.72%</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
-                            <td style="text-align:center"><a href="/fund/018043" class="btn-dir-review">量化评测 ➔</a></td>
+                            <td style="text-align:center"><a href="/fund/018043" class="btn-dir-review">量化评测 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -893,18 +905,18 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="text-align:center"><span style="color:#f59e0b;font-weight:700">★★★★★</span></td>
+                            <td style="text-align:center"><span class="score-chip" style="font-family:var(--font-mono);font-weight:700;color:var(--warn);display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">5.0</span></td>
                             <td style="text-align:center"><span class="code-mono">161125</span></td>
                             <td><a href="/fund/161125" class="dir-fund-name">易方达标普500指数人民币A</a> <span class="badge-share badge-a">A类</span></td>
                             <td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td>
                             <td style="text-align:center;color:var(--ok);font-weight:600">+65.40%</td>
-                            <td style="text-align:center;color:var(--ok);font-weight:600">1.18% (极优)</td>
+                            <td style="text-align:center;color:var(--ok);font-weight:600">1.18% (优于同类中位数)</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
-                            <td style="text-align:center"><a href="/fund/161125" class="btn-dir-review">量化评测 ➔</a></td>
+                            <td style="text-align:center"><a href="/fund/161125" class="btn-dir-review">量化评测 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td>
                         </tr>
                         <tr>
-                            <td style="text-align:center"><span style="color:#f59e0b;font-weight:700">★★★★★</span></td>
+                            <td style="text-align:center"><span class="score-chip" style="font-family:var(--font-mono);font-weight:700;color:var(--warn);display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">5.0</span></td>
                             <td style="text-align:center"><span class="code-mono">050025</span></td>
                             <td><a href="/fund/050025" class="dir-fund-name">博时标普500ETF联接A</a> <span class="badge-share badge-a">A类</span></td>
                             <td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td>
@@ -912,10 +924,10 @@
                             <td style="text-align:center">1.23%</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
-                            <td style="text-align:center"><a href="/fund/050025" class="btn-dir-review">量化评测 ➔</a></td>
+                            <td style="text-align:center"><a href="/fund/050025" class="btn-dir-review">量化评测 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td>
                         </tr>
                         <tr>
-                            <td style="text-align:center"><span style="color:#f59e0b;font-weight:700">★★★★★</span></td>
+                            <td style="text-align:center"><span class="score-chip" style="font-family:var(--font-mono);font-weight:700;color:var(--warn);display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">5.0</span></td>
                             <td style="text-align:center"><span class="code-mono">017641</span></td>
                             <td><a href="/fund/017641" class="dir-fund-name">摩根标普500指数(QDII)人民币A</a> <span class="badge-share badge-a">A类</span></td>
                             <td style="text-align:center"><span class="dir-fund-fee fee-low">0.65% (最优费率)</span></td>
@@ -923,10 +935,10 @@
                             <td style="text-align:center">1.59%</td>
                             <td style="text-align:center"><span class="status-dot dot-buyable"></span> 限10元/日</td>
                             <td style="text-align:center"><span class="status-dot dot-direct"></span> 限1000元/日</td>
-                            <td style="text-align:center"><a href="/fund/017641" class="btn-dir-review">量化评测 ➔</a></td>
+                            <td style="text-align:center"><a href="/fund/017641" class="btn-dir-review">量化评测 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td>
                         </tr>
                         <tr>
-                            <td style="text-align:center"><span style="color:#f59e0b;font-weight:700">★★★★☆</span></td>
+                            <td style="text-align:center"><span class="score-chip" style="font-family:var(--font-mono);font-weight:700;color:var(--warn);display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">4.0</span></td>
                             <td style="text-align:center"><span class="code-mono">017028</span></td>
                             <td><a href="/fund/017028" class="dir-fund-name">国泰标普500ETF发起联接(QDII)A</a> <span class="badge-share badge-a">A类</span></td>
                             <td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td>
@@ -934,10 +946,10 @@
                             <td style="text-align:center">1.26%</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
-                            <td style="text-align:center"><a href="/fund/017028" class="btn-dir-review">量化评测 ➔</a></td>
+                            <td style="text-align:center"><a href="/fund/017028" class="btn-dir-review">量化评测 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td>
                         </tr>
                         <tr>
-                            <td style="text-align:center"><span style="color:#f59e0b;font-weight:700">★★★★☆</span></td>
+                            <td style="text-align:center"><span class="score-chip" style="font-family:var(--font-mono);font-weight:700;color:var(--warn);display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">4.0</span></td>
                             <td style="text-align:center"><span class="code-mono">007721</span></td>
                             <td><a href="/fund/007721" class="dir-fund-name">天弘标普500发起(QDII-FOF)A</a> <span class="badge-share badge-a">A类</span></td>
                             <td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td>
@@ -945,7 +957,7 @@
                             <td style="text-align:center">1.50%</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
                             <td style="text-align:center"><span class="status-dot dot-paused"></span> 暂停申购</td>
-                            <td style="text-align:center"><a href="/fund/007721" class="btn-dir-review">量化评测 ➔</a></td>
+                            <td style="text-align:center"><a href="/fund/007721" class="btn-dir-review">量化评测 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -957,7 +969,7 @@
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem">
             <h3 style="margin-bottom:0">经典配置策略方案对比</h3>
-            <a href="#portfolio" class="btn-jump-strat" style="font-size:0.8rem;padding:0.4rem 0.85rem">进入定投方案页配置 ➔</a>
+            <a href="#portfolio" class="btn-jump-strat" style="font-size:0.8rem;padding:0.4rem 0.85rem">进入定投方案页配置 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
         <div id="home-strategies">
             <div class="home-strat-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1rem;">
@@ -1062,7 +1074,7 @@
             <h2 class="seo-title" style="margin-bottom:0.4rem">投资百科 — 深度原创投研专栏</h2>
             <p style="color:var(--txt2);font-size:0.95rem;margin:0">全景收录 18 篇万字级深度投研长文，覆盖核心宽基、量化金融工程、公募限购穿透与行为金融学实操。</p>
         </div>
-        <a href="articles/" class="btn btn-p" style="text-decoration:none;padding:0.5rem 1.25rem;font-size:0.88rem;font-weight:600">浏览全部 18 篇专栏 ➔</a>
+        <a href="articles/" class="btn btn-p" style="text-decoration:none;padding:0.5rem 1.25rem;font-size:0.88rem;font-weight:600">浏览全部 18 篇专栏 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
 
     <!-- 模块1：核心宽基指数与资产配置 -->
@@ -1112,7 +1124,7 @@
             </div>
             <div class="article-preview-card">
                 <h3><a href="/articles/why-investors-fail-at-market-timing">为什么95%的投资者择时注定失败：美股过去50年极端行情定投实证</a></h3>
-                <p>错过最佳10天收益骤降50%！用标普500过去50年每日真实行情量化实证“在场”的重要性，彻底击碎择时神话，奠定机械化定投的数学信仰。</p>
+                <p>错过最佳10天收益骤降50%！用标普500过去50年每日真实行情量化实证“在场”的重要性，基于长周期日线收益分布与几何布朗运动的机械化定投模型。</p>
                 <a class="read-more" href="/articles/why-investors-fail-at-market-timing">阅读全文 →</a>
             </div>
             <div class="article-preview-card">
@@ -1192,7 +1204,7 @@
     </div>
 
     <div style="text-align:center;margin-top:2rem">
-        <a href="articles/" class="btn btn-p" style="text-decoration:none;padding:0.75rem 2.5rem;font-weight:600;font-size:1rem">访问投资百科专区主页 (查阅完整 18 篇专栏与学习路线) ➔</a>
+        <a href="articles/" class="btn btn-p" style="text-decoration:none;padding:0.75rem 2.5rem;font-weight:600;font-size:1rem">访问投资百科专区主页 (查阅完整 18 篇专栏与学习路线) <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
 </section>
 
@@ -1219,7 +1231,7 @@
                         <th class="col-center" style="width:105px">操作</th>
                     </tr>
                 </thead>
-                <tbody><tr><td style="text-align:center"><span class="code-mono">019441</span></td><td><a href="/fund/019441" class="dir-fund-name">万家纳斯达克100指数发起式(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">万家基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/019441" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019442</span></td><td><a href="/fund/019442" class="dir-fund-name">万家纳斯达克100指数发起式(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">万家基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.85%</span></td><td style="text-align:center"><a href="/fund/019442" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">015299</span></td><td><a href="/fund/015299" class="dir-fund-name">华夏纳斯达克100ETF发起式联接(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">华夏基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/015299" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">015300</span></td><td><a href="/fund/015300" class="dir-fund-name">华夏纳斯达克100ETF发起式联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">华夏基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.10%</span></td><td style="text-align:center"><a href="/fund/015300" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">014978</span></td><td><a href="/fund/014978" class="dir-fund-name">华安纳斯达克100ETF联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">华安基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/014978" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">040046</span></td><td><a href="/fund/040046" class="dir-fund-name">华安纳斯达克100ETF联接(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">华安基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/040046" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019524</span></td><td><a href="/fund/019524" class="dir-fund-name">华泰柏瑞纳斯达克100ETF发起式联接(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">华泰柏瑞基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/019524" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019525</span></td><td><a href="/fund/019525" class="dir-fund-name">华泰柏瑞纳斯达克100ETF发起式联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">华泰柏瑞基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.90%</span></td><td style="text-align:center"><a href="/fund/019525" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">022664</span></td><td><a href="/fund/022664" class="dir-fund-name">华泰柏瑞纳斯达克100ETF发起式联接(QDII)I</a></td><td style="text-align:center"><span class="badge-share badge-i">I类</span></td><td class="dir-fund-mgr">华泰柏瑞基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td><td style="text-align:center"><a href="/fund/022664" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">016452</span></td><td><a href="/fund/016452" class="dir-fund-name">南方纳斯达克100指数发起(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">南方基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/016452" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">016453</span></td><td><a href="/fund/016453" class="dir-fund-name">南方纳斯达克100指数发起(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">南方基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td><td style="text-align:center"><a href="/fund/016453" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">021000</span></td><td><a href="/fund/021000" class="dir-fund-name">南方纳斯达克100指数发起(QDII)I</a></td><td style="text-align:center"><span class="badge-share badge-i">I类</span></td><td class="dir-fund-mgr">南方基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.66%</span></td><td style="text-align:center"><a href="/fund/021000" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">016055</span></td><td><a href="/fund/016055" class="dir-fund-name">博时纳斯达克100ETF发起式联接(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/016055" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">016057</span></td><td><a href="/fund/016057" class="dir-fund-name">博时纳斯达克100ETF发起式联接(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.95%</span></td><td style="text-align:center"><a href="/fund/016057" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">024237</span></td><td><a href="/fund/024237" class="dir-fund-name">博时纳斯达克100ETF发起式联接(QDII)I人民币</a></td><td style="text-align:center"><span class="badge-share badge-i">I类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/024237" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">016532</span></td><td><a href="/fund/016532" class="dir-fund-name">嘉实纳斯达克100ETF发起联接(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">嘉实基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.60%</span></td><td style="text-align:center"><a href="/fund/016532" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">016533</span></td><td><a href="/fund/016533" class="dir-fund-name">嘉实纳斯达克100ETF发起联接(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">嘉实基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.85%</span></td><td style="text-align:center"><a href="/fund/016533" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">021838</span></td><td><a href="/fund/021838" class="dir-fund-name">嘉实纳斯达克100ETF发起联接(QDII)I人民币</a></td><td style="text-align:center"><span class="badge-share badge-i">I类</span></td><td class="dir-fund-mgr">嘉实基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.70%</span></td><td style="text-align:center"><a href="/fund/021838" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">160213</span></td><td><a href="/fund/160213" class="dir-fund-name">国泰纳斯达克100指数</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">国泰基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/160213" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">000834</span></td><td><a href="/fund/000834" class="dir-fund-name">大成纳斯达克100ETF联接(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">大成基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/000834" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">008971</span></td><td><a href="/fund/008971" class="dir-fund-name">大成纳斯达克100ETF联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">大成基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.30%</span></td><td style="text-align:center"><a href="/fund/008971" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">018043</span></td><td><a href="/fund/018043" class="dir-fund-name">天弘纳斯达克100指数发起(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.60%</span></td><td style="text-align:center"><a href="/fund/018043" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">018044</span></td><td><a href="/fund/018044" class="dir-fund-name">天弘纳斯达克100指数发起(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/018044" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">022525</span></td><td><a href="/fund/022525" class="dir-fund-name">天弘纳斯达克100指数发起(QDII)D</a></td><td style="text-align:center"><span class="badge-share badge-d">D类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/022525" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019736</span></td><td><a href="/fund/019736" class="dir-fund-name">宝盈纳斯达克100指数发起(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">宝盈基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/019736" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019737</span></td><td><a href="/fund/019737" class="dir-fund-name">宝盈纳斯达克100指数发起(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">宝盈基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.90%</span></td><td style="text-align:center"><a href="/fund/019737" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">006479</span></td><td><a href="/fund/006479" class="dir-fund-name">广发纳指100ETF联接(QDII)人民币C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">广发基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.20%</span></td><td style="text-align:center"><a href="/fund/006479" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">021778</span></td><td><a href="/fund/021778" class="dir-fund-name">广发纳指100ETF联接(QDII)人民币F</a></td><td style="text-align:center"><span class="badge-share badge-f">F类</span></td><td class="dir-fund-mgr">广发基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.18%</span></td><td style="text-align:center"><a href="/fund/021778" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">270042</span></td><td><a href="/fund/270042" class="dir-fund-name">广发纳指100ETF联接(QDII)人民币A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">广发基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/270042" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">012752</span></td><td><a href="/fund/012752" class="dir-fund-name">建信纳斯达克100指数(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">建信基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.30%</span></td><td style="text-align:center"><a href="/fund/012752" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">023422</span></td><td><a href="/fund/023422" class="dir-fund-name">建信纳斯达克100指数(QDII)D人民币</a></td><td style="text-align:center"><span class="badge-share badge-d">D类</span></td><td class="dir-fund-mgr">建信基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.30%</span></td><td style="text-align:center"><a href="/fund/023422" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">539001</span></td><td><a href="/fund/539001" class="dir-fund-name">建信纳斯达克100指数(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">建信基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/539001" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019547</span></td><td><a href="/fund/019547" class="dir-fund-name">招商纳斯达克100ETF发起式联接(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">招商基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/019547" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019548</span></td><td><a href="/fund/019548" class="dir-fund-name">招商纳斯达克100ETF发起式联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">招商基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/019548" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019172</span></td><td><a href="/fund/019172" class="dir-fund-name">摩根纳斯达克100指数(QDII)人民币A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">摩根基金(中国)</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.60%</span></td><td style="text-align:center"><a href="/fund/019172" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019173</span></td><td><a href="/fund/019173" class="dir-fund-name">摩根纳斯达克100指数(QDII)人民币C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">摩根基金(中国)</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.90%</span></td><td style="text-align:center"><a href="/fund/019173" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">012870</span></td><td><a href="/fund/012870" class="dir-fund-name">易方达纳斯达克100ETF联接(QDII-LOF)C(人民币)</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">易方达基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.90%</span></td><td style="text-align:center"><a href="/fund/012870" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">161130</span></td><td><a href="/fund/161130" class="dir-fund-name">易方达纳斯达克100ETF联接(QDII-LOF)A(人民币)</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">易方达基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.60%</span></td><td style="text-align:center"><a href="/fund/161130" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">017091</span></td><td><a href="/fund/017091" class="dir-fund-name">景顺长城纳斯达克科技ETF联接(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">景顺长城基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/017091" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">017093</span></td><td><a href="/fund/017093" class="dir-fund-name">景顺长城纳斯达克科技ETF联接(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">景顺长城基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.40%</span></td><td style="text-align:center"><a href="/fund/017093" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019118</span></td><td><a href="/fund/019118" class="dir-fund-name">景顺长城纳斯达克科技ETF联接(QDII)E人民币</a></td><td style="text-align:center"><span class="badge-share badge-e">E类</span></td><td class="dir-fund-mgr">景顺长城基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.20%</span></td><td style="text-align:center"><a href="/fund/019118" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">018966</span></td><td><a href="/fund/018966" class="dir-fund-name">汇添富纳斯达克100ETF发起式联接(QDII)人民币A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">汇添富基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/018966" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">018967</span></td><td><a href="/fund/018967" class="dir-fund-name">汇添富纳斯达克100ETF发起式联接(QDII)人民币C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">汇添富基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/018967" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">021773</span></td><td><a href="/fund/021773" class="dir-fund-name">汇添富纳斯达克100ETF发起式联接(QDII)人民币E</a></td><td style="text-align:center"><span class="badge-share badge-e">E类</span></td><td class="dir-fund-mgr">汇添富基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td><td style="text-align:center"><a href="/fund/021773" class="btn-dir-review">评测专页 ➔</a></td></tr></tbody>
+                <tbody><tr><td style="text-align:center"><span class="code-mono">019441</span></td><td><a href="/fund/019441" class="dir-fund-name">万家纳斯达克100指数发起式(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">万家基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/019441" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019442</span></td><td><a href="/fund/019442" class="dir-fund-name">万家纳斯达克100指数发起式(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">万家基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.85%</span></td><td style="text-align:center"><a href="/fund/019442" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">015299</span></td><td><a href="/fund/015299" class="dir-fund-name">华夏纳斯达克100ETF发起式联接(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">华夏基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/015299" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">015300</span></td><td><a href="/fund/015300" class="dir-fund-name">华夏纳斯达克100ETF发起式联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">华夏基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.10%</span></td><td style="text-align:center"><a href="/fund/015300" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">014978</span></td><td><a href="/fund/014978" class="dir-fund-name">华安纳斯达克100ETF联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">华安基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/014978" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">040046</span></td><td><a href="/fund/040046" class="dir-fund-name">华安纳斯达克100ETF联接(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">华安基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/040046" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019524</span></td><td><a href="/fund/019524" class="dir-fund-name">华泰柏瑞纳斯达克100ETF发起式联接(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">华泰柏瑞基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/019524" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019525</span></td><td><a href="/fund/019525" class="dir-fund-name">华泰柏瑞纳斯达克100ETF发起式联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">华泰柏瑞基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.90%</span></td><td style="text-align:center"><a href="/fund/019525" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">022664</span></td><td><a href="/fund/022664" class="dir-fund-name">华泰柏瑞纳斯达克100ETF发起式联接(QDII)I</a></td><td style="text-align:center"><span class="badge-share badge-i">I类</span></td><td class="dir-fund-mgr">华泰柏瑞基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td><td style="text-align:center"><a href="/fund/022664" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">016452</span></td><td><a href="/fund/016452" class="dir-fund-name">南方纳斯达克100指数发起(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">南方基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/016452" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">016453</span></td><td><a href="/fund/016453" class="dir-fund-name">南方纳斯达克100指数发起(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">南方基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td><td style="text-align:center"><a href="/fund/016453" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">021000</span></td><td><a href="/fund/021000" class="dir-fund-name">南方纳斯达克100指数发起(QDII)I</a></td><td style="text-align:center"><span class="badge-share badge-i">I类</span></td><td class="dir-fund-mgr">南方基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.66%</span></td><td style="text-align:center"><a href="/fund/021000" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">016055</span></td><td><a href="/fund/016055" class="dir-fund-name">博时纳斯达克100ETF发起式联接(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/016055" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">016057</span></td><td><a href="/fund/016057" class="dir-fund-name">博时纳斯达克100ETF发起式联接(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.95%</span></td><td style="text-align:center"><a href="/fund/016057" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">024237</span></td><td><a href="/fund/024237" class="dir-fund-name">博时纳斯达克100ETF发起式联接(QDII)I人民币</a></td><td style="text-align:center"><span class="badge-share badge-i">I类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/024237" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">016532</span></td><td><a href="/fund/016532" class="dir-fund-name">嘉实纳斯达克100ETF发起联接(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">嘉实基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.60%</span></td><td style="text-align:center"><a href="/fund/016532" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">016533</span></td><td><a href="/fund/016533" class="dir-fund-name">嘉实纳斯达克100ETF发起联接(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">嘉实基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.85%</span></td><td style="text-align:center"><a href="/fund/016533" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">021838</span></td><td><a href="/fund/021838" class="dir-fund-name">嘉实纳斯达克100ETF发起联接(QDII)I人民币</a></td><td style="text-align:center"><span class="badge-share badge-i">I类</span></td><td class="dir-fund-mgr">嘉实基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.70%</span></td><td style="text-align:center"><a href="/fund/021838" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">160213</span></td><td><a href="/fund/160213" class="dir-fund-name">国泰纳斯达克100指数</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">国泰基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/160213" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">000834</span></td><td><a href="/fund/000834" class="dir-fund-name">大成纳斯达克100ETF联接(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">大成基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/000834" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">008971</span></td><td><a href="/fund/008971" class="dir-fund-name">大成纳斯达克100ETF联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">大成基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.30%</span></td><td style="text-align:center"><a href="/fund/008971" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">018043</span></td><td><a href="/fund/018043" class="dir-fund-name">天弘纳斯达克100指数发起(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.60%</span></td><td style="text-align:center"><a href="/fund/018043" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">018044</span></td><td><a href="/fund/018044" class="dir-fund-name">天弘纳斯达克100指数发起(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/018044" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">022525</span></td><td><a href="/fund/022525" class="dir-fund-name">天弘纳斯达克100指数发起(QDII)D</a></td><td style="text-align:center"><span class="badge-share badge-d">D类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/022525" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019736</span></td><td><a href="/fund/019736" class="dir-fund-name">宝盈纳斯达克100指数发起(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">宝盈基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/019736" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019737</span></td><td><a href="/fund/019737" class="dir-fund-name">宝盈纳斯达克100指数发起(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">宝盈基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.90%</span></td><td style="text-align:center"><a href="/fund/019737" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">006479</span></td><td><a href="/fund/006479" class="dir-fund-name">广发纳指100ETF联接(QDII)人民币C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">广发基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.20%</span></td><td style="text-align:center"><a href="/fund/006479" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">021778</span></td><td><a href="/fund/021778" class="dir-fund-name">广发纳指100ETF联接(QDII)人民币F</a></td><td style="text-align:center"><span class="badge-share badge-f">F类</span></td><td class="dir-fund-mgr">广发基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.18%</span></td><td style="text-align:center"><a href="/fund/021778" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">270042</span></td><td><a href="/fund/270042" class="dir-fund-name">广发纳指100ETF联接(QDII)人民币A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">广发基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/270042" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">012752</span></td><td><a href="/fund/012752" class="dir-fund-name">建信纳斯达克100指数(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">建信基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.30%</span></td><td style="text-align:center"><a href="/fund/012752" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">023422</span></td><td><a href="/fund/023422" class="dir-fund-name">建信纳斯达克100指数(QDII)D人民币</a></td><td style="text-align:center"><span class="badge-share badge-d">D类</span></td><td class="dir-fund-mgr">建信基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.30%</span></td><td style="text-align:center"><a href="/fund/023422" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">539001</span></td><td><a href="/fund/539001" class="dir-fund-name">建信纳斯达克100指数(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">建信基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/539001" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019547</span></td><td><a href="/fund/019547" class="dir-fund-name">招商纳斯达克100ETF发起式联接(QDII)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">招商基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/019547" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019548</span></td><td><a href="/fund/019548" class="dir-fund-name">招商纳斯达克100ETF发起式联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">招商基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/019548" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019172</span></td><td><a href="/fund/019172" class="dir-fund-name">摩根纳斯达克100指数(QDII)人民币A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">摩根基金(中国)</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.60%</span></td><td style="text-align:center"><a href="/fund/019172" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019173</span></td><td><a href="/fund/019173" class="dir-fund-name">摩根纳斯达克100指数(QDII)人民币C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">摩根基金(中国)</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.90%</span></td><td style="text-align:center"><a href="/fund/019173" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">012870</span></td><td><a href="/fund/012870" class="dir-fund-name">易方达纳斯达克100ETF联接(QDII-LOF)C(人民币)</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">易方达基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.90%</span></td><td style="text-align:center"><a href="/fund/012870" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">161130</span></td><td><a href="/fund/161130" class="dir-fund-name">易方达纳斯达克100ETF联接(QDII-LOF)A(人民币)</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">易方达基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.60%</span></td><td style="text-align:center"><a href="/fund/161130" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">017091</span></td><td><a href="/fund/017091" class="dir-fund-name">景顺长城纳斯达克科技ETF联接(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">景顺长城基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/017091" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">017093</span></td><td><a href="/fund/017093" class="dir-fund-name">景顺长城纳斯达克科技ETF联接(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">景顺长城基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.40%</span></td><td style="text-align:center"><a href="/fund/017093" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019118</span></td><td><a href="/fund/019118" class="dir-fund-name">景顺长城纳斯达克科技ETF联接(QDII)E人民币</a></td><td style="text-align:center"><span class="badge-share badge-e">E类</span></td><td class="dir-fund-mgr">景顺长城基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.20%</span></td><td style="text-align:center"><a href="/fund/019118" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">018966</span></td><td><a href="/fund/018966" class="dir-fund-name">汇添富纳斯达克100ETF发起式联接(QDII)人民币A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">汇添富基金</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/018966" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">018967</span></td><td><a href="/fund/018967" class="dir-fund-name">汇添富纳斯达克100ETF发起式联接(QDII)人民币C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">汇添富基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/018967" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">021773</span></td><td><a href="/fund/021773" class="dir-fund-name">汇添富纳斯达克100ETF发起式联接(QDII)人民币E</a></td><td style="text-align:center"><span class="badge-share badge-e">E类</span></td><td class="dir-fund-mgr">汇添富基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td><td style="text-align:center"><a href="/fund/021773" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr></tbody>
             </table>
         </div>
     </div>
@@ -1240,7 +1252,7 @@
                         <th class="col-center" style="width:105px">操作</th>
                     </tr>
                 </thead>
-                <tbody><tr><td style="text-align:center"><span class="code-mono">018064</span></td><td><a href="/fund/018064" class="dir-fund-name">华夏标普500ETF发起式联接(QDII)A(人民币)</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">华夏基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td><td style="text-align:center"><a href="/fund/018064" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">018065</span></td><td><a href="/fund/018065" class="dir-fund-name">华夏标普500ETF发起式联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">华夏基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/018065" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">006075</span></td><td><a href="/fund/006075" class="dir-fund-name">博时标普500ETF联接C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.15%</span></td><td style="text-align:center"><a href="/fund/006075" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">018738</span></td><td><a href="/fund/018738" class="dir-fund-name">博时标普500ETF联接E(人民币)</a></td><td style="text-align:center"><span class="badge-share badge-e">E类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.81%</span></td><td style="text-align:center"><a href="/fund/018738" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">050025</span></td><td><a href="/fund/050025" class="dir-fund-name">博时标普500ETF联接A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/050025" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">017028</span></td><td><a href="/fund/017028" class="dir-fund-name">国泰标普500ETF发起联接(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">国泰基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td><td style="text-align:center"><a href="/fund/017028" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">017030</span></td><td><a href="/fund/017030" class="dir-fund-name">国泰标普500ETF发起联接(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">国泰基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/017030" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">008401</span></td><td><a href="/fund/008401" class="dir-fund-name">大成标普500等权重指数(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">大成基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.50%</span></td><td style="text-align:center"><a href="/fund/008401" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">096001</span></td><td><a href="/fund/096001" class="dir-fund-name">大成标普500等权重指数(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">大成基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.20%</span></td><td style="text-align:center"><a href="/fund/096001" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">007721</span></td><td><a href="/fund/007721" class="dir-fund-name">天弘标普500发起(QDII-FOF)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/007721" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">007722</span></td><td><a href="/fund/007722" class="dir-fund-name">天弘标普500发起(QDII-FOF)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/007722" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">022523</span></td><td><a href="/fund/022523" class="dir-fund-name">天弘标普500发起(QDII-FOF)D</a></td><td style="text-align:center"><span class="badge-share badge-d">D类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/022523" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">017641</span></td><td><a href="/fund/017641" class="dir-fund-name">摩根标普500指数(QDII)人民币A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">摩根基金(中国)</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/017641" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">019305</span></td><td><a href="/fund/019305" class="dir-fund-name">摩根标普500指数(QDII)人民币C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">摩根基金(中国)</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.95%</span></td><td style="text-align:center"><a href="/fund/019305" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">012860</span></td><td><a href="/fund/012860" class="dir-fund-name">易方达标普500指数人民币C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">易方达基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.35%</span></td><td style="text-align:center"><a href="/fund/012860" class="btn-dir-review">评测专页 ➔</a></td></tr><tr><td style="text-align:center"><span class="code-mono">161125</span></td><td><a href="/fund/161125" class="dir-fund-name">易方达标普500指数人民币A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">易方达基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/161125" class="btn-dir-review">评测专页 ➔</a></td></tr></tbody>
+                <tbody><tr><td style="text-align:center"><span class="code-mono">018064</span></td><td><a href="/fund/018064" class="dir-fund-name">华夏标普500ETF发起式联接(QDII)A(人民币)</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">华夏基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td><td style="text-align:center"><a href="/fund/018064" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">018065</span></td><td><a href="/fund/018065" class="dir-fund-name">华夏标普500ETF发起式联接(QDII)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">华夏基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/018065" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">006075</span></td><td><a href="/fund/006075" class="dir-fund-name">博时标普500ETF联接C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.15%</span></td><td style="text-align:center"><a href="/fund/006075" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">018738</span></td><td><a href="/fund/018738" class="dir-fund-name">博时标普500ETF联接E(人民币)</a></td><td style="text-align:center"><span class="badge-share badge-e">E类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.81%</span></td><td style="text-align:center"><a href="/fund/018738" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">050025</span></td><td><a href="/fund/050025" class="dir-fund-name">博时标普500ETF联接A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">博时基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/050025" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">017028</span></td><td><a href="/fund/017028" class="dir-fund-name">国泰标普500ETF发起联接(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">国泰基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.75%</span></td><td style="text-align:center"><a href="/fund/017028" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">017030</span></td><td><a href="/fund/017030" class="dir-fund-name">国泰标普500ETF发起联接(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">国泰基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/017030" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">008401</span></td><td><a href="/fund/008401" class="dir-fund-name">大成标普500等权重指数(QDII)C人民币</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">大成基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.50%</span></td><td style="text-align:center"><a href="/fund/008401" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">096001</span></td><td><a href="/fund/096001" class="dir-fund-name">大成标普500等权重指数(QDII)A人民币</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">大成基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.20%</span></td><td style="text-align:center"><a href="/fund/096001" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">007721</span></td><td><a href="/fund/007721" class="dir-fund-name">天弘标普500发起(QDII-FOF)A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.80%</span></td><td style="text-align:center"><a href="/fund/007721" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">007722</span></td><td><a href="/fund/007722" class="dir-fund-name">天弘标普500发起(QDII-FOF)C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/007722" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">022523</span></td><td><a href="/fund/022523" class="dir-fund-name">天弘标普500发起(QDII-FOF)D</a></td><td style="text-align:center"><span class="badge-share badge-d">D类</span></td><td class="dir-fund-mgr">天弘基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.05%</span></td><td style="text-align:center"><a href="/fund/022523" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">017641</span></td><td><a href="/fund/017641" class="dir-fund-name">摩根标普500指数(QDII)人民币A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">摩根基金(中国)</td><td style="text-align:center"><span class="dir-fund-fee fee-low">0.65%</span></td><td style="text-align:center"><a href="/fund/017641" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">019305</span></td><td><a href="/fund/019305" class="dir-fund-name">摩根标普500指数(QDII)人民币C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">摩根基金(中国)</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">0.95%</span></td><td style="text-align:center"><a href="/fund/019305" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">012860</span></td><td><a href="/fund/012860" class="dir-fund-name">易方达标普500指数人民币C</a></td><td style="text-align:center"><span class="badge-share badge-c">C类</span></td><td class="dir-fund-mgr">易方达基金</td><td style="text-align:center"><span class="dir-fund-fee fee-high">1.35%</span></td><td style="text-align:center"><a href="/fund/012860" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr><tr><td style="text-align:center"><span class="code-mono">161125</span></td><td><a href="/fund/161125" class="dir-fund-name">易方达标普500指数人民币A</a></td><td style="text-align:center"><span class="badge-share badge-a">A类</span></td><td class="dir-fund-mgr">易方达基金</td><td style="text-align:center"><span class="dir-fund-fee fee-mid">1.00%</span></td><td style="text-align:center"><a href="/fund/161125" class="btn-dir-review">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></td></tr></tbody>
             </table>
         </div>
     </div>
@@ -1262,42 +1274,42 @@
             <div class="algo-grid">
                 <div class="algo-item">
                     <div class="algo-header">
-                        <span class="algo-weight" style="background:var(--accent-g)">35%</span>
+                        <span class="algo-weight" style="background:var(--accent)">35%</span>
                         <strong>综合费率</strong>
                     </div>
                     <p>管理费 + 托管费。费率每高 0.1%，长期复利下会侵蚀数万元收益。费率是指数基金最核心的差异因素，因为跟踪同一指数的基金收益差异主要来自费率。</p>
                 </div>
                 <div class="algo-item">
                     <div class="algo-header">
-                        <span class="algo-weight" style="background:linear-gradient(135deg,#6366f1,#a78bfa)">20%</span>
+                        <span class="algo-weight" style="background:var(--accent)">20%</span>
                         <strong>跟踪误差与信息比率 (TE / IR)</strong>
                     </div>
                     <p>基金收益率与指数收益率的标准差。结合信息比率 (IR = 跟踪偏离度均值 / 跟踪误差) 与同类中位数相对评分法，精准评估基金经理在承担跟踪风险下的稳定超额收益能力，误差越小、IR越高说明管理越卓越。</p>
                 </div>
                 <div class="algo-item">
                     <div class="algo-header">
-                        <span class="algo-weight" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">15%</span>
+                        <span class="algo-weight" style="background:var(--warn)">15%</span>
                         <strong>基金规模</strong>
                     </div>
                     <p>规模 10-80 亿为最优区间。太小有清盘风险，太大可能影响跟踪精度。规模适中的基金运营更稳定。</p>
                 </div>
                 <div class="algo-item">
                     <div class="algo-header">
-                        <span class="algo-weight" style="background:linear-gradient(135deg,#10b981,#34d399)">15%</span>
+                        <span class="algo-weight" style="background:var(--ok)">15%</span>
                         <strong>历史业绩</strong>
                     </div>
                     <p>近 3 年收益率。虽然过去业绩不代表未来，但可以反映基金的跟踪质量和管理水平。</p>
                 </div>
                 <div class="algo-item">
                     <div class="algo-header">
-                        <span class="algo-weight" style="background:linear-gradient(135deg,#f59e0b,#f97316)">10%</span>
+                        <span class="algo-weight" style="background:var(--warn)">10%</span>
                         <strong>晨星评级</strong>
                     </div>
                     <p>专业评级机构的综合评价，基于风险调整后收益。晨星评级是独立第三方的质量认证。</p>
                 </div>
                 <div class="algo-item">
                     <div class="algo-header">
-                        <span class="algo-weight" style="background:linear-gradient(135deg,#06b6d4,#22d3ee)">5%</span>
+                        <span class="algo-weight" style="background:var(--cyan, #0284c7)">5%</span>
                         <strong>申购费率</strong>
                     </div>
                     <p>购买基金时的一次性费用。虽然占比小，但对于频繁定投的投资者，低申购费能节省不少成本。</p>
@@ -1574,7 +1586,7 @@
                             <div class="tbl-return-spark-track" title="近3年累计收益表现条"><div class="tbl-return-spark-fill spark-pos" style="width:79%"></div></div>
                         </div>
                     </td>
-                    <td><span class="tbl-stars-wrap" style="color:var(--warn)">★★★</span></td>
+                    <td><span class="tbl-stars-wrap" style="color:var(--warn);font-family:var(--font-mono);font-weight:600">3.0</span></td>
                     <td><div class="tbl-limit-cell"><div class="tbl-limit-row"><span class="tbl-limit-lbl">代销</span><span class="pill py pill-tight"><span class="status-pulse-dot warn"></span> 限10元/日</span></div><div class="tbl-limit-row"><span class="tbl-limit-lbl">直销</span><span class="pill py pill-tight"><span class="status-pulse-dot warn"></span> 限100元/日</span></div></div></td>
                     <td><div class="tbl-score-cell"><div class="tbl-score-num-wrap"><strong class="tbl-score-val">96.8</strong><span class="tbl-score-sub">分</span></div><div class="tbl-score-meter-bar" title="量化六维加权得分: 96.8 / 100"><div class="tbl-score-meter-fill" style="width:97%"></div></div></div></td>
                 </tr>
@@ -1600,7 +1612,7 @@
                             <div class="tbl-return-spark-track" title="近3年累计收益表现条"><div class="tbl-return-spark-fill spark-pos" style="width:78%"></div></div>
                         </div>
                     </td>
-                    <td><span class="tbl-stars-wrap" style="color:var(--warn)">★★★</span></td>
+                    <td><span class="tbl-stars-wrap" style="color:var(--warn);font-family:var(--font-mono);font-weight:600">3.0</span></td>
                     <td><div class="tbl-limit-cell"><div class="tbl-limit-row"><span class="tbl-limit-lbl">代销</span><span class="pill py pill-tight"><span class="status-pulse-dot warn"></span> 限1000元/日</span></div><div class="tbl-limit-row"><span class="tbl-limit-lbl">直销</span><span class="pill pg pill-relaxed"><span class="status-pulse-dot ok"></span> 开放申购</span></div></div></td>
                     <td><div class="tbl-score-cell"><div class="tbl-score-num-wrap"><strong class="tbl-score-val">95.4</strong><span class="tbl-score-sub">分</span></div><div class="tbl-score-meter-bar" title="量化六维加权得分: 95.4 / 100"><div class="tbl-score-meter-fill" style="width:95%"></div></div></div></td>
                 </tr>
@@ -1626,7 +1638,7 @@
                             <div class="tbl-return-spark-track" title="近3年累计收益表现条"><div class="tbl-return-spark-fill spark-pos" style="width:56%"></div></div>
                         </div>
                     </td>
-                    <td><span class="tbl-stars-wrap" style="color:var(--warn)">★★</span></td>
+                    <td><span class="tbl-stars-wrap" style="color:var(--warn);font-family:var(--font-mono);font-weight:600">2.0</span></td>
                     <td><div class="tbl-limit-cell"><div class="tbl-limit-row"><span class="tbl-limit-lbl">代销</span><span class="pill py pill-tight"><span class="status-pulse-dot warn"></span> 限500元/日</span></div><div class="tbl-limit-row"><span class="tbl-limit-lbl">直销</span><span class="pill pg pill-relaxed"><span class="status-pulse-dot ok"></span> 开放申购</span></div></div></td>
                     <td><div class="tbl-score-cell"><div class="tbl-score-num-wrap"><strong class="tbl-score-val">93.2</strong><span class="tbl-score-sub">分</span></div><div class="tbl-score-meter-bar" title="量化六维加权得分: 93.2 / 100"><div class="tbl-score-meter-fill" style="width:93%"></div></div></div></td>
                 </tr>
@@ -1704,7 +1716,7 @@
                 <div class="preset-chips" data-for="sim-y">
                     <span class="preset-chip" data-val="5">5年</span>
                     <span class="preset-chip" data-val="10">10年</span>
-                    <span class="preset-chip active" data-val="20">20年 (黄金复利期)</span>
+                    <span class="preset-chip active" data-val="20">20年 (长期复利区间)</span>
                     <span class="preset-chip" data-val="30">30年</span>
                 </div>
             </div>
@@ -1864,7 +1876,7 @@
                     <div class="preset-chips" data-for="pf-y">
                         <span class="preset-chip" data-val="5">5年</span>
                         <span class="preset-chip" data-val="10">10年</span>
-                        <span class="preset-chip active" data-val="20">20年 (黄金复利期)</span>
+                        <span class="preset-chip active" data-val="20">20年 (长期复利区间)</span>
                         <span class="preset-chip" data-val="30">30年</span>
                     </div>
                 </div>
@@ -1912,7 +1924,7 @@
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px">
-                <span class="tag" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:600">量化前沿面</span>
+                <span class="tag" style="background:var(--accent);color:#fff;font-weight:600">量化前沿面</span>
                 <span class="algo-arrow" id="quant-frontier-arrow" style="transform:rotate(0deg);transition:transform .2s">▼</span>
             </div>
         </div>
@@ -2058,7 +2070,7 @@
                     <div>
                         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                             <h2 style="margin:0;font-size:1.15rem;color:var(--txt)">历史极端危机压力测试 (Stress Testing)</h2>
-                            <span class="tag" style="background:rgba(239,68,68,0.12);color:var(--err);font-weight:700">肥尾黑天鹅实测</span>
+                            <span class="tag" style="background:rgba(239,68,68,0.12);color:var(--err);font-weight:700">极端历史情景压力测试</span>
                             <span class="tag" style="background:rgba(99,102,241,0.12);color:var(--accent2);font-weight:600">非高斯真实序列</span>
                         </div>
                         <p style="margin:4px 0 0;font-size:0.78rem;color:var(--txt3)">复现美股百年 4 大经典崩盘危机：检验在估值暴跌、系统性踩踏与极速 V 反行情中，各定投策略的真实抗跌与修复能力</p>
@@ -2314,7 +2326,7 @@
     <h1 class="page-title">关于 Fund Advisor</h1>
     <p class="page-sub">平台介绍 · 免责声明 · 隐私政策</p>
     <div style="text-align:center;margin:1.5rem 0 2rem">
-        <a href="/about" class="btn btn-p" style="text-decoration:none;padding:0.6rem 1.5rem;font-weight:600">查阅完整平台介绍、量化投研方法论与合规声明 ➔</a>
+        <a href="/about" class="btn btn-p" style="text-decoration:none;padding:0.6rem 1.5rem;font-weight:600">查阅完整平台介绍、量化投研方法论与合规声明 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
     <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin:0.75rem 0 1.5rem">
         <span class="tag" style="background:rgba(99,102,241,0.1);color:var(--accent2);border:1px solid rgba(99,102,241,0.25)">独立客观</span>
@@ -2378,7 +2390,7 @@
             </p>
             <div class="footer-status-pill">
                 <span class="footer-pulse-dot"></span>
-                <span id="footer-system-status">量化通算引擎全时在线 · 延迟 &lt; 15ms</span>
+                <span id="footer-system-status">量化分析引擎稳定运行 · 延迟 &lt; 15ms</span>
             </div>
             <div class="footer-shortcut-hint">
                 <span>快捷操作：</span>
@@ -2423,8 +2435,8 @@
     </div>
 
     <div class="footer-copyright">
-        <div>© 2026 Fund Advisor (858000.xyz). All Wall Street quant models open for research.</div>
-        <div>Designed to Award Tier Standards · Webby &amp; Awwwards Compliant</div>
+        <div>© 2026 Fund Advisor (858000.xyz). Institutional quantitative models open for research.</div>
+        <div>Institutional Quantitative Terminal Architecture</div>
     </div>
 </footer>
 
@@ -2453,14 +2465,14 @@
 </nav>
 
     <!-- 全景表格导出前基金勾选弹窗 -->
-    <div class="fund-select-modal-backdrop" id="rank-select-modal" style="display:none">
+    <div class="fund-select-modal-backdrop" id="rank-select-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="rks-modal-title">
         <div class="fund-select-dialog">
             <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="fund-select-header">
                 <div class="fund-select-title-group">
                     <div class="fund-select-title">
                         <span class="modal-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></span>
-                        <strong>选择导出基金标的</strong>
+                        <strong id="rks-modal-title">选择导出基金标的</strong>
                     </div>
                     <div class="fund-select-sub">
                         当前筛选共 <span id="rks-total-num">0</span> 只（其中 <span id="rks-quota-num" class="text-ok">0</span> 只可申购），已勾选 <strong id="rks-selected-num" class="text-accent">0</strong> 只（默认全选）
@@ -2514,14 +2526,14 @@
     </div>
 
     <!-- 公告看板导出前基金勾选弹窗 -->
-    <div class="fund-select-modal-backdrop" id="quota-select-modal" style="display:none">
+    <div class="fund-select-modal-backdrop" id="quota-select-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="qks-modal-title">
         <div class="fund-select-dialog">
             <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="fund-select-header">
                 <div class="fund-select-title-group">
                     <div class="fund-select-title">
                         <span class="modal-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></span>
-                        <strong>选择导出公告标的</strong>
+                        <strong id="qks-modal-title">选择导出公告标的</strong>
                     </div>
                     <div class="fund-select-sub">
                         近期变动共 <span id="qks-total-num">0</span> 只，已勾选 <strong id="qks-selected-num" class="text-accent">0</strong> 只（默认全选）
@@ -2573,7 +2585,7 @@
     </div>
 
     <!-- 图片导出预览弹窗 -->
-    <div class="poster-modal-backdrop" id="poster-modal-backdrop" style="display:none">
+    <div class="poster-modal-backdrop" id="poster-modal-backdrop" style="display:none" role="dialog" aria-modal="true" aria-labelledby="poster-modal-title-text">
         <div class="poster-modal-dialog">
             <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="poster-modal-header">
@@ -2606,14 +2618,14 @@
     </div>
 
     <!-- 全局键盘快捷键指令 HUD 弹窗 (Raycast / Linear 风格) -->
-    <div class="fund-select-modal-backdrop" id="shortcut-hud-modal" style="display:none" role="dialog" aria-label="键盘快捷键速查">
+    <div class="fund-select-modal-backdrop" id="shortcut-hud-modal" style="display:none" role="dialog" aria-modal="true" aria-label="键盘快捷键速查" aria-labelledby="hud-modal-title">
         <div class="fund-select-dialog shortcut-hud-dialog">
             <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="fund-select-header">
                 <div class="fund-select-title-group">
                     <div class="fund-select-title">
                         <span class="modal-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M6 12h.001M10 12h.001M14 12h.001M18 12h.001M7 16h10"/></svg></span>
-                        <strong>键盘快捷键速查 · Keyboard Shortcuts</strong>
+                        <strong id="hud-modal-title">键盘快捷键速查 · Keyboard Shortcuts</strong>
                     </div>
                     <div class="fund-select-sub">终端级量化操作流，指尖掌控全站</div>
                 </div>
