@@ -455,11 +455,20 @@ const App = (() => {
 
         let pName = page;
         let queryParams = {};
+        if (typeof window !== 'undefined' && window.location && window.location.search) {
+            try {
+                const globalSp = new URLSearchParams(window.location.search);
+                globalSp.forEach((v, k) => queryParams[k] = v);
+            } catch (e) {}
+        }
         if (page.includes('?')) {
             const parts = page.split('?');
             pName = parts[0].replace(/^[#/]+/, '');
             const sp = new URLSearchParams(parts[1]);
             sp.forEach((v, k) => queryParams[k] = v);
+        }
+        if (queryParams.q && (pName === 'home' || !pName)) {
+            pName = 'ranking';
         }
 
         if (pName.startsWith('page-')) {
@@ -626,10 +635,15 @@ const App = (() => {
 
         // 首次加载
         let initHash = window.location.hash.replace('#', '') || 'home';
-        if (initHash === 'home' && window.location.search) {
+        if (window.location.search) {
             const urlSp = new URLSearchParams(window.location.search);
             if (urlSp.get('q')) {
-                initHash = 'ranking?' + window.location.search.replace(/^\?/, '');
+                const searchStr = window.location.search.replace(/^\?/, '');
+                if (initHash === 'home' || initHash === 'ranking') {
+                    initHash = 'ranking?' + searchStr;
+                } else if (!initHash.includes('?')) {
+                    initHash = initHash + '?' + searchStr;
+                }
             }
         }
         switchPage(initHash);
@@ -910,14 +924,14 @@ const App = (() => {
             else if (r.rank === 3) rankBadge = '<span class="tbl-rank-badge rank-bronze" title="综合排名第3">03</span>';
             else rankBadge = `<span class="tbl-rank-badge">#${r.rank}</span>`;
 
-            return `<div class="tbl-rank-code-cell"><div class="trc-badge-wrap" title="点击展开详情看板">${rankBadge}</div><div class="trc-code-wrap"><span class="code-mono trc-code-btn" data-code="${r.code}" title="点击复制基金代码">${r.code}</span></div><div class="trc-actions-wrap"><button type="button" class="trc-copy-btn" data-code="${r.code}" title="复制基金代码"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button><a href="/fund/${r.code}" target="_blank" class="code-ext-link" title="在新标签页打开独立专页">↗</a></div></div>`;
+            return `<div class="tbl-rank-code-cell"><div class="trc-badge-wrap" title="点击展开详情看板">${rankBadge}</div><div class="trc-code-wrap"><span class="code-mono trc-code-btn" data-code="${r.code}" title="点击复制基金代码">${r.code}</span></div><div class="trc-actions-wrap"><button type="button" class="trc-copy-btn" data-code="${r.code}" title="复制基金代码"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button><a href="/fund/${r.code}" target="_blank" class="code-ext-link" title="在新标签页打开独立专页"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg></a></div></div>`;
         } },
         { key: 'name', label: '名称', render: r => {
             const curType = document.querySelector('#rank-filter .seg-btn.on')?.dataset.value || '纳斯达克100';
             const idxBadge = curType === 'ALL'
                 ? `<span class="badge-idx ${r.index_type === '纳斯达克100' ? 'badge-nq' : 'badge-sp'}">${r.index_type === '纳斯达克100' ? '纳指' : '标普'}</span>`
                 : '';
-            return `<div class="tbl-name-cell">${idxBadge}${shareBadge(r.share_class)}<a href="/fund/${r.code}" class="fund-name-link" data-code="${r.code}" title="点击展开多因子详情看板">${r.name}</a><span class="tbl-row-expand-arrow" title="点击展开/收起详情">▾</span></div>`;
+            return `<div class="tbl-name-cell">${idxBadge}${shareBadge(r.share_class)}<a href="/fund/${r.code}" class="fund-name-link" data-code="${r.code}" title="点击展开多因子详情看板">${r.name}</a><span class="tbl-row-expand-arrow" title="点击展开/收起详情" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>`;
         } },
         { key: 'fee', label: '综合费率', render: r => {
             const mgmt = r.mgmt_fee || 0;
@@ -1408,7 +1422,7 @@ const App = (() => {
                 toggleBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
                 if (toggleTxt) toggleTxt.textContent = isHidden ? '收起限购变动看板' : '查看限购变动与平替全景';
                 const arrow = toggleBtn.querySelector('.quota-toggle-arrow');
-                if (arrow) arrow.textContent = isHidden ? '▴' : '▾';
+                if (arrow) arrow.classList.toggle('open', isHidden);
                 if (isHidden) {
                     drawerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
@@ -1463,15 +1477,15 @@ const App = (() => {
                         <div class="q-channel-grid">
                             <span class="q-channel-tag tag-agency">代销</span>
                             <span class="q-diff-before">${item.agency.before_status}</span>
-                            <span class="q-diff-arrow">➔</span>
+                            <span class="q-diff-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                             <span class="q-diff-after ${item.agency.direction || ''}">${item.agency.after_status}</span>
 
                             <span class="q-channel-tag tag-direct">直销</span>
                             <span class="q-diff-before">${item.direct.before_status}</span>
-                            <span class="q-diff-arrow">➔</span>
+                            <span class="q-diff-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                             <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
                         </div>
-                        ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">官方公告 ↗</a>` : ''}
+                        ${item.announcement_url ? `<a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">官方公告 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M7 17L17 7M7 7h10v10"/></svg></a>` : ''}
                     </div>
                 `;
 
@@ -1560,17 +1574,17 @@ const App = (() => {
                         <div class="qmc-diff-grid">
                             <span class="qmc-diff-lbl"><span class="q-channel-tag tag-agency">代销渠道</span></span>
                             <span class="q-diff-before">${item.agency.before_status}</span>
-                            <span class="q-diff-arrow">➔</span>
+                            <span class="q-diff-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                             <span class="q-diff-after ${item.agency.direction || ''}">${item.agency.after_status}</span>
 
                             <span class="qmc-diff-lbl"><span class="q-channel-tag tag-direct">直销渠道</span></span>
                             <span class="q-diff-before">${item.direct.before_status}</span>
-                            <span class="q-diff-arrow">➔</span>
+                            <span class="q-diff-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                             <span class="q-diff-after ${item.direct.direction || ''}">${item.direct.after_status}</span>
                         </div>
                         ${item.announcement_url ? `
                         <div class="qmc-ann-row">
-                            <a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">查看官方公告原件 ↗</a>
+                            <a href="${item.announcement_url}" target="_blank" class="q-ann-link" title="点击查看基金公司官方公告原件详情">查看官方公告原件 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
                         </div>` : ''}
                         ${subsHtml}
                     </div>
@@ -1803,6 +1817,9 @@ const App = (() => {
             });
             posterThemeCache = {};
             activePosterBlobUrl = null;
+            if (triggerBtn && typeof triggerBtn.focus === 'function') {
+                triggerBtn.focus();
+            }
         };
 
         const escHandler = e => {
@@ -1816,6 +1833,11 @@ const App = (() => {
             };
             modal.style.display = 'flex';
             document.addEventListener('keydown', escHandler);
+            if (downloadBtn) {
+                setTimeout(() => downloadBtn.focus(), 50);
+            } else if (closeBtn) {
+                setTimeout(() => closeBtn.focus(), 50);
+            }
         }
 
         showToast(successToast || '图片已生成', 'success');
@@ -2034,6 +2056,9 @@ const App = (() => {
         const closeSelectModal = () => {
             modal.style.display = 'none';
             document.removeEventListener('keydown', escHandler);
+            if (triggerBtn && typeof triggerBtn.focus === 'function') {
+                triggerBtn.focus();
+            }
         };
 
         const escHandler = e => {
@@ -2074,6 +2099,11 @@ const App = (() => {
 
         modal.style.display = 'flex';
         document.addEventListener('keydown', escHandler);
+        if (searchInput) {
+            setTimeout(() => searchInput.focus(), 50);
+        } else if (btnClose) {
+            setTimeout(() => btnClose.focus(), 50);
+        }
     }
 
     // ===== 导出适合社交发布的 3:4 公告看板图片 (按勾选标的渲染，剥离平替推荐与网页交互控件) =====
@@ -2176,7 +2206,7 @@ const App = (() => {
                                     <span class="dbp-ch-lbl">代销渠道</span>
                                     <div class="dbp-flow">
                                         <span class="dbp-val-before">${item.agency?.before_status || '未知'}</span>
-                                        <span class="dbp-flow-arr">➔</span>
+                                        <span class="dbp-flow-arr"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                                         <span class="dbp-val-after ${agencyDir}">${item.agency?.after_status || '未知'}</span>
                                     </div>
                                 </div>
@@ -2184,7 +2214,7 @@ const App = (() => {
                                     <span class="dbp-ch-lbl">直销渠道</span>
                                     <div class="dbp-flow">
                                         <span class="dbp-val-before">${item.direct?.before_status || '未知'}</span>
-                                        <span class="dbp-flow-arr">➔</span>
+                                        <span class="dbp-flow-arr"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                                         <span class="dbp-val-after ${directDir}">${item.direct?.after_status || '未知'}</span>
                                     </div>
                                 </div>
@@ -2646,6 +2676,9 @@ const App = (() => {
         const closeSelectModal = () => {
             modal.style.display = 'none';
             document.removeEventListener('keydown', escHandler);
+            if (triggerBtn && typeof triggerBtn.focus === 'function') {
+                triggerBtn.focus();
+            }
         };
 
         const escHandler = e => {
@@ -2688,6 +2721,11 @@ const App = (() => {
 
         modal.style.display = 'flex';
         document.addEventListener('keydown', escHandler);
+        if (searchInput) {
+            setTimeout(() => searchInput.focus(), 50);
+        } else if (btnClose) {
+            setTimeout(() => btnClose.focus(), 50);
+        }
     }
 
     // ===== 导出全景对比表格高清长图图片 (按勾选标的渲染，剔除网页交互控件与重复类别徽标) =====
@@ -3095,7 +3133,7 @@ const App = (() => {
                     <!-- 基金主名称 -->
                     <div class="fmc-name-row">
                         <a href="/fund/${r.code}" class="fmc-title" data-code="${r.code}">${r.name}</a>
-                        <a href="/fund/${r.code}" target="_blank" class="fmc-page-link" title="在新标签打开独立专页">评测专页 ↗</a>
+                        <a href="/fund/${r.code}" target="_blank" class="fmc-page-link" title="在新标签打开独立专页">评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
                     </div>
 
                     <!-- 核心 4 宫格量化指标 -->
@@ -3176,10 +3214,10 @@ const App = (() => {
                             <!-- 卡片快捷操作 -->
                             <div class="fmc-actions">
                                 <a href="/fund/${r.code}" target="_blank" class="fmc-btn-act fmc-btn-primary">
-                                    打开独立深度评测专页 ↗
+                                    打开独立深度评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M7 17L17 7M7 7h10v10"/></svg>
                                 </a>
                                 <button type="button" class="fmc-btn-act btn-sim-card-single" data-code="${r.code}">
-                                    带入蒙特卡洛模拟器推演 ➔
+                                    带入蒙特卡洛模拟器推演 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                                 </button>
                             </div>
                         </div>
@@ -3188,7 +3226,7 @@ const App = (() => {
                     <!-- 卡片底部展开/收起触控条 -->
                     <div class="fmc-expand-bar" data-code="${r.code}">
                         <span class="fmc-expand-text">展开深度指标与同门比对</span>
-                        <span class="fmc-expand-arrow">▾</span>
+                        <span class="fmc-expand-arrow" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
                     </div>
                 </div>
             `;
@@ -5425,7 +5463,7 @@ const App = (() => {
                         </div>
                         <div class="pf-card-footer">
                             <span style="font-size:0.75rem;color:var(--txt3)">想要自定义定投预算、年限或测试极端市场压力？</span>
-                            <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="ideal">以该理论配置启动蒙特卡洛推演 ➔</button>
+                            <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="ideal">以该理论配置启动蒙特卡洛推演 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
                         </div>
                     </div>
 
@@ -5441,7 +5479,7 @@ const App = (() => {
                         </div>
                         <div class="pf-card-footer">
                             <span style="font-size:0.75rem;color:var(--txt3)">想要自定义定投预算、年限或测试极端市场压力？</span>
-                            <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="practical">以该可买配置运行蒙特卡洛推演 ➔</button>
+                            <button class="btn-simulate-action btn-sim-from-strat" data-strategy="${s.key}" data-variant="practical">以该可买配置运行蒙特卡洛推演 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
                         </div>
                     </div>
                 </div>`;
@@ -7360,20 +7398,28 @@ const App = (() => {
         const hudOkBtn = document.getElementById('btn-hud-ok');
         const footerHudBtn = document.getElementById('footer-btn-hud');
 
-        function openShortcutHud() {
+        let hudTriggerEl = null;
+        function openShortcutHud(trigger) {
+            hudTriggerEl = (trigger && trigger.nodeType === 1) ? trigger : document.activeElement;
             if (hudModal) {
                 hudModal.style.display = 'flex';
+                if (hudCloseBtn) {
+                    setTimeout(() => hudCloseBtn.focus(), 50);
+                }
             }
         }
         function closeShortcutHud() {
             if (hudModal) {
                 hudModal.style.display = 'none';
+                if (hudTriggerEl && typeof hudTriggerEl.focus === 'function') {
+                    hudTriggerEl.focus();
+                }
             }
         }
-        function toggleShortcutHud() {
+        function toggleShortcutHud(trigger) {
             if (hudModal) {
                 if (hudModal.style.display === 'none' || !hudModal.style.display) {
-                    openShortcutHud();
+                    openShortcutHud(trigger);
                 } else {
                     closeShortcutHud();
                 }
@@ -7381,7 +7427,7 @@ const App = (() => {
         }
         if (hudCloseBtn) hudCloseBtn.addEventListener('click', closeShortcutHud);
         if (hudOkBtn) hudOkBtn.addEventListener('click', closeShortcutHud);
-        if (footerHudBtn) footerHudBtn.addEventListener('click', openShortcutHud);
+        if (footerHudBtn) footerHudBtn.addEventListener('click', () => openShortcutHud(footerHudBtn));
         if (hudModal) {
             hudModal.addEventListener('click', e => {
                 if (e.target === hudModal) closeShortcutHud();
@@ -7820,13 +7866,13 @@ const App = (() => {
                 ${f.benchmark ? `<div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border); font-size:0.8rem; color:var(--txt3);"><strong>业绩基准：</strong>${f.benchmark}</div>` : ''}
                 <div class="fund-detail-actions">
                     <a href="/fund/${f.code}" target="_blank" class="btn-fund-page-action" title="在新标签页中打开这只基金的独立评测专页">
-                        打开评测专页 ↗
+                        打开评测专页 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M7 17L17 7M7 7h10v10"/></svg>
                     </a>
                     <button type="button" class="btn-copy-code-action" data-code="${f.code}">
                         复制基金代码 (${f.code})
                     </button>
                     <button type="button" class="btn-simulate-action btn-sim-single" data-code="${f.code}">
-                        带入模拟器测试 ➔
+                        带入模拟器测试 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:2px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </button>
                 </div>
             </td>`;

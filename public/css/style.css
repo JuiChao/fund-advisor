@@ -385,8 +385,8 @@ header {
 .navbar {
     pointer-events: auto;
     background: var(--nav-bg);
-    backdrop-filter: blur(28px) saturate(200%);
-    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    backdrop-filter: blur(20px) saturate(130%);
+    -webkit-backdrop-filter: blur(20px) saturate(130%);
     border: 1px solid var(--border2);
     border-radius: var(--radius-sm);
     max-width: 1280px;
@@ -1389,6 +1389,9 @@ tr.wr td {
     line-height: 1;
     cursor: pointer;
     transition: all 0.2s;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 .tbl-rank-code-cell .trc-copy-btn:hover {
     color: var(--accent);
@@ -2221,11 +2224,11 @@ input[type=range]::-webkit-slider-thumb {
 }
 input[type=range]::-webkit-slider-thumb:hover {
     transform: scale(1.18);
-    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px var(--accent2), 0 0 22px rgba(99, 102, 241, 0.65);
+    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px var(--accent2), 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 input[type=range]:active::-webkit-slider-thumb {
     transform: scale(1.12);
-    box-shadow: 0 0 0 3px #ffffff, 0 0 0 7px var(--accent), 0 0 28px rgba(99, 102, 241, 0.85);
+    box-shadow: 0 0 0 3px #ffffff, 0 0 0 7px var(--accent), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 input[type=range]::-moz-range-thumb {
     width: 22px;
@@ -2239,7 +2242,7 @@ input[type=range]::-moz-range-thumb {
 }
 input[type=range]::-moz-range-thumb:hover {
     transform: scale(1.18);
-    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px var(--accent2), 0 0 22px rgba(99, 102, 241, 0.65);
+    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px var(--accent2), 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 [data-theme="dark"] input[type=range]::-webkit-slider-thumb {
     background: #0b1120;
@@ -2594,8 +2597,16 @@ input[type=range]::-moz-range-thumb:hover {
     box-shadow: var(--shadow-sm);
 }
 .quota-toggle-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-size: 0.85rem;
     line-height: 1;
+    transition: transform 0.2s ease;
+}
+.quota-toggle-arrow.open,
+.quota-toggle-btn[aria-expanded="true"] .quota-toggle-arrow {
+    transform: rotate(180deg);
 }
 
 /* 抽屉看板内构 */
@@ -3174,7 +3185,7 @@ input[type=range]::-moz-range-thumb:hover {
     font-size: 0.75rem;
     font-weight: 600;
     padding: 3px 10px;
-    border-radius: 16px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: var(--transition);
     line-height: 1.2;
@@ -3866,7 +3877,7 @@ input[type=range]::-moz-range-thumb:hover {
 .dbp-tag-date {
     background: rgba(99, 102, 241, 0.28);
     padding: 2px 9px;
-    border-radius: 12px;
+    border-radius: var(--radius-xs, 2px);
     color: #e0e7ff;
     font-size: 12px;
 }
@@ -3934,7 +3945,7 @@ input[type=range]::-moz-range-thumb:hover {
 .dbp-card {
     background: linear-gradient(145deg, rgba(25, 34, 56, 0.95) 0%, rgba(13, 19, 34, 0.98) 100%);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    border-radius: var(--radius-lg, 6px);
     padding: 16px 18px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
     position: relative;
@@ -4163,7 +4174,7 @@ input[type=range]::-moz-range-thumb:hover {
 .douyin-poster-export.theme-light .dbp-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: var(--radius-lg, 6px);
     box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
 }
 .douyin-poster-export.theme-light .dbp-card-relaxed {
@@ -4292,7 +4303,7 @@ input[type=range]::-moz-range-thumb:hover {
 .rkp-tag-date {
     background: rgba(99, 102, 241, 0.28);
     padding: 2px 9px;
-    border-radius: 12px;
+    border-radius: var(--radius-xs, 2px);
     color: #e0e7ff;
     font-size: 12px;
 }
@@ -4396,7 +4407,7 @@ input[type=range]::-moz-range-thumb:hover {
 }
 
 .rkp-table-wrap {
-    border-radius: 12px;
+    border-radius: var(--radius-lg, 6px);
     border: 1px solid rgba(99, 102, 241, 0.25);
     background: rgba(15, 23, 42, 0.85);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
@@ -5057,7 +5068,7 @@ input[type=range]::-moz-range-thumb:hover {
 .fund-mobile-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     padding: 1rem 1.05rem 0.65rem 1.05rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
@@ -5124,8 +5135,8 @@ input[type=range]::-moz-range-thumb:hover {
     background: rgba(10, 14, 26, 0.78);
     border-color: rgba(129, 140, 248, 0.18);
     box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(24px) saturate(190%);
-    -webkit-backdrop-filter: blur(24px) saturate(190%);
+    backdrop-filter: blur(16px) saturate(130%);
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
 }
 [data-theme="dark"] .fund-mobile-card:hover {
     border-color: rgba(129, 140, 248, 0.5);
@@ -5504,7 +5515,7 @@ input[type=range]::-moz-range-thumb:hover {
     padding: 2.5rem 1rem;
     background: var(--surface);
     border: 1px dashed var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
 }
 
 .rank-index-tabs {
@@ -5684,7 +5695,7 @@ input[type=range]::-moz-range-thumb:hover {
 .floating-btn {
     width: 44px;
     height: 44px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     background: var(--surface);
     border: 1px solid var(--border2);
     color: var(--txt2);
@@ -5733,7 +5744,7 @@ input[type=range]::-moz-range-thumb:hover {
     .floating-btn {
         width: 42px;
         height: 42px;
-        border-radius: 12px;
+        border-radius: var(--radius-md);
     }
 }
 
@@ -6619,8 +6630,8 @@ footer {
     height: calc(58px + env(safe-area-inset-bottom, 0px));
     padding-bottom: env(safe-area-inset-bottom, 0px);
     background: var(--nav-bg);
-    backdrop-filter: blur(28px) saturate(190%);
-    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    backdrop-filter: blur(20px) saturate(130%);
+    -webkit-backdrop-filter: blur(20px) saturate(130%);
     border-top: 1px solid var(--border);
     z-index: 1000;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
@@ -6854,8 +6865,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         z-index: 10001;
         background: var(--surface) !important;
         background-color: var(--surface) !important;
-        backdrop-filter: blur(32px) saturate(200%);
-        -webkit-backdrop-filter: blur(32px) saturate(200%);
+        backdrop-filter: blur(20px) saturate(130%);
+        -webkit-backdrop-filter: blur(20px) saturate(130%);
         flex-direction: column;
         padding: 1.15rem 1rem 1.5rem;
         gap: 0.45rem;
@@ -6980,7 +6991,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         gap: 3px;
         box-sizing: border-box;
         background: var(--surface2);
-        border-radius: 12px;
+        border-radius: var(--radius-md);
         border: 1px solid var(--border);
         box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     }
@@ -7061,7 +7072,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     /* 限购公告与风控看板移动端专属深度适配 */
     .quota-bulletin-container {
         margin-bottom: 1.15rem;
-        border-radius: 12px;
+        border-radius: var(--radius-lg);
     }
     .quota-alert-bar {
         padding: 0.75rem 0.85rem;
@@ -7142,7 +7153,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .quota-mobile-card {
         background: var(--surface2);
         border: 1px solid var(--border);
-        border-radius: 12px;
+        border-radius: var(--radius-lg);
         padding: 0.85rem 0.9rem;
         display: flex;
         flex-direction: column;
@@ -7550,22 +7561,28 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .tbl-rank-code-cell .code-mono:active {
         background: rgba(99, 102, 241, 0.2);
     }
-    /* 移动端第三行纯复制图标按钮：居中微型方块，无冗余文字 */
+    /* 移动端第三行纯复制图标按钮：居中微型方块，扩展触控热区 */
     .tbl-rank-code-cell .trc-copy-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 20px;
-        height: 18px;
+        width: 22px;
+        height: 20px;
         padding: 0;
         margin: 0 auto;
         font-size: 0.65rem;
-        border-radius: 3px;
+        border-radius: var(--radius-xs);
         border: 1px solid var(--border);
         background: var(--surface2);
         color: var(--txt3);
         line-height: 1;
         cursor: pointer;
+        position: relative;
+    }
+    .tbl-rank-code-cell .trc-copy-btn::after {
+        content: '';
+        position: absolute;
+        inset: -8px;
     }
     .tbl-rank-code-cell .trc-copy-btn:active {
         background: rgba(99, 102, 241, 0.2);
@@ -7743,7 +7760,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .frontier-interactive-panel {
     background: var(--surface);
     border: 1px solid rgba(99, 102, 241, 0.22);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     padding: 1.25rem;
     margin-bottom: 1.25rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
@@ -7993,19 +8010,19 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     background: var(--surface2);
 }
 .f-split-nq {
-    background: linear-gradient(90deg, #4f46e5, #6366f1);
+    background: var(--accent, #6366f1);
     transition: width 0.15s ease;
 }
 .f-split-sp {
-    background: linear-gradient(90deg, #059669, #10b981);
+    background: var(--ok, #10b981);
     transition: width 0.15s ease;
 }
 .f-risk-nq {
-    background: linear-gradient(90deg, #e11d48, #f43f5e);
+    background: var(--err, #f43f5e);
     transition: width 0.15s ease;
 }
 .f-risk-sp {
-    background: linear-gradient(90deg, #0284c7, #0ea5e9);
+    background: var(--info, #0ea5e9);
     transition: width 0.15s ease;
 }
 .f-bars-legend {
@@ -8345,7 +8362,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     padding: 0.85rem 1rem;
     background: var(--surface2, var(--bg2));
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm, 8px);
+    border-radius: var(--radius-sm);
     transition: all 0.2s ease;
 }
 .downside-card-header {
@@ -8380,7 +8397,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     background: rgba(16, 185, 129, 0.08);
     border: 1px solid rgba(16, 185, 129, 0.2);
     padding: 2px 8px;
-    border-radius: 12px;
+    border-radius: var(--radius-xs);
 }
 .downside-sortino-pill strong {
     color: var(--ok);
@@ -8446,7 +8463,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     padding: 0.9rem 1.1rem;
     background: linear-gradient(180deg, var(--surface2) 0%, rgba(99, 102, 241, 0.04) 100%);
     border: 1px solid rgba(99, 102, 241, 0.22);
-    border-radius: var(--radius-sm, 8px);
+    border-radius: var(--radius-sm);
 }
 .sim-downside-title {
     display: flex;
@@ -8987,7 +9004,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     width: 100%;
     background: var(--surface2, var(--bg2));
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm, 8px);
+    border-radius: var(--radius-sm);
     padding: 0.85rem 1rem;
     display: flex;
     flex-direction: column;
@@ -9023,7 +9040,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     background: rgba(16, 185, 129, 0.08);
     border: 1px solid rgba(16, 185, 129, 0.2);
     padding: 2px 10px;
-    border-radius: 12px;
+    border-radius: var(--radius-xs);
 }
 
 .pf-donut-budget-pill strong {
@@ -9273,7 +9290,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     height: 100%;
     background: var(--surface2, var(--bg2));
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm, 8px);
+    border-radius: var(--radius-sm);
     padding: 0.85rem 1rem;
     display: flex;
     flex-direction: column;
@@ -9301,7 +9318,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     background: rgba(99, 102, 241, 0.08);
     border: 1px solid rgba(99, 102, 241, 0.2);
     padding: 2px 8px;
-    border-radius: 12px;
+    border-radius: var(--radius-xs);
 }
 
 .pf-pill-metrics {
@@ -9488,7 +9505,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     background: rgba(16, 185, 129, 0.1);
     border: 1px solid rgba(16, 185, 129, 0.25);
     padding: 2px 8px;
-    border-radius: 12px;
+    border-radius: var(--radius-xs);
     margin-left: 8px;
     white-space: nowrap;
 }
@@ -9627,8 +9644,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     border-radius: var(--radius);
     padding: 1.25rem 1.5rem;
     box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 24px rgba(99, 102, 241, 0.04);
-    backdrop-filter: blur(28px) saturate(190%);
-    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    backdrop-filter: blur(20px) saturate(130%);
+    -webkit-backdrop-filter: blur(20px) saturate(130%);
     position: relative;
     z-index: 2;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -11116,7 +11133,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     padding: 1.35rem;
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .eeat-header {
@@ -11281,6 +11298,7 @@ a:focus-visible, button:focus-visible {
         padding: 0 !important;
     }
     .fund-select-dialog,
+    .shortcut-hud-dialog,
     .poster-modal-dialog {
         max-width: 100% !important;
         width: 100% !important;
@@ -11295,6 +11313,7 @@ a:focus-visible, button:focus-visible {
     }
     @starting-style {
         .fund-select-dialog,
+        .shortcut-hud-dialog,
         .poster-modal-dialog {
             transform: translateY(100%);
         }
@@ -11474,53 +11493,7 @@ tbody.spotlight-active tr:hover {
 .frontier-inspector-card:hover {
     border-color: var(--accent2);
 }
-.frontier-range-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 8px;
-    border-radius: 3px;
-    background: linear-gradient(90deg, #10b981 0%, #06b6d4 50%, #6366f1 100%);
-    outline: none;
-    cursor: pointer;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
-    transition: filter 0.2s ease;
-}
-.frontier-range-slider:hover {
-    filter: brightness(1.12);
-}
-.frontier-range-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 0 0 2.5px #ffffff, 0 0 0 5px var(--accent), 0 4px 14px rgba(99, 102, 241, 0.5);
-    cursor: pointer;
-    transition: transform 0.25s var(--spring-easing), box-shadow 0.25s ease;
-}
-.frontier-range-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.18);
-    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px var(--accent2), 0 0 22px rgba(99, 102, 241, 0.7);
-}
-.frontier-range-slider::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 0 0 2.5px #ffffff, 0 0 0 5px var(--accent), 0 4px 14px rgba(99, 102, 241, 0.5);
-    cursor: pointer;
-    border: none;
-    transition: transform 0.25s var(--spring-easing), box-shadow 0.25s ease;
-}
-[data-theme="dark"] .frontier-range-slider::-webkit-slider-thumb {
-    background: #0b1120;
-    box-shadow: 0 0 0 2px #1e293b, 0 0 0 4.5px var(--accent2), 0 0 18px rgba(99, 102, 241, 0.6);
-}
-[data-theme="dark"] .frontier-range-slider::-moz-range-thumb {
-    background: #0b1120;
-    box-shadow: 0 0 0 2px #1e293b, 0 0 0 4.5px var(--accent2), 0 0 18px rgba(99, 102, 241, 0.6);
-}
+/* .frontier-range-slider and .f-split-* rules unified in base & section 6 */
 .frontier-kpi-item {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -11542,9 +11515,6 @@ tbody.spotlight-active tr:hover {
     line-height: 1.2;
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
-}
-.f-split-bar {
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.15), 0 1px 4px rgba(0,0,0,0.06);
 }
 
 /* 策略卡片与分类面板 */
@@ -11576,7 +11546,7 @@ tbody.spotlight-active tr:hover {
 .pf-strat-icon {
     width: 44px;
     height: 44px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     background: var(--surface2);
     border: 1px solid var(--border);
     display: flex;
@@ -11733,6 +11703,9 @@ tbody.spotlight-active tr:hover {
     cursor: pointer;
     transition: all 0.15s;
     padding: 0;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 .sim-stepper-btn:hover {
     background: var(--accent);
@@ -12419,8 +12392,8 @@ tbody.spotlight-active tr:hover {
 .journey-card,
 .hero-quant-ticker,
 .table-wrap {
-    backdrop-filter: blur(36px) saturate(220%) contrast(105%);
-    -webkit-backdrop-filter: blur(36px) saturate(220%) contrast(105%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 [data-theme="dark"] .hero-quant-ticker {
     background: var(--surface);
@@ -12618,12 +12591,12 @@ input[type=range]::-webkit-slider-thumb {
 }
 input[type=range]::-webkit-slider-thumb:hover {
     transform: scale(1.22);
-    box-shadow: 0 0 0 2.5px #ffffff, 0 0 0 6px var(--accent2), 0 0 20px rgba(99, 102, 241, 0.7);
+    box-shadow: 0 0 0 2.5px #ffffff, 0 0 0 6px var(--accent2), 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 input[type=range]:active::-webkit-slider-thumb {
     cursor: grabbing;
     transform: scale(1.12);
-    box-shadow: 0 0 0 3px #ffffff, 0 0 0 7px var(--accent), 0 0 26px rgba(99, 102, 241, 0.9);
+    box-shadow: 0 0 0 3px #ffffff, 0 0 0 7px var(--accent), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 input[type=range]::-moz-range-thumb {
     width: 22px;
@@ -12646,11 +12619,11 @@ input[type=range]::-moz-range-thumb {
 }
 [data-theme="dark"] input[type=range]::-webkit-slider-thumb {
     background: #0f172a;
-    box-shadow: 0 0 0 2px #1e293b, 0 0 0 4.5px var(--accent2), 0 0 18px rgba(99, 102, 241, 0.65);
+    box-shadow: 0 0 0 2px #1e293b, 0 0 0 4.5px var(--accent2), 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 [data-theme="dark"] input[type=range]::-moz-range-thumb {
     background: #0f172a;
-    box-shadow: 0 0 0 2px #1e293b, 0 0 0 4.5px var(--accent2), 0 0 18px rgba(99, 102, 241, 0.65);
+    box-shadow: 0 0 0 2px #1e293b, 0 0 0 4.5px var(--accent2), 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* 6. Frontier Range Slider Dynamic Progress & Tactile Thumb */
@@ -12662,14 +12635,14 @@ input[type=range]::-moz-range-thumb {
     border-radius: 3px;
     background: linear-gradient(
         to right,
-        #10b981 0%,
-        #06b6d4 var(--slider-pct, 39%),
-        #6366f1 var(--slider-pct, 39%),
-        #8b5cf6 100%
+        var(--accent2) 0%,
+        var(--accent2) var(--slider-pct, 39%),
+        var(--surface2) var(--slider-pct, 39%),
+        var(--surface2) 100%
     ) !important;
     outline: none;
     cursor: pointer;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 12px rgba(99, 102, 241, 0.25);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
     transition: filter 0.2s ease;
 }
 .frontier-range-slider:hover {
@@ -12682,21 +12655,43 @@ input[type=range]::-moz-range-thumb {
     height: 24px;
     border-radius: 50%;
     background: #ffffff;
-    box-shadow: 0 0 0 2.5px #ffffff, 0 0 0 5.5px var(--accent), 0 4px 16px rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 0 2.5px #ffffff, 0 0 0 5.5px var(--accent), 0 2px 6px rgba(0, 0, 0, 0.25);
     cursor: grab;
     transition: transform 0.25s var(--spring-easing, cubic-bezier(0.34, 1.56, 0.64, 1)), box-shadow 0.25s ease;
 }
 .frontier-range-slider::-webkit-slider-thumb:hover {
     transform: scale(1.22);
-    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6.5px var(--accent2), 0 0 24px rgba(99, 102, 241, 0.8);
+    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6.5px var(--accent2), 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 .frontier-range-slider:active::-webkit-slider-thumb {
     cursor: grabbing;
     transform: scale(1.14);
 }
+.frontier-range-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: none;
+    box-shadow: 0 0 0 2.5px #ffffff, 0 0 0 5.5px var(--accent), 0 2px 6px rgba(0, 0, 0, 0.25);
+    cursor: grab;
+    transition: transform 0.25s var(--spring-easing, cubic-bezier(0.34, 1.56, 0.64, 1)), box-shadow 0.25s ease;
+}
+.frontier-range-slider::-moz-range-thumb:hover {
+    transform: scale(1.22);
+    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6.5px var(--accent2), 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.frontier-range-slider:active::-moz-range-thumb {
+    cursor: grabbing;
+    transform: scale(1.14);
+}
 [data-theme="dark"] .frontier-range-slider::-webkit-slider-thumb {
     background: #0f172a;
-    box-shadow: 0 0 0 2px #1e293b, 0 0 0 5px var(--accent2), 0 0 20px rgba(99, 102, 241, 0.7);
+    box-shadow: 0 0 0 2px #1e293b, 0 0 0 5px var(--accent2), 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+[data-theme="dark"] .frontier-range-slider::-moz-range-thumb {
+    background: #0f172a;
+    box-shadow: 0 0 0 2px #1e293b, 0 0 0 5px var(--accent2), 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 /* 7. Stepper & Active Badges */
@@ -12801,26 +12796,7 @@ input[type=range]::-moz-range-thumb {
     background: var(--surface2);
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-.f-split-nq {
-    background: linear-gradient(90deg, #4f46e5, #6366f1);
-    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-.f-split-sp {
-    background: linear-gradient(90deg, #059669, #10b981);
-    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-.f-risk-nq {
-    background: linear-gradient(90deg, #e11d48, #f43f5e);
-    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-.f-risk-sp {
-    background: linear-gradient(90deg, #0284c7, #0ea5e9);
-    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-}
+/* Duplicate .f-split-*, .f-risk-* removed; unified in base styles */
 
 .pf-bar-track {
     display: flex;
@@ -13457,6 +13433,18 @@ input[type=range]::-moz-range-thumb {
         justify-content: center;
     }
 
+    /* 移动端定投权重步进按钮触控强化 */
+    .sim-stepper-btn {
+        width: 26px;
+        height: 26px;
+        position: relative;
+    }
+    .sim-stepper-btn::after {
+        content: '';
+        position: absolute;
+        inset: -6px;
+    }
+
     /* 移动端基金卡片点击热区强化 */
     .fmc-page-link {
         min-height: 32px;
@@ -13628,7 +13616,7 @@ input[type=range]::-moz-range-thumb {
 }
 .fund-hero-card {
     margin-top: 0.75rem;
-    border-radius: var(--radius-lg, 16px);
+    border-radius: var(--radius-lg);
 }
 .fund-detail-header {
     margin: 0.5rem 0 1.5rem;
@@ -13688,7 +13676,7 @@ input[type=range]::-moz-range-thumb {
 .fund-metric-card {
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md, 12px);
+    border-radius: var(--radius-md);
     padding: 1.15rem;
     box-shadow: var(--shadow-sm);
     transition: transform 0.25s var(--spring-easing), border-color 0.2s ease, box-shadow 0.2s ease;
@@ -13845,7 +13833,7 @@ input[type=range]::-moz-range-thumb {
     margin: 1.25rem 0 1.5rem;
     background: rgba(16, 185, 129, 0.05);
     border: 1px solid rgba(16, 185, 129, 0.25);
-    border-radius: var(--radius-md, 10px);
+    border-radius: var(--radius-md);
     padding: 1.25rem;
 }
 .fund-substitutes-grid {
@@ -13871,7 +13859,7 @@ input[type=range]::-moz-range-thumb {
 .fund-quant-report-box {
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md, 10px);
+    border-radius: var(--radius-md);
     padding: 1.25rem;
     margin-bottom: 1.5rem;
 }
@@ -13893,7 +13881,7 @@ input[type=range]::-moz-range-thumb {
     margin-top: 2rem;
     padding: 1.25rem;
     background: var(--surface2);
-    border-radius: var(--radius-md, 10px);
+    border-radius: var(--radius-md);
     border: 1px solid var(--border);
 }
 .fund-recommended-guides h3 {

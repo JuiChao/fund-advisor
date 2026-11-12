@@ -65,20 +65,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <title>{fund_name} ({fund_code}) 费率_限购_历史收益 - Fund Advisor</title>
 <meta name="description" content="{fund_name}({fund_code})是跟踪{index_type}指数的公募QDII基金({share_class}类份额)。当前代销状态：{agency_status}，直销状态：{direct_status}。综合年费率{total_fee}%。近3年收益率{return_3yr}%。点击查阅详细量化多因子评测与定投策略。">
 <meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, {share_class}类份额, 费率, 限购, 收益率, 定投, Fund Advisor">
 <link rel="canonical" href="https://858000.xyz/fund/{fund_code}">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="dns-prefetch" href="https://fonts.loli.net">
-<link rel="dns-prefetch" href="https://gstatic.loli.net">
-<link rel="preconnect" href="https://fonts.loli.net">
-<link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-<link rel="stylesheet" href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" media="print" onload="this.media='all'">
-<noscript>
-<link rel="stylesheet" href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap">
-</noscript>
 <link rel="stylesheet" href="/css/style.css?v=20261031_award">
 <meta name="google-adsense-account" content="ca-pub-8921283801578142">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
@@ -233,10 +226,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="fund-recommended-guides">
             <h3>推荐投研指南与实操精读</h3>
             <ul>
-                <li><a href="/articles/{related_guide_slug}">{related_guide_title} ➔</a></li>
-                <li><a href="/articles/how-to-choose-qdii-funds">如何挑选最优QDII指数基金：费率、规模与跟踪误差三角法则 ➔</a></li>
-                <li><a href="/articles/share-class-a-vs-c-break-even-analysis">A类与C类份额终极抉择：持有几年才是费率平衡临界点？（附量化数学推导） ➔</a></li>
-                <li><a href="/articles/penetrating-qdii-purchase-quota-restrictions">穿透公募基金限购内幕：为什么QDII单日限额会从1000元骤降至10元？ ➔</a></li>
+                <li><a href="/articles/{related_guide_slug}">{related_guide_title} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:4px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></li>
+                <li><a href="/articles/how-to-choose-qdii-funds">如何挑选最优QDII指数基金：费率、规模与跟踪误差三角法则 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:4px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></li>
+                <li><a href="/articles/share-class-a-vs-c-break-even-analysis">A类与C类份额终极抉择：持有几年才是费率平衡临界点？（附量化数学推导） <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:4px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></li>
+                <li><a href="/articles/penetrating-qdii-purchase-quota-restrictions">穿透公募基金限购内幕：为什么QDII单日限额会从1000元骤降至10元？ <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:4px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></li>
             </ul>
         </div>
 
@@ -274,7 +267,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 </div>
             </div>
             <div class="eeat-disclaimer">
-                <strong>免责合规声明：</strong>本页面所载分析仅供量化研究与个人理财科普之用，不构成任何形式的投资建议或基金销售推介。<a href="/about" style="color:var(--accent2);text-decoration:none;margin-left:6px;font-weight:600">查阅关于我们与完整投研方法论 ➔</a>
+                <strong>免责合规声明：</strong>本页面所载分析仅供量化研究与个人理财科普之用，不构成任何形式的投资建议或基金销售推介。<a href="/about" style="color:var(--accent2);text-decoration:none;margin-left:6px;font-weight:600">查阅关于我们与完整投研方法论 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:4px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             </div>
         </div>
 
@@ -285,7 +278,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         </div>
 
         <div class="fund-cta-wrap">
-            <a href="/#ranking?q={fund_code}" class="fund-cta-btn">在 Fund Advisor 完整版中进行定投模拟 ➔</a>
+            <a href="/?q={fund_code}#ranking" class="fund-cta-btn">在 Fund Advisor 完整版中进行定投模拟 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-left:4px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
     </div>
 </main>
@@ -533,7 +526,7 @@ for fund in funds:
                     f"<span>当前额度: <span style='color:var(--ok);font-weight:600;'>代销({ag_st}) / 直销({dir_st})</span></span>"
                     f"</div>"
                     f"</div>"
-                    f"<a href='/fund/{s_code}' class='btn-dir-review' style='display:block;text-align:center;padding:0.4rem 0.6rem;font-size:0.8rem;margin-top:auto;'>查看平替专页 ➔</a>"
+                    f"<a href='/fund/{s_code}' class='btn-dir-review' style='display:block;text-align:center;padding:0.4rem 0.6rem;font-size:0.8rem;margin-top:auto;'>查看平替专页 <svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' style='vertical-align:middle;margin-left:4px'><path d='M5 12h14M12 5l7 7-7 7'/></svg></a>"
                     f"</div>"
                 )
             substitutes_html = (
@@ -592,7 +585,7 @@ for fund in funds:
                 f"<td style='text-align:center'>{format_pct(s_fee)}%</td>"
                 f"<td style='text-align:center'>{s_ag}</td>"
                 f"<td style='text-align:center'>{s_dir}</td>"
-                f"<td style='text-align:center'><a href='/fund/{sc}' class='btn-dir-review' style='padding:2px 8px;font-size:0.75rem'>专页 ➔</a></td></tr>"
+                f"<td style='text-align:center'><a href='/fund/{sc}' class='btn-dir-review' style='padding:2px 8px;font-size:0.75rem'>专页 <svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' style='vertical-align:middle;margin-left:4px'><path d='M5 12h14M12 5l7 7-7 7'/></svg></a></td></tr>"
             )
         siblings_html = f"""
             <div style="margin-top:1.75rem">
@@ -624,12 +617,12 @@ for fund in funds:
     if fund_history:
         history_items = []
         for h in fund_history[:4]:
-            ann_link = f" <a href='{h.get('announcement_url')}' target='_blank' style='color:var(--accent2);text-decoration:none;font-size:0.82rem;font-weight:600;margin-left:6px;'>[官方公告 ↗]</a>" if h.get('announcement_url') else ""
+            ann_link = f" <a href='{h.get('announcement_url')}' target='_blank' style='color:var(--accent2);text-decoration:none;font-size:0.82rem;font-weight:600;margin-left:6px;'>[官方公告 <svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' style='vertical-align:middle;margin-left:2px'><path d='M7 17L17 7M7 7h10v10'/></svg>]</a>" if h.get('announcement_url') else ""
             history_items.append(
                 f"<li style='margin-bottom:0.5rem;'><strong>{h.get('date')}</strong> · <span style='color:var(--accent2);font-weight:600;'>{h.get('change_type_label', '')}</span>: {h.get('summary', '')}{ann_link}</li>"
             )
         quota_history_html = f"""
-            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.15rem;margin-top:1.5rem;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.15rem;margin-top:1.5rem;">
                 <h3 style="font-size:1.05rem;color:var(--txt);margin-top:0;margin-bottom:0.6rem;font-weight:700;">申购限购调整历史与渠道动态</h3>
                 <ul style="padding-left:1.2rem;margin-bottom:0;color:var(--txt2);font-size:0.88rem;line-height:1.5;">
                     {''.join(history_items)}
