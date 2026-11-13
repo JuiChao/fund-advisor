@@ -733,7 +733,7 @@ header {
     padding: 1.6rem 1.75rem;
     text-decoration: none;
     color: var(--txt);
-    transition: transform 0.45s var(--spring-easing), border-color 0.25s, box-shadow 0.3s;
+    transition: border-color 0.25s ease, box-shadow 0.3s ease;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -765,24 +765,22 @@ header {
     opacity: 0.04;
     line-height: 1;
     pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.4s var(--spring-easing);
+    transition: opacity 0.3s ease;
     z-index: 1;
 }
 .journey-card:hover::after {
     opacity: 0.09;
-    transform: translateY(3px) scale(1.05);
 }
 .journey-card:nth-child(1):hover::before { background: var(--accent); }
 .journey-card:nth-child(2):hover::before { background: linear-gradient(90deg, #10b981, #06b6d4); }
 .journey-card:nth-child(3):hover::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
 
 .journey-card:hover {
-    transform: translateY(-6px) translateZ(0);
     border-color: var(--border-hover);
-    box-shadow: 0 24px 50px -15px rgba(0, 0, 0, 0.4), var(--card-hover-shadow);
+    box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.4), var(--card-hover-shadow);
 }
 .journey-card:active {
-    transform: translateY(-2px) scale(0.985);
+    border-color: var(--accent);
 }
 .journey-step {
     font-size: 0.72rem;
@@ -824,13 +822,18 @@ header {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: transform 0.3s var(--spring-easing), color 0.2s;
+    transition: color 0.2s ease;
     position: relative;
     z-index: 2;
 }
+.journey-action svg {
+    transition: transform 0.25s ease;
+}
 .journey-card:hover .journey-action {
-    transform: translateX(6px);
     color: var(--purple);
+}
+.journey-card:hover .journey-action svg {
+    transform: translateX(4px);
 }
 
 /* ===== Quick Preset Chips (Sliders) ===== */
@@ -1010,7 +1013,7 @@ header {
     opacity: 0;
     transition: var(--transition);
 }
-.card:hover { border-color: rgba(79, 110, 247, 0.2); box-shadow: var(--shadow); transform: translateY(-2px); }
+.card:hover { border-color: rgba(79, 110, 247, 0.2); box-shadow: var(--shadow); }
 .card:hover::before { opacity: 1; }
 .card h2, .card h3 { color: var(--txt); font-size: .95rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: -.01em; }
 .card h3 { display: flex; align-items: center; gap: .5rem; }
@@ -1029,12 +1032,11 @@ header {
     border: 1px solid var(--border);
     position: relative;
     overflow: hidden;
-    transition: transform 0.45s var(--spring-easing), border-color 0.25s, box-shadow 0.3s;
+    transition: border-color 0.25s ease, box-shadow 0.3s ease;
     box-shadow: var(--shadow-sm), var(--card-glow);
 }
 .stat:hover { 
     border-color: var(--border-hover); 
-    transform: translateY(-4px) translateZ(0); 
     box-shadow: var(--shadow-lg), var(--card-hover-shadow); 
 }
 .stat::before {
@@ -1059,9 +1061,9 @@ header {
     background: var(--accent);
     border-radius: 50%;
     opacity: 0.04;
-    transition: opacity 0.3s, transform 0.4s var(--spring-easing);
+    transition: opacity 0.3s ease;
 }
-.stat:hover::after { opacity: 0.09; transform: scale(1.3); }
+.stat:hover::after { opacity: 0.09; }
 .stat .lb { 
     font-size: 0.72rem; 
     color: var(--txt3); 
@@ -1884,7 +1886,6 @@ tr:hover .tbl-row-expand-arrow {
 }
 .sibling-card:hover {
     border-color: var(--accent2);
-    transform: translateY(-2px);
     box-shadow: var(--shadow-sm);
 }
 .sibling-card.active {
@@ -1924,7 +1925,6 @@ tr:hover .tbl-row-expand-arrow {
 .fund-detail-grid > div:hover {
     border-color: rgba(99, 102, 241, 0.28);
     box-shadow: var(--shadow);
-    transform: translateY(-2px);
 }
 .fund-detail-actions {
     margin-top: 1.25rem;
@@ -5084,7 +5084,6 @@ input[type=range]::-moz-range-thumb:hover {
     .fund-mobile-card:hover {
         border-color: rgba(99, 102, 241, 0.45);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        transform: translateY(-3px);
     }
 }
 
@@ -6190,7 +6189,6 @@ input[type=range]::-moz-range-thumb:hover {
 
 .sim-kpi-card:hover {
     border-color: var(--border2);
-    transform: translateY(-2px);
     box-shadow: var(--shadow-sm);
 }
 
@@ -6708,7 +6706,6 @@ footer {
 .article-preview-card:hover {
     border-color: rgba(79, 110, 247, 0.2);
     box-shadow: var(--shadow);
-    transform: translateY(-3px);
 }
 .article-preview-card:hover::before { opacity: 1; }
 .article-preview-card h3 {
@@ -7407,7 +7404,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     }
     .fund-mobile-card:active {
-        transform: scale(0.995);
+        transform: none;
     }
     .fmc-actions {
         flex-direction: column;
@@ -9999,7 +9996,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     -webkit-backdrop-filter: blur(16px);
     box-sizing: border-box;
     transition: border-color var(--duration-fast) var(--ease-smooth),
-                transform var(--duration-fast) var(--ease-smooth),
                 box-shadow var(--duration-fast) var(--ease-smooth);
 }
 
@@ -10013,7 +10009,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .index-card:hover {
     border-color: var(--accent2);
     box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.35);
-    transform: translateY(-2px);
 }
 
 .index-card-head {
@@ -10300,7 +10295,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: var(--radius-sm);
     padding: 0.5rem 0.75rem;
-    transition: transform 0.35s var(--spring-easing), border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
     position: relative;
     overflow: hidden;
 }
@@ -10312,7 +10307,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .ticker-box:hover {
-    transform: translateY(-3px);
     border-color: rgba(99, 102, 241, 0.35);
     box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.4), 0 0 16px rgba(99, 102, 241, 0.18);
     background: rgba(99, 102, 241, 0.06);
@@ -10552,7 +10546,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     display: flex;
     flex-direction: column;
     box-shadow: var(--shadow-sm), var(--card-glow);
-    transition: transform 0.45s var(--spring-easing), border-color 0.3s, box-shadow 0.35s;
+    transition: border-color 0.3s ease, box-shadow 0.35s ease;
     overflow: hidden;
 }
 .quant-engine-card::before {
@@ -10567,11 +10561,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     z-index: 2;
 }
 .quant-engine-card:hover {
-    transform: translateY(-8px) scale(1.005) translateZ(0);
-    box-shadow: 0 28px 60px -15px rgba(0, 0, 0, 0.45), var(--card-hover-shadow);
+    border-color: var(--border-hover);
+    box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.45), var(--card-hover-shadow);
 }
 .quant-engine-card:active {
-    transform: translateY(-3px) scale(0.995);
+    box-shadow: 0 10px 20px -6px rgba(0, 0, 0, 0.35);
 }
 
 /* Engine 1 Theme: Frontier */
@@ -11135,6 +11129,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.eeat-author-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-sm);
 }
 .eeat-header {
     display: flex;
@@ -11503,11 +11502,11 @@ tbody.spotlight-active tr:hover {
     flex-direction: column;
     justify-content: center;
     box-shadow: var(--shadow-sm);
-    transition: transform 0.25s var(--spring-easing), border-color 0.2s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .frontier-kpi-item:hover {
-    transform: translateY(-2px);
     border-color: var(--accent2);
+    box-shadow: var(--shadow-sm);
 }
 .f-kpi-val {
     font-size: 1.35rem;
@@ -11523,14 +11522,13 @@ tbody.spotlight-active tr:hover {
     border: 1px solid var(--border);
     background: var(--surface);
     box-shadow: var(--shadow-sm);
-    transition: transform 0.35s var(--spring-easing), box-shadow 0.3s ease, border-color 0.3s ease;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
     position: relative;
     overflow: hidden;
     margin-bottom: 1.5rem;
     padding: 1.5rem;
 }
 .pf-card:hover {
-    transform: translateY(-3px);
     box-shadow: var(--shadow-lg);
     border-color: rgba(99, 102, 241, 0.35);
 }
@@ -11939,11 +11937,10 @@ tbody.spotlight-active tr:hover {
     border-radius: var(--radius-sm);
     padding: 1.25rem 1.4rem;
     box-shadow: var(--shadow-sm);
-    transition: transform 0.25s var(--spring-easing), border-color 0.2s, box-shadow 0.25s;
+    transition: border-color 0.2s ease, box-shadow 0.25s ease;
     position: relative;
 }
 .methodology-card:hover {
-    transform: translateY(-2px);
     border-color: var(--accent2);
     box-shadow: var(--shadow);
 }
@@ -12358,7 +12355,9 @@ tbody.spotlight-active tr:hover {
     100% { transform: scaleY(1); opacity: 1; }
 }
 
-/* (4) 触觉级 3D 悬浮微倾斜架构 (Tactile 3D Perspective Card Physics) */
+/* (4) 高保真展示卡片渲染保障 (Crisp Card Rendering - 3D Tilt & Subpixel Blurring Eliminated) */
+.card,
+.stat,
 .journey-card,
 .quant-engine-card,
 .ticker-box,
@@ -12367,10 +12366,61 @@ tbody.spotlight-active tr:hover {
 .home-benchmark-card,
 .algo-card,
 .article-card,
-.contact-card {
-    transform-style: preserve-3d;
-    will-change: transform;
-    transition: transform 0.35s var(--ease-smooth), box-shadow 0.3s ease, border-color 0.25s ease;
+.article-preview-card,
+.contact-card,
+.index-card,
+.sibling-card,
+.fund-detail-grid > div,
+.fund-mobile-card,
+.frontier-kpi-item,
+.frontier-inspector-card,
+.quant-frontier-card,
+.pf-card,
+.methodology-card,
+.pain-point-card,
+.pipeline-step-card,
+.fund-metric-card,
+.fund-sub-card,
+.eeat-author-card,
+.citation-item,
+.article-takeaways-card,
+.fund-hero-card {
+    transform-style: flat;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: box-shadow 0.3s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.card:hover,
+.stat:hover,
+.journey-card:hover,
+.quant-engine-card:hover,
+.ticker-box:hover,
+.sim-kpi-card:hover,
+.home-quota-radar-card:hover,
+.home-benchmark-card:hover,
+.algo-card:hover,
+.article-card:hover,
+.article-preview-card:hover,
+.contact-card:hover,
+.index-card:hover,
+.sibling-card:hover,
+.fund-detail-grid > div:hover,
+.fund-mobile-card:hover,
+.frontier-kpi-item:hover,
+.frontier-inspector-card:hover,
+.quant-frontier-card:hover,
+.pf-card:hover,
+.methodology-card:hover,
+.pain-point-card:hover,
+.pipeline-step-card:hover,
+.fund-metric-card:hover,
+.fund-sub-card:hover,
+.eeat-author-card:hover,
+.citation-item:hover,
+.article-takeaways-card:hover,
+.fund-hero-card:hover {
+    transform: none !important;
 }
 
 /* (5) 磁吸高引力按钮与流体聚光光轨 (Magnetic Buttons & Liquid Specular Trail) */
@@ -13099,10 +13149,9 @@ input[type=range]::-moz-range-thumb {
     flex-direction: column;
     gap: 0.5rem;
     box-shadow: var(--shadow-sm);
-    transition: transform 0.25s var(--spring-easing), border-color 0.2s, box-shadow 0.25s;
+    transition: border-color 0.2s ease, box-shadow 0.25s ease;
 }
 .pain-point-card:hover {
-    transform: translateY(-3px);
     border-color: var(--accent2);
     box-shadow: var(--shadow);
 }
@@ -13189,11 +13238,11 @@ input[type=range]::-moz-range-thumb {
     gap: 0.85rem;
     font-size: 0.86rem;
     line-height: 1.6;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .citation-item:hover {
     border-color: var(--accent2);
-    transform: translateX(2px);
+    box-shadow: var(--shadow-sm);
 }
 .citation-num {
     display: inline-flex;
@@ -13239,11 +13288,11 @@ input[type=range]::-moz-range-thumb {
     border-radius: var(--radius-sm);
     padding: 1.15rem;
     box-shadow: var(--shadow-sm);
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .pipeline-step-card:hover {
-    transform: translateY(-2px);
     border-color: var(--accent2);
+    box-shadow: var(--shadow-sm);
 }
 .pipeline-step-num {
     font-family: var(--font-mono);
@@ -13477,7 +13526,7 @@ input[type=range]::-moz-range-thumb {
     margin: 1.5rem 0 2rem 0;
     position: relative;
     box-shadow: var(--shadow-sm);
-    transition: transform var(--transition), box-shadow var(--transition);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 [data-theme="dark"] .article-takeaways-card {
     background: var(--surface2);
@@ -13486,6 +13535,7 @@ input[type=range]::-moz-range-thumb {
     box-shadow: var(--shadow-sm);
 }
 .article-takeaways-card:hover {
+    border-color: var(--border-hover);
     box-shadow: var(--shadow);
 }
 .takeaways-top {
@@ -13679,13 +13729,12 @@ input[type=range]::-moz-range-thumb {
     border-radius: var(--radius-md);
     padding: 1.15rem;
     box-shadow: var(--shadow-sm);
-    transition: transform 0.25s var(--spring-easing), border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 .fund-metric-card:hover {
-    transform: translateY(-2px);
     border-color: var(--border2);
     box-shadow: var(--shadow-md, var(--shadow));
 }
@@ -13850,11 +13899,11 @@ input[type=range]::-moz-range-thumb {
     flex-direction: column;
     justify-content: space-between;
     box-shadow: var(--shadow-sm);
-    transition: border-color 0.2s, transform 0.2s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .fund-sub-card:hover {
     border-color: var(--accent);
-    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
 }
 .fund-quant-report-box {
     background: var(--surface2);

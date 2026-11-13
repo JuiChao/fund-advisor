@@ -7257,58 +7257,13 @@ const App = (() => {
         }
         initHeroIndicesStream();
 
-        // ===== 触觉级 3D 悬浮微倾斜与磁吸按钮引擎 (Tactile 3D Card Tilt & Magnetic Buttons) =====
+        // ===== 磁吸按钮与高定交互引擎 (Magnetic Buttons Engine - 3D Card Tilt Disabled for Crisp Font Rendering) =====
         function initTactile3DAndMagneticButtons() {
             const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             const hasFinePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
             if (!hasFinePointer || isReducedMotion) return;
 
-            // 1. Delegated 3D Perspective Tilt on Interactive Cards (Supports dynamically generated cards)
-            let activeTiltCard = null;
-            const tiltSelector = '.journey-card, .quant-engine-card, .ticker-box, .sim-kpi-card, .home-quota-radar-card, .home-benchmark-card, .algo-card, .article-card, .contact-card, .index-card';
-
-            function resetTiltCard(card) {
-                if (!card) return;
-                card.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
-                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0) scale3d(1, 1, 1)';
-                setTimeout(() => {
-                    if (card !== activeTiltCard) card.style.transition = '';
-                }, 450);
-            }
-
-            document.addEventListener('mousemove', e => {
-                const card = e.target.closest(tiltSelector);
-                if (activeTiltCard && activeTiltCard !== card) {
-                    resetTiltCard(activeTiltCard);
-                    activeTiltCard = null;
-                }
-                if (!card) return;
-                activeTiltCard = card;
-
-                const rect = card.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width - 0.5;
-                const y = (e.clientY - rect.top) / rect.height - 0.5;
-                const tiltX = -y * 7;
-                const tiltY = x * 7;
-                card.style.transition = 'transform 0.08s ease-out';
-                card.style.transform = `perspective(1000px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) translateY(-3px) scale3d(1.012, 1.012, 1.012)`;
-            }, { passive: true });
-
-            document.addEventListener('mouseleave', () => {
-                if (activeTiltCard) {
-                    resetTiltCard(activeTiltCard);
-                    activeTiltCard = null;
-                }
-            }, { passive: true });
-
-            window.addEventListener('blur', () => {
-                if (activeTiltCard) {
-                    resetTiltCard(activeTiltCard);
-                    activeTiltCard = null;
-                }
-            }, { passive: true });
-
-            // 2. Delegated Magnetic Buttons with Liquid Specular Highlight Trail
+            // Delegated Magnetic Buttons with Liquid Specular Highlight Trail
             let activeBtn = null;
             const magneticSelector = '.hero-btn-primary, .hero-btn-secondary, .hero-btn-ghost, .nav-cta-btn';
 
