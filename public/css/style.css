@@ -898,7 +898,7 @@ header {
 }
 .btn-sim-preset {
     padding: 0.35rem 0.75rem;
-    border-radius: 8px;
+    border-radius: var(--radius-btn, 8px);
     background: var(--surface2);
     border: 1px solid var(--border2);
     color: var(--txt);
@@ -950,7 +950,7 @@ header {
     justify-content: center;
     width: 22px;
     height: 22px;
-    border-radius: 6px;
+    border-radius: var(--radius-btn, 8px);
     background: var(--surface2);
     border: 1px solid var(--border);
     color: var(--txt3);
@@ -1879,9 +1879,10 @@ tr:hover .tbl-row-expand-arrow {
 .sibling-box {
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-lg);
     padding: 1rem 1.25rem;
     margin-bottom: 1.25rem;
+    box-shadow: var(--shadow-sm), var(--card-glow);
 }
 .sibling-title {
     font-size: 0.85rem;
@@ -1900,9 +1901,10 @@ tr:hover .tbl-row-expand-arrow {
 .sibling-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius);
     padding: 0.75rem 0.9rem;
     cursor: pointer;
+    box-shadow: var(--shadow-sm), var(--card-glow);
     transition: var(--transition);
 }
 .sibling-card:hover {
@@ -2740,11 +2742,13 @@ input[type=range]::-moz-range-thumb:hover {
 .quota-table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     margin: 0 auto 0.85rem auto;
     max-width: 1040px;
     background: var(--surface);
+    box-shadow: var(--shadow-sm), var(--card-glow);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
 .quota-table {
@@ -3058,7 +3062,7 @@ input[type=range]::-moz-range-thumb:hover {
     align-items: center;
     gap: 4px;
     padding: 2px 7px;
-    border-radius: 6px;
+    border-radius: var(--radius-btn, 8px);
     border: 1px solid var(--border);
     background: var(--surface);
     color: var(--txt);
@@ -3275,7 +3279,7 @@ input[type=range]::-moz-range-thumb:hover {
     align-items: center;
     gap: 6px;
     padding: 0.45rem 1rem;
-    border-radius: 6px;
+    border-radius: var(--radius-btn, 8px);
     font-size: 0.82rem;
     font-weight: 700;
     cursor: pointer;
@@ -3811,7 +3815,7 @@ input[type=range]::-moz-range-thumb:hover {
     font-size: 0.75rem;
     font-weight: 600;
     padding: 2.5px 8px;
-    border-radius: 4px;
+    border-radius: var(--radius-btn, 8px);
     cursor: pointer;
     transition: var(--transition);
 }
@@ -4430,7 +4434,7 @@ input[type=range]::-moz-range-thumb:hover {
 }
 
 .rkp-table-wrap {
-    border-radius: var(--radius-lg, 6px);
+    border-radius: var(--radius-lg);
     border: 1px solid rgba(99, 102, 241, 0.25);
     background: rgba(15, 23, 42, 0.85);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
@@ -6022,7 +6026,7 @@ input[type=range]::-moz-range-thumb:hover {
     padding: 0.55rem 1.35rem;
     font-size: 0.875rem;
     font-weight: 700;
-    border-radius: 8px;
+    border-radius: var(--radius-btn, 8px);
     box-shadow: 0 4px 14px rgba(79, 70, 229, 0.28);
     cursor: pointer;
     transition: var(--transition);
@@ -7148,7 +7152,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         justify-content: center;
         padding: 0.55rem 0.75rem;
         font-size: 0.8rem;
-        border-radius: 8px;
+        border-radius: var(--radius-btn, 8px);
         min-height: 44px;
     }
     .quota-board-drawer {
@@ -7336,7 +7340,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         padding: 0.35rem 0.65rem;
         min-height: 36px;
         font-size: 0.74rem;
-        border-radius: 6px;
+        border-radius: var(--radius-btn, 8px);
         background: var(--surface);
         display: inline-flex;
         align-items: center;
@@ -8205,10 +8209,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 #funds-directory .card {
     padding: 1.25rem 1.5rem;
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     background: var(--surface);
     border: 1px solid var(--border);
-    box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm), var(--card-glow);
 }
 #funds-directory .dir-card-title {
     margin-top: 0;
@@ -8225,17 +8229,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     width: 100%;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     background: var(--surface);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-sm), var(--card-glow);
+    margin-bottom: 1.5rem;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
 #funds-directory .dir-table-wrap {
     overflow-x: auto;
     margin-top: 0.75rem;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     background: var(--surface);
+    box-shadow: var(--shadow-sm), var(--card-glow);
 }
 .dir-table {
     width: 100%;
@@ -8863,7 +8870,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     font-size: 0.72rem;
     font-weight: 600;
     padding: 0.4rem 0.5rem;
-    border-radius: 4px;
+    border-radius: var(--radius-btn, 8px);
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
@@ -10704,7 +10711,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .engine-preview-box {
     background: var(--surface2, var(--bg2));
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius, 10px);
     padding: 1.1rem 1.25rem;
     margin-bottom: 1.4rem;
     position: relative;
@@ -11523,30 +11530,31 @@ tbody.spotlight-active tr:hover {
 .frontier-inspector-card {
     background: var(--surface2);
     border: 1px solid var(--border2);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-lg);
     padding: 1.15rem 1.35rem;
     margin-top: 1.25rem;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-sm), var(--card-glow);
     transition: var(--transition);
 }
 .frontier-inspector-card:hover {
     border-color: var(--accent2);
+    box-shadow: var(--card-hover-shadow);
 }
 /* .frontier-range-slider and .f-split-* rules unified in base & section 6 */
 .frontier-kpi-item {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius, 10px);
     padding: 0.85rem 1rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-sm), var(--card-glow);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .frontier-kpi-item:hover {
     border-color: var(--accent2);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--card-hover-shadow);
 }
 .f-kpi-val {
     font-size: 1.35rem;
@@ -11729,7 +11737,7 @@ tbody.spotlight-active tr:hover {
 .sim-stepper-btn {
     width: 20px;
     height: 20px;
-    border-radius: 4px;
+    border-radius: var(--radius-btn, 8px);
     border: 1px solid var(--border);
     background: var(--surface2);
     color: var(--txt2);
@@ -12401,6 +12409,7 @@ tbody.spotlight-active tr:hover {
 .journey-card,
 .quant-engine-card,
 .ticker-box,
+.hero-quant-ticker,
 .sim-kpi-card,
 .home-quota-radar-card,
 .home-benchmark-card,
@@ -12424,7 +12433,11 @@ tbody.spotlight-active tr:hover {
 .eeat-author-card,
 .citation-item,
 .article-takeaways-card,
-.fund-hero-card {
+.fund-hero-card,
+.table-wrap,
+.dir-table-wrap,
+.quota-table-wrap,
+.rkp-table-wrap {
     transform-style: flat;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -12461,7 +12474,10 @@ tbody.spotlight-active tr:hover {
 .citation-item:hover,
 .article-takeaways-card:hover,
 .fund-hero-card:hover,
-.table-wrap:hover {
+.table-wrap:hover,
+.dir-table-wrap:hover,
+.quota-table-wrap:hover,
+.rkp-table-wrap:hover {
     transform: none !important;
     border-color: var(--accent2);
     box-shadow: var(--card-hover-shadow);
@@ -13669,10 +13685,10 @@ input[type=range]::-moz-range-thumb {
     margin: 1.75rem 0;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     background: var(--surface);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-sm), var(--card-glow);
 }
 .article-content .table-wrap table {
     margin: 0;
