@@ -7317,25 +7317,9 @@ const App = (() => {
         }
         initTactile3DAndMagneticButtons();
 
-        // ===== 奖项级鼠标聚光灯高定控制器 (Spotlight Controller - Comprehensive Universal Scope) =====
-        let mouseRaf = null;
-        document.addEventListener('mousemove', e => {
-            if (mouseRaf) return;
-            mouseRaf = requestAnimationFrame(() => {
-                mouseRaf = null;
-                const cards = document.querySelectorAll('.hero-banner, .quant-frontier-card, .journey-card, .sim-kpi-card, .stat, .ticker-box, .quant-engine-card, .card, .home-quota-radar-card, .home-benchmark-card, .pf-card, .sim-params-card, .sim-result-card, .pf-params-card, .stress-test-card, .algo-card');
-                for (let i = 0; i < cards.length; i++) {
-                    const rect = cards[i].getBoundingClientRect();
-                    if (e.clientX >= rect.left - 120 && e.clientX <= rect.right + 120 &&
-                        e.clientY >= rect.top - 120 && e.clientY <= rect.bottom + 120) {
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        cards[i].style.setProperty('--mouse-x', `${x}px`);
-                        cards[i].style.setProperty('--mouse-y', `${y}px`);
-                    }
-                }
-            });
-        }, { passive: true });
+        // ===== 高定交互与展示框绝对静止保障 (Stationary Display Boxes & Crisp Text Guarantee) =====
+        // All display boxes (quant engine cards, quota radar, benchmark tables, etc.) remain strictly stationary
+        // with transform: none and zero mousemove wobble, ensuring sharp subpixel font rendering.
 
         // ===== 表格行聚焦高亮聚焦器 (Table Row Spotlight Focus) =====
         const rankTableEl = document.getElementById('rank-table');
