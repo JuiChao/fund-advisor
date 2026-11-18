@@ -21,7 +21,12 @@
 - 🛡️ [全市场 QDII 限购穿透雷达 (Quota Warning Radar)](https://858000.xyz/#quota-warning) — 穿透监控外汇额度紧缩、暂停大额申购及恢复申购状态，防范定投断流，提供同指数可买平替选项。
 - 🎲 [蒙特卡洛 5,000 次随机漫步定投模拟器 (Simulator)](https://858000.xyz/#simulator) — 基于几何布朗运动 (GBM)，推演 1~30 年投资周期的五分位数概率收益分布（95% 乐观、75% 良好、50% 中位、25% 谨慎、5% 保守），支持多资产自选组合权重回测。
 - 📊 [Markowitz 现代资产组合理论有效前沿 (MPT Portfolio)](https://858000.xyz/#portfolio) — 均值-方差优化计算，提供 6 种量化定投配置范式（无约束最优、实际可买、最大收益、风险平衡、稳健保守、无限制最优）及黑天鹅极端行情压力测试。
-- 📚 [QDII 指数基金量化投研百科 (Research Articles)](https://858000.xyz/articles/) — 涵盖 QDII 外汇额度套利防范、A/C 类份额费率损耗临界点、场内外折溢价回归、中美交易日汇率时滞管理等原创量化研报。
+- 📚 [QDII 指数基金量化投研百科 (Research Articles)](https://858000.xyz/articles/) — 全景收录 18 篇万字级深度投研长文，涵盖宽基指数、金融工程、外汇限额穿透与行为金融学实操：
+  - 📖 [纳斯达克100指数投资完全指南 (Nasdaq 100 Guide)](https://858000.xyz/articles/nasdaq-100-investment-guide)
+  - 📖 [标普500指数投资完全指南 (S&P 500 Guide)](https://858000.xyz/articles/sp500-investment-guide)
+  - 📖 [QDII 基金限购穿透与外汇额度套利防范 (Quota Restrictions)](https://858000.xyz/articles/penetrating-qdii-purchase-quota-restrictions)
+  - 📖 [蒙特卡洛模拟在基金定投中的金融工程实现 (Monte Carlo Financial Engineering)](https://858000.xyz/articles/monte-carlo-simulation-financial-engineering)
+  - 📖 [现代资产组合理论 (MPT) 在定投中的应用 (MPT Portfolio Optimization)](https://858000.xyz/articles/mpt-modern-portfolio-theory-in-dca)
 - 📋 [内容审校与事实核查方针 (Editorial & Fact-Checking Policy)](https://858000.xyz/editorial-policy) — 遵循金融与财富 (YMYL) 事实核查标准，透明公开数据清洗管线、参数校准与客观分析规范。
 
 ---
@@ -30,7 +35,7 @@
 
 ```
 GitHub Actions (每日定时任务)
-  ├── Python Scraper (抓取天天基金网/东方财富数据) → 更新 funds.json
+  ├── Python Pipeline (天天基金网/东方财富数据同步与清洗) → 更新 funds.json
   └── Python Simulator (NumPy 5,000 次蒙特卡洛预计算) → 更新 simulations.json (156 组基准)
        ↓ Git Push 触发
 Cloudflare Pages 全球边缘托管 (自动部署)
@@ -85,17 +90,17 @@ python tests_e2e/run_all_e2e.py
 1. 代码推送至 GitHub 仓库 `master` 分支
 2. Cloudflare Dashboard → Pages → 连接 GitHub 仓库
 3. 构建配置: Framework preset=`None`, Output directory=`public`
-4. GitHub Actions 每日自动抓取更新数据并触发自动部署
+4. GitHub Actions 每日自动同步更新数据并触发自动部署
 
 ---
 
 ## 投研指南与合规规范
 
 - 🌐 [官方量化终端 (Live Web Terminal)](https://858000.xyz/)
-- 📖 [关于平台与研究方法 (About Fund Advisor)](https://858000.xyz/about.html)
+- 📖 [关于平台与研究方法 (About Fund Advisor)](https://858000.xyz/about)
 - 📋 [事实核查与审校方针 (Editorial & Fact-Checking Policy)](https://858000.xyz/editorial-policy)
-- 🔒 [隐私保护政策 (Privacy Policy)](https://858000.xyz/privacy-policy.html)
-- 📜 [用户服务协议 (Terms of Service)](https://858000.xyz/terms-of-service.html)
+- 🔒 [隐私保护政策 (Privacy Policy)](https://858000.xyz/privacy-policy)
+- 📜 [用户服务协议 (Terms of Service)](https://858000.xyz/terms-of-service)
 
 ---
 

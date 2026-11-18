@@ -549,6 +549,16 @@ const App = (() => {
             applyRankView(currentRankView);
             if (queryParams.section === 'quota') {
                 setTimeout(() => {
+                    const drawerEl = document.getElementById('quota-board-drawer');
+                    const toggleBtn = document.getElementById('btn-quota-toggle');
+                    const toggleTxt = document.getElementById('quota-toggle-text');
+                    const arrow = toggleBtn ? toggleBtn.querySelector('.quota-toggle-arrow') : null;
+                    if (drawerEl && drawerEl.style.display === 'none') {
+                        drawerEl.style.display = 'block';
+                        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+                        if (toggleTxt) toggleTxt.textContent = '收起限购全景看板';
+                        if (arrow) arrow.classList.add('open');
+                    }
                     const el = document.getElementById('quota-bulletin-section') || document.getElementById('quota-bulletin-container');
                     if (el) {
                         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
