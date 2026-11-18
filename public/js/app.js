@@ -471,6 +471,11 @@ const App = (() => {
             pName = 'ranking';
         }
 
+        if (pName === 'quota-warning' || pName === 'quota') {
+            pName = 'ranking';
+            queryParams.section = 'quota';
+        }
+
         if (pName.startsWith('page-')) {
             pName = pName.replace('page-', '');
         }
