@@ -9,4 +9,5 @@ Allow: /
 User-agent: Google-Display-Ads-Bot
 Allow: /
 
+Sitemap: https://858000.xyz/sitemap-high-quality.xml
 Sitemap: https://858000.xyz/sitemap.xml

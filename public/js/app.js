@@ -426,7 +426,7 @@ const App = (() => {
 
     // ===== 页面切换与 TDK 动态更新 =====
     const PAGE_TDK = {
-        'home': { title: '基金定投智能分析 | Fund Advisor', desc: '基于蒙特卡洛模拟的指数基金定投智能分析平台。自动抓取天天基金数据，提供基金排名、收益率模拟及最佳资产配置方案。' },
+        'home': { title: '基金定投智能分析 | Fund Advisor', desc: '基于公募基金管理人法定信息公开披露数据、中国证券投资基金业协会（AMAC）权威备案及证券交易所公开行情，采用现代投资组合理论（MPT）与蒙特卡洛模拟构建的独立量化投研分析工具。' },
         'ranking': { title: '纳斯达克100与标普500指数基金排名 - 费率与收益对比 | Fund Advisor', desc: '全网最新纳斯达克100和标普500指数基金排名。对比各基金的管理费、托管费、限购状态及历史年化收益，助您找到最低费率的优质基金。' },
         'simulator': { title: '基金蒙特卡洛模拟器 - 预测未来收益走势 | Fund Advisor', desc: '采用高级蒙特卡洛随机漫步模型，模拟指数基金在未来不同市场环境下的收益率分布。输入本金与定投金额，预见未来财富可能。' },
         'portfolio': { title: '最优基金定投方案 - QDII限购环境下的资产配置 | Fund Advisor', desc: '根据各基金最新的单日申购限额（QDII额度限制），通过动态规划算法计算出理论最优与实际可买的完美定投组合方案，最大化资金利用率。' },
@@ -673,7 +673,7 @@ const App = (() => {
                 <div class="stat"><div class="lb">收录份额</div><div class="vl">${FUND_DATA.length}</div><div class="sub">纳指 ${nq.length} · 标普 ${sp.length} (涵盖A/C/D/E/F/I)</div></div>
                 <div class="stat"><div class="lb">可购份额</div><div class="vl">${availAgency.length}</div><div class="sub">代销可买 (直销可买${availDirect.length})</div></div>
                 <div class="stat"><div class="lb">最低综合年费</div><div class="vl">${(minFee * 100).toFixed(2)}%</div><div class="sub">管理+托管+销售费</div></div>
-                <div class="stat"><div class="lb">数据更新</div><div class="vl" style="font-size:1rem">${FUND_DATA[0]?.updated_at?.split('T')[0] || '-'}</div><div class="sub">每日自动抓取</div></div>
+                <div class="stat"><div class="lb">数据更新</div><div class="vl" style="font-size:1rem">${FUND_DATA[0]?.updated_at?.split('T')[0] || '-'}</div><div class="sub">法定披露核验同步</div></div>
             `;
         }
 

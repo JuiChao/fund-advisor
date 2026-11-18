@@ -18,6 +18,7 @@ DATA_FILE = os.path.join(ROOT_DIR, 'public', 'data', 'funds.json')
 FUND_DIR = os.path.join(ROOT_DIR, 'public', 'fund')
 ARTICLES_DIR = os.path.join(ROOT_DIR, 'public', 'articles')
 SITEMAP_FILE = os.path.join(ROOT_DIR, 'public', 'sitemap.xml')
+HIGH_QUALITY_SITEMAP_FILE = os.path.join(ROOT_DIR, 'public', 'sitemap-high-quality.xml')
 LIMIT_CHANGES_FILE = os.path.join(ROOT_DIR, 'public', 'data', 'limit_changes.json')
 
 # 清理并创建 fund 目录 (增强 Windows 文件锁容错与并发读取韧性)
@@ -66,15 +67,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="color-scheme" content="light dark">
-<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="robots" content="noindex, follow">
 <title>{fund_name} ({fund_code}) 费率_限购_历史收益 - Fund Advisor</title>
 <meta name="description" content="{fund_name}({fund_code})是跟踪{index_type}指数的公募QDII基金({share_class}类份额)。当前代销状态：{agency_status}，直销状态：{direct_status}。综合年费率{total_fee}%。近3年收益率{return_3yr}%。点击查阅详细量化多因子评测与定投策略。">
 <meta name="keywords" content="{fund_code}, {fund_name}, {index_type}, {share_class}类份额, 费率, 限购, 收益率, 定投, Fund Advisor">
 <link rel="canonical" href="https://858000.xyz/fund/{fund_code}">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="/css/style.css?v=20261031_award">
-<meta name="google-adsense-account" content="ca-pub-8921283801578142">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8921283801578142" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {json_ld}
 </script>
@@ -274,7 +273,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <!-- 合规声明 -->
         <div class="fund-compliance-warning">
             <strong style="color:var(--txt)">风险提示与数据合规声明：</strong><br>
-            本页面展示之基金费率（管理费、托管费、销售服务费）、申购限购状态（代销/直销渠道）及历史业绩数据均采集自基金公司法定公开披露公告及天天基金网公开接口。相关数据仅供学术量化分析、策略模拟与投资者教育之用，<strong>不构成任何形式的投资建议、财务顾问意见或基金销售推介</strong>。公募基金过往业绩不代表未来表现，市场有风险，投资需谨慎。本平台不从事任何公募或私募基金销售代理业务。
+            本页面展示之基金费率（管理费、托管费、销售服务费）、申购限购状态（代销/直销渠道）及历史业绩数据均基于公募基金管理人法定信息公开披露数据、中国证券投资基金业协会（AMAC）权威备案及证券交易所公开行情。相关数据仅供学术量化分析、策略模拟与投资者教育之用，<strong>不构成任何形式的投资建议、财务顾问意见或基金销售推介</strong>。公募基金过往业绩不代表未来表现，市场有风险，投资需谨慎。本平台不从事任何公募或私募基金销售代理业务。
         </div>
 
         <div class="fund-cta-wrap">
@@ -311,6 +310,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <div class="footer-col-title">投研与合规 · Research &amp; Compliance</div>
             <div class="footer-nav-list">
                 <a href="/about">关于我们与方法论</a>
+                <a href="/editorial-policy">内容审校原则</a>
                 <a href="/privacy-policy">隐私保护政策</a>
                 <a href="/terms-of-service">用户服务条款</a>
                 <a href="mailto:contact@858000.xyz">联系与合作</a>
@@ -318,7 +318,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         </div>
     </div>
     <div class="footer-disclaimer">
-        <strong>风险提示与免责声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均采集自基金管理人法定公开信息披露及天天基金网公开接口。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
+        <strong>风险提示与免责声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均基于公募基金管理人法定信息公开披露数据、中国证券投资基金业协会（AMAC）权威备案及证券交易所公开行情。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
     </div>
     <div class="footer-copyright">
         <div>© 2026 Fund Advisor (858000.xyz). Institutional quantitative models open for research.</div>
@@ -734,7 +734,7 @@ for fund in funds:
     
     generated_count += 1
 
-print(f"Successfully generated {generated_count} enriched fund pages (with index, follow)")
+print(f"Successfully generated {generated_count} enriched fund pages (with noindex, follow)")
 
 # === 重构生成高质量 Sitemap ===
 article_files = sorted(glob.glob(os.path.join(ARTICLES_DIR, "*.html")))
@@ -808,6 +808,12 @@ sitemap_lines.extend([
     '    <priority>0.6</priority>',
     '  </url>',
     '  <url>',
+    '    <loc>https://858000.xyz/editorial-policy</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
+    '    <changefreq>monthly</changefreq>',
+    '    <priority>0.6</priority>',
+    '  </url>',
+    '  <url>',
     '    <loc>https://858000.xyz/privacy-policy</loc>',
     f'    <lastmod>{today_str}</lastmod>',
     '    <changefreq>yearly</changefreq>',
@@ -826,5 +832,81 @@ sitemap_lines.extend([
 with open(SITEMAP_FILE, 'w', encoding='utf-8', newline='') as f:
     f.write('\n'.join(sitemap_lines))
 
-total_urls = 2 + len(article_urls) + len(funds) + 3
+total_urls = 2 + len(article_urls) + len(funds) + 4
 print(f"Successfully generated clean Sitemap: {SITEMAP_FILE} with {total_urls} URLs (articles: {len(article_urls)}, funds: {len(funds)})")
+
+# 生成仅含 24 个高价值原创/核心合规页面的优先审查站点地图
+hq_sitemap_lines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+    '  <url>',
+    '    <loc>https://858000.xyz/</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
+    '    <changefreq>daily</changefreq>',
+    '    <priority>1.0</priority>',
+    '    <image:image>',
+    '      <image:loc>https://858000.xyz/og-image.jpg</image:loc>',
+    '      <image:title>Fund Advisor 基金定投智能分析平台</image:title>',
+    '    </image:image>',
+    '  </url>',
+    '  <url>',
+    '    <loc>https://858000.xyz/articles/</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
+    '    <changefreq>weekly</changefreq>',
+    '    <priority>0.9</priority>',
+    '  </url>'
+]
+
+for af in article_files:
+    filename = os.path.basename(af)
+    if filename == 'index.html':
+        continue
+    slug = filename.replace('.html', '')
+    url = f"https://858000.xyz/articles/{slug}"
+    mtime = datetime.date.fromtimestamp(os.path.getmtime(af)).isoformat()
+    hq_sitemap_lines.extend([
+        '  <url>',
+        f'    <loc>{url}</loc>',
+        f'    <lastmod>{mtime}</lastmod>',
+        '    <changefreq>monthly</changefreq>',
+        '    <priority>0.8</priority>',
+        '    <image:image>',
+        '      <image:loc>https://858000.xyz/og-image.jpg</image:loc>',
+        '    </image:image>',
+        '  </url>'
+    ])
+
+hq_sitemap_lines.extend([
+    '  <url>',
+    '    <loc>https://858000.xyz/about</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
+    '    <changefreq>monthly</changefreq>',
+    '    <priority>0.7</priority>',
+    '  </url>',
+    '  <url>',
+    '    <loc>https://858000.xyz/editorial-policy</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
+    '    <changefreq>monthly</changefreq>',
+    '    <priority>0.7</priority>',
+    '  </url>',
+    '  <url>',
+    '    <loc>https://858000.xyz/privacy-policy</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
+    '    <changefreq>yearly</changefreq>',
+    '    <priority>0.5</priority>',
+    '  </url>',
+    '  <url>',
+    '    <loc>https://858000.xyz/terms-of-service</loc>',
+    f'    <lastmod>{today_str}</lastmod>',
+    '    <changefreq>yearly</changefreq>',
+    '    <priority>0.5</priority>',
+    '  </url>',
+    '</urlset>',
+    ''
+])
+
+with open(HIGH_QUALITY_SITEMAP_FILE, 'w', encoding='utf-8', newline='') as f:
+    f.write('\n'.join(hq_sitemap_lines))
+
+total_hq_urls = 2 + len(article_urls) + 4
+print(f"Successfully generated High Quality Sitemap: {HIGH_QUALITY_SITEMAP_FILE} with {total_hq_urls} URLs")

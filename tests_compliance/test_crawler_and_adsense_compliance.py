@@ -10,14 +10,48 @@ class TestCrawlerAndAdSenseCompliance(unittest.TestCase):
         self.root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.public_dir = os.path.join(self.root_dir, 'public')
 
-    def test_404_page_has_no_adsense(self):
-        """Item 4: public/404.html must not contain AdSense scripts or account meta tags."""
-        path_404 = os.path.join(self.public_dir, '404.html')
-        self.assertTrue(os.path.exists(path_404))
-        with open(path_404, 'r', encoding='utf-8') as f:
-            content = f.read()
-        self.assertNotIn('pagead2.googlesyndication.com', content)
-        self.assertNotIn('google-adsense-account', content)
+    def test_adsense_distribution_and_crawler_policy(self):
+        """AdSense compliance: utility/policy pages (404, privacy, terms, editorial) & fund pages
+        must contain 0 AdSense code; fund pages must have noindex, follow;
+        homepage and all 18 articles must retain AdSense meta tag and script.
+        """
+        zero_ads_pages = [
+            os.path.join(self.public_dir, '404.html'),
+            os.path.join(self.public_dir, 'privacy-policy.html'),
+            os.path.join(self.public_dir, 'terms-of-service.html'),
+            os.path.join(self.public_dir, 'editorial-policy.html'),
+        ]
+        for fpath in zero_ads_pages:
+            self.assertTrue(os.path.exists(fpath), f"File {fpath} must exist")
+            with open(fpath, 'r', encoding='utf-8') as f:
+                content = f.read()
+            self.assertNotIn('pagead2.googlesyndication.com', content, f"{fpath} must not contain AdSense script")
+            self.assertNotIn('google-adsense-account', content, f"{fpath} must not contain AdSense account meta")
+
+        # Fund pages: 0 AdSense and noindex, follow
+        fund_files = glob.glob(os.path.join(self.public_dir, 'fund', '*.html'))
+        self.assertEqual(len(fund_files), 60, "Expected 60 fund pages")
+        for fpath in fund_files:
+            with open(fpath, 'r', encoding='utf-8') as f:
+                content = f.read()
+            self.assertNotIn('pagead2.googlesyndication.com', content, f"{fpath} must not contain AdSense script")
+            self.assertNotIn('google-adsense-account', content, f"{fpath} must not contain AdSense account meta")
+            self.assertIn('<meta name="robots" content="noindex, follow">', content, f"{fpath} must have noindex, follow firewall")
+
+        # Homepage and 18 articles must retain AdSense
+        index_path = os.path.join(self.public_dir, 'index.html')
+        with open(index_path, 'r', encoding='utf-8') as f:
+            idx_content = f.read()
+        self.assertIn('pagead2.googlesyndication.com', idx_content, "index.html must retain AdSense script")
+        self.assertIn('google-adsense-account', idx_content, "index.html must retain AdSense account meta")
+
+        article_files = [f for f in glob.glob(os.path.join(self.public_dir, 'articles', '*.html')) if not f.endswith('index.html')]
+        self.assertEqual(len(article_files), 18, "Expected 18 research articles")
+        for fpath in article_files:
+            with open(fpath, 'r', encoding='utf-8') as f:
+                art_content = f.read()
+            self.assertIn('pagead2.googlesyndication.com', art_content, f"{fpath} must retain AdSense script")
+            self.assertIn('google-adsense-account', art_content, f"{fpath} must retain AdSense account meta")
 
     def test_sitelinks_searchbox_has_no_hash(self):
         """Item 5: Google Sitelinks Searchbox prohibits '#' in target."""
@@ -85,6 +119,7 @@ class TestCrawlerAndAdSenseCompliance(unittest.TestCase):
         html_files = [
             os.path.join(self.public_dir, 'index.html'),
             os.path.join(self.public_dir, 'about.html'),
+            os.path.join(self.public_dir, 'editorial-policy.html'),
             os.path.join(self.public_dir, 'privacy-policy.html'),
             os.path.join(self.public_dir, 'terms-of-service.html'),
         ] + glob.glob(os.path.join(self.public_dir, 'articles', '*.html')) + glob.glob(os.path.join(self.public_dir, 'fund', '*.html'))
@@ -123,6 +158,45 @@ class TestCrawlerAndAdSenseCompliance(unittest.TestCase):
 
         # initTheme inside try
         self.assertIn("async function init() {\n        try {\n            initTheme();", content.replace('\r\n', '\n'))
+
+    def test_high_quality_sitemap_compliance(self):
+        """High-quality priority sitemap must exist, be valid XML, contain exactly 24 URLs,
+        and have zero /fund/ programmatic URLs.
+        """
+        import xml.etree.ElementTree as ET
+        hq_sitemap = os.path.join(self.public_dir, 'sitemap-high-quality.xml')
+        self.assertTrue(os.path.exists(hq_sitemap), "public/sitemap-high-quality.xml must exist")
+        tree = ET.parse(hq_sitemap)
+        root = tree.getroot()
+        self.assertIn("urlset", root.tag)
+        urls = [loc.text for loc in root.findall("{http://www.sitemaps.org/schemas/sitemap/0.9}url/{http://www.sitemaps.org/schemas/sitemap/0.9}loc")]
+        self.assertEqual(len(urls), 24, f"High quality sitemap must contain exactly 24 URLs, found {len(urls)}")
+        self.assertIn("https://858000.xyz/", urls)
+        self.assertIn("https://858000.xyz/articles/", urls)
+        self.assertIn("https://858000.xyz/about", urls)
+        self.assertIn("https://858000.xyz/editorial-policy", urls)
+        self.assertIn("https://858000.xyz/privacy-policy", urls)
+        self.assertIn("https://858000.xyz/terms-of-service", urls)
+        for u in urls:
+            self.assertNotIn("/fund/", u, f"High quality sitemap must not contain programmatic fund pages: {u}")
+
+    def test_zero_scraper_vocabulary_in_public(self):
+        """Purge '抓取' / '采集' site-wide: public HTML pages and app.js must not contain scraper phrasing."""
+        target_files = [
+            os.path.join(self.public_dir, 'index.html'),
+            os.path.join(self.public_dir, 'about.html'),
+            os.path.join(self.public_dir, 'editorial-policy.html'),
+            os.path.join(self.public_dir, 'privacy-policy.html'),
+            os.path.join(self.public_dir, 'terms-of-service.html'),
+            os.path.join(self.public_dir, 'js', 'app.js'),
+        ] + glob.glob(os.path.join(self.public_dir, 'articles', '*.html')) + glob.glob(os.path.join(self.public_dir, 'fund', '*.html'))
+
+        forbidden_words = ['抓取', '采集']
+        for fpath in target_files:
+            with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            for kw in forbidden_words:
+                self.assertNotIn(kw, content, f"File {fpath} must not contain '{kw}'")
 
 
 if __name__ == '__main__':
