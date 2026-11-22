@@ -100,14 +100,16 @@
 <body>
 <div id="scroll-progress" aria-hidden="true"></div>
 <div class="ambient-glow ambient-glow-2"></div>
-</div>
+<div class="ambient-glow ambient-glow-3"></div>
+<div class="ambient-glow ambient-glow-4"></div>
 
 <header>
 <nav class="navbar navbar-subpage">
     <div class="brand">
         <a href="/" style="display:flex;align-items:center;text-decoration:none;color:inherit">
-            <img src="../favicon.png" alt="" class="brand-logo">
+            <img src="../favicon.png" alt="Fund Advisor" class="brand-logo">
             <span class="brand-text">FUND ADVISOR</span>
+            <span class="brand-sub-badge"><span class="brand-pulse-dot"></span> QDII 实时量化监控</span>
         </a>
     </div>
     <div class="links" id="nav-links">
@@ -115,17 +117,17 @@
         <a href="/#ranking">基金排名</a>
         <a href="/#simulator">模拟器</a>
         <a href="/#portfolio">定投方案</a>
-        <a href="/articles/">投资百科</a>
+        <a href="/articles/" class="on">投资百科</a>
         <a href="/about">关于我们</a>
     </div>
     <div class="nav-actions">
-        <a href="/#portfolio" class="nav-cta-btn" title="立即开启量化资产配置">启动量化配置</a>
+        <a href="/#portfolio" class="nav-cta-btn" title="立即开启量化资产配置">定投方案</a>
         <button class="theme-toggle" id="theme-toggle" aria-label="切换主题" title="切换深色/浅色模式">
             <span class="theme-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
         </button>
         <button class="nav-toggle" aria-label="切换菜单" aria-expanded="false" onclick="var l=document.getElementById('nav-links');var b=this;var o=l.classList.toggle('show');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);">
-        <span></span><span></span><span></span>
-    </button>
+            <span></span><span></span><span></span>
+        </button>
     </div>
 </nav>
 </header>
@@ -147,8 +149,8 @@
         <span class="tag" style="background:rgba(16,185,129,0.1);color:var(--ok);border-color:rgba(16,185,129,0.25)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:-1px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>阅读用时约 10 分钟</span>
         <span class="tag" style="background:var(--surface2);color:var(--txt2);border:1px solid var(--border)">更新时间: 2026-11-06</span>
     </div>
-    <h1 class="page-title">A类与C类份额终极抉择：持有几年才是费率平衡临界点？（附量化数学推导）</h1>
-    <p class="page-sub">申购费 vs 销售服务费 · 赎回费梯级 · 临界持有天数推导 · 定投最佳方案</p>
+    <h1 class="page-title" style="text-wrap:balance;letter-spacing:-0.02em;">A类与C类份额终极抉择：持有几年才是费率平衡临界点？（附量化数学推导）</h1>
+    <p class="page-sub" style="text-wrap:balance;">申购费 vs 销售服务费 · 赎回费梯级 · 临界持有天数推导 · 定投最佳方案</p>
 
     <div class="article-takeaways-card">
         <div class="takeaways-top">
@@ -183,7 +185,7 @@
         <p>表面上看，C类“免申购费”极具诱惑力，但从金融工程与资产收益率拖累的角度观察，两者的成本发生机制截然不同：一个是<strong>静态的一次性门票成本</strong>，另一个是<strong>动态的按日复利抽水机制</strong>。</p>
         <div style="overflow-x:auto;margin:1.5rem 0">
             <div class="table-wrap">
-                <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+                <table class="tbl" style="width:100%;border-collapse:collapse;font-size:0.875rem;font-variant-numeric:tabular-nums lining-nums;">
                     <thead>
                         <tr style="background:var(--surface2);text-align:left">
                             <th style="padding:10px;border-bottom:2px solid var(--border)">费用构成项目</th>
@@ -267,7 +269,7 @@
         <h3>3.2 全市场主流QDII费率临界矩阵速查表</h3>
         <div style="overflow-x:auto;margin:1.5rem 0">
             <div class="table-wrap">
-                <table style="width:100%;border-collapse:collapse;font-size:0.88rem">
+                <table class="tbl" style="width:100%;border-collapse:collapse;font-size:0.875rem;font-variant-numeric:tabular-nums lining-nums;">
                     <thead>
                         <tr style="background:var(--surface2);text-align:left">
                             <th style="padding:10px;border-bottom:2px solid var(--border)">A类折后申购费率</th>
@@ -317,7 +319,7 @@
         <p>我们设定标准定投量化模型：每月固定投入 3,000 元（每年投入 3.6 万元），假定纳斯达克100或标普500长期年化复利投资回报率为 10.0%。A类前端申购费 0.12%，C类销售服务费 0.25%/年。我们对比不同时间跨度下的资产终值与费用损耗：</p>
         <div style="overflow-x:auto;margin:1.5rem 0">
             <div class="table-wrap">
-                <table style="width:100%;border-collapse:collapse;font-size:0.88rem">
+                <table class="tbl" style="width:100%;border-collapse:collapse;font-size:0.875rem;font-variant-numeric:tabular-nums lining-nums;">
                     <thead>
                         <tr style="background:var(--surface2);text-align:left">
                             <th style="padding:10px;border-bottom:2px solid var(--border)">定投持有周期</th>
@@ -473,24 +475,42 @@
 
 <footer>
     <div class="footer-inner">
-        <div class="footer-info">
-            <strong>Fund Advisor</strong> — 基金定投智能分析平台<br>
-            数据来源：基金管理人法定披露与AMAC权威备案 · 每日自动更新 · 仅供参考，不构成投资建议<br>
-            © 2026 Fund Advisor. All rights reserved.
+        <div class="footer-info footer-col-brand">
+            <div class="footer-brand-title">
+                <img src="../favicon.png" alt="Fund Advisor" width="24" height="24" style="border-radius:6px">
+                <span>FUND ADVISOR</span>
+            </div>
+            <p class="footer-brand-desc">
+                面向境内投资者的专业级美股指数（纳斯达克100 &amp; 标普500）公募QDII量化配置中枢。融合现代投资组合理论（MPT）、索提诺下行风险体检、黑天鹅极端压力测试与估值动态定投。
+            </p>
+            <div class="footer-status-pill">
+                <span class="footer-pulse-dot"></span>
+                <span>量化分析引擎稳定运行 · 延迟 &lt; 15ms</span>
+            </div>
         </div>
         <div class="footer-links">
-            <a href="/">首页</a>
-            <a href="/#ranking">基金排名</a>
-            <a href="/#simulator">模拟器</a>
-            <a href="/#portfolio">定投方案</a>
-            <a href="/articles/">投资百科</a>
-            <a href="/about">关于我们</a>
-            <a href="/privacy-policy">隐私政策</a>
-            <a href="/terms-of-service">服务条款</a>
+            <div class="footer-col-title">平台导览 · Navigation</div>
+            <div class="footer-nav-list">
+                <a href="/">首页概览</a>
+                <a href="/#ranking">基金多因子排名</a>
+                <a href="/#portfolio">定投方案配置</a>
+                <a href="/#simulator">蒙特卡洛模拟器</a>
+                <a href="/articles/">深度投研百科</a>
+            </div>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col-title">投研与合规 · Research &amp; Compliance</div>
+            <div class="footer-nav-list">
+                <a href="/about">关于我们与方法论</a>
+                <a href="/editorial-policy">内容审校原则</a>
+                <a href="/privacy-policy">隐私保护政策</a>
+                <a href="/terms-of-service">用户服务条款</a>
+                <a href="mailto:contact@858000.xyz">联系与合作</a>
+            </div>
         </div>
     </div>
     <div class="footer-disclaimer">
-        <strong>风险提示与免责合规声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均基于公募基金管理人法定信息公开披露数据、中国证券投资基金业协会（AMAC）权威备案及证券交易所公开行情。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
+        <strong>风险提示与免责声明：</strong>本平台为独立客观的指数基金量化投研工具，所有基金净值、费率、跟踪偏离度及申购限额数据均基于公募基金管理人法定信息公开披露数据、中国证券投资基金业协会（AMAC）权威备案及证券交易所公开行情。本站所载之多因子综合评分、现代投资组合理论（MPT）配置建议、蒙特卡洛随机漫步模拟结果以及投资百科科普长文仅用于学术研究交流与个人理财知识普及，<strong>不构成任何形式的投资建议、投资推介、买卖要约或收益承诺</strong>。基金过往业绩不预示其未来表现，市场有风险，投资需谨慎。投资者应依据自身风险承受能力独立决策，本平台不从事任何公募或私募基金销售代理业务。
     </div>
     <div class="footer-copyright">
         <div>© 2026 Fund Advisor (858000.xyz). Institutional quantitative models open for research.</div>

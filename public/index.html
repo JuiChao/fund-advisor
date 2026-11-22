@@ -1544,16 +1544,16 @@
         <table id="rank-table">
             <thead>
                 <tr>
-                    <th data-key="rank"># · 代码 <span class="arr">⇅</span></th>
-                    <th data-key="name">基金名称 <span class="arr">⇅</span></th>
-                    <th data-key="fee">综合费率 <span class="arr">⇅</span></th>
-                    <th data-key="purchase_fee">申购费 <span class="arr">⇅</span></th>
-                    <th data-key="tracking_error">跟踪误差 / IR <span class="arr">⇅</span></th>
-                    <th data-key="scale">规模 <span class="arr">⇅</span></th>
-                    <th data-key="return_3yr">近3年 <span class="arr">⇅</span></th>
-                    <th data-key="morningstar">晨星 <span class="arr">⇅</span></th>
-                    <th data-key="limit_status">限购(代/直) <span class="arr">⇅</span></th>
-                    <th data-key="score">评分 <span class="arr">⇅</span></th>
+                    <th data-key="rank"># · 代码 <span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span></th>
+                    <th data-key="name">基金名称 <span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span></th>
+                    <th data-key="fee">综合费率 <span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span></th>
+                    <th data-key="purchase_fee">申购费 <span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span></th>
+                    <th data-key="tracking_error">跟踪误差 / IR <span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span></th>
+                    <th data-key="scale">规模 <span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span></th>
+                    <th data-key="return_3yr">近3年 <span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span></th>
+                    <th data-key="morningstar">晨星 <span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span></th>
+                    <th data-key="limit_status">限购(代/直) <span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span></th>
+                    <th data-key="score">评分 <span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span></th>
                 </tr>
             </thead>
             <tbody>
@@ -2459,7 +2459,7 @@
 </nav>
 
     <!-- 全景表格导出前基金勾选弹窗 -->
-    <div class="fund-select-modal-backdrop" id="rank-select-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="rks-modal-title">
+    <dialog class="fund-select-modal-backdrop" id="rank-select-modal" style="display:none;border:none;margin:0;padding:1rem;width:100%;height:100%;max-width:none;max-height:none;box-sizing:border-box;" role="dialog" aria-modal="true" aria-labelledby="rks-modal-title">
         <div class="fund-select-dialog">
             <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="fund-select-header">
@@ -2517,10 +2517,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </dialog>
 
     <!-- 公告看板导出前基金勾选弹窗 -->
-    <div class="fund-select-modal-backdrop" id="quota-select-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="qks-modal-title">
+    <dialog class="fund-select-modal-backdrop" id="quota-select-modal" style="display:none;border:none;margin:0;padding:1rem;width:100%;height:100%;max-width:none;max-height:none;box-sizing:border-box;" role="dialog" aria-modal="true" aria-labelledby="qks-modal-title">
         <div class="fund-select-dialog">
             <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="fund-select-header">
@@ -2576,10 +2576,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </dialog>
 
     <!-- 图片导出预览弹窗 -->
-    <div class="poster-modal-backdrop" id="poster-modal-backdrop" style="display:none" role="dialog" aria-modal="true" aria-labelledby="poster-modal-title-text">
+    <dialog class="poster-modal-backdrop" id="poster-modal-backdrop" style="display:none;border:none;margin:0;padding:1rem;width:100%;height:100%;max-width:none;max-height:none;box-sizing:border-box;" role="dialog" aria-modal="true" aria-labelledby="poster-modal-title-text">
         <div class="poster-modal-dialog">
             <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="poster-modal-header">
@@ -2609,10 +2609,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </dialog>
 
     <!-- 全局键盘快捷键指令 HUD 弹窗 (Raycast / Linear 风格) -->
-    <div class="fund-select-modal-backdrop" id="shortcut-hud-modal" style="display:none" role="dialog" aria-modal="true" aria-label="键盘快捷键速查" aria-labelledby="hud-modal-title">
+    <dialog class="fund-select-modal-backdrop" id="shortcut-hud-modal" style="display:none;border:none;margin:0;padding:1rem;width:100%;height:100%;max-width:none;max-height:none;box-sizing:border-box;" role="dialog" aria-modal="true" aria-label="键盘快捷键速查" aria-labelledby="hud-modal-title">
         <div class="fund-select-dialog shortcut-hud-dialog">
             <div class="modal-drag-handle" aria-hidden="true"></div>
             <div class="fund-select-header">
@@ -2674,7 +2674,7 @@
                 <button type="button" class="btn-rks-confirm" id="btn-hud-ok" style="padding:0.4rem 1rem">明白 (Got it)</button>
             </div>
         </div>
-    </div>
+    </dialog>
 
     <!-- 全局快捷悬浮岛 (返回顶部 / 快捷搜基) -->
     <aside class="floating-quick-bar" id="floating-quick-bar" aria-label="快捷工具栏" style="display:none">

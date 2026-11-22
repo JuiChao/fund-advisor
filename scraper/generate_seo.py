@@ -107,9 +107,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <body>
 <div id="scroll-progress" aria-hidden="true"></div>
 <div class="ambient-glow ambient-glow-2"></div>
-    <div class="ambient-glow ambient-glow-3"></div>
-    <div class="ambient-glow ambient-glow-4"></div>
-</div>
+<div class="ambient-glow ambient-glow-3"></div>
+<div class="ambient-glow ambient-glow-4"></div>
 <header>
 <nav class="navbar navbar-subpage">
     <div class="brand">
@@ -159,7 +158,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         
         <div class="fund-detail-header">
             <div class="fund-title-row">
-                <h1 class="fund-title"><span class="badge-share badge-{share_class_lower}">{share_class}类</span> {fund_name} <span class="fund-code-tag">{fund_code}</span></h1>
+                <h1 class="fund-title" style="text-wrap:balance;"><span class="badge-share badge-{share_class_lower}">{share_class}类</span> {fund_name} <span class="fund-code-tag">{fund_code}</span></h1>
                 {quota_sharing_badge_html}
             </div>
             <div class="fund-meta-strip">
@@ -515,23 +514,23 @@ for fund in funds:
                     f"<div class='fund-sub-card'>"
                     f"<div>"
                     f"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;'>"
-                    f"<span class='code-mono' style='font-weight:700;color:var(--accent2);'>{s_code}</span>"
+                    f"<span class='code-mono' style='font-weight:700;color:var(--accent2);font-variant-numeric:tabular-nums lining-nums;'>{s_code}</span>"
                     f"<span class='badge-share badge-{s_class.lower()}'>{s_class}类</span>"
                     f"</div>"
                     f"<a href='/fund/{s_code}' style='color:var(--txt);font-weight:600;font-size:0.9rem;text-decoration:none;display:block;margin-bottom:0.5rem;line-height:1.4;'>{s_name}</a>"
                     f"<div style='font-size:0.8rem;color:var(--txt2);margin-bottom:0.3rem;'>"
-                    f"<span>综合费率: <strong style='color:var(--txt);'>{s_fee_str}</strong></span>"
+                    f"<span>综合费率: <strong style='color:var(--txt);font-variant-numeric:tabular-nums lining-nums;'>{s_fee_str}</strong></span>"
                     f"</div>"
                     f"<div style='font-size:0.8rem;color:var(--txt2);margin-bottom:0.6rem;'>"
                     f"<span>当前额度: <span style='color:var(--ok);font-weight:600;'>代销({ag_st}) / 直销({dir_st})</span></span>"
                     f"</div>"
                     f"</div>"
-                    f"<a href='/fund/{s_code}' class='btn-dir-review' style='display:block;text-align:center;padding:0.4rem 0.6rem;font-size:0.8rem;margin-top:auto;'>查看平替专页 <svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' style='vertical-align:middle;margin-left:4px'><path d='M5 12h14M12 5l7 7-7 7'/></svg></a>"
+                    f"<a href='/fund/{s_code}' class='btn-dir-review' style='display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:0.45rem 0.75rem;font-size:0.8rem;margin-top:auto;font-weight:600;'>查看平替专页 <svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M5 12h14M12 5l7 7-7 7'/></svg></a>"
                     f"</div>"
                 )
             substitutes_html = (
                 f"<div class='fund-substitutes-box'>"
-                f"<h4 style='margin:0 0 0.75rem;font-size:0.95rem;color:var(--ok);display:flex;align-items:center;gap:6px;'>"
+                f"<h4 style='margin:0 0 0.75rem;font-size:0.95rem;color:var(--ok);display:flex;align-items:center;gap:6px;font-weight:700;text-wrap:balance;'>"
                 f"优质平替基金推荐（同跟踪 {index_type} 且当前开放申购）"
                 f"</h4>"
                 f"<div class='fund-substitutes-grid'>"
@@ -580,18 +579,18 @@ for fund in funds:
             cur_style = "style='background:rgba(99,102,241,0.06);font-weight:600'" if sc == code else ""
             sib_rows.append(
                 f"<tr {cur_style}><td style='text-align:center'><span class='badge-share badge-{s_class.lower()}'>{s_class}类</span></td>"
-                f"<td style='text-align:center'><span class='code-mono'>{sc}</span></td>"
-                f"<td><a href='/fund/{sc}' style='color:var(--txt);text-decoration:none'>{s_fund.get('name', '')}{is_cur}</a></td>"
-                f"<td style='text-align:center'>{format_pct(s_fee)}%</td>"
+                f"<td style='text-align:center'><span class='code-mono' style='font-weight:700;font-variant-numeric:tabular-nums lining-nums;'>{sc}</span></td>"
+                f"<td><a href='/fund/{sc}' style='color:var(--txt);text-decoration:none;font-weight:600'>{s_fund.get('name', '')}{is_cur}</a></td>"
+                f"<td style='text-align:center;font-variant-numeric:tabular-nums lining-nums;'>{format_pct(s_fee)}%</td>"
                 f"<td style='text-align:center'>{s_ag}</td>"
                 f"<td style='text-align:center'>{s_dir}</td>"
-                f"<td style='text-align:center'><a href='/fund/{sc}' class='btn-dir-review' style='padding:2px 8px;font-size:0.75rem'>专页 <svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' style='vertical-align:middle;margin-left:4px'><path d='M5 12h14M12 5l7 7-7 7'/></svg></a></td></tr>"
+                f"<td style='text-align:center'><a href='/fund/{sc}' class='btn-dir-review' style='padding:3px 10px;font-size:0.75rem;display:inline-flex;align-items:center;gap:3px;font-weight:600;'>专页 <svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M5 12h14M12 5l7 7-7 7'/></svg></a></td></tr>"
             )
         siblings_html = f"""
             <div style="margin-top:1.75rem">
-                <h3 style="font-size:1.1rem;color:var(--txt);margin-bottom:0.75rem;font-weight:700">同门跨份额对比矩阵 ({fund.get('family_name', '同系列基金')})</h3>
+                <h3 style="font-size:1.1rem;color:var(--txt);margin-bottom:0.75rem;font-weight:750;text-wrap:balance">同门跨份额对比矩阵 ({fund.get('family_name', '同系列基金')})</h3>
                 <div class="dir-table-wrap">
-                    <table class="tbl dir-table" style="font-size:0.85rem">
+                    <table class="tbl dir-table" style="font-size:0.85rem;font-variant-numeric:tabular-nums lining-nums">
                         <thead>
                             <tr>
                                 <th class="col-center" style="width:65px">份额</th>
@@ -619,12 +618,12 @@ for fund in funds:
         for h in fund_history[:4]:
             ann_link = f" <a href='{h.get('announcement_url')}' target='_blank' style='color:var(--accent2);text-decoration:none;font-size:0.82rem;font-weight:600;margin-left:6px;'>[官方公告 <svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' style='vertical-align:middle;margin-left:2px'><path d='M7 17L17 7M7 7h10v10'/></svg>]</a>" if h.get('announcement_url') else ""
             history_items.append(
-                f"<li style='margin-bottom:0.5rem;'><strong>{h.get('date')}</strong> · <span style='color:var(--accent2);font-weight:600;'>{h.get('change_type_label', '')}</span>: {h.get('summary', '')}{ann_link}</li>"
+                f"<li style='margin-bottom:0.5rem;'><strong style='font-variant-numeric:tabular-nums lining-nums;'>{h.get('date')}</strong> · <span style='color:var(--accent2);font-weight:600;'>{h.get('change_type_label', '')}</span>: {h.get('summary', '')}{ann_link}</li>"
             )
         quota_history_html = f"""
-            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.15rem;margin-top:1.5rem;">
-                <h3 style="font-size:1.05rem;color:var(--txt);margin-top:0;margin-bottom:0.6rem;font-weight:700;">申购限购调整历史与渠道动态</h3>
-                <ul style="padding-left:1.2rem;margin-bottom:0;color:var(--txt2);font-size:0.88rem;line-height:1.5;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.15rem 1.25rem;margin-top:1.75rem;">
+                <h3 style="font-size:1.05rem;color:var(--txt);margin-top:0;margin-bottom:0.6rem;font-weight:750;text-wrap:balance;">申购限购调整历史与渠道动态</h3>
+                <ul style="padding-left:1.2rem;margin-bottom:0;color:var(--txt2);font-size:0.88rem;line-height:1.6;">
                     {''.join(history_items)}
                 </ul>
             </div>
@@ -632,15 +631,15 @@ for fund in funds:
 
     # 深度综合评测 HTML (保留关键词 "深度量化评测")
     review_html = f"""
-        <div class="fund-seo-review" style="margin-top:2rem;line-height:1.75;color:var(--txt2);font-size:1rem;">
-            <h2 style="font-size:1.25rem;color:var(--txt);margin-bottom:1rem;font-weight:700;">{fund.get('name', '')} 深度量化评测</h2>
+        <div class="fund-seo-review" style="margin-top:2rem;line-height:1.8;color:var(--txt2);font-size:1rem;">
+            <h2 style="font-size:1.25rem;color:var(--txt);margin-bottom:1rem;font-weight:750;text-wrap:balance;letter-spacing:-0.015em;">{fund.get('name', '')} 深度量化评测</h2>
             
-            <p style="margin-bottom:1.1rem;">
+            <p style="margin-bottom:1.15rem;line-height:1.8;text-wrap:pretty;">
                 <strong>{fund.get('name', '')} (代码: {code})</strong> 是由 <strong>{manager_company}</strong> 发行并管理的公募 QDII 指数基金，属于该产品线的 <strong>{share_class} 类份额</strong>，紧密跟踪海外核心资产 <strong>{index_type}</strong>。该基金成立于 {inception_date}，基金资产由 <strong>{custodian}</strong> 安全托管，业绩比较基准为 <em>{benchmark}</em>。
             </p>
 
             <div class="fund-quant-report-box">
-                <h3>核心量化多因子体检报告</h3>
+                <h3 style="font-weight:750;text-wrap:balance;">核心量化多因子体检报告</h3>
                 <ul>
                     <li><strong>费率维度</strong>：{fee_eval}</li>
                     <li><strong>跟踪偏离</strong>：{te_eval}</li>
@@ -649,7 +648,7 @@ for fund in funds:
                 </ul>
             </div>
 
-            <h3 style="font-size:1.08rem;color:var(--txt);margin-top:1.5rem;margin-bottom:0.6rem;font-weight:700;">渠道额度穿透与定投实操建议</h3>
+            <h3 style="font-size:1.1rem;color:var(--txt);margin-top:1.75rem;margin-bottom:0.65rem;font-weight:750;text-wrap:balance;">渠道额度穿透与定投实操建议</h3>
             <div class="fund-channel-callout">
                 {channel_eval}
             </div>
@@ -657,8 +656,9 @@ for fund in funds:
 
             {f"<div style='padding:0.75rem 1.15rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;margin-bottom:1rem;font-size:0.88rem'>{quota_rule_eval}</div>" if quota_rule_eval else ""}
 
-            <p style="margin-bottom:1rem;">
+            <p style="margin-bottom:1.15rem;line-height:1.8;text-wrap:pretty;">
                 <strong>历史收益与风险透视</strong>：该基金近 3 年累计收益率为 <strong>{r3_str}%</strong>，近 1 年收益率为 <strong>{r1_str}%</strong>。公募指数基金的历史业绩主要反映其所追踪的底层标的资产（{index_type}）的系统性 Beta 回报，并不构成对未来表现的确定性保证。美股指数长期展现出强大的科技复利增长韧性，但历史中也曾经历 2000 年互联网泡沫、2008 年次贷海啸与 2022 年美联储加息等大幅回撤周期。建议普通投资者摒弃追涨杀跌的择时心态，利用机械化定投平滑持仓成本。
+            </p>
             </p>
 
             {siblings_html}

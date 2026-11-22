@@ -291,12 +291,16 @@ const App = (() => {
     function animateOdometer(el, targetValue, duration = 1100, decimals = 0, prefix = '', suffix = '') {
         if (!el) return;
         const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (isReducedMotion) {
+        if (isReducedMotion || (typeof document !== 'undefined' && document.visibilityState === 'hidden')) {
             el.textContent = `${prefix}${targetValue.toFixed(decimals)}${suffix}`;
             return;
         }
         const startTime = performance.now();
         function step(currentTime) {
+            if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+                el.textContent = `${prefix}${targetValue.toFixed(decimals)}${suffix}`;
+                return;
+            }
             const progress = Math.min((currentTime - startTime) / duration, 1);
             // easeOutCubic
             const easeProgress = 1 - Math.pow(1 - progress, 3);
@@ -1202,10 +1206,11 @@ const App = (() => {
                 limit_status: '代销渠道（第三方）与直销渠道最新单日申购限额',
                 score: '基于费率、跟踪误差、规模与评级的六维量化综合得分'
             };
+            const sortChevronSvg = '<span class="arr" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></span>';
             thead.innerHTML = '<tr>' + rankCols.map((c, idx) => {
                 const align = idx === 0 ? 'data-tooltip-align="left"' : (idx >= rankCols.length - 2 ? 'data-tooltip-align="right"' : '');
                 const tip = colTooltips[c.key] || '';
-                return `<th data-key="${c.key}" data-tooltip="${tip}" data-tooltip-pos="bottom" ${align}>${c.label} <span class="arr">⇅</span></th>`;
+                return `<th data-key="${c.key}" data-tooltip="${tip}" data-tooltip-pos="bottom" ${align}>${c.label} ${sortChevronSvg}</th>`;
             }).join('') + '</tr>';
         }
 
@@ -1664,6 +1669,37 @@ const App = (() => {
         });
     }
 
+    // ===== 统一原生 <dialog> 弹窗管理器 (Native Dialog Lifecycle & Focus Trap) =====
+    function openModalDialog(modal, focusEl) {
+        if (!modal) return;
+        modal.style.display = 'flex';
+        if (typeof modal.showModal === 'function') {
+            try {
+                if (!modal.open) modal.showModal();
+            } catch (e) {
+                // 回退到 CSS 弹性盒显示
+            }
+        }
+        if (focusEl) {
+            setTimeout(() => {
+                try { focusEl.focus(); } catch (e) {}
+            }, 50);
+        }
+    }
+
+    function closeModalDialog(modal, triggerEl) {
+        if (!modal) return;
+        if (typeof modal.close === 'function') {
+            try {
+                if (modal.open) modal.close();
+            } catch (e) {}
+        }
+        modal.style.display = 'none';
+        if (triggerEl && typeof triggerEl.focus === 'function') {
+            try { triggerEl.focus(); } catch (e) {}
+        }
+    }
+
     // 全局导出图片风格偏好（默认深色，持久化于 localStorage）
     let currentExportTheme = 'dark';
     try {
@@ -1825,16 +1861,13 @@ const App = (() => {
         }
 
         const closeModal = () => {
-            if (modal) modal.style.display = 'none';
+            closeModalDialog(modal, triggerBtn);
             document.removeEventListener('keydown', escHandler);
             Object.values(posterThemeCache).forEach(item => {
                 if (item.blobUrl) URL.revokeObjectURL(item.blobUrl);
             });
             posterThemeCache = {};
             activePosterBlobUrl = null;
-            if (triggerBtn && typeof triggerBtn.focus === 'function') {
-                triggerBtn.focus();
-            }
         };
 
         const escHandler = e => {
@@ -1843,16 +1876,15 @@ const App = (() => {
 
         if (closeBtn) closeBtn.onclick = closeModal;
         if (modal) {
+            modal.addEventListener('cancel', e => {
+                e.preventDefault();
+                closeModal();
+            });
             modal.onclick = e => {
                 if (e.target === modal) closeModal();
             };
-            modal.style.display = 'flex';
+            openModalDialog(modal, downloadBtn || closeBtn);
             document.addEventListener('keydown', escHandler);
-            if (downloadBtn) {
-                setTimeout(() => downloadBtn.focus(), 50);
-            } else if (closeBtn) {
-                setTimeout(() => closeBtn.focus(), 50);
-            }
         }
 
         showToast(successToast || '图片已生成', 'success');
@@ -2069,11 +2101,8 @@ const App = (() => {
         }
 
         const closeSelectModal = () => {
-            modal.style.display = 'none';
+            closeModalDialog(modal, triggerBtn);
             document.removeEventListener('keydown', escHandler);
-            if (triggerBtn && typeof triggerBtn.focus === 'function') {
-                triggerBtn.focus();
-            }
         };
 
         const escHandler = e => {
@@ -2082,6 +2111,10 @@ const App = (() => {
 
         if (btnClose) btnClose.onclick = closeSelectModal;
         if (btnCancel) btnCancel.onclick = closeSelectModal;
+        modal.addEventListener('cancel', e => {
+            e.preventDefault();
+            closeSelectModal();
+        });
         modal.onclick = e => {
             if (e.target === modal) closeSelectModal();
         };
@@ -2112,13 +2145,8 @@ const App = (() => {
             };
         }
 
-        modal.style.display = 'flex';
+        openModalDialog(modal, searchInput || btnClose);
         document.addEventListener('keydown', escHandler);
-        if (searchInput) {
-            setTimeout(() => searchInput.focus(), 50);
-        } else if (btnClose) {
-            setTimeout(() => btnClose.focus(), 50);
-        }
     }
 
     // ===== 导出适合社交发布的 3:4 公告看板图片 (按勾选标的渲染，剥离平替推荐与网页交互控件) =====
@@ -2689,11 +2717,8 @@ const App = (() => {
         }
 
         const closeSelectModal = () => {
-            modal.style.display = 'none';
+            closeModalDialog(modal, triggerBtn);
             document.removeEventListener('keydown', escHandler);
-            if (triggerBtn && typeof triggerBtn.focus === 'function') {
-                triggerBtn.focus();
-            }
         };
 
         const escHandler = e => {
@@ -2702,6 +2727,10 @@ const App = (() => {
 
         if (btnClose) btnClose.onclick = closeSelectModal;
         if (btnCancel) btnCancel.onclick = closeSelectModal;
+        modal.addEventListener('cancel', e => {
+            e.preventDefault();
+            closeSelectModal();
+        });
         modal.onclick = e => {
             if (e.target === modal) closeSelectModal();
         };
@@ -2734,13 +2763,8 @@ const App = (() => {
             };
         }
 
-        modal.style.display = 'flex';
+        openModalDialog(modal, searchInput || btnClose);
         document.addEventListener('keydown', escHandler);
-        if (searchInput) {
-            setTimeout(() => searchInput.focus(), 50);
-        } else if (btnClose) {
-            setTimeout(() => btnClose.focus(), 50);
-        }
     }
 
     // ===== 导出全景对比表格高清长图图片 (按勾选标的渲染，剔除网页交互控件与重复类别徽标) =====
@@ -3693,6 +3717,12 @@ const App = (() => {
         btn.disabled = true;
         btn.innerHTML = '<span class="sim-spinner-dot"></span> 5,000次随机漫步并行推演中...';
 
+        const monthlyEl = document.getElementById('sim-m');
+        const yearsEl = document.getElementById('sim-y');
+        const monthly = Math.max(500, parseInt(monthlyEl?.value) || parseInt(monthlyEl?.defaultValue) || 2000);
+        const years = Math.max(5, parseInt(yearsEl?.value) || parseInt(yearsEl?.defaultValue) || 20);
+        const totalSteps = years * 12;
+
         // 即时渲染计算等待状态舱
         const resultContainer = document.getElementById('sim-result');
         if (resultContainer) {
@@ -3700,7 +3730,7 @@ const App = (() => {
                 <div class="sim-computing-deck fade-in">
                     <div class="sim-computing-header">
                         <span class="sim-computing-badge"><span class="computing-dot"></span> WEB WORKER PARALLEL ENGINE</span>
-                        <span class="sim-computing-timer">5,000 路径 · 240 步长 · 协方差收缩</span>
+                        <span class="sim-computing-timer">5,000 路径 · ${totalSteps} 步长 · Box-Muller 抽样</span>
                     </div>
                     <div class="sim-computing-title">正在执行几何布朗运动随机漫步与超额 Alpha 计算...</div>
                     <div class="sim-progress-track">
@@ -3720,10 +3750,6 @@ const App = (() => {
         await new Promise(r => setTimeout(r, 60));
 
         try {
-            const monthlyEl = document.getElementById('sim-m');
-            const yearsEl = document.getElementById('sim-y');
-            const monthly = Math.max(500, parseInt(monthlyEl.value) || parseInt(monthlyEl.defaultValue) || 2000);
-            const years = Math.max(5, parseInt(yearsEl.value) || parseInt(yearsEl.defaultValue) || 20);
             const funds = codes.map(c => FUND_DATA.find(f => f.code === c)).filter(Boolean);
 
             if (!funds.length) {
@@ -4707,13 +4733,25 @@ const App = (() => {
             }
         });
 
+        let _frontierRaf = null;
+
         // 更新探测器 HUD 状态
         function updateHUD(w_nq) {
             const pt = calcFrontierPoint(w_nq);
             currentWeight = pt.w_nq;
 
-            // 查找是否靠近关键里程碑
-            const matched = milestonePoints.find(m => Math.abs(m.w_nq - pt.w_nq) <= 0.015);
+            // 查找是否靠近关键里程碑组合
+            let closestKey = null;
+            let minDistance = 0.045; // 4.5% 阈值
+            milestonePoints.forEach(m => {
+                const dist = Math.abs(m.w_nq - pt.w_nq);
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    closestKey = m.key;
+                }
+            });
+
+            const matched = milestonePoints.find(m => m.key === closestKey) || milestonePoints.find(m => Math.abs(m.w_nq - pt.w_nq) <= 0.015);
 
             const hudIcon = document.getElementById('f-hud-icon');
             const hudTitle = document.getElementById('f-hud-title');
@@ -4783,7 +4821,7 @@ const App = (() => {
                 capSp.textContent = pt.w_sp_pct > 8 ? `${pt.w_sp_pct}%` : '';
             }
 
-            // 风险贡献条
+            // 风险贡献条 (方差分解)
             const riskNq = document.getElementById('f-risk-nq');
             const riskSp = document.getElementById('f-risk-sp');
             if (riskNq && riskSp) {
@@ -4797,7 +4835,7 @@ const App = (() => {
             const noteEl = document.getElementById('f-bars-note');
             if (noteEl) {
                 if (Math.abs(pt.rc_nq - 50) <= 2) {
-                    noteEl.textContent = '达成绝对等风险中性 (各50%)';
+                    noteEl.textContent = '达成绝对等风险中性 (50% : 50%)';
                     noteEl.style.color = 'var(--ok)';
                 } else if (pt.w_nq_pct === 50) {
                     noteEl.textContent = `传统平分: 纳指实际承担 ${pt.rc_nq}% 方差风险`;
@@ -4811,10 +4849,40 @@ const App = (() => {
                 }
             }
 
-            // 更新图表 Cursor 点
+            // 同步联动矩阵表格行高亮选中
+            const matrixRows = document.querySelectorAll('.quant-matrix-row');
+            matrixRows.forEach(row => {
+                if (closestKey && row.dataset.strategy === closestKey) {
+                    row.classList.add('selected-row');
+                    row.style.background = 'rgba(99, 102, 241, 0.12)';
+                    row.style.outline = '1px solid rgba(99, 102, 241, 0.35)';
+                } else {
+                    row.classList.remove('selected-row');
+                    row.style.background = '';
+                    row.style.outline = '';
+                }
+            });
+
+            // 同步预设锚点按钮状态
+            const presetBtns = document.querySelectorAll('#frontier-presets .frontier-preset-btn');
+            presetBtns.forEach(b => {
+                if (closestKey && b.dataset.preset === closestKey) {
+                    b.classList.add('on');
+                } else {
+                    b.classList.remove('on');
+                }
+            });
+
+            // 零延迟调度更新图表 Cursor 点 (RAF 批处理防掉帧)
             if (chartPool.frontier) {
-                chartPool.frontier.data.datasets[4].data = [pt];
-                chartPool.frontier.update('none');
+                if (_frontierRaf) cancelAnimationFrame(_frontierRaf);
+                _frontierRaf = requestAnimationFrame(() => {
+                    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
+                    if (chartPool.frontier && chartPool.frontier.data?.datasets?.[4]) {
+                        chartPool.frontier.data.datasets[4].data = [pt];
+                        chartPool.frontier.update('none');
+                    }
+                });
             }
         }
 
@@ -4827,10 +4895,6 @@ const App = (() => {
             slider.oninput = (e) => {
                 const w = Number(e.target.value) / 100;
                 updateHUD(w);
-                updateSliderGlowTrack(e.target);
-                // 同步更新预设按钮状态
-                const presetBtns = document.querySelectorAll('.frontier-preset-btn');
-                presetBtns.forEach(btn => btn.classList.remove('on'));
             };
         }
 
@@ -6750,11 +6814,20 @@ const App = (() => {
 
             updateMarketStatus();
             updatePingJitter();
-            setInterval(updateMarketStatus, 60000);
             setInterval(() => {
-            if (document.visibilityState === 'hidden') return;
-            updatePingJitter();
-        }, 3500);
+                if (document.visibilityState === 'hidden') return;
+                updateMarketStatus();
+            }, 60000);
+            setInterval(() => {
+                if (document.visibilityState === 'hidden') return;
+                updatePingJitter();
+            }, 3500);
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    updateMarketStatus();
+                    updatePingJitter();
+                }
+            });
         }
         initLiveMarketTelemetry();
 
@@ -7356,23 +7429,18 @@ const App = (() => {
         function openShortcutHud(trigger) {
             hudTriggerEl = (trigger && trigger.nodeType === 1) ? trigger : document.activeElement;
             if (hudModal) {
-                hudModal.style.display = 'flex';
-                if (hudCloseBtn) {
-                    setTimeout(() => hudCloseBtn.focus(), 50);
-                }
+                openModalDialog(hudModal, hudCloseBtn);
             }
         }
         function closeShortcutHud() {
             if (hudModal) {
-                hudModal.style.display = 'none';
-                if (hudTriggerEl && typeof hudTriggerEl.focus === 'function') {
-                    hudTriggerEl.focus();
-                }
+                closeModalDialog(hudModal, hudTriggerEl);
             }
         }
         function toggleShortcutHud(trigger) {
             if (hudModal) {
-                if (hudModal.style.display === 'none' || !hudModal.style.display) {
+                const isOpen = hudModal.open || (hudModal.style.display !== 'none' && hudModal.style.display);
+                if (!isOpen) {
                     openShortcutHud(trigger);
                 } else {
                     closeShortcutHud();
@@ -7383,6 +7451,10 @@ const App = (() => {
         if (hudOkBtn) hudOkBtn.addEventListener('click', closeShortcutHud);
         if (footerHudBtn) footerHudBtn.addEventListener('click', () => openShortcutHud(footerHudBtn));
         if (hudModal) {
+            hudModal.addEventListener('cancel', e => {
+                e.preventDefault();
+                closeShortcutHud();
+            });
             hudModal.addEventListener('click', e => {
                 if (e.target === hudModal) closeShortcutHud();
             });
@@ -7390,12 +7462,15 @@ const App = (() => {
 
         function closeAllModals() {
             closeShortcutHud();
-            const rks = document.getElementById('rank-select-modal');
-            if (rks) rks.style.display = 'none';
-            const qks = document.getElementById('quota-select-modal');
-            if (qks) qks.style.display = 'none';
-            const poster = document.getElementById('poster-modal-backdrop');
-            if (poster) poster.style.display = 'none';
+            const modals = [
+                document.getElementById('rank-select-modal'),
+                document.getElementById('quota-select-modal'),
+                document.getElementById('poster-modal-backdrop'),
+                document.getElementById('shortcut-hud-modal')
+            ];
+            modals.forEach(m => {
+                if (m) closeModalDialog(m);
+            });
             closeMobileNav();
         }
 
