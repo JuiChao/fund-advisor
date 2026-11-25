@@ -1,8 +1,1059 @@
 {
-  "last_updated": "2026-11-25T12:47:32",
+  "last_updated": "2026-11-25T22:05:45",
   "today_date": "2026-11-25",
-  "today_count": 0,
-  "recent_7d_count": 0,
+  "today_count": 15,
+  "recent_7d_count": 15,
   "total_monitored": 60,
-  "history": []
+  "history": [
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "019524",
+      "name": "华泰柏瑞纳斯达克100ETF发起式联接(QDII)A",
+      "index_type": "纳斯达克100",
+      "share_class": "A",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限5元/日",
+        "after_status": "暂停申购",
+        "before_limit": 5,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限5元/日",
+        "after_status": "限5元/日",
+        "before_limit": 5,
+        "after_limit": 5,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限5元/日 ➔ 暂停申购；直销: 维持限5元/日",
+      "announcement_id": "AN202609221829732369",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/019524/AN202609221829732369.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "019525",
+      "name": "华泰柏瑞纳斯达克100ETF发起式联接(QDII)C",
+      "index_type": "纳斯达克100",
+      "share_class": "C",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限5元/日",
+        "after_status": "暂停申购",
+        "before_limit": 5,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限5元/日",
+        "after_status": "限5元/日",
+        "before_limit": 5,
+        "after_limit": 5,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限5元/日 ➔ 暂停申购；直销: 维持限5元/日",
+      "announcement_id": "AN202609221829732369",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/019525/AN202609221829732369.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "022664",
+      "name": "华泰柏瑞纳斯达克100ETF发起式联接(QDII)I",
+      "index_type": "纳斯达克100",
+      "share_class": "I",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限5元/日",
+        "after_status": "暂停申购",
+        "before_limit": 5,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限5元/日",
+        "after_status": "限5元/日",
+        "before_limit": 5,
+        "after_limit": 5,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限5元/日 ➔ 暂停申购；直销: 维持限5元/日",
+      "announcement_id": "AN202609221829732369",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/022664/AN202609221829732369.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "016452",
+      "name": "南方纳斯达克100指数发起(QDII)A",
+      "index_type": "纳斯达克100",
+      "share_class": "A",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限10元/日",
+        "after_status": "限10元/日",
+        "before_limit": 10,
+        "after_limit": 10,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限10元/日",
+      "announcement_id": "AN202607081826816306",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/016452/AN202607081826816306.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "016453",
+      "name": "南方纳斯达克100指数发起(QDII)C",
+      "index_type": "纳斯达克100",
+      "share_class": "C",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限10元/日",
+        "after_status": "限10元/日",
+        "before_limit": 10,
+        "after_limit": 10,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限10元/日",
+      "announcement_id": "AN202607081826816306",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/016453/AN202607081826816306.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "000834",
+      "name": "大成纳斯达克100ETF联接(QDII)A",
+      "index_type": "纳斯达克100",
+      "share_class": "A",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限100元/日",
+        "after_status": "限100元/日",
+        "before_limit": 100,
+        "after_limit": 100,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限100元/日",
+      "announcement_id": "AN202606031823188725",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/000834/AN202606031823188725.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "008971",
+      "name": "大成纳斯达克100ETF联接(QDII)C",
+      "index_type": "纳斯达克100",
+      "share_class": "C",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限100元/日",
+        "after_status": "限100元/日",
+        "before_limit": 100,
+        "after_limit": 100,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限100元/日",
+      "announcement_id": "AN202606031823188725",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/008971/AN202606031823188725.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "019736",
+      "name": "宝盈纳斯达克100指数发起(QDII)A人民币",
+      "index_type": "纳斯达克100",
+      "share_class": "A",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限10元/日",
+        "after_status": "限10元/日",
+        "before_limit": 10,
+        "after_limit": 10,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限10元/日",
+      "announcement_id": "AN202609241829831132",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/019736/AN202609241829831132.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "019737",
+      "name": "宝盈纳斯达克100指数发起(QDII)C人民币",
+      "index_type": "纳斯达克100",
+      "share_class": "C",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限10元/日",
+        "after_status": "限10元/日",
+        "before_limit": 10,
+        "after_limit": 10,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限10元/日",
+      "announcement_id": "AN202609241829831132",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/019737/AN202609241829831132.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "012752",
+      "name": "建信纳斯达克100指数(QDII)C人民币",
+      "index_type": "纳斯达克100",
+      "share_class": "C",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限10元/日",
+        "after_status": "限10元/日",
+        "before_limit": 10,
+        "after_limit": 10,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限10元/日",
+      "announcement_id": "AN202608191828132673",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/012752/AN202608191828132673.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "539001",
+      "name": "建信纳斯达克100指数(QDII)A人民币",
+      "index_type": "纳斯达克100",
+      "share_class": "A",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限10元/日",
+        "after_status": "限10元/日",
+        "before_limit": 10,
+        "after_limit": 10,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限10元/日",
+      "announcement_id": "AN202608191828132673",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/539001/AN202608191828132673.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "019172",
+      "name": "摩根纳斯达克100指数(QDII)人民币A",
+      "index_type": "纳斯达克100",
+      "share_class": "A",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限10元/日",
+        "after_status": "限10元/日",
+        "before_limit": 10,
+        "after_limit": 10,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限10元/日",
+      "announcement_id": "AN202607241827315717",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/019172/AN202607241827315717.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "019173",
+      "name": "摩根纳斯达克100指数(QDII)人民币C",
+      "index_type": "纳斯达克100",
+      "share_class": "C",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限10元/日",
+        "after_status": "限10元/日",
+        "before_limit": 10,
+        "after_limit": 10,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限10元/日",
+      "announcement_id": "AN202607241827315717",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/019173/AN202607241827315717.html",
+      "substitutes": [
+        {
+          "code": "021000",
+          "name": "南方纳斯达克100指数发起(QDII)I",
+          "share_class": "I",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0066,
+          "limit_status": "未开通代销",
+          "direct_limit_status": "限200元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 200,
+          "max_quota": 200,
+          "score": 0
+        },
+        {
+          "code": "019441",
+          "name": "万家纳斯达克100指数发起式(QDII)A",
+          "share_class": "A",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        },
+        {
+          "code": "019442",
+          "name": "万家纳斯达克100指数发起式(QDII)C",
+          "share_class": "C",
+          "index_type": "纳斯达克100",
+          "total_fee": 0.0085,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限100元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 100,
+          "max_quota": 100,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "017641",
+      "name": "摩根标普500指数(QDII)人民币A",
+      "index_type": "标普500",
+      "share_class": "A",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限10元/日",
+        "after_status": "限10元/日",
+        "before_limit": 10,
+        "after_limit": 10,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限10元/日",
+      "announcement_id": "AN202607241827315718",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/017641/AN202607241827315718.html",
+      "substitutes": [
+        {
+          "code": "096001",
+          "name": "大成标普500等权重指数(QDII)A人民币",
+          "share_class": "A",
+          "index_type": "标普500",
+          "total_fee": 0.012,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限500元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 500,
+          "max_quota": 500,
+          "score": 0
+        },
+        {
+          "code": "008401",
+          "name": "大成标普500等权重指数(QDII)C人民币",
+          "share_class": "C",
+          "index_type": "标普500",
+          "total_fee": 0.015,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限500元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 500,
+          "max_quota": 500,
+          "score": 0
+        },
+        {
+          "code": "019305",
+          "name": "摩根标普500指数(QDII)人民币C",
+          "share_class": "C",
+          "index_type": "标普500",
+          "total_fee": 0.0095,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限10元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 10,
+          "max_quota": 10,
+          "score": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "effective_date": "2026-11-25",
+      "announcement_pub_date": "2026-11-25",
+      "timestamp": "2026-11-25T22:05:45",
+      "code": "019305",
+      "name": "摩根标普500指数(QDII)人民币C",
+      "index_type": "标普500",
+      "share_class": "C",
+      "change_type": "TIGHTENED",
+      "change_type_label": "额度下调 / 暂停申购",
+      "agency": {
+        "before_status": "限10元/日",
+        "after_status": "暂停申购",
+        "before_limit": 10,
+        "after_limit": 0,
+        "direction": "TIGHTENED"
+      },
+      "direct": {
+        "before_status": "限10元/日",
+        "after_status": "限10元/日",
+        "before_limit": 10,
+        "after_limit": 10,
+        "direction": "UNCHANGED"
+      },
+      "summary": "代销: 限10元/日 ➔ 暂停申购；直销: 维持限10元/日",
+      "announcement_id": "AN202607241827315718",
+      "announcement_url": "https://data.eastmoney.com/notices/detail/019305/AN202607241827315718.html",
+      "substitutes": [
+        {
+          "code": "096001",
+          "name": "大成标普500等权重指数(QDII)A人民币",
+          "share_class": "A",
+          "index_type": "标普500",
+          "total_fee": 0.012,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限500元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 500,
+          "max_quota": 500,
+          "score": 0
+        },
+        {
+          "code": "008401",
+          "name": "大成标普500等权重指数(QDII)C人民币",
+          "share_class": "C",
+          "index_type": "标普500",
+          "total_fee": 0.015,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限500元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 500,
+          "max_quota": 500,
+          "score": 0
+        },
+        {
+          "code": "017641",
+          "name": "摩根标普500指数(QDII)人民币A",
+          "share_class": "A",
+          "index_type": "标普500",
+          "total_fee": 0.0065,
+          "limit_status": "暂停申购",
+          "direct_limit_status": "限10元/日",
+          "daily_limit": 0,
+          "direct_daily_limit": 10,
+          "max_quota": 10,
+          "score": 0
+        }
+      ]
+    }
+  ]
 }
